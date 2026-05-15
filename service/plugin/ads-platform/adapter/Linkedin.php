@@ -8,6 +8,8 @@ namespace plugin\ads_platform\adapter;
 use plugin\ads_platform\src\{
     PlatformAdapter, CampaignData, ReportRequest, FieldMapping
 };
+use RuntimeException;
+use InvalidArgumentException;
 
 class Linkedin implements PlatformAdapter
 {
@@ -17,8 +19,8 @@ class Linkedin implements PlatformAdapter
 
     public function __construct()
     {
-        $this->clientId     = getenv('LINKEDIN_CLIENT_ID') ?: '';
-        $this->clientSecret = getenv('LINKEDIN_CLIENT_SECRET') ?: '';
+        $this->clientId     = env('LINKEDIN_CLIENT_ID', '');
+        $this->clientSecret = env('LINKEDIN_CLIENT_SECRET', '');
     }
 
     // ── Identity ──────────────────────────────────────────────
@@ -105,7 +107,7 @@ class Linkedin implements PlatformAdapter
 
     // ── Campaigns ─────────────────────────────────────────────
 
-    public function fetchCampaigns(string $accessToken, string $accountId): Generator
+    public function fetchCampaigns(string $accessToken, string $accountId): \Generator
     {
         $mapping = $this->campaignFieldMapping();
         $accountUrn = $this->toAccountUrn($accountId);
@@ -133,7 +135,7 @@ class Linkedin implements PlatformAdapter
 
     // ── AdGroups ──────────────────────────────────────────────
 
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator
     {
         $mapping = $this->adgroupFieldMapping();
         $accountUrn = $this->toAccountUrn($accountId);
@@ -162,7 +164,7 @@ class Linkedin implements PlatformAdapter
 
     // ── Creatives ─────────────────────────────────────────────
 
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
     {
         $mapping = $this->creativeFieldMapping();
         $accountUrn = $this->toAccountUrn($accountId);
@@ -191,7 +193,7 @@ class Linkedin implements PlatformAdapter
 
     // ── Reports (Analytics) ───────────────────────────────────
 
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator
     {
         $mapping = $this->reportFieldMapping();
         $accountUrn = $this->toAccountUrn($accountId);

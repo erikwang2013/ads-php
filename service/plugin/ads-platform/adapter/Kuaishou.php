@@ -8,6 +8,8 @@ namespace plugin\ads_platform\adapter;
 use plugin\ads_platform\src\{
     PlatformAdapter, CampaignData, ReportRequest, FieldMapping
 };
+use RuntimeException;
+use InvalidArgumentException;
 
 class Kuaishou implements PlatformAdapter
 {
@@ -19,8 +21,8 @@ class Kuaishou implements PlatformAdapter
 
     public function __construct()
     {
-        $this->appId  = getenv('KUAISHOU_APP_ID') ?: '';
-        $this->secret = getenv('KUAISHOU_SECRET') ?: '';
+        $this->appId  = env('KUAISHOU_APP_ID', '');
+        $this->secret = env('KUAISHOU_SECRET', '');
     }
 
     public function code(): string { return 'kuaishou'; }
@@ -73,7 +75,7 @@ class Kuaishou implements PlatformAdapter
         ], $list);
     }
 
-    public function fetchCampaigns(string $accessToken, string $accountId): Generator
+    public function fetchCampaigns(string $accessToken, string $accountId): \Generator
     {
         $mapping = $this->campaignFieldMapping();
         $page = 1;
@@ -92,12 +94,12 @@ class Kuaishou implements PlatformAdapter
         } while ($hasMore);
     }
 
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator
     {
         yield from [];
     }
 
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
     {
         $mapping = $this->creativeFieldMapping();
         $page = 1;
@@ -116,7 +118,7 @@ class Kuaishou implements PlatformAdapter
         } while ($hasMore);
     }
 
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator
     {
         $mapping = $this->reportFieldMapping();
         $page = 1;

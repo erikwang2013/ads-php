@@ -8,6 +8,8 @@ namespace plugin\ads_platform\adapter;
 use plugin\ads_platform\src\{
     PlatformAdapter, CampaignData, ReportRequest, FieldMapping
 };
+use RuntimeException;
+use InvalidArgumentException;
 
 /**
  * 优酷广告平台适配器（阿里系）
@@ -25,8 +27,8 @@ class Youku implements PlatformAdapter
 
     public function __construct()
     {
-        $this->appKey = getenv('YOUKU_APP_KEY') ?: '';
-        $this->secret = getenv('YOUKU_SECRET') ?: '';
+        $this->appKey = env('YOUKU_APP_KEY', '');
+        $this->secret = env('YOUKU_SECRET', '');
     }
 
     // ── Identity ──────────────────────────────────────────────
@@ -108,7 +110,7 @@ class Youku implements PlatformAdapter
 
     // ── Campaigns ─────────────────────────────────────────────
 
-    public function fetchCampaigns(string $accessToken, string $accountId): Generator
+    public function fetchCampaigns(string $accessToken, string $accountId): \Generator
     {
         $mapping = $this->campaignFieldMapping();
         $page    = 1;
@@ -128,21 +130,21 @@ class Youku implements PlatformAdapter
 
     // ── AdGroups ──────────────────────────────────────────────
 
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator
     {
         yield from [];
     }
 
     // ── Creatives ─────────────────────────────────────────────
 
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
     {
         yield from [];
     }
 
     // ── Reports ───────────────────────────────────────────────
 
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator
     {
         $mapping = $this->reportFieldMapping();
         $page    = 1;

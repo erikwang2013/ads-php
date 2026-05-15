@@ -10,6 +10,7 @@ use plugin\ads_platform\src\AdapterRegistry;
 use plugin\ads_platform\src\ReportRequest;
 use erik\support\CacheService;
 use Illuminate\Database\Capsule\Manager as DB;
+use Throwable;
 
 class DataSyncTask
 {

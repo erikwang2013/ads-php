@@ -4,9 +4,9 @@
  * Models that use the Searchable trait will auto-sync to the configured driver.
  */
 return [
-    'driver' => getenv('SCOUT_DRIVER', 'elasticsearch'),
+    'driver' => env('SCOUT_DRIVER', 'elasticsearch'),
     'elasticsearch' => [
-        'hosts' => [getenv('ES_HOST', '127.0.0.1:9200')],
-        'index' => getenv('ES_INDEX', 'ads_platform'),
+        'hosts' => [env('ES_HOST', '127.0.0.1:9200')],
+        'index' => env('ES_INDEX', 'ads_platform'),
     ],
 ];

@@ -8,6 +8,8 @@ namespace plugin\ads_platform\adapter;
 use plugin\ads_platform\src\{
     PlatformAdapter, CampaignData, ReportRequest, FieldMapping
 };
+use RuntimeException;
+use InvalidArgumentException;
 
 class Twitter implements PlatformAdapter
 {
@@ -17,8 +19,8 @@ class Twitter implements PlatformAdapter
 
     public function __construct()
     {
-        $this->clientId     = getenv('TWITTER_CLIENT_ID') ?: '';
-        $this->clientSecret = getenv('TWITTER_CLIENT_SECRET') ?: '';
+        $this->clientId     = env('TWITTER_CLIENT_ID', '');
+        $this->clientSecret = env('TWITTER_CLIENT_SECRET', '');
     }
 
     // ── Identity ──────────────────────────────────────────────
@@ -172,7 +174,7 @@ class Twitter implements PlatformAdapter
 
     // ── Campaigns ─────────────────────────────────────────────
 
-    public function fetchCampaigns(string $accessToken, string $accountId): Generator
+    public function fetchCampaigns(string $accessToken, string $accountId): \Generator
     {
         $mapping = $this->campaignFieldMapping();
         $urlPath = "accounts/{$accountId}/campaigns";
@@ -199,7 +201,7 @@ class Twitter implements PlatformAdapter
 
     // ── AdGroups (Line Items in Twitter) ──────────────────────
 
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator
     {
         $mapping = $this->adgroupFieldMapping();
         $urlPath = "accounts/{$accountId}/line_items";
@@ -226,7 +228,7 @@ class Twitter implements PlatformAdapter
 
     // ── Creatives (Promoted Tweets / Cards) ───────────────────
 
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
     {
         $mapping = $this->creativeFieldMapping();
         $urlPath = "accounts/{$accountId}/promoted_tweets";
@@ -253,7 +255,7 @@ class Twitter implements PlatformAdapter
 
     // ── Reports (Stats) ───────────────────────────────────────
 
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator
     {
         $mapping = $this->reportFieldMapping();
         $urlPath = "stats/accounts/{$accountId}";

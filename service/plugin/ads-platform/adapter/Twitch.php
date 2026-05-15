@@ -8,6 +8,8 @@ namespace plugin\ads_platform\adapter;
 use plugin\ads_platform\src\{
     PlatformAdapter, CampaignData, ReportRequest, FieldMapping
 };
+use RuntimeException;
+use InvalidArgumentException;
 
 class Twitch implements PlatformAdapter
 {
@@ -17,8 +19,8 @@ class Twitch implements PlatformAdapter
 
     public function __construct()
     {
-        $this->clientId     = getenv('TWITCH_ADS_CLIENT_ID') ?: '';
-        $this->clientSecret = getenv('TWITCH_ADS_CLIENT_SECRET') ?: '';
+        $this->clientId     = env('TWITCH_ADS_CLIENT_ID', '');
+        $this->clientSecret = env('TWITCH_ADS_CLIENT_SECRET', '');
     }
 
     public function code(): string { return 'twitch'; }
@@ -81,7 +83,7 @@ class Twitch implements PlatformAdapter
         ], $list);
     }
 
-    public function fetchCampaigns(string $accessToken, string $accountId): Generator
+    public function fetchCampaigns(string $accessToken, string $accountId): \Generator
     {
         $mapping = $this->campaignFieldMapping();
         $cursor = null;
@@ -99,19 +101,19 @@ class Twitch implements PlatformAdapter
         } while ($cursor);
     }
 
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator
     {
         // Twitch uses ad_schedule segments within campaigns — no separate ad group entity
         yield from [];
     }
 
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
     {
         // Twitch ads are video-based with limited creative API surface
         yield from [];
     }
 
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator
     {
         $mapping = $this->reportFieldMapping();
         $cursor = null;

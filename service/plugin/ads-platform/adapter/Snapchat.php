@@ -8,6 +8,8 @@ namespace plugin\ads_platform\adapter;
 use plugin\ads_platform\src\{
     PlatformAdapter, CampaignData, ReportRequest, FieldMapping
 };
+use RuntimeException;
+use InvalidArgumentException;
 
 class Snapchat implements PlatformAdapter
 {
@@ -17,8 +19,8 @@ class Snapchat implements PlatformAdapter
 
     public function __construct()
     {
-        $this->clientId     = getenv('SNAPCHAT_CLIENT_ID') ?: '';
-        $this->clientSecret = getenv('SNAPCHAT_CLIENT_SECRET') ?: '';
+        $this->clientId     = env('SNAPCHAT_CLIENT_ID', '');
+        $this->clientSecret = env('SNAPCHAT_CLIENT_SECRET', '');
     }
 
     // ── Identity ──────────────────────────────────────────────
@@ -106,7 +108,7 @@ class Snapchat implements PlatformAdapter
 
     // ── Campaigns ─────────────────────────────────────────────
 
-    public function fetchCampaigns(string $accessToken, string $accountId): Generator
+    public function fetchCampaigns(string $accessToken, string $accountId): \Generator
     {
         $mapping = $this->campaignFieldMapping();
         $urlPath = "adaccounts/{$accountId}/campaigns";
@@ -122,7 +124,7 @@ class Snapchat implements PlatformAdapter
 
     // ── AdGroups (Ad Squads in Snapchat) ──────────────────────
 
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator
     {
         $mapping = $this->adgroupFieldMapping();
         $urlPath = "adaccounts/{$accountId}/adsquads";
@@ -141,7 +143,7 @@ class Snapchat implements PlatformAdapter
 
     // ── Creatives (Ads in Snapchat) ───────────────────────────
 
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
     {
         $mapping = $this->creativeFieldMapping();
         $urlPath = "adaccounts/{$accountId}/ads";
@@ -160,7 +162,7 @@ class Snapchat implements PlatformAdapter
 
     // ── Reports ───────────────────────────────────────────────
 
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator
     {
         $mapping = $this->reportFieldMapping();
 

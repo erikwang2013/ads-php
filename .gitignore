@@ -4,6 +4,8 @@
 /vendor
 *.log
 .env
+.env.local
+.env.*.local
 /tests/tmp
 /tests/.phpunit.result.cache
 /composer.lock

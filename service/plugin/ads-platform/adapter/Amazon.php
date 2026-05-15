@@ -8,6 +8,8 @@ namespace plugin\ads_platform\adapter;
 use plugin\ads_platform\src\{
     PlatformAdapter, CampaignData, ReportRequest, FieldMapping
 };
+use RuntimeException;
+use InvalidArgumentException;
 
 class Amazon implements PlatformAdapter
 {
@@ -17,8 +19,8 @@ class Amazon implements PlatformAdapter
 
     public function __construct()
     {
-        $this->clientId     = getenv('AMAZON_ADS_CLIENT_ID') ?: '';
-        $this->clientSecret = getenv('AMAZON_ADS_CLIENT_SECRET') ?: '';
+        $this->clientId     = env('AMAZON_ADS_CLIENT_ID', '');
+        $this->clientSecret = env('AMAZON_ADS_CLIENT_SECRET', '');
     }
 
     public function code(): string { return 'amazon'; }
@@ -81,7 +83,7 @@ class Amazon implements PlatformAdapter
         ], $list);
     }
 
-    public function fetchCampaigns(string $accessToken, string $accountId): Generator
+    public function fetchCampaigns(string $accessToken, string $accountId): \Generator
     {
         $mapping = $this->campaignFieldMapping();
         $nextToken = null;
@@ -99,7 +101,7 @@ class Amazon implements PlatformAdapter
         } while ($nextToken);
     }
 
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator
     {
         $mapping = $this->adGroupFieldMapping();
         $nextToken = null;
@@ -117,7 +119,7 @@ class Amazon implements PlatformAdapter
         } while ($nextToken);
     }
 
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
     {
         $mapping = $this->creativeFieldMapping();
         $nextToken = null;
@@ -135,7 +137,7 @@ class Amazon implements PlatformAdapter
         } while ($nextToken);
     }
 
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator
     {
         $mapping = $this->reportFieldMapping();
 

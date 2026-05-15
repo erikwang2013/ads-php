@@ -8,6 +8,8 @@ namespace plugin\ads_platform\adapter;
 use plugin\ads_platform\src\{
     PlatformAdapter, CampaignData, ReportRequest, FieldMapping
 };
+use RuntimeException;
+use InvalidArgumentException;
 
 class Umeng implements PlatformAdapter
 {
@@ -17,8 +19,8 @@ class Umeng implements PlatformAdapter
 
     public function __construct()
     {
-        $this->apiKey    = getenv('UMENG_API_KEY') ?: '';
-        $this->apiSecret = getenv('UMENG_API_SECRET') ?: '';
+        $this->apiKey    = env('UMENG_API_KEY', '');
+        $this->apiSecret = env('UMENG_API_SECRET', '');
     }
 
     public function code(): string { return 'umeng'; }
@@ -99,17 +101,17 @@ class Umeng implements PlatformAdapter
     //  Campaign / AdGroup / Creative — not supported by Umeng
     // ----------------------------------------------------------------
 
-    public function fetchCampaigns(string $accessToken, string $accountId): Generator
+    public function fetchCampaigns(string $accessToken, string $accountId): \Generator
     {
         yield from [];
     }
 
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator
     {
         yield from [];
     }
 
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
     {
         yield from [];
     }
@@ -118,7 +120,7 @@ class Umeng implements PlatformAdapter
     //  Reports
     // ----------------------------------------------------------------
 
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator
     {
         $mapping = $this->reportFieldMapping();
 

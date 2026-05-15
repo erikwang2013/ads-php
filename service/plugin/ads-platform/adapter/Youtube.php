@@ -8,6 +8,8 @@ namespace plugin\ads_platform\adapter;
 use plugin\ads_platform\src\{
     PlatformAdapter, CampaignData, ReportRequest, FieldMapping
 };
+use RuntimeException;
+use InvalidArgumentException;
 
 class Youtube implements PlatformAdapter
 {
@@ -21,10 +23,10 @@ class Youtube implements PlatformAdapter
 
     public function __construct()
     {
-        $this->clientId         = getenv('YOUTUBE_CLIENT_ID') ?: '';
-        $this->clientSecret     = getenv('YOUTUBE_CLIENT_SECRET') ?: '';
-        $this->developerToken   = getenv('YOUTUBE_DEVELOPER_TOKEN') ?: '';
-        $this->loginCustomerId  = getenv('YOUTUBE_LOGIN_CUSTOMER_ID') ?: '';
+        $this->clientId         = env('YOUTUBE_CLIENT_ID', '');
+        $this->clientSecret     = env('YOUTUBE_CLIENT_SECRET', '');
+        $this->developerToken   = env('YOUTUBE_DEVELOPER_TOKEN', '');
+        $this->loginCustomerId  = env('YOUTUBE_LOGIN_CUSTOMER_ID', '');
     }
 
     // -------------------------------------------------------------------
@@ -170,7 +172,7 @@ class Youtube implements PlatformAdapter
     //  Campaigns — GAQL search filtered by advertisingChannelType = VIDEO
     // -------------------------------------------------------------------
 
-    public function fetchCampaigns(string $accessToken, string $accountId): Generator
+    public function fetchCampaigns(string $accessToken, string $accountId): \Generator
     {
         $mapping = $this->campaignFieldMapping();
         $query = 'SELECT campaign.id, campaign.name, campaign.status '
@@ -187,7 +189,7 @@ class Youtube implements PlatformAdapter
     //  AdGroups
     // -------------------------------------------------------------------
 
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator
     {
         $mapping = $this->adgroupFieldMapping();
         $query = 'SELECT ad_group.id, ad_group.name, ad_group.status, ad_group.campaign '
@@ -204,7 +206,7 @@ class Youtube implements PlatformAdapter
     //  Creatives
     // -------------------------------------------------------------------
 
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
     {
         $mapping = $this->creativeFieldMapping();
         $query = 'SELECT ad_group_ad.ad.id, ad_group_ad.ad.name, ad_group_ad.status, ad_group_ad.ad_group '
@@ -221,7 +223,7 @@ class Youtube implements PlatformAdapter
     //  Reports — googleAds:search with video-specific metrics
     // -------------------------------------------------------------------
 
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator
     {
         $mapping = $this->reportFieldMapping();
         $query = 'SELECT '

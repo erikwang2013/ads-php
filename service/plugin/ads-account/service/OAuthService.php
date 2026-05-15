@@ -8,6 +8,9 @@ namespace plugin\ads_account\service;
 use plugin\ads_account\model\PlatformAccount;
 use plugin\ads_account\model\AuthToken;
 use plugin\ads_platform\src\AdapterRegistry;
+use Throwable;
+use RuntimeException;
+use InvalidArgumentException;
 
 class OAuthService
 {

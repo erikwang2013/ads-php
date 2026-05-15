@@ -8,6 +8,8 @@ namespace plugin\ads_platform\adapter;
 use plugin\ads_platform\src\{
     PlatformAdapter, CampaignData, ReportRequest, FieldMapping
 };
+use RuntimeException;
+use InvalidArgumentException;
 
 class Meta implements PlatformAdapter
 {
@@ -17,8 +19,8 @@ class Meta implements PlatformAdapter
 
     public function __construct()
     {
-        $this->appId  = getenv('META_APP_ID') ?: '';
-        $this->secret = getenv('META_SECRET') ?: '';
+        $this->appId  = env('META_APP_ID', '');
+        $this->secret = env('META_SECRET', '');
     }
 
     // ── Identity ──────────────────────────────────────────────
@@ -154,7 +156,7 @@ class Meta implements PlatformAdapter
 
     // ── Campaigns ─────────────────────────────────────────────
 
-    public function fetchCampaigns(string $accessToken, string $accountId): Generator
+    public function fetchCampaigns(string $accessToken, string $accountId): \Generator
     {
         $mapping = $this->campaignFieldMapping();
         $urlPath = $accountId . '/campaigns';
@@ -179,7 +181,7 @@ class Meta implements PlatformAdapter
 
     // ── AdGroups (AdSets in Meta) ─────────────────────────────
 
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator
     {
         $mapping = $this->adgroupFieldMapping();
         $urlPath = $accountId . '/adsets';
@@ -208,7 +210,7 @@ class Meta implements PlatformAdapter
 
     // ── Creatives (Ads in Meta) ───────────────────────────────
 
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
     {
         $mapping = $this->creativeFieldMapping();
         $urlPath = $accountId . '/ads';
@@ -236,7 +238,7 @@ class Meta implements PlatformAdapter
 
     // ── Reports (Insights) ────────────────────────────────────
 
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator
     {
         $mapping = $this->reportFieldMapping();
         $urlPath = $accountId . '/insights';

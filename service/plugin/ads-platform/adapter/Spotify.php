@@ -8,6 +8,8 @@ namespace plugin\ads_platform\adapter;
 use plugin\ads_platform\src\{
     PlatformAdapter, CampaignData, ReportRequest, FieldMapping
 };
+use RuntimeException;
+use InvalidArgumentException;
 
 class Spotify implements PlatformAdapter
 {
@@ -17,8 +19,8 @@ class Spotify implements PlatformAdapter
 
     public function __construct()
     {
-        $this->clientId     = getenv('SPOTIFY_ADS_CLIENT_ID') ?: '';
-        $this->clientSecret = getenv('SPOTIFY_ADS_CLIENT_SECRET') ?: '';
+        $this->clientId     = env('SPOTIFY_ADS_CLIENT_ID', '');
+        $this->clientSecret = env('SPOTIFY_ADS_CLIENT_SECRET', '');
     }
 
     public function code(): string { return 'spotify'; }
@@ -77,7 +79,7 @@ class Spotify implements PlatformAdapter
         ], $list);
     }
 
-    public function fetchCampaigns(string $accessToken, string $accountId): Generator
+    public function fetchCampaigns(string $accessToken, string $accountId): \Generator
     {
         $mapping = $this->campaignFieldMapping();
         $offset = 0;
@@ -96,7 +98,7 @@ class Spotify implements PlatformAdapter
         } while ($hasMore);
     }
 
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator
     {
         $mapping = $this->adGroupFieldMapping();
         $offset = 0;
@@ -116,7 +118,7 @@ class Spotify implements PlatformAdapter
         } while ($hasMore);
     }
 
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
     {
         $mapping = $this->creativeFieldMapping();
         $offset = 0;
@@ -136,7 +138,7 @@ class Spotify implements PlatformAdapter
         } while ($hasMore);
     }
 
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator
     {
         $mapping = $this->reportFieldMapping();
 

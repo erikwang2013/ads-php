@@ -8,6 +8,8 @@ namespace plugin\ads_platform\adapter;
 use plugin\ads_platform\src\{
     PlatformAdapter, CampaignData, ReportRequest, FieldMapping
 };
+use RuntimeException;
+use InvalidArgumentException;
 
 class Meituan implements PlatformAdapter
 {
@@ -18,8 +20,8 @@ class Meituan implements PlatformAdapter
 
     public function __construct()
     {
-        $this->appId  = getenv('MEITUAN_APP_ID') ?: '';
-        $this->secret = getenv('MEITUAN_SECRET') ?: '';
+        $this->appId  = env('MEITUAN_APP_ID', '');
+        $this->secret = env('MEITUAN_SECRET', '');
     }
 
     public function code(): string { return 'meituan'; }
@@ -92,7 +94,7 @@ class Meituan implements PlatformAdapter
 
     // ── Campaign ───────────────────────────────────────────
 
-    public function fetchCampaigns(string $accessToken, string $accountId): Generator
+    public function fetchCampaigns(string $accessToken, string $accountId): \Generator
     {
         $mapping = $this->campaignFieldMapping();
         $page = 1;
@@ -110,12 +112,12 @@ class Meituan implements PlatformAdapter
         } while ($hasMore);
     }
 
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator
     {
         yield from [];
     }
 
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
     {
         // 美团主要是本地生活广告，无独立创意端点
         yield from [];
@@ -123,7 +125,7 @@ class Meituan implements PlatformAdapter
 
     // ── Report ─────────────────────────────────────────────
 
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator
     {
         $mapping = $this->reportFieldMapping();
         $resp = $this->request('GET', 'report/summary', [

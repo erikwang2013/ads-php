@@ -8,6 +8,8 @@ namespace plugin\ads_platform\adapter;
 use plugin\ads_platform\src\{
     PlatformAdapter, CampaignData, ReportRequest, FieldMapping
 };
+use RuntimeException;
+use InvalidArgumentException;
 
 class Taobao implements PlatformAdapter
 {
@@ -19,8 +21,8 @@ class Taobao implements PlatformAdapter
 
     public function __construct()
     {
-        $this->appKey = getenv('TAOBAO_APP_KEY') ?: '';
-        $this->secret = getenv('TAOBAO_SECRET') ?: '';
+        $this->appKey = env('TAOBAO_APP_KEY', '');
+        $this->secret = env('TAOBAO_SECRET', '');
     }
 
     // ── Identity ──────────────────────────────────────────────
@@ -97,7 +99,7 @@ class Taobao implements PlatformAdapter
 
     // ── Campaigns ─────────────────────────────────────────────
 
-    public function fetchCampaigns(string $accessToken, string $accountId): Generator
+    public function fetchCampaigns(string $accessToken, string $accountId): \Generator
     {
         $mapping = $this->campaignFieldMapping();
         $pageNo  = 1;
@@ -119,7 +121,7 @@ class Taobao implements PlatformAdapter
 
     // ── AdGroups ──────────────────────────────────────────────
 
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator
     {
         // Taobao does not expose a separate ad-group concept; skip
         yield from [];
@@ -127,7 +129,7 @@ class Taobao implements PlatformAdapter
 
     // ── Creatives ─────────────────────────────────────────────
 
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
     {
         // Taobao creative-level fetch is not available through this interface; skip
         yield from [];
@@ -135,7 +137,7 @@ class Taobao implements PlatformAdapter
 
     // ── Reports ───────────────────────────────────────────────
 
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator
     {
         $mapping = $this->reportFieldMapping();
         $pageNo  = 1;

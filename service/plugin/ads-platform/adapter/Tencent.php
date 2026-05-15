@@ -8,6 +8,8 @@ namespace plugin\ads_platform\adapter;
 use plugin\ads_platform\src\{
     PlatformAdapter, CampaignData, ReportRequest, FieldMapping
 };
+use RuntimeException;
+use InvalidArgumentException;
 
 class Tencent implements PlatformAdapter
 {
@@ -19,8 +21,8 @@ class Tencent implements PlatformAdapter
 
     public function __construct()
     {
-        $this->appId  = getenv('TENCENT_APP_ID') ?: '';
-        $this->secret = getenv('TENCENT_SECRET') ?: '';
+        $this->appId  = env('TENCENT_APP_ID', '');
+        $this->secret = env('TENCENT_SECRET', '');
     }
 
     // ── Identity ──────────────────────────────────────────────
@@ -102,7 +104,7 @@ class Tencent implements PlatformAdapter
 
     // ── Campaigns ─────────────────────────────────────────────
 
-    public function fetchCampaigns(string $accessToken, string $accountId): Generator
+    public function fetchCampaigns(string $accessToken, string $accountId): \Generator
     {
         $mapping = $this->campaignFieldMapping();
         $page = 1;
@@ -123,12 +125,12 @@ class Tencent implements PlatformAdapter
         } while ($hasMore);
     }
 
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator
     {
         yield from [];
     }
 
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
     {
         $mapping = $this->creativeFieldMapping();
         $page = 1;
@@ -151,7 +153,7 @@ class Tencent implements PlatformAdapter
 
     // ── Reports (async: create → poll → fetch) ────────────────
 
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator
     {
         $mapping = $this->reportFieldMapping();
         $reportFields = '["date","campaign_id","cost","view_count","valid_click_count","conversions_count","ctr","cpm","cpc","cvr"]';

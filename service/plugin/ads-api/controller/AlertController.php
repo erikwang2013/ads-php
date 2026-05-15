@@ -32,6 +32,8 @@ class AlertController
         }
 
         $sort = $request->get('sort', 'id');
+        $allowedSorts = ['id', 'name', 'created_at', 'updated_at'];
+        $sort = in_array($sort, $allowedSorts) ? $sort : 'id';
         $query->orderBy($sort, 'desc');
 
         $perPage = min((int) $request->get('per_page', 20), 100);
@@ -152,6 +154,8 @@ class AlertController
         }
 
         $sort = $request->get('sort', 'id');
+        $allowedSorts = ['id', 'name', 'created_at', 'updated_at'];
+        $sort = in_array($sort, $allowedSorts) ? $sort : 'id';
         $query->orderBy($sort, 'desc');
 
         $perPage = min((int) $request->get('per_page', 20), 100);

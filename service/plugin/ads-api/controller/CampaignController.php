@@ -11,6 +11,7 @@ use plugin\ads_account\model\PlatformAccount;
 use Webman\Http\Request;
 use app\support\ApiResponse;
 use Illuminate\Database\Capsule\Manager as DB;
+use Throwable;
 
 class CampaignController
 {
@@ -30,6 +31,8 @@ class CampaignController
         }
 
         $sort = $request->get('sort', 'id');
+        $allowedSorts = ['id', 'name', 'platform', 'daily_budget', 'status', 'created_at', 'updated_at'];
+        $sort = in_array($sort, $allowedSorts) ? $sort : 'id';
         $query->orderBy($sort, 'desc');
 
         $perPage = min((int) $request->get('per_page', 20), 100);

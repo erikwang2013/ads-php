@@ -13,7 +13,7 @@
  * @see https://webman.workerman.net/doc/en/plugin/create.html
  */
 return [
-    'key' => env('ENCRYPTION_KEY'),
+    'key' => env('APP_ENCRYPTION_KEY'),
     'cipher' => env('ENCRYPTION_CIPHER', 'aes-128-ecb'),
     'previous_keys' => \Maize\Encryptable\Support\PreviousKeysParser::parse(env('ENCRYPTION_PREVIOUS_KEYS')),
 ];

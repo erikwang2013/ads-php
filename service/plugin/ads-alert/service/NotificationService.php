@@ -8,6 +8,7 @@ namespace plugin\ads_alert\service;
 use plugin\ads_alert\model\AlertLog;
 use plugin\ads_alert\model\AlertRule;
 use Illuminate\Database\Capsule\Manager as DB;
+use Throwable;
 
 class NotificationService
 {
@@ -37,7 +38,7 @@ class NotificationService
     protected function sendWeb(AlertLog $log, AlertRule $rule): void
     {
         try {
-            DB::table('notifications')->insert([
+            DB::table('erik_notifications')->insert([
                 'tenant_id'  => $log->tenant_id,
                 'type'       => 'alert',
                 'title'      => "告警触发: {$rule->name}",

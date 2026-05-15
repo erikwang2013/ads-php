@@ -8,6 +8,8 @@ namespace plugin\ads_platform\adapter;
 use plugin\ads_platform\src\{
     PlatformAdapter, CampaignData, ReportRequest, FieldMapping
 };
+use RuntimeException;
+use InvalidArgumentException;
 
 /**
  * 360 推广平台适配器
@@ -27,8 +29,8 @@ class Qihoo360 implements PlatformAdapter
 
     public function __construct()
     {
-        $this->apiKey    = getenv('QIHOO360_API_KEY') ?: '';
-        $this->apiSecret = getenv('QIHOO360_API_SECRET') ?: '';
+        $this->apiKey    = env('QIHOO360_API_KEY', '');
+        $this->apiSecret = env('QIHOO360_API_SECRET', '');
     }
 
     // ── Identity ──────────────────────────────────────────────
@@ -112,7 +114,7 @@ class Qihoo360 implements PlatformAdapter
 
     // ── Campaigns ─────────────────────────────────────────────
 
-    public function fetchCampaigns(string $accessToken, string $accountId): Generator
+    public function fetchCampaigns(string $accessToken, string $accountId): \Generator
     {
         $mapping = $this->campaignFieldMapping();
         $page    = 1;
@@ -132,21 +134,21 @@ class Qihoo360 implements PlatformAdapter
 
     // ── AdGroups ──────────────────────────────────────────────
 
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator
     {
         yield from [];
     }
 
     // ── Creatives ─────────────────────────────────────────────
 
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
     {
         yield from [];
     }
 
     // ── Reports ───────────────────────────────────────────────
 
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator
     {
         $mapping = $this->reportFieldMapping();
         $page    = 1;

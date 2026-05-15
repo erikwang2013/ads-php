@@ -8,6 +8,8 @@ namespace plugin\ads_platform\adapter;
 use plugin\ads_platform\src\{
     PlatformAdapter, CampaignData, ReportRequest, FieldMapping
 };
+use RuntimeException;
+use InvalidArgumentException;
 
 class Weibo implements PlatformAdapter
 {
@@ -18,8 +20,8 @@ class Weibo implements PlatformAdapter
 
     public function __construct()
     {
-        $this->appId  = getenv('WEIBO_APP_ID') ?: '';
-        $this->secret = getenv('WEIBO_SECRET') ?: '';
+        $this->appId  = env('WEIBO_APP_ID', '');
+        $this->secret = env('WEIBO_SECRET', '');
     }
 
     public function code(): string { return 'weibo'; }
@@ -92,7 +94,7 @@ class Weibo implements PlatformAdapter
 
     // ── Campaign ───────────────────────────────────────────
 
-    public function fetchCampaigns(string $accessToken, string $accountId): Generator
+    public function fetchCampaigns(string $accessToken, string $accountId): \Generator
     {
         $mapping = $this->campaignFieldMapping();
         $page = 1;
@@ -110,12 +112,12 @@ class Weibo implements PlatformAdapter
         } while ($hasMore);
     }
 
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator
     {
         yield from [];
     }
 
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
     {
         $mapping = $this->creativeFieldMapping();
         $page = 1;
@@ -135,7 +137,7 @@ class Weibo implements PlatformAdapter
 
     // ── Report ─────────────────────────────────────────────
 
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator
     {
         $mapping = $this->reportFieldMapping();
         $page = 1;

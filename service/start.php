@@ -11,7 +11,7 @@ use plugin\ads_platform\adapter\Juliang;
 
 // Load .env
 if (file_exists(__DIR__ . '/.env')) {
-    DotenvDotenv::createUnsafeImmutable(__DIR__)->load();
+    Dotenv\Dotenv::createUnsafeMutable(__DIR__)->load();
 }
 
 // Initialize Database

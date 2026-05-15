@@ -8,7 +8,7 @@
  * Called by support\App::run() in each worker process.
  */
 
-use DotenvDotenv;
+use Dotenv\Dotenv;
 use support\Log;
 use Webman\Bootstrap;
 use Webman\Config;

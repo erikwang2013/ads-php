@@ -10,6 +10,7 @@ use plugin\ads_report\service\PdfExporter;
 use Webman\Http\Request;
 use Webman\Http\Response;
 use app\support\ApiResponse;
+use Throwable;
 
 class ExportController
 {

@@ -56,7 +56,7 @@
             clearable
             style="width: 200px;"
           >
-            <el-option label="巨量引擎" value="oceanengine" />
+            <el-option label="巨量引擎" value="juliang" />
             <el-option label="腾讯广告" value="tencent" />
             <el-option label="百度营销" value="baidu" />
             <el-option label="Google Ads" value="google" />
@@ -90,6 +90,7 @@ import { ref, reactive } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Download } from '@element-plus/icons-vue'
 import { exportApi } from '@/api/export'
+import { formatDate } from '@/utils/format'
 
 const dateRange = ref<[string, string]>([
   new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10),
@@ -170,15 +171,6 @@ const handleExport = async () => {
   }
 }
 
-const formatDate = (d: Date) => {
-  const y = d.getFullYear()
-  const m = String(d.getMonth() + 1).padStart(2, '0')
-  const day = String(d.getDate()).padStart(2, '0')
-  const h = String(d.getHours()).padStart(2, '0')
-  const min = String(d.getMinutes()).padStart(2, '0')
-  const s = String(d.getSeconds()).padStart(2, '0')
-  return `${y}${m}${day}${h}${min}${s}`
-}
 </script>
 
 <style scoped>

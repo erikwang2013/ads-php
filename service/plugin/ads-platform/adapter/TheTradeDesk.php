@@ -8,6 +8,8 @@ namespace plugin\ads_platform\adapter;
 use plugin\ads_platform\src\{
     PlatformAdapter, CampaignData, ReportRequest, FieldMapping
 };
+use RuntimeException;
+use InvalidArgumentException;
 
 class TheTradeDesk implements PlatformAdapter
 {
@@ -17,8 +19,8 @@ class TheTradeDesk implements PlatformAdapter
 
     public function __construct()
     {
-        $this->apiKey    = getenv('TTD_API_KEY') ?: '';
-        $this->apiSecret = getenv('TTD_API_SECRET') ?: '';
+        $this->apiKey    = env('TTD_API_KEY', '');
+        $this->apiSecret = env('TTD_API_SECRET', '');
     }
 
     public function code(): string { return 'thetradedesk'; }
@@ -76,7 +78,7 @@ class TheTradeDesk implements PlatformAdapter
         ], $list);
     }
 
-    public function fetchCampaigns(string $accessToken, string $accountId): Generator
+    public function fetchCampaigns(string $accessToken, string $accountId): \Generator
     {
         $mapping = $this->campaignFieldMapping();
         $page = 1;
@@ -95,7 +97,7 @@ class TheTradeDesk implements PlatformAdapter
         } while ($hasMore);
     }
 
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator
     {
         $mapping = $this->adGroupFieldMapping();
         $resp = $this->request('GET', 'adgroup', [
@@ -108,7 +110,7 @@ class TheTradeDesk implements PlatformAdapter
         }
     }
 
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
     {
         // TTD is a DSP — creatives are managed by external ad servers,
         // so this method yields creative references from the ad group
@@ -123,7 +125,7 @@ class TheTradeDesk implements PlatformAdapter
         }
     }
 
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator
     {
         $mapping = $this->reportFieldMapping();
 

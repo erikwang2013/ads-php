@@ -9,6 +9,7 @@ use Erikwang2013\JwtWebman\Jwt;
 use Webman\Http\Request;
 use Webman\Http\Response;
 use Webman\MiddlewareInterface;
+use Throwable;
 
 class AuthMiddleware implements MiddlewareInterface
 {

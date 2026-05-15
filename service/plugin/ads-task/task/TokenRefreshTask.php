@@ -7,6 +7,7 @@ namespace plugin\ads_task\task;
 
 use plugin\ads_account\model\PlatformAccount;
 use plugin\ads_platform\src\AdapterRegistry;
+use Throwable;
 
 class TokenRefreshTask
 {

@@ -8,6 +8,8 @@ namespace plugin\ads_platform\adapter;
 use plugin\ads_platform\src\{
     PlatformAdapter, CampaignData, ReportRequest, FieldMapping
 };
+use RuntimeException;
+use InvalidArgumentException;
 
 class Tiktok implements PlatformAdapter
 {
@@ -18,8 +20,8 @@ class Tiktok implements PlatformAdapter
 
     public function __construct()
     {
-        $this->appId  = getenv('TIKTOK_APP_ID') ?: '';
-        $this->secret = getenv('TIKTOK_SECRET') ?: '';
+        $this->appId  = env('TIKTOK_APP_ID', '');
+        $this->secret = env('TIKTOK_SECRET', '');
     }
 
     // -------------------------------------------------------------------
@@ -100,7 +102,7 @@ class Tiktok implements PlatformAdapter
     //  Campaigns
     // -------------------------------------------------------------------
 
-    public function fetchCampaigns(string $accessToken, string $accountId): Generator
+    public function fetchCampaigns(string $accessToken, string $accountId): \Generator
     {
         $mapping = $this->campaignFieldMapping();
         $page = 1;
@@ -123,7 +125,7 @@ class Tiktok implements PlatformAdapter
     //  AdGroups
     // -------------------------------------------------------------------
 
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator
     {
         $mapping = $this->adgroupFieldMapping();
         $page = 1;
@@ -147,7 +149,7 @@ class Tiktok implements PlatformAdapter
     //  Creatives
     // -------------------------------------------------------------------
 
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
     {
         $mapping = $this->creativeFieldMapping();
         $page = 1;
@@ -171,7 +173,7 @@ class Tiktok implements PlatformAdapter
     //  Reports — /report/integrated/get (sync paginated)
     // -------------------------------------------------------------------
 
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator
     {
         $mapping = $this->reportFieldMapping();
         $page = 1;

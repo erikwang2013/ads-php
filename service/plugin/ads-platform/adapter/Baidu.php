@@ -8,6 +8,8 @@ namespace plugin\ads_platform\adapter;
 use plugin\ads_platform\src\{
     PlatformAdapter, CampaignData, ReportRequest, FieldMapping
 };
+use RuntimeException;
+use InvalidArgumentException;
 
 class Baidu implements PlatformAdapter
 {
@@ -18,8 +20,8 @@ class Baidu implements PlatformAdapter
 
     public function __construct()
     {
-        $this->appId  = getenv('BAIDU_APP_ID') ?: '';
-        $this->secret = getenv('BAIDU_SECRET') ?: '';
+        $this->appId  = env('BAIDU_APP_ID', '');
+        $this->secret = env('BAIDU_SECRET', '');
     }
 
     // ── Identity ──────────────────────────────────────────────
@@ -95,7 +97,7 @@ class Baidu implements PlatformAdapter
 
     // ── Campaigns ─────────────────────────────────────────────
 
-    public function fetchCampaigns(string $accessToken, string $accountId): Generator
+    public function fetchCampaigns(string $accessToken, string $accountId): \Generator
     {
         $mapping  = $this->campaignFieldMapping();
         $pageNum  = 0;
@@ -117,7 +119,7 @@ class Baidu implements PlatformAdapter
 
     // ── AdGroups ──────────────────────────────────────────────
 
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator
     {
         $mapping = $this->adgroupFieldMapping();
         $pageNum = 0;
@@ -140,7 +142,7 @@ class Baidu implements PlatformAdapter
 
     // ── Creatives ─────────────────────────────────────────────
 
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
     {
         $mapping = $this->creativeFieldMapping();
         $pageNum = 0;
@@ -163,7 +165,7 @@ class Baidu implements PlatformAdapter
 
     // ── Reports (async: create → poll → fetch) ────────────────
 
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator
     {
         $mapping = $this->reportFieldMapping();
 

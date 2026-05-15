@@ -8,6 +8,8 @@ namespace plugin\ads_platform\adapter;
 use plugin\ads_platform\src\{
     PlatformAdapter, CampaignData, ReportRequest, FieldMapping
 };
+use RuntimeException;
+use InvalidArgumentException;
 
 /**
  * 京东广告 (京准通) adapter.
@@ -27,8 +29,8 @@ class Jingdong implements PlatformAdapter
 
     public function __construct()
     {
-        $this->appKey = getenv('JINGDONG_APP_KEY') ?: '';
-        $this->secret = getenv('JINGDONG_SECRET') ?: '';
+        $this->appKey = env('JINGDONG_APP_KEY', '');
+        $this->secret = env('JINGDONG_SECRET', '');
     }
 
     // ── Identity ──────────────────────────────────────────────
@@ -105,7 +107,7 @@ class Jingdong implements PlatformAdapter
 
     // ── Campaigns ─────────────────────────────────────────────
 
-    public function fetchCampaigns(string $accessToken, string $accountId): Generator
+    public function fetchCampaigns(string $accessToken, string $accountId): \Generator
     {
         $mapping = $this->campaignFieldMapping();
         $pageNo  = 1;
@@ -126,7 +128,7 @@ class Jingdong implements PlatformAdapter
 
     // ── AdGroups ──────────────────────────────────────────────
 
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator
     {
         // JD does not expose a separate ad-group concept at this level
         yield from [];
@@ -134,7 +136,7 @@ class Jingdong implements PlatformAdapter
 
     // ── Creatives ─────────────────────────────────────────────
 
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
     {
         $mapping = $this->creativeFieldMapping();
         $pageNo  = 1;
@@ -155,7 +157,7 @@ class Jingdong implements PlatformAdapter
 
     // ── Reports ───────────────────────────────────────────────
 
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator
     {
         $mapping = $this->reportFieldMapping();
         $pageNo  = 1;

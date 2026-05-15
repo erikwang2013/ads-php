@@ -8,6 +8,8 @@ namespace plugin\ads_platform\adapter;
 use plugin\ads_platform\src\{
     PlatformAdapter, CampaignData, ReportRequest, FieldMapping
 };
+use RuntimeException;
+use InvalidArgumentException;
 
 /**
  * Google Ads API adapter.
@@ -32,10 +34,10 @@ class Google implements PlatformAdapter
 
     public function __construct()
     {
-        $this->clientId        = getenv('GOOGLE_CLIENT_ID') ?: '';
-        $this->clientSecret    = getenv('GOOGLE_CLIENT_SECRET') ?: '';
-        $this->developerToken  = getenv('GOOGLE_ADS_DEVELOPER_TOKEN') ?: '';
-        $this->loginCustomerId = getenv('GOOGLE_ADS_LOGIN_CUSTOMER_ID') ?: '';
+        $this->clientId        = env('GOOGLE_CLIENT_ID', '');
+        $this->clientSecret    = env('GOOGLE_CLIENT_SECRET', '');
+        $this->developerToken  = env('GOOGLE_ADS_DEVELOPER_TOKEN', '');
+        $this->loginCustomerId = env('GOOGLE_ADS_LOGIN_CUSTOMER_ID', '');
     }
 
     // ── Identity ──────────────────────────────────────────────
@@ -122,7 +124,7 @@ class Google implements PlatformAdapter
 
     // ── Campaigns ─────────────────────────────────────────────
 
-    public function fetchCampaigns(string $accessToken, string $accountId): Generator
+    public function fetchCampaigns(string $accessToken, string $accountId): \Generator
     {
         $mapping = $this->campaignFieldMapping();
         $query   = 'SELECT campaign.id, campaign.name, campaign.status, campaign_budget.amount_micros FROM campaign';
@@ -139,14 +141,14 @@ class Google implements PlatformAdapter
 
     // ── AdGroups ──────────────────────────────────────────────
 
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator
     {
         yield from [];
     }
 
     // ── Creatives ─────────────────────────────────────────────
 
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
     {
         $mapping   = $this->creativeFieldMapping();
         $query     = 'SELECT ad_group_ad.ad.id, ad_group_ad.ad.name, ad_group_ad.status FROM ad_group_ad';
@@ -163,7 +165,7 @@ class Google implements PlatformAdapter
 
     // ── Reports ───────────────────────────────────────────────
 
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator
     {
         $mapping   = $this->reportFieldMapping();
         $query     = $this->buildReportQuery($req);

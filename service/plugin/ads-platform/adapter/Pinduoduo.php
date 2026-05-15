@@ -8,6 +8,8 @@ namespace plugin\ads_platform\adapter;
 use plugin\ads_platform\src\{
     PlatformAdapter, CampaignData, ReportRequest, FieldMapping
 };
+use RuntimeException;
+use InvalidArgumentException;
 
 /**
  * 拼多多广告 (多多进宝) adapter.
@@ -27,8 +29,8 @@ class Pinduoduo implements PlatformAdapter
 
     public function __construct()
     {
-        $this->clientId = getenv('PINDUODUO_CLIENT_ID') ?: '';
-        $this->secret   = getenv('PINDUODUO_SECRET') ?: '';
+        $this->clientId = env('PINDUODUO_CLIENT_ID', '');
+        $this->secret   = env('PINDUODUO_SECRET', '');
     }
 
     // ── Identity ──────────────────────────────────────────────
@@ -107,7 +109,7 @@ class Pinduoduo implements PlatformAdapter
 
     // ── Campaigns (PDD calls them "plans") ────────────────────
 
-    public function fetchCampaigns(string $accessToken, string $accountId): Generator
+    public function fetchCampaigns(string $accessToken, string $accountId): \Generator
     {
         $mapping = $this->campaignFieldMapping();
         $pageNo  = 1;
@@ -128,14 +130,14 @@ class Pinduoduo implements PlatformAdapter
 
     // ── AdGroups ──────────────────────────────────────────────
 
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator
     {
         yield from [];
     }
 
     // ── Creatives ─────────────────────────────────────────────
 
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
     {
         // PDD does not expose a creative endpoint at this level
         yield from [];
@@ -143,7 +145,7 @@ class Pinduoduo implements PlatformAdapter
 
     // ── Reports ───────────────────────────────────────────────
 
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator
     {
         $mapping = $this->reportFieldMapping();
         $pageNo  = 1;

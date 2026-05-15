@@ -8,6 +8,8 @@ namespace plugin\ads_platform\adapter;
 use plugin\ads_platform\src\{
     PlatformAdapter, CampaignData, ReportRequest, FieldMapping
 };
+use RuntimeException;
+use InvalidArgumentException;
 
 class Netflix implements PlatformAdapter
 {
@@ -18,8 +20,8 @@ class Netflix implements PlatformAdapter
 
     public function __construct()
     {
-        $this->clientId     = getenv('NETFLIX_ADS_CLIENT_ID') ?: '';
-        $this->clientSecret = getenv('NETFLIX_ADS_CLIENT_SECRET') ?: '';
+        $this->clientId     = env('NETFLIX_ADS_CLIENT_ID', '');
+        $this->clientSecret = env('NETFLIX_ADS_CLIENT_SECRET', '');
     }
 
     public function code(): string { return 'netflix'; }
@@ -72,7 +74,7 @@ class Netflix implements PlatformAdapter
         ], $list);
     }
 
-    public function fetchCampaigns(string $accessToken, string $accountId): Generator
+    public function fetchCampaigns(string $accessToken, string $accountId): \Generator
     {
         $mapping = $this->campaignFieldMapping();
         $page = 1;
@@ -91,7 +93,7 @@ class Netflix implements PlatformAdapter
         } while ($hasMore);
     }
 
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator
     {
         // Netflix Ads has a simplified structure — campaigns directly contain placements,
         // similar to ad groups but accessed inline with campaigns.
@@ -105,7 +107,7 @@ class Netflix implements PlatformAdapter
         }
     }
 
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
     {
         $mapping = $this->creativeFieldMapping();
         $resp = $this->request('GET', 'adGroups/' . $adGroupId . '/creatives', [
@@ -117,7 +119,7 @@ class Netflix implements PlatformAdapter
         }
     }
 
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator
     {
         $mapping = $this->reportFieldMapping();
         $page = 1;

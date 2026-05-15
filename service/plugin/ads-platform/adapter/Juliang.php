@@ -8,6 +8,8 @@ namespace plugin\ads_platform\adapter;
 use plugin\ads_platform\src\{
     PlatformAdapter, CampaignData, ReportRequest, FieldMapping
 };
+use RuntimeException;
+use InvalidArgumentException;
 
 class Juliang implements PlatformAdapter
 {
@@ -17,8 +19,8 @@ class Juliang implements PlatformAdapter
 
     public function __construct()
     {
-        $this->appId  = getenv('JULIANG_APP_ID') ?: '';
-        $this->secret = getenv('JULIANG_SECRET') ?: '';
+        $this->appId  = env('JULIANG_APP_ID', '');
+        $this->secret = env('JULIANG_SECRET', '');
     }
 
     public function code(): string { return 'juliang'; }
@@ -80,7 +82,7 @@ class Juliang implements PlatformAdapter
         ], $list);
     }
 
-    public function fetchCampaigns(string $accessToken, string $accountId): Generator
+    public function fetchCampaigns(string $accessToken, string $accountId): \Generator
     {
         $mapping = $this->campaignFieldMapping();
         $page = 1;
@@ -99,12 +101,12 @@ class Juliang implements PlatformAdapter
         } while ($hasMore);
     }
 
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator
     {
         yield from [];
     }
 
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
     {
         // Note: Juliang API creative/get doesn't filter by ad_group_id natively;
         // all creatives for the advertiser are fetched
@@ -125,7 +127,7 @@ class Juliang implements PlatformAdapter
         } while ($hasMore);
     }
 
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator
     {
         $mapping = $this->reportFieldMapping();
         $page = 1;

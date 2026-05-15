@@ -20,10 +20,10 @@ interface PlatformAdapter
     public function fetchAccountInfo(string $accessToken): array;
 
     // 数据同步（返回 Generator，yield 统一 Campaign/AdGroup/Creative 对象）
-    public function fetchCampaigns(string $accessToken, string $accountId): Generator;
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator;
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator;
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator;
+    public function fetchCampaigns(string $accessToken, string $accountId): \Generator;
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator;
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator;
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator;
 
     // 投放操作
     public function createCampaign(string $accessToken, string $accountId, CampaignData $data): string;

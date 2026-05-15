@@ -30,7 +30,7 @@ class DashboardController
                 ->selectRaw('COALESCE(SUM(conversions), 0) as total_conversions')
                 ->selectRaw('CASE WHEN SUM(impressions) > 0 THEN ROUND(SUM(clicks)/SUM(impressions)*100, 2) ELSE 0 END as avg_ctr')
                 ->selectRaw('CASE WHEN SUM(clicks) > 0 THEN ROUND(SUM(conversions)/SUM(clicks)*100, 2) ELSE 0 END as avg_cvr')
-                ->selectRaw('CASE WHEN SUM(cost) > 0 THEN ROUND(SUM(cost)/SUM(conversions)/100, 2) ELSE 0 END as avg_cpa')
+                ->selectRaw('CASE WHEN SUM(cost) > 0 THEN ROUND(SUM(cost)/SUM(conversions), 2) ELSE 0 END as avg_cpa')
                 ->first();
 
             $byPlatform = DB::table('erik_report_metrics')
