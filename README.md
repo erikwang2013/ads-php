@@ -106,8 +106,10 @@ cd service && composer install && php start.php start
 cd admin && npm install && npm run dev
 
 # Flutter App
-cd flutter && flutter run -d chrome  # Web PC
-cd flutter && flutter run -d android # Mobile
+cd apps/flutter && flutter run -d chrome  # Web PC
+# HarmonyOS App
+# 使用 DevEco Studio 打开 apps/harmonyos 目录
+cd apps/flutter && flutter run -d android # Mobile
 
 # TypeScript 检查
 cd admin && npx vue-tsc --noEmit   # 零错误
@@ -119,39 +121,34 @@ cd admin && npx vue-tsc --noEmit   # 零错误
 
 ```
 ads-php/
-├── service/                    # PHP 服务端 (webman v2)
+├── service/                    # 用户端业务服务 (webman v2)
 │   ├── plugin/
 │   │   ├── ads-tenant/         # 多租户管理
-│   │   ├── ads-account/        # 账户 & OAuth 授权
+│   │   ├── ads-account/        # 账户 & OAuth 授权（含encryptable加密）
 │   │   ├── ads-platform/       # 29 个广告平台适配器
 │   │   ├── ads-api/            # RESTful API (7 控制器 + 7 中间件)
 │   │   ├── ads-task/           # 定时任务调度
 │   │   ├── ads-report/         # 报表引擎 & 导出
-│   │   └── ads-alert/          # 告警监控
+│   │   └── ads-alert/          # 告警监控 & 推送
 │   ├── config/                 # 配置文件（带注释）
 │   └── support/                # Erik Stack 工具类
-├── admin/                      # Vue3 + TS 管理后台
-│   └── src/
+├── admin/                      # 独立管理后台 (webman-admin v2)
+│   └── src/                    # Vue 3 + TS + Element Plus + ECharts
 │       ├── views/              # 页面 (dashboard/campaign/account/alert/report)
 │       ├── components/         # 组件 (layout/MetricCard/PlatformBadge)
 │       ├── api/                # Axios API 层 (7 模块)
 │       ├── stores/             # Pinia 状态 (auth/alert)
 │       └── router/             # Vue Router
-├── flutter/                    # Flutter App (PC Web 优先)
-│   └── lib/
-│       ├── features/           # 功能页 (dashboard/campaign/report/account/alert)
-│       ├── shared/api/         # Dio HTTP 客户端
-│       └── stores/             # Riverpod 状态管理
-├── harmonyos/                  # HarmonyOS App (ArkTS)
-│   └── entry/src/main/ets/
-│       ├── pages/              # 6 页面
-│       ├── api/                # HTTP 客户端
-│       └── widgets/            # 4 组件
-├── docker/                     # Nginx 配置
+├── apps/                       # 客户端 App
+│   ├── flutter/                # Flutter App (PC Web/Mobile 响应式)
+│   │   └── lib/                # Dart + Riverpod + GoRouter + Dio
+│   └── harmonyos/              # HarmonyOS App (ArkTS)
+│       └── entry/src/main/ets/ # ArkUI + HTTP Client
+├── docker/                     # Docker & Nginx 配置
 ├── docs/                       # 设计文档 & 实施计划
-├── docker-compose.yml          # Docker 编排
+├── docker-compose.yml          # Docker 一键部署
 ├── Dockerfile                  # PHP 镜像
-├── Dockerfile.admin            # 前端 Nginx 镜像
+├── Dockerfile.admin            # 管理后台 Nginx 镜像
 └── Makefile                    # 运维快捷命令
 ```
 
