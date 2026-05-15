@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: ads-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-root}
+      MYSQL_DATABASE: ads
+    ports: ["3306:3306"]
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./service/plugin/*/migration/:/docker-entrypoint-initdb.d/
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+  redis:
+    image: redis:7-alpine
+    container_name: ads-redis
+    ports: ["6379:6379"]
+    volumes: [redis_data:/data]
+
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ads-php
+    ports: ["8788:8788"]
+    depends_on: [mysql, redis]
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: ads
+      DB_USERNAME: root
+      DB_PASSWORD: ${DB_PASSWORD:-root}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    volumes:
+      - ./service/.env:/app/.env
+    restart: unless-stopped
+
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile.admin
+    container_name: ads-nginx
+    ports: ["80:80"]
+    depends_on: [php]
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+  redis_data:
