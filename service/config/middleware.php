@@ -6,5 +6,7 @@
 return [
     // Global middleware — applied to every request in the application.
     // Add fully-qualified middleware class names here to run them on all routes.
-    'global' => [],
+    'global' => [
+        \plugin\ads_api\middleware\EncryptionMiddleware::class,
+    ],
 ];

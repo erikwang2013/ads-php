@@ -7,10 +7,14 @@ namespace plugin\ads_account\model;
 
 use Illuminate\Database\Eloquent\Model;
 use erik\support\SnowflakeTrait;
+use Erikwang2013\Encryptable\Encryptable;
 
 class PlatformAccount extends Model
 {
     use SnowflakeTrait;
+    use Encryptable;
+
+    protected array $encryptable = ['access_token', 'refresh_token'];
 
     protected $table = 'erik_platform_accounts';
     protected $guarded = ['id'];

@@ -7,10 +7,14 @@ namespace plugin\ads_account\model;
 
 use Illuminate\Database\Eloquent\Model;
 use erik\support\SnowflakeTrait;
+use Erikwang2013\Encryptable\Encryptable;
 
 class AuthToken extends Model
 {
     use SnowflakeTrait;
+    use Encryptable;
+
+    protected array $encryptable = ['redirect_uri'];
 
     protected $table = 'erik_auth_tokens';
     protected $guarded = ['id'];
