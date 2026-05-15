@@ -1,0 +1,14 @@
+CREATE TABLE IF NOT EXISTS `tenants` (
+    `id` BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    `name` VARCHAR(100) NOT NULL,
+    `domain` VARCHAR(255) DEFAULT NULL,
+    `db_type` ENUM('shared','dedicated') DEFAULT 'shared',
+    `db_config` JSON NULL,
+    `plan` ENUM('free','pro','enterprise') DEFAULT 'free',
+    `status` TINYINT DEFAULT 1,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `tenants` (`id`, `name`, `plan`) VALUES (1, '默认租户', 'enterprise')
+ON DUPLICATE KEY UPDATE `name` = VALUES(`name`);
