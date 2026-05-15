@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS `tenants` (
     `db_config` JSON NULL,
     `plan` ENUM('free','pro','enterprise') DEFAULT 'free',
     `status` TINYINT DEFAULT 1,
+    INDEX `idx_domain_status` (`domain`, `status`),
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

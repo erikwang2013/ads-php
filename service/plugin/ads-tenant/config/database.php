@@ -11,7 +11,7 @@ class Database
         if ($tenant->db_type === 'shared') {
             return;
         }
-        $cfg = json_decode($tenant->db_config, true);
+        $cfg = $tenant->db_config;
         $name = 'tenant_' . $tenant->id;
         $config = DB::getDatabaseManager()->getConfig('shared');
         $config['database'] = $cfg['database'] ?? $name;
