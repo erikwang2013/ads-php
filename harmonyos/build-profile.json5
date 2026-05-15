@@ -1,0 +1,12 @@
+// Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+{
+  "app": {
+    "signingConfigs": [],
+    "products": [
+      { "name": "default", "signingConfig": "default" }
+    ]
+  },
+  "modules": [
+    { "name": "entry", "srcPath": "./entry" }
+  ]
+}
