@@ -10,4 +10,9 @@ return [
         'handler' => [plugin\ads_task\task\DataSyncTask::class, 'execute'],
         'rule'    => '*/10 * * * *',
     ],
+    [
+        'name'    => 'AlertCheck',
+        'handler' => [plugin\ads_task\task\AlertCheckTask::class, 'execute'],
+        'rule'    => '*/5 * * * *',
+    ],
 ];
