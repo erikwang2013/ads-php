@@ -1,13 +1,32 @@
 import axios from 'axios'
-import type { AxiosInstance, AxiosResponse } from 'axios'
+import type { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 import { ElMessage } from 'element-plus'
 
-const api: AxiosInstance = axios.create({
+// Backend unified response wrapper
+interface ApiResponse<T = any> {
+  code: number
+  message: string
+  data: T
+}
+
+// Custom Axios instance that unwraps the ApiResponse envelope
+interface UnwrappedInstance extends Omit<AxiosInstance, 'request' | 'get' | 'delete' | 'head' | 'options' | 'post' | 'put' | 'patch'> {
+  request<T = any>(config: InternalAxiosRequestConfig): Promise<T>
+  get<T = any>(url: string, config?: any): Promise<T>
+  delete<T = any>(url: string, config?: any): Promise<T>
+  head<T = any>(url: string, config?: any): Promise<T>
+  options<T = any>(url: string, config?: any): Promise<T>
+  post<T = any>(url: string, data?: any, config?: any): Promise<T>
+  put<T = any>(url: string, data?: any, config?: any): Promise<T>
+  patch<T = any>(url: string, data?: any, config?: any): Promise<T>
+}
+
+const raw = axios.create({
   baseURL: '/api/v1',
   timeout: 15000,
 })
 
-api.interceptors.request.use((config) => {
+raw.interceptors.request.use((config) => {
   const token = localStorage.getItem('access_token')
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
@@ -15,8 +34,8 @@ api.interceptors.request.use((config) => {
   return config
 })
 
-api.interceptors.response.use(
-  (response: AxiosResponse) => {
+raw.interceptors.response.use(
+  (response: AxiosResponse<ApiResponse>) => {
     const { code, message, data } = response.data
     if (code !== 0) {
       ElMessage.error(message || '请求失败')
@@ -34,5 +53,8 @@ api.interceptors.response.use(
   }
 )
 
+const api = raw as unknown as UnwrappedInstance
+
 export default api
 export { api }
+export type { ApiResponse }
