@@ -1,0 +1,21 @@
+{
+    "name": "ads/service",
+    "type": "project",
+    "require": {
+        "php": ">=8.2",
+        "workerman/webman-framework": "^2.0",
+        "workerman/crontab": "^1.0",
+        "illuminate/database": "^11.0",
+        "illuminate/redis": "^11.0",
+        "webman/redis-queue": "^2.0",
+        "firebase/php-jwt": "^6.0",
+        "vlucas/phpdotenv": "^5.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "plugin\\": "plugin/"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
