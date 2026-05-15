@@ -1,7 +1,7 @@
 <?php
-namespace support;
+namespace app\support;
 
-class Response
+class ApiResponse
 {
     public static function json(int $code, string $message, mixed $data = null): \Webman\Http\Response
     {
