@@ -18,6 +18,13 @@
       </template>
       <el-menu-item index="/campaigns">广告计划</el-menu-item>
     </el-sub-menu>
+    <el-sub-menu index="reports">
+      <template #title>
+        <el-icon><DataAnalysis /></el-icon>
+        <span>数据报表</span>
+      </template>
+      <el-menu-item index="/reports/export">报表导出</el-menu-item>
+    </el-sub-menu>
     <el-menu-item index="/accounts">
       <el-icon><User /></el-icon>
       <span>账户管理</span>

@@ -49,6 +49,12 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/alert/AlertLogList.vue'),
         meta: { title: '告警记录' },
       },
+      {
+        path: 'reports/export',
+        name: 'ReportExport',
+        component: () => import('@/views/report/ReportExport.vue'),
+        meta: { title: '报表导出' },
+      },
     ],
   },
 ]

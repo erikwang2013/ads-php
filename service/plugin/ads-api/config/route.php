@@ -7,6 +7,7 @@ use plugin\ads_api\controller\CampaignController;
 use plugin\ads_api\controller\DashboardController;
 use plugin\ads_api\controller\ReportController;
 use plugin\ads_api\controller\AlertController;
+use plugin\ads_api\controller\ExportController;
 
 // Public routes
 \Webman\Route::post('/api/v1/auth/login', [AuthController::class, 'login']);
@@ -32,6 +33,7 @@ use plugin\ads_api\controller\AlertController;
 
     \Webman\Route::get('/reports/summary', [DashboardController::class, 'summary']);
     \Webman\Route::get('/reports/custom', [ReportController::class, 'custom']);
+    \Webman\Route::get('/reports/export', [ExportController::class, 'export']);
 
     \Webman\Route::get('/alerts/rules', [AlertController::class, 'rules']);
     \Webman\Route::post('/alerts/rules', [AlertController::class, 'createRule']);
