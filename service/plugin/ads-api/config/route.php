@@ -12,8 +12,10 @@ use plugin\ads_api\controller\DashboardController;
 use plugin\ads_api\controller\ReportController;
 use plugin\ads_api\controller\AlertController;
 use plugin\ads_api\controller\ExportController;
+use plugin\ads_api\controller\DocController;
 
 // Public routes
+Webman\Route::get('/docs', [DocController::class, 'index']);
 Webman\Route::post('/api/v1/auth/login', [AuthController::class, 'login']);
 Webman\Route::get('/api/v1/platforms', [PlatformController::class, 'index']);
 

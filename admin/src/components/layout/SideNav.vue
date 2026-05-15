@@ -11,6 +11,10 @@
       <el-icon><DataAnalysis /></el-icon>
       <span>仪表盘</span>
     </el-menu-item>
+    <el-menu-item index="/docs" @click="openDocs">
+      <el-icon><Document /></el-icon>
+      <span>API 文档</span>
+    </el-menu-item>
     <el-sub-menu index="ads">
       <template #title>
         <el-icon><Promotion /></el-icon>
@@ -43,11 +47,15 @@
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import { DataAnalysis, Promotion, User, Bell } from '@element-plus/icons-vue'
+import { DataAnalysis, Promotion, User, Bell, Document } from '@element-plus/icons-vue'
 import { useAlertStore } from '@/stores/alert'
 defineProps<{ collapsed: boolean }>()
 const route = useRoute()
 const alertStore = useAlertStore()
+
+function openDocs() {
+  window.open('/api/v1/docs', '_blank')
+}
 </script>
 
 <style scoped>
