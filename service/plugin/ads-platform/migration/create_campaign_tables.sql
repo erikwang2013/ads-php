@@ -1,5 +1,5 @@
-CREATE TABLE IF NOT EXISTS `campaigns` (
-    `id` BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `erik_campaigns` (
+    `id` BIGINT UNSIGNED PRIMARY KEY,
     `tenant_id` BIGINT UNSIGNED NOT NULL,
     `platform_account_id` BIGINT UNSIGNED NOT NULL,
     `platform` VARCHAR(32) NOT NULL,
@@ -18,8 +18,8 @@ CREATE TABLE IF NOT EXISTS `campaigns` (
     INDEX `idx_tenant` (`tenant_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS `ad_groups` (
-    `id` BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `erik_ad_groups` (
+    `id` BIGINT UNSIGNED PRIMARY KEY,
     `campaign_id` BIGINT UNSIGNED NOT NULL,
     `platform_adgroup_id` VARCHAR(128) NOT NULL,
     `name` VARCHAR(255) DEFAULT NULL,
@@ -33,8 +33,8 @@ CREATE TABLE IF NOT EXISTS `ad_groups` (
     UNIQUE KEY `uk_platform_adgroup` (`campaign_id`, `platform_adgroup_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS `creatives` (
-    `id` BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `erik_creatives` (
+    `id` BIGINT UNSIGNED PRIMARY KEY,
     `ad_group_id` BIGINT UNSIGNED NOT NULL,
     `platform_creative_id` VARCHAR(128) NOT NULL,
     `title` VARCHAR(500) DEFAULT NULL,
@@ -48,8 +48,8 @@ CREATE TABLE IF NOT EXISTS `creatives` (
     UNIQUE KEY `uk_platform_creative` (`ad_group_id`, `platform_creative_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS `report_metrics` (
-    `id` BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `erik_report_metrics` (
+    `id` BIGINT UNSIGNED PRIMARY KEY,
     `tenant_id` BIGINT UNSIGNED NOT NULL,
     `platform_account_id` BIGINT UNSIGNED NOT NULL,
     `platform` VARCHAR(32) NOT NULL,
@@ -72,10 +72,10 @@ CREATE TABLE IF NOT EXISTS `report_metrics` (
     INDEX `idx_campaign_date` (`campaign_id`, `date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS `report_extras` (
-    `id` BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `erik_report_extras` (
+    `id` BIGINT UNSIGNED PRIMARY KEY,
     `report_metric_id` BIGINT UNSIGNED NOT NULL,
     `platform` VARCHAR(32) NOT NULL,
     `extra` JSON NULL,
-    FOREIGN KEY (`report_metric_id`) REFERENCES `report_metrics`(`id`) ON DELETE CASCADE
+    FOREIGN KEY (`report_metric_id`) REFERENCES `erik_report_metrics`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

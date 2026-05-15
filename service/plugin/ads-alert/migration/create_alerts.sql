@@ -1,5 +1,5 @@
-CREATE TABLE IF NOT EXISTS `alert_rules` (
-    `id` BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `erik_alert_rules` (
+    `id` BIGINT UNSIGNED PRIMARY KEY,
     `tenant_id` BIGINT UNSIGNED NOT NULL,
     `name` VARCHAR(100) NOT NULL,
     `metric` VARCHAR(32) NOT NULL,
@@ -16,8 +16,8 @@ CREATE TABLE IF NOT EXISTS `alert_rules` (
     INDEX `idx_tenant_enabled` (`tenant_id`, `enabled`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS `alert_logs` (
-    `id` BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `erik_alert_logs` (
+    `id` BIGINT UNSIGNED PRIMARY KEY,
     `tenant_id` BIGINT UNSIGNED NOT NULL,
     `rule_id` BIGINT UNSIGNED NOT NULL,
     `rule_name` VARCHAR(100) NOT NULL,

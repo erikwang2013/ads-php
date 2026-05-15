@@ -6,10 +6,13 @@
 namespace plugin\ads_account\model;
 
 use Illuminate\Database\Eloquent\Model;
+use erik\support\SnowflakeTrait;
 
 class AuthToken extends Model
 {
-    protected $table = 'auth_tokens';
+    use SnowflakeTrait;
+
+    protected $table = 'erik_auth_tokens';
     protected $guarded = ['id'];
     protected $casts = [
         'expires_at' => 'datetime',

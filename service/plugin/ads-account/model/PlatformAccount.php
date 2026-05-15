@@ -6,10 +6,13 @@
 namespace plugin\ads_account\model;
 
 use Illuminate\Database\Eloquent\Model;
+use erik\support\SnowflakeTrait;
 
 class PlatformAccount extends Model
 {
-    protected $table = 'platform_accounts';
+    use SnowflakeTrait;
+
+    protected $table = 'erik_platform_accounts';
     protected $guarded = ['id'];
     protected $casts = [
         'sync_enabled' => 'boolean',

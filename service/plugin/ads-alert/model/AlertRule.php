@@ -6,10 +6,13 @@
 namespace plugin\ads_alert\model;
 
 use Illuminate\Database\Eloquent\Model;
+use erik\support\SnowflakeTrait;
 
 class AlertRule extends Model
 {
-    protected $table = 'alert_rules';
+    use SnowflakeTrait;
+
+    protected $table = 'erik_alert_rules';
     protected $guarded = ['id'];
     protected $casts = [
         'channels' => 'array',

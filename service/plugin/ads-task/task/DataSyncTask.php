@@ -28,7 +28,7 @@ class DataSyncTask
 
                 // Sync campaigns
                 foreach ($adapter->fetchCampaigns($account->access_token, $account->account_id_on_platform) as $row) {
-                    DB::table('campaigns')->updateOrInsert(
+                    DB::table('erik_campaigns')->updateOrInsert(
                         [
                             'platform_account_id'  => $account->id,
                             'platform_campaign_id' => $row['platform_campaign_id'],
@@ -57,14 +57,14 @@ class DataSyncTask
                 foreach ($adapter->fetchReports($account->access_token, $account->account_id_on_platform, $req) as $row) {
                     $campaignId = null;
                     if (!empty($row['platform_campaign_id'])) {
-                        $campaign = DB::table('campaigns')
+                        $campaign = DB::table('erik_campaigns')
                             ->where('platform_campaign_id', $row['platform_campaign_id'])
                             ->where('platform_account_id', $account->id)
                             ->first();
                         $campaignId = $campaign->id ?? null;
                     }
 
-                    DB::table('report_metrics')->updateOrInsert(
+                    DB::table('erik_report_metrics')->updateOrInsert(
                         [
                             'tenant_id'           => $account->tenant_id,
                             'platform'            => $account->platform,

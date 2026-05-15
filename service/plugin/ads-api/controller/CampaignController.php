@@ -17,7 +17,7 @@ class CampaignController
     public function index(Request $request): Webman\Http\Response
     {
         $tenantId = $request->tenantId ?? 1;
-        $query = DB::table('campaigns')->where('tenant_id', $tenantId);
+        $query = DB::table('erik_campaigns')->where('tenant_id', $tenantId);
 
         if ($platform = $request->get('platform')) {
             $query->where('platform', $platform);
@@ -35,7 +35,7 @@ class CampaignController
         $perPage = min((int) $request->get('per_page', 20), 100);
         $paginator = $query->paginate($perPage);
 
-        $summary = (array) DB::table('report_metrics')
+        $summary = (array) DB::table('erik_report_metrics')
             ->where('tenant_id', $tenantId)
             ->where('date', date('Y-m-d'))
             ->selectRaw('COALESCE(SUM(cost), 0) as total_cost')
@@ -74,7 +74,7 @@ class CampaignController
                 $data
             );
 
-            $id = DB::table('campaigns')->insertGetId([
+            $id = DB::table('erik_campaigns')->insertGetId([
                 'tenant_id'            => $request->tenantId ?? 1,
                 'platform_account_id'  => $accountId,
                 'platform'             => $platform,
@@ -96,12 +96,12 @@ class CampaignController
 
     public function show(int $id): Webman\Http\Response
     {
-        $campaign = DB::table('campaigns')->find($id);
+        $campaign = DB::table('erik_campaigns')->find($id);
         if (!$campaign) {
             return ApiResponse::error('Campaign not found');
         }
 
-        $todayMetrics = DB::table('report_metrics')
+        $todayMetrics = DB::table('erik_report_metrics')
             ->where('campaign_id', $id)
             ->where('date', date('Y-m-d'))
             ->first();
@@ -111,7 +111,7 @@ class CampaignController
 
     public function update(Request $request, int $id): Webman\Http\Response
     {
-        $campaign = DB::table('campaigns')->find($id);
+        $campaign = DB::table('erik_campaigns')->find($id);
         if (!$campaign) {
             return ApiResponse::error('Campaign not found');
         }
@@ -128,7 +128,7 @@ class CampaignController
                 $data
             );
 
-            DB::table('campaigns')->where('id', $id)->update([
+            DB::table('erik_campaigns')->where('id', $id)->update([
                 'name'         => $data->name,
                 'daily_budget' => $data->dailyBudget,
                 'updated_at'   => now(),
@@ -142,7 +142,7 @@ class CampaignController
 
     public function toggle(Request $request, int $id): Webman\Http\Response
     {
-        $campaign = DB::table('campaigns')->find($id);
+        $campaign = DB::table('erik_campaigns')->find($id);
         if (!$campaign) {
             return ApiResponse::error('Campaign not found');
         }
@@ -159,7 +159,7 @@ class CampaignController
                 $enabled
             );
 
-            DB::table('campaigns')->where('id', $id)->update([
+            DB::table('erik_campaigns')->where('id', $id)->update([
                 'status'     => $enabled ? 'enabled' : 'paused',
                 'updated_at' => now(),
             ]);

@@ -110,7 +110,7 @@ class ReportExporter
         $metricCols = $this->metricColumns($metrics);
         $groupCols  = $this->dimensionColumns($dimensions);
 
-        $query = DB::table('report_metrics')
+        $query = DB::table('erik_report_metrics')
             ->where('tenant_id', $tenantId)
             ->whereBetween('date', [$dateStart, $dateEnd]);
 

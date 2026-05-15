@@ -1,5 +1,5 @@
-CREATE TABLE IF NOT EXISTS `tenants` (
-    `id` BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `erik_tenants` (
+    `id` BIGINT UNSIGNED PRIMARY KEY,
     `name` VARCHAR(100) NOT NULL,
     `domain` VARCHAR(255) DEFAULT NULL,
     `db_type` ENUM('shared','dedicated') DEFAULT 'shared',
@@ -11,5 +11,5 @@ CREATE TABLE IF NOT EXISTS `tenants` (
     `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `tenants` (`id`, `name`, `plan`) VALUES (1, '默认租户', 'enterprise')
+INSERT INTO `erik_tenants` (`id`, `name`, `plan`) VALUES (1, '默认租户', 'enterprise')
 ON DUPLICATE KEY UPDATE `name` = VALUES(`name`);

@@ -6,10 +6,13 @@
 namespace plugin\ads_tenant\model;
 
 use Illuminate\Database\Eloquent\Model;
+use erik\support\SnowflakeTrait;
 
 class Tenant extends Model
 {
-    protected $table = 'tenants';
+    use SnowflakeTrait;
+
+    protected $table = 'erik_tenants';
     protected $guarded = ['id'];
     protected $casts = [
         'db_config' => 'array',

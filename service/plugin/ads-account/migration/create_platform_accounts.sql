@@ -1,5 +1,5 @@
-CREATE TABLE IF NOT EXISTS `platform_accounts` (
-    `id` BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `erik_platform_accounts` (
+    `id` BIGINT UNSIGNED PRIMARY KEY,
     `tenant_id` BIGINT UNSIGNED NOT NULL,
     `platform` VARCHAR(32) NOT NULL,
     `account_id_on_platform` VARCHAR(128) NOT NULL,
@@ -16,8 +16,8 @@ CREATE TABLE IF NOT EXISTS `platform_accounts` (
     INDEX `idx_tenant_platform` (`tenant_id`, `platform`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS `auth_tokens` (
-    `id` BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `erik_auth_tokens` (
+    `id` BIGINT UNSIGNED PRIMARY KEY,
     `tenant_id` BIGINT UNSIGNED NOT NULL,
     `platform` VARCHAR(32) NOT NULL,
     `state` VARCHAR(64) NOT NULL,

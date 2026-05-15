@@ -17,7 +17,7 @@ class DashboardController
         $dateStart = $request->get('date_start', date('Y-m-d'));
         $dateEnd   = $request->get('date_end', date('Y-m-d'));
 
-        $overview = (array) DB::table('report_metrics')
+        $overview = (array) DB::table('erik_report_metrics')
             ->where('tenant_id', $tenantId)
             ->whereBetween('date', [$dateStart, $dateEnd])
             ->selectRaw('COALESCE(SUM(cost), 0) as total_cost')
@@ -29,7 +29,7 @@ class DashboardController
             ->selectRaw('CASE WHEN SUM(cost) > 0 THEN ROUND(SUM(cost)/SUM(conversions)/100, 2) ELSE 0 END as avg_cpa')
             ->first();
 
-        $byPlatform = DB::table('report_metrics')
+        $byPlatform = DB::table('erik_report_metrics')
             ->where('tenant_id', $tenantId)
             ->whereBetween('date', [$dateStart, $dateEnd])
             ->groupBy('platform')
@@ -41,7 +41,7 @@ class DashboardController
             ->orderByDesc('cost')
             ->get();
 
-        $daily = DB::table('report_metrics')
+        $daily = DB::table('erik_report_metrics')
             ->where('tenant_id', $tenantId)
             ->whereBetween('date', [$dateStart, $dateEnd])
             ->groupBy('date', 'platform')
