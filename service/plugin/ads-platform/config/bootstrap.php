@@ -10,6 +10,10 @@ use plugin\ads_platform\adapter\Xiaohongshu;
 use plugin\ads_platform\adapter\Youku;
 use plugin\ads_platform\adapter\Qihoo360;
 use plugin\ads_platform\adapter\Sogou;
+use plugin\ads_platform\adapter\Weibo;
+use plugin\ads_platform\adapter\Bilibili;
+use plugin\ads_platform\adapter\Meituan;
+use plugin\ads_platform\adapter\Zhihu;
 
 AdapterRegistry::register(new Juliang());
 AdapterRegistry::register(new Baidu());
@@ -21,3 +25,7 @@ AdapterRegistry::register(new Xiaohongshu());
 AdapterRegistry::register(new Youku());
 AdapterRegistry::register(new Qihoo360());
 AdapterRegistry::register(new Sogou());
+AdapterRegistry::register(new Weibo());
+AdapterRegistry::register(new Bilibili());
+AdapterRegistry::register(new Meituan());
+AdapterRegistry::register(new Zhihu());
