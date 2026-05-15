@@ -9,11 +9,17 @@
         "illuminate/redis": "^11.0",
         "webman/redis-queue": "^2.0",
         "firebase/php-jwt": "^6.0",
-        "vlucas/phpdotenv": "^5.0"
+        "vlucas/phpdotenv": "^5.0",
+        "monolog/monolog": "^3.10",
+        "illuminate/pagination": "^11.51"
     },
     "autoload": {
         "psr-4": {
-            "plugin\\": "plugin/"
+            "app\\": "",
+            "plugin\\ads_platform\\": "plugin/ads-platform/",
+            "plugin\\ads_account\\": "plugin/ads-account/",
+            "plugin\\ads_api\\": "plugin/ads-api/",
+            "plugin\\ads_tenant\\": "plugin/ads-tenant/"
         }
     },
     "minimum-stability": "stable",
