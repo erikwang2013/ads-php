@@ -55,10 +55,18 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 数据库 | MySQL 8.0 | 13 张表，erik_ 前缀，Snowflake BIGINT 主键 |
 | 缓存 | Redis 7 | 仪表盘缓存，限流计数，Pub/Sub |
 | 搜索 | Elasticsearch | webman-scout 自动索引同步 |
-| 管理后台 | Vue 3 + TypeScript + Element Plus | 15+ 页面，ECharts 可视化 |
+| 管理后台 | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP 后端(端口 8789)，ServiceProxy 调用业务 API(端口 8788)，15+ 页面，ECharts 可视化 |
 | Flutter | Dart 3 + Riverpod + GoRouter | PC/Mobile 响应式三断点 |
 | HarmonyOS | ArkTS + ArkUI | 6 页，4 组件，HTTP 客户端 |
 | 部署 | Docker + Nginx | 一键启动全套服务 |
+
+## 架构说明
+
+- **`service/`** — webman v2 用户端业务 API 服务，监听端口 **8788**。处理广告平台对接、OAuth 授权、数据同步、报表引擎、告警监控等业务逻辑。
+- **`admin/`** — webman-admin v2 独立管理后台，监听端口 **8789**。包含 PHP 后端（认证鉴权、用户管理、系统配置）和 Vue 3 SPA 前端。
+- **管理后台与业务服务的通信** — Admin 通过 `ServiceProxy`（基于 cURL 的 HTTP 代理）调用 service API，转发管理员请求并携带 JWT Token。
+- **开发模式** — Vite dev server (端口 5173) 将 `/api` 代理至 service:8788；admin PHP 后端在 8789 提供 session 认证和 SPA 静态服务。
+- **生产模式** — Nginx 将 `/` 路由至 admin:8789（管理后台 SPA），将 `/api/` 路由至 service:8788（业务 API）。
 
 ## Erik Stack 集成
 
@@ -132,12 +140,17 @@ ads-php/
 │   │   └── ads-alert/          # 告警监控 & 推送
 │   ├── config/                 # 配置文件（带注释）
 │   └── support/                # Erik Stack 工具类
-├── admin/                      # 独立管理后台 (webman-admin v2)
+├── admin/                      # 独立管理后台 (webman-admin v2, PHP + Vue3)
+│   ├── start.php               # 入口引导 (端口 8789)
+│   ├── config/                 # 管理后台配置 (app/database/redis/server)
+│   ├── app/
+│   │   ├── controller/         # 管理端控制器 (ServiceProxy → service:8788)
+│   │   └── middleware/         # 管理端中间件 (AuthCheck: JWT + Session)
 │   └── src/                    # Vue 3 + TS + Element Plus + ECharts
-│       ├── views/              # 页面 (dashboard/campaign/account/alert/report)
+│       ├── views/              # 页面 (dashboard/campaign/account/alert/report/system)
 │       ├── components/         # 组件 (layout/MetricCard/PlatformBadge)
 │       ├── api/                # Axios API 层 (7 模块)
-│       ├── stores/             # Pinia 状态 (auth/alert)
+│       ├── stores/             # Pinia 状态 (auth/alert/admin)
 │       └── router/             # Vue Router
 ├── apps/                       # 客户端 App
 │   ├── flutter/                # Flutter App (PC Web/Mobile 响应式)
