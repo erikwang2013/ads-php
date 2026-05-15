@@ -1,4 +1,8 @@
 <?php
+/**
+ * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+ */
+
 namespace plugin\ads_api\controller;
 
 use Webman\Http\Request;
@@ -7,7 +11,7 @@ use Illuminate\Database\Capsule\Manager as DB;
 
 class DashboardController
 {
-    public function summary(Request $request): \Webman\Http\Response
+    public function summary(Request $request): Webman\Http\Response
     {
         $tenantId = $request->tenantId ?? 1;
         $dateStart = $request->get('date_start', date('Y-m-d'));

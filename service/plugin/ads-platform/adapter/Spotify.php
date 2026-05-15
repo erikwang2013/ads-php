@@ -1,4 +1,8 @@
 <?php
+/**
+ * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+ */
+
 namespace plugin\ads_platform\adapter;
 
 use plugin\ads_platform\src\{
@@ -73,7 +77,7 @@ class Spotify implements PlatformAdapter
         ], $list);
     }
 
-    public function fetchCampaigns(string $accessToken, string $accountId): \Generator
+    public function fetchCampaigns(string $accessToken, string $accountId): Generator
     {
         $mapping = $this->campaignFieldMapping();
         $offset = 0;
@@ -92,7 +96,7 @@ class Spotify implements PlatformAdapter
         } while ($hasMore);
     }
 
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator
     {
         $mapping = $this->adGroupFieldMapping();
         $offset = 0;
@@ -112,7 +116,7 @@ class Spotify implements PlatformAdapter
         } while ($hasMore);
     }
 
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator
     {
         $mapping = $this->creativeFieldMapping();
         $offset = 0;
@@ -132,7 +136,7 @@ class Spotify implements PlatformAdapter
         } while ($hasMore);
     }
 
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator
     {
         $mapping = $this->reportFieldMapping();
 
@@ -160,7 +164,7 @@ class Spotify implements PlatformAdapter
         }
 
         if ($status !== 'COMPLETED') {
-            throw new \RuntimeException('Spotify Ads report generation failed with status: ' . $status);
+            throw new RuntimeException('Spotify Ads report generation failed with status: ' . $status);
         }
 
         // Step 3: Download / stream results
@@ -318,14 +322,14 @@ class Spotify implements PlatformAdapter
         if ($body === false || curl_errno($ch)) {
             $error = curl_error($ch);
             curl_close($ch);
-            throw new \RuntimeException('Spotify Ads API network error: ' . $error);
+            throw new RuntimeException('Spotify Ads API network error: ' . $error);
         }
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
         $decoded = json_decode($body, true);
         if ($httpCode >= 400 || !is_array($decoded)) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 'Spotify Ads API error: HTTP ' . $httpCode . ' - ' . ($decoded['error']['message'] ?? $body)
             );
         }

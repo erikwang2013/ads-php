@@ -1,4 +1,8 @@
 <?php
+/**
+ * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+ */
+
 namespace plugin\ads_platform\adapter;
 
 use plugin\ads_platform\src\{
@@ -93,7 +97,7 @@ class Taobao implements PlatformAdapter
 
     // ── Campaigns ─────────────────────────────────────────────
 
-    public function fetchCampaigns(string $accessToken, string $accountId): \Generator
+    public function fetchCampaigns(string $accessToken, string $accountId): Generator
     {
         $mapping = $this->campaignFieldMapping();
         $pageNo  = 1;
@@ -115,7 +119,7 @@ class Taobao implements PlatformAdapter
 
     // ── AdGroups ──────────────────────────────────────────────
 
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator
     {
         // Taobao does not expose a separate ad-group concept; skip
         yield from [];
@@ -123,7 +127,7 @@ class Taobao implements PlatformAdapter
 
     // ── Creatives ─────────────────────────────────────────────
 
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator
     {
         // Taobao creative-level fetch is not available through this interface; skip
         yield from [];
@@ -131,7 +135,7 @@ class Taobao implements PlatformAdapter
 
     // ── Reports ───────────────────────────────────────────────
 
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator
     {
         $mapping = $this->reportFieldMapping();
         $pageNo  = 1;
@@ -257,18 +261,18 @@ class Taobao implements PlatformAdapter
             $error = curl_error($ch);
             $errno = curl_errno($ch);
             curl_close($ch);
-            throw new \RuntimeException("Taobao OAuth network error [{$errno}]: {$error}");
+            throw new RuntimeException("Taobao OAuth network error [{$errno}]: {$error}");
         }
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
         $decoded = json_decode($body, true);
         if (!is_array($decoded)) {
-            throw new \RuntimeException('Taobao OAuth: invalid JSON response');
+            throw new RuntimeException('Taobao OAuth: invalid JSON response');
         }
         if ($httpCode !== 200 || isset($decoded['error'])) {
             $desc = $decoded['error_description'] ?? $decoded['error'] ?? "HTTP {$httpCode}";
-            throw new \RuntimeException('Taobao OAuth error: ' . $desc);
+            throw new RuntimeException('Taobao OAuth error: ' . $desc);
         }
         return $decoded;
     }
@@ -311,14 +315,14 @@ class Taobao implements PlatformAdapter
             $error = curl_error($ch);
             $errno = curl_errno($ch);
             curl_close($ch);
-            throw new \RuntimeException("Taobao API network error [{$errno}]: {$error}");
+            throw new RuntimeException("Taobao API network error [{$errno}]: {$error}");
         }
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
         $decoded = json_decode($body, true);
         if (!is_array($decoded)) {
-            throw new \RuntimeException('Taobao API: invalid JSON response');
+            throw new RuntimeException('Taobao API: invalid JSON response');
         }
 
         // Taobao error envelope: {"error_response": {"code": ..., "msg": ..., ...}}
@@ -326,7 +330,7 @@ class Taobao implements PlatformAdapter
             $err  = $decoded['error_response'] ?? [];
             $desc = ($err['msg'] ?? $err['sub_msg'] ?? '') ?: "HTTP {$httpCode}";
             $code = $err['code'] ?? 0;
-            throw new \RuntimeException("Taobao API error [code {$code}]: {$desc}");
+            throw new RuntimeException("Taobao API error [code {$code}]: {$desc}");
         }
         return $decoded;
     }

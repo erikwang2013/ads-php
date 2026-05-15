@@ -1,4 +1,8 @@
 <?php
+/**
+ * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+ */
+
 namespace plugin\ads_platform\adapter;
 
 use plugin\ads_platform\src\{
@@ -103,7 +107,7 @@ class Pinduoduo implements PlatformAdapter
 
     // ── Campaigns (PDD calls them "plans") ────────────────────
 
-    public function fetchCampaigns(string $accessToken, string $accountId): \Generator
+    public function fetchCampaigns(string $accessToken, string $accountId): Generator
     {
         $mapping = $this->campaignFieldMapping();
         $pageNo  = 1;
@@ -124,14 +128,14 @@ class Pinduoduo implements PlatformAdapter
 
     // ── AdGroups ──────────────────────────────────────────────
 
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator
     {
         yield from [];
     }
 
     // ── Creatives ─────────────────────────────────────────────
 
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator
     {
         // PDD does not expose a creative endpoint at this level
         yield from [];
@@ -139,7 +143,7 @@ class Pinduoduo implements PlatformAdapter
 
     // ── Reports ───────────────────────────────────────────────
 
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator
     {
         $mapping = $this->reportFieldMapping();
         $pageNo  = 1;
@@ -265,18 +269,18 @@ class Pinduoduo implements PlatformAdapter
             $error = curl_error($ch);
             $errno = curl_errno($ch);
             curl_close($ch);
-            throw new \RuntimeException("Pinduoduo OAuth network error [{$errno}]: {$error}");
+            throw new RuntimeException("Pinduoduo OAuth network error [{$errno}]: {$error}");
         }
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
         $decoded = json_decode($body, true);
         if (!is_array($decoded)) {
-            throw new \RuntimeException('Pinduoduo OAuth: invalid JSON response');
+            throw new RuntimeException('Pinduoduo OAuth: invalid JSON response');
         }
         if ($httpCode !== 200 || isset($decoded['error'])) {
             $desc = $decoded['error_description'] ?? $decoded['error'] ?? "HTTP {$httpCode}";
-            throw new \RuntimeException('Pinduoduo OAuth error: ' . $desc);
+            throw new RuntimeException('Pinduoduo OAuth error: ' . $desc);
         }
         return $decoded;
     }
@@ -320,21 +324,21 @@ class Pinduoduo implements PlatformAdapter
             $error = curl_error($ch);
             $errno = curl_errno($ch);
             curl_close($ch);
-            throw new \RuntimeException("Pinduoduo API network error [{$errno}]: {$error}");
+            throw new RuntimeException("Pinduoduo API network error [{$errno}]: {$error}");
         }
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
         $decoded = json_decode($body, true);
         if (!is_array($decoded)) {
-            throw new \RuntimeException('Pinduoduo API: invalid JSON response');
+            throw new RuntimeException('Pinduoduo API: invalid JSON response');
         }
 
         if ($httpCode !== 200 || isset($decoded['error_response'])) {
             $err  = $decoded['error_response'] ?? [];
             $desc = ($err['error_msg'] ?? $err['msg'] ?? '') ?: "HTTP {$httpCode}";
             $code = $err['code'] ?? 0;
-            throw new \RuntimeException("Pinduoduo API error [code {$code}]: {$desc}");
+            throw new RuntimeException("Pinduoduo API error [code {$code}]: {$desc}");
         }
         return $decoded;
     }

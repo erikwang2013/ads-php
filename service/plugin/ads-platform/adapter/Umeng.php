@@ -1,4 +1,8 @@
 <?php
+/**
+ * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+ */
+
 namespace plugin\ads_platform\adapter;
 
 use plugin\ads_platform\src\{
@@ -42,7 +46,7 @@ class Umeng implements PlatformAdapter
         $secret = $this->apiSecret;
 
         if (empty($apiKey) || empty($secret)) {
-            throw new \RuntimeException('Umeng API Key and Secret are required');
+            throw new RuntimeException('Umeng API Key and Secret are required');
         }
 
         // Verify credentials with a lightweight account-info call.
@@ -95,17 +99,17 @@ class Umeng implements PlatformAdapter
     //  Campaign / AdGroup / Creative — not supported by Umeng
     // ----------------------------------------------------------------
 
-    public function fetchCampaigns(string $accessToken, string $accountId): \Generator
+    public function fetchCampaigns(string $accessToken, string $accountId): Generator
     {
         yield from [];
     }
 
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator
     {
         yield from [];
     }
 
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator
     {
         yield from [];
     }
@@ -114,7 +118,7 @@ class Umeng implements PlatformAdapter
     //  Reports
     // ----------------------------------------------------------------
 
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator
     {
         $mapping = $this->reportFieldMapping();
 
@@ -157,17 +161,17 @@ class Umeng implements PlatformAdapter
 
     public function createCampaign(string $accessToken, string $accountId, CampaignData $data): string
     {
-        throw new \RuntimeException('Umeng does not support campaign management');
+        throw new RuntimeException('Umeng does not support campaign management');
     }
 
     public function updateCampaign(string $accessToken, string $accountId, string $platformId, CampaignData $data): void
     {
-        throw new \RuntimeException('Umeng does not support campaign management');
+        throw new RuntimeException('Umeng does not support campaign management');
     }
 
     public function toggleCampaign(string $accessToken, string $accountId, string $platformId, bool $enabled): void
     {
-        throw new \RuntimeException('Umeng does not support campaign management');
+        throw new RuntimeException('Umeng does not support campaign management');
     }
 
     // ----------------------------------------------------------------
@@ -271,7 +275,7 @@ class Umeng implements PlatformAdapter
         if ($respBody === false) {
             $error = curl_error($ch);
             curl_close($ch);
-            throw new \RuntimeException('Umeng API network error: ' . $error);
+            throw new RuntimeException('Umeng API network error: ' . $error);
         }
 
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -280,7 +284,7 @@ class Umeng implements PlatformAdapter
         $decoded = json_decode($respBody, true);
 
         if ($httpCode < 200 || $httpCode >= 300) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 'Umeng API HTTP error: ' . $httpCode . ' — ' . ($decoded['message'] ?? $respBody)
             );
         }
@@ -288,7 +292,7 @@ class Umeng implements PlatformAdapter
         // Umeng uses various response codes; treat non-success as error.
         $code = $decoded['code'] ?? $decoded['status'] ?? -1;
         if ($code !== 0 && $code !== 'OK' && $code !== 200 && $code !== '200') {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 'Umeng API error: ' . ($decoded['message'] ?? $decoded['msg'] ?? 'Unknown error')
             );
         }

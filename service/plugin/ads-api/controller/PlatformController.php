@@ -1,4 +1,8 @@
 <?php
+/**
+ * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+ */
+
 namespace plugin\ads_api\controller;
 
 use plugin\ads_platform\src\AdapterRegistry;
@@ -9,12 +13,12 @@ use app\support\ApiResponse;
 
 class PlatformController
 {
-    public function index(): \Webman\Http\Response
+    public function index(): Webman\Http\Response
     {
         return ApiResponse::success(AdapterRegistry::all());
     }
 
-    public function oauthUrl(Request $request, string $code): \Webman\Http\Response
+    public function oauthUrl(Request $request, string $code): Webman\Http\Response
     {
         $redirectUri = $request->get('redirect_uri', '');
         if (!$redirectUri) {
@@ -40,7 +44,7 @@ class PlatformController
         return ApiResponse::success(['auth_url' => $url, 'state' => $state]);
     }
 
-    public function callback(Request $request, string $code): \Webman\Http\Response
+    public function callback(Request $request, string $code): Webman\Http\Response
     {
         $state = $request->post('state', '');
         $authCode = $request->post('code', '');
@@ -54,7 +58,7 @@ class PlatformController
                 $authCode
             );
             return ApiResponse::success(['account_id' => $account->id]);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return ApiResponse::error($e->getMessage());
         }
     }

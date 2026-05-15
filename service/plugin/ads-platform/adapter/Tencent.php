@@ -1,4 +1,8 @@
 <?php
+/**
+ * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+ */
+
 namespace plugin\ads_platform\adapter;
 
 use plugin\ads_platform\src\{
@@ -98,7 +102,7 @@ class Tencent implements PlatformAdapter
 
     // ── Campaigns ─────────────────────────────────────────────
 
-    public function fetchCampaigns(string $accessToken, string $accountId): \Generator
+    public function fetchCampaigns(string $accessToken, string $accountId): Generator
     {
         $mapping = $this->campaignFieldMapping();
         $page = 1;
@@ -119,12 +123,12 @@ class Tencent implements PlatformAdapter
         } while ($hasMore);
     }
 
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator
     {
         yield from [];
     }
 
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator
     {
         $mapping = $this->creativeFieldMapping();
         $page = 1;
@@ -147,7 +151,7 @@ class Tencent implements PlatformAdapter
 
     // ── Reports (async: create → poll → fetch) ────────────────
 
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator
     {
         $mapping = $this->reportFieldMapping();
         $reportFields = '["date","campaign_id","cost","view_count","valid_click_count","conversions_count","ctr","cpm","cpc","cvr"]';
@@ -165,7 +169,7 @@ class Tencent implements PlatformAdapter
         ], $accessToken);
         $taskId = $createResp['data']['task_id'] ?? '';
         if (!$taskId) {
-            throw new \RuntimeException('Tencent report: failed to create report job');
+            throw new RuntimeException('Tencent report: failed to create report job');
         }
 
         // Step 2 – poll until completed (max 60 s)
@@ -180,12 +184,12 @@ class Tencent implements PlatformAdapter
             ], $accessToken);
             $taskStatus = $pollResp['data']['task_status'] ?? 'FAIL';
             if ($taskStatus === 'FAIL') {
-                throw new \RuntimeException('Tencent report: report job failed');
+                throw new RuntimeException('Tencent report: report job failed');
             }
             $maxRetries--;
         }
         if ($taskStatus !== 'SUCCESS') {
-            throw new \RuntimeException('Tencent report: report job timed out');
+            throw new RuntimeException('Tencent report: report job timed out');
         }
 
         // Step 3 – pull paginated report data
@@ -323,17 +327,17 @@ class Tencent implements PlatformAdapter
             $error = curl_error($ch);
             $errno = curl_errno($ch);
             curl_close($ch);
-            throw new \RuntimeException("Tencent OAuth network error [{$errno}]: {$error}");
+            throw new RuntimeException("Tencent OAuth network error [{$errno}]: {$error}");
         }
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
         $decoded = json_decode($body, true);
         if (!is_array($decoded)) {
-            throw new \RuntimeException('Tencent OAuth: invalid JSON response');
+            throw new RuntimeException('Tencent OAuth: invalid JSON response');
         }
         if ($httpCode !== 200 || ($decoded['code'] ?? -1) !== 0) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 'Tencent OAuth error: ' . ($decoded['message'] ?? 'HTTP ' . $httpCode)
             );
         }
@@ -377,18 +381,18 @@ class Tencent implements PlatformAdapter
             $error = curl_error($ch);
             $errno = curl_errno($ch);
             curl_close($ch);
-            throw new \RuntimeException("Tencent API network error [{$errno}]: {$error}");
+            throw new RuntimeException("Tencent API network error [{$errno}]: {$error}");
         }
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
         $decoded = json_decode($body, true);
         if (!is_array($decoded)) {
-            throw new \RuntimeException('Tencent API: invalid JSON response');
+            throw new RuntimeException('Tencent API: invalid JSON response');
         }
         if ($httpCode !== 200 || ($decoded['code'] ?? -1) !== 0) {
             $msg = $decoded['message'] ?? $decoded['message_cn'] ?? "HTTP {$httpCode}";
-            throw new \RuntimeException('Tencent API error: ' . $msg);
+            throw new RuntimeException('Tencent API error: ' . $msg);
         }
         return $decoded;
     }

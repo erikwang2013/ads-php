@@ -1,13 +1,17 @@
 <?php
+/**
+ * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+ */
+
 namespace plugin\ads_api\controller;
 
-use Firebase\JWT\JWT;
+use Erikwang2013\JwtWebman\Jwt;
 use Webman\Http\Request;
 use app\support\ApiResponse;
 
 class AuthController
 {
-    public function login(Request $request): \Webman\Http\Response
+    public function login(Request $request): Webman\Http\Response
     {
         $username = $request->post('username', '');
         $password = $request->post('password', '');
@@ -18,13 +22,10 @@ class AuthController
             return ApiResponse::error('Invalid credentials', 1001);
         }
 
-        $payload = [
+        $token = Jwt::encode([
             'uid' => 1,
             'tid' => $tenantId,
-            'iat' => time(),
-            'exp' => time() + (int) config('app.jwt.ttl', 86400),
-        ];
-        $token = JWT::encode($payload, config('app.jwt.secret'), 'HS256');
+        ]);
 
         return ApiResponse::success([
             'access_token' => $token,
@@ -38,7 +39,7 @@ class AuthController
         ]);
     }
 
-    public function me(Request $request): \Webman\Http\Response
+    public function me(Request $request): Webman\Http\Response
     {
         return ApiResponse::success([
             'id'        => $request->userId ?? 1,

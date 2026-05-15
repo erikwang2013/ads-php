@@ -1,4 +1,8 @@
 <?php
+/**
+ * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+ */
+
 namespace plugin\ads_platform\adapter;
 
 use plugin\ads_platform\src\{
@@ -88,7 +92,7 @@ class Bilibili implements PlatformAdapter
 
     // ── Campaign ───────────────────────────────────────────
 
-    public function fetchCampaigns(string $accessToken, string $accountId): \Generator
+    public function fetchCampaigns(string $accessToken, string $accountId): Generator
     {
         $mapping = $this->campaignFieldMapping();
         $page = 1;
@@ -106,12 +110,12 @@ class Bilibili implements PlatformAdapter
         } while ($hasMore);
     }
 
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator
     {
         yield from [];
     }
 
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator
     {
         $mapping = $this->creativeFieldMapping();
         $page = 1;
@@ -131,7 +135,7 @@ class Bilibili implements PlatformAdapter
 
     // ── Report ─────────────────────────────────────────────
 
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator
     {
         $mapping = $this->reportFieldMapping();
         $page = 1;
@@ -259,14 +263,14 @@ class Bilibili implements PlatformAdapter
         if ($errno !== 0) {
             $error = curl_error($ch);
             curl_close($ch);
-            throw new \RuntimeException('Bilibili API network error: ' . $error);
+            throw new RuntimeException('Bilibili API network error: ' . $error);
         }
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
         $decoded = json_decode($body, true);
         if ($httpCode !== 200 || ($decoded['code'] ?? -1) !== 0) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 'Bilibili API error: ' . ($decoded['message'] ?? 'HTTP ' . $httpCode)
             );
         }

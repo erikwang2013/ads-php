@@ -1,4 +1,8 @@
 <?php
+/**
+ * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+ */
+
 namespace plugin\ads_platform\adapter;
 
 use plugin\ads_platform\src\{
@@ -77,7 +81,7 @@ class Twitch implements PlatformAdapter
         ], $list);
     }
 
-    public function fetchCampaigns(string $accessToken, string $accountId): \Generator
+    public function fetchCampaigns(string $accessToken, string $accountId): Generator
     {
         $mapping = $this->campaignFieldMapping();
         $cursor = null;
@@ -95,19 +99,19 @@ class Twitch implements PlatformAdapter
         } while ($cursor);
     }
 
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator
     {
         // Twitch uses ad_schedule segments within campaigns — no separate ad group entity
         yield from [];
     }
 
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator
     {
         // Twitch ads are video-based with limited creative API surface
         yield from [];
     }
 
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator
     {
         $mapping = $this->reportFieldMapping();
         $cursor = null;
@@ -242,14 +246,14 @@ class Twitch implements PlatformAdapter
         if ($body === false || curl_errno($ch)) {
             $error = curl_error($ch);
             curl_close($ch);
-            throw new \RuntimeException('Twitch Ads API network error: ' . $error);
+            throw new RuntimeException('Twitch Ads API network error: ' . $error);
         }
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
         $decoded = json_decode($body, true);
         if ($httpCode >= 400 || !is_array($decoded)) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 'Twitch Ads API error: HTTP ' . $httpCode . ' - ' . ($decoded['message'] ?? $body)
             );
         }

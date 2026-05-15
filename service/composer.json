@@ -11,11 +11,19 @@
         "firebase/php-jwt": "^6.0",
         "vlucas/phpdotenv": "^5.0",
         "monolog/monolog": "^3.10",
-        "illuminate/pagination": "^11.51"
+        "illuminate/pagination": "^11.51",
+        "erikwang2013/snowflake-php": "^1.0",
+        "erikwang2013/hashids": "^1.0",
+        "erikwang2013/jwt-webman": "^1.0",
+        "erikwang2013/encryption": "^1.0",
+        "erikwang2013/encryptable": "^1.0",
+        "erikwang2013/webman-scout": "^1.0",
+        "erikwang2013/season": "^1.0"
     },
     "autoload": {
         "psr-4": {
             "app\\": "",
+            "erik\\": "support/",
             "plugin\\ads_platform\\": "plugin/ads-platform/",
             "plugin\\ads_account\\": "plugin/ads-account/",
             "plugin\\ads_api\\": "plugin/ads-api/",
@@ -23,5 +31,10 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "config": {
+        "allow-plugins": {
+            "erikwang2013/encryptable": true
+        }
+    }
 }

@@ -1,4 +1,8 @@
 <?php
+/**
+ * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+ */
+
 namespace plugin\ads_account\service;
 
 use plugin\ads_account\model\PlatformAccount;
@@ -11,7 +15,7 @@ class OAuthService
     {
         $adapter = AdapterRegistry::get($platform);
         if (!$adapter) {
-            throw new \InvalidArgumentException("Unsupported platform: $platform");
+            throw new InvalidArgumentException("Unsupported platform: $platform");
         }
 
         $state = bin2hex(random_bytes(16));
@@ -37,12 +41,12 @@ class OAuthService
             ->first();
 
         if (!$authToken || $authToken->isExpired()) {
-            throw new \RuntimeException('Invalid or expired state');
+            throw new RuntimeException('Invalid or expired state');
         }
 
         $adapter = AdapterRegistry::get($platform);
         if (!$adapter) {
-            throw new \InvalidArgumentException("Unsupported platform: $platform");
+            throw new InvalidArgumentException("Unsupported platform: $platform");
         }
 
         $tokenData = $adapter->exchangeToken($code, $authToken->redirect_uri);
@@ -77,7 +81,7 @@ class OAuthService
                         ]
                     );
                 }
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 // account name fetch failure doesn't block binding
             }
         }

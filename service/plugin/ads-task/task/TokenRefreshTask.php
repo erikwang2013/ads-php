@@ -1,4 +1,8 @@
 <?php
+/**
+ * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+ */
+
 namespace plugin\ads_task\task;
 
 use plugin\ads_account\model\PlatformAccount;
@@ -27,7 +31,7 @@ class TokenRefreshTask
                     'token_expires_at' => now()->addSeconds($tokenData['expires_in'] ?? 86400),
                 ]);
                 $refreshed++;
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 echo "Token refresh failed for account {$account->id}: {$e->getMessage()}\n";
             }
         }

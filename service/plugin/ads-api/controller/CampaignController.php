@@ -1,4 +1,8 @@
 <?php
+/**
+ * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+ */
+
 namespace plugin\ads_api\controller;
 
 use plugin\ads_platform\src\AdapterRegistry;
@@ -10,7 +14,7 @@ use Illuminate\Database\Capsule\Manager as DB;
 
 class CampaignController
 {
-    public function index(Request $request): \Webman\Http\Response
+    public function index(Request $request): Webman\Http\Response
     {
         $tenantId = $request->tenantId ?? 1;
         $query = DB::table('campaigns')->where('tenant_id', $tenantId);
@@ -50,7 +54,7 @@ class CampaignController
         );
     }
 
-    public function store(Request $request): \Webman\Http\Response
+    public function store(Request $request): Webman\Http\Response
     {
         $platform = $request->post('platform');
         $accountId = (int) $request->post('platform_account_id');
@@ -85,12 +89,12 @@ class CampaignController
             ]);
 
             return ApiResponse::success(['id' => $id, 'platform_campaign_id' => $platformCampaignId]);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return ApiResponse::error($e->getMessage());
         }
     }
 
-    public function show(int $id): \Webman\Http\Response
+    public function show(int $id): Webman\Http\Response
     {
         $campaign = DB::table('campaigns')->find($id);
         if (!$campaign) {
@@ -105,7 +109,7 @@ class CampaignController
         return ApiResponse::success(['campaign' => $campaign, 'today' => $todayMetrics]);
     }
 
-    public function update(Request $request, int $id): \Webman\Http\Response
+    public function update(Request $request, int $id): Webman\Http\Response
     {
         $campaign = DB::table('campaigns')->find($id);
         if (!$campaign) {
@@ -131,12 +135,12 @@ class CampaignController
             ]);
 
             return ApiResponse::success(null, 'Updated');
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return ApiResponse::error($e->getMessage());
         }
     }
 
-    public function toggle(Request $request, int $id): \Webman\Http\Response
+    public function toggle(Request $request, int $id): Webman\Http\Response
     {
         $campaign = DB::table('campaigns')->find($id);
         if (!$campaign) {
@@ -161,7 +165,7 @@ class CampaignController
             ]);
 
             return ApiResponse::success(null, $enabled ? 'Enabled' : 'Paused');
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return ApiResponse::error($e->getMessage());
         }
     }

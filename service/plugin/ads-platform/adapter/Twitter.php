@@ -1,4 +1,8 @@
 <?php
+/**
+ * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+ */
+
 namespace plugin\ads_platform\adapter;
 
 use plugin\ads_platform\src\{
@@ -68,18 +72,18 @@ class Twitter implements PlatformAdapter
             $error = curl_error($ch);
             $errno = curl_errno($ch);
             curl_close($ch);
-            throw new \RuntimeException("Twitter OAuth network error [{$errno}]: {$error}");
+            throw new RuntimeException("Twitter OAuth network error [{$errno}]: {$error}");
         }
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
         $decoded = json_decode($body, true);
         if (!is_array($decoded)) {
-            throw new \RuntimeException('Twitter OAuth: invalid JSON response');
+            throw new RuntimeException('Twitter OAuth: invalid JSON response');
         }
         if ($httpCode !== 200 || isset($decoded['error'])) {
             $desc = $decoded['error_description'] ?? $decoded['error'] ?? "HTTP {$httpCode}";
-            throw new \RuntimeException('Twitter OAuth error: ' . $desc);
+            throw new RuntimeException('Twitter OAuth error: ' . $desc);
         }
 
         return [
@@ -116,7 +120,7 @@ class Twitter implements PlatformAdapter
             $error = curl_error($ch);
             $errno = curl_errno($ch);
             curl_close($ch);
-            throw new \RuntimeException("Twitter token refresh network error [{$errno}]: {$error}");
+            throw new RuntimeException("Twitter token refresh network error [{$errno}]: {$error}");
         }
         curl_close($ch);
 
@@ -168,7 +172,7 @@ class Twitter implements PlatformAdapter
 
     // ── Campaigns ─────────────────────────────────────────────
 
-    public function fetchCampaigns(string $accessToken, string $accountId): \Generator
+    public function fetchCampaigns(string $accessToken, string $accountId): Generator
     {
         $mapping = $this->campaignFieldMapping();
         $urlPath = "accounts/{$accountId}/campaigns";
@@ -195,7 +199,7 @@ class Twitter implements PlatformAdapter
 
     // ── AdGroups (Line Items in Twitter) ──────────────────────
 
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator
     {
         $mapping = $this->adgroupFieldMapping();
         $urlPath = "accounts/{$accountId}/line_items";
@@ -222,7 +226,7 @@ class Twitter implements PlatformAdapter
 
     // ── Creatives (Promoted Tweets / Cards) ───────────────────
 
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator
     {
         $mapping = $this->creativeFieldMapping();
         $urlPath = "accounts/{$accountId}/promoted_tweets";
@@ -249,7 +253,7 @@ class Twitter implements PlatformAdapter
 
     // ── Reports (Stats) ───────────────────────────────────────
 
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator
     {
         $mapping = $this->reportFieldMapping();
         $urlPath = "stats/accounts/{$accountId}";
@@ -455,14 +459,14 @@ class Twitter implements PlatformAdapter
             $error = curl_error($ch);
             $errno = curl_errno($ch);
             curl_close($ch);
-            throw new \RuntimeException("Twitter API network error [{$errno}]: {$error}");
+            throw new RuntimeException("Twitter API network error [{$errno}]: {$error}");
         }
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
         $decoded = json_decode($body, true);
         if (!is_array($decoded)) {
-            throw new \RuntimeException('Twitter API: invalid JSON response');
+            throw new RuntimeException('Twitter API: invalid JSON response');
         }
         if ($httpCode >= 400 || (isset($decoded['errors']) && !empty($decoded['errors']))) {
             $errors = $decoded['errors'] ?? [];
@@ -474,7 +478,7 @@ class Twitter implements PlatformAdapter
             if (!$msg) {
                 $msg = $decoded['detail'] ?? $decoded['title'] ?? "HTTP {$httpCode}";
             }
-            throw new \RuntimeException('Twitter API error: ' . $msg);
+            throw new RuntimeException('Twitter API error: ' . $msg);
         }
         return $decoded;
     }

@@ -1,4 +1,8 @@
 <?php
+/**
+ * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+ */
+
 namespace plugin\ads_platform\adapter;
 
 use plugin\ads_platform\src\{
@@ -108,7 +112,7 @@ class Qihoo360 implements PlatformAdapter
 
     // ── Campaigns ─────────────────────────────────────────────
 
-    public function fetchCampaigns(string $accessToken, string $accountId): \Generator
+    public function fetchCampaigns(string $accessToken, string $accountId): Generator
     {
         $mapping = $this->campaignFieldMapping();
         $page    = 1;
@@ -128,21 +132,21 @@ class Qihoo360 implements PlatformAdapter
 
     // ── AdGroups ──────────────────────────────────────────────
 
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator
     {
         yield from [];
     }
 
     // ── Creatives ─────────────────────────────────────────────
 
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator
     {
         yield from [];
     }
 
     // ── Reports ───────────────────────────────────────────────
 
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator
     {
         $mapping = $this->reportFieldMapping();
         $page    = 1;
@@ -263,18 +267,18 @@ class Qihoo360 implements PlatformAdapter
             $error = curl_error($ch);
             $errno = curl_errno($ch);
             curl_close($ch);
-            throw new \RuntimeException("Qihoo360 OAuth network error [{$errno}]: {$error}");
+            throw new RuntimeException("Qihoo360 OAuth network error [{$errno}]: {$error}");
         }
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
         $decoded = json_decode($body, true);
         if (!is_array($decoded)) {
-            throw new \RuntimeException('Qihoo360 OAuth: invalid JSON response');
+            throw new RuntimeException('Qihoo360 OAuth: invalid JSON response');
         }
         if ($httpCode !== 200 || isset($decoded['error'])) {
             $desc = $decoded['error_description'] ?? $decoded['error'] ?? "HTTP {$httpCode}";
-            throw new \RuntimeException('Qihoo360 OAuth error: ' . $desc);
+            throw new RuntimeException('Qihoo360 OAuth error: ' . $desc);
         }
         return $decoded;
     }
@@ -331,19 +335,19 @@ class Qihoo360 implements PlatformAdapter
             $error = curl_error($ch);
             $errno = curl_errno($ch);
             curl_close($ch);
-            throw new \RuntimeException("Qihoo360 API network error [{$errno}]: {$error}");
+            throw new RuntimeException("Qihoo360 API network error [{$errno}]: {$error}");
         }
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
         $decoded = json_decode($body, true);
         if (!is_array($decoded)) {
-            throw new \RuntimeException('Qihoo360 API: invalid JSON response');
+            throw new RuntimeException('Qihoo360 API: invalid JSON response');
         }
         if ($httpCode !== 200 || ($decoded['code'] ?? -1) !== 0) {
             $desc = $decoded['message'] ?? "HTTP {$httpCode}";
             $code = $decoded['code'] ?? 0;
-            throw new \RuntimeException("Qihoo360 API error [code {$code}]: {$desc}");
+            throw new RuntimeException("Qihoo360 API error [code {$code}]: {$desc}");
         }
         return $decoded;
     }

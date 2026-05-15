@@ -1,4 +1,8 @@
 <?php
+/**
+ * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+ */
+
 namespace plugin\ads_platform\adapter;
 
 use plugin\ads_platform\src\{
@@ -101,7 +105,7 @@ class Linkedin implements PlatformAdapter
 
     // ── Campaigns ─────────────────────────────────────────────
 
-    public function fetchCampaigns(string $accessToken, string $accountId): \Generator
+    public function fetchCampaigns(string $accessToken, string $accountId): Generator
     {
         $mapping = $this->campaignFieldMapping();
         $accountUrn = $this->toAccountUrn($accountId);
@@ -129,7 +133,7 @@ class Linkedin implements PlatformAdapter
 
     // ── AdGroups ──────────────────────────────────────────────
 
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator
     {
         $mapping = $this->adgroupFieldMapping();
         $accountUrn = $this->toAccountUrn($accountId);
@@ -158,7 +162,7 @@ class Linkedin implements PlatformAdapter
 
     // ── Creatives ─────────────────────────────────────────────
 
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator
     {
         $mapping = $this->creativeFieldMapping();
         $accountUrn = $this->toAccountUrn($accountId);
@@ -187,7 +191,7 @@ class Linkedin implements PlatformAdapter
 
     // ── Reports (Analytics) ───────────────────────────────────
 
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator
     {
         $mapping = $this->reportFieldMapping();
         $accountUrn = $this->toAccountUrn($accountId);
@@ -403,18 +407,18 @@ class Linkedin implements PlatformAdapter
             $error = curl_error($ch);
             $errno = curl_errno($ch);
             curl_close($ch);
-            throw new \RuntimeException("LinkedIn OAuth network error [{$errno}]: {$error}");
+            throw new RuntimeException("LinkedIn OAuth network error [{$errno}]: {$error}");
         }
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
         $decoded = json_decode($body, true);
         if (!is_array($decoded)) {
-            throw new \RuntimeException('LinkedIn OAuth: invalid JSON response');
+            throw new RuntimeException('LinkedIn OAuth: invalid JSON response');
         }
         if ($httpCode !== 200 || isset($decoded['error'])) {
             $desc = $decoded['error_description'] ?? $decoded['error'] ?? "HTTP {$httpCode}";
-            throw new \RuntimeException('LinkedIn OAuth error: ' . $desc);
+            throw new RuntimeException('LinkedIn OAuth error: ' . $desc);
         }
         return $decoded;
     }
@@ -458,18 +462,18 @@ class Linkedin implements PlatformAdapter
             $error = curl_error($ch);
             $errno = curl_errno($ch);
             curl_close($ch);
-            throw new \RuntimeException("LinkedIn API network error [{$errno}]: {$error}");
+            throw new RuntimeException("LinkedIn API network error [{$errno}]: {$error}");
         }
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
         $decoded = json_decode($body, true);
         if (!is_array($decoded)) {
-            throw new \RuntimeException('LinkedIn API: invalid JSON response');
+            throw new RuntimeException('LinkedIn API: invalid JSON response');
         }
         if ($httpCode >= 400 || isset($decoded['errorDetail']) || isset($decoded['message'])) {
             $msg = $decoded['errorDetail']['message'] ?? $decoded['message'] ?? "HTTP {$httpCode}";
-            throw new \RuntimeException('LinkedIn API error: ' . $msg);
+            throw new RuntimeException('LinkedIn API error: ' . $msg);
         }
         return $decoded;
     }

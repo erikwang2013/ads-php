@@ -1,4 +1,8 @@
 <?php
+/**
+ * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+ */
+
 namespace plugin\ads_api\controller;
 
 use plugin\ads_alert\model\AlertRule;
@@ -12,7 +16,7 @@ class AlertController
      * GET /api/v1/alerts/rules
      * List alert rules with pagination.
      */
-    public function rules(Request $request): \Webman\Http\Response
+    public function rules(Request $request): Webman\Http\Response
     {
         $tenantId = $request->tenantId ?? 1;
         $query = AlertRule::byTenant($tenantId);
@@ -45,7 +49,7 @@ class AlertController
      * POST /api/v1/alerts/rules
      * Create a new alert rule.
      */
-    public function createRule(Request $request): \Webman\Http\Response
+    public function createRule(Request $request): Webman\Http\Response
     {
         $tenantId = $request->tenantId ?? 1;
 
@@ -75,7 +79,7 @@ class AlertController
      * PUT /api/v1/alerts/rules/{id}
      * Update an existing alert rule.
      */
-    public function updateRule(Request $request, int $id): \Webman\Http\Response
+    public function updateRule(Request $request, int $id): Webman\Http\Response
     {
         $tenantId = $request->tenantId ?? 1;
         $rule = AlertRule::byTenant($tenantId)->find($id);
@@ -114,7 +118,7 @@ class AlertController
      * DELETE /api/v1/alerts/rules/{id}
      * Delete an alert rule.
      */
-    public function deleteRule(Request $request, int $id): \Webman\Http\Response
+    public function deleteRule(Request $request, int $id): Webman\Http\Response
     {
         $tenantId = $request->tenantId ?? 1;
         $rule = AlertRule::byTenant($tenantId)->find($id);
@@ -132,7 +136,7 @@ class AlertController
      * GET /api/v1/alerts/logs
      * List alert logs with pagination and status filter.
      */
-    public function logs(Request $request): \Webman\Http\Response
+    public function logs(Request $request): Webman\Http\Response
     {
         $tenantId = $request->tenantId ?? 1;
         $query = AlertLog::byTenant($tenantId);
@@ -165,7 +169,7 @@ class AlertController
      * POST /api/v1/alerts/logs/{id}/acknowledge
      * Acknowledge an alert log.
      */
-    public function acknowledge(Request $request, int $id): \Webman\Http\Response
+    public function acknowledge(Request $request, int $id): Webman\Http\Response
     {
         $tenantId = $request->tenantId ?? 1;
         $log = AlertLog::byTenant($tenantId)->find($id);
@@ -187,7 +191,7 @@ class AlertController
      * GET /api/v1/alerts/unread-count
      * Get count of triggered (unread) alerts.
      */
-    public function unreadCount(Request $request): \Webman\Http\Response
+    public function unreadCount(Request $request): Webman\Http\Response
     {
         $tenantId = $request->tenantId ?? 1;
         $count = AlertLog::byTenant($tenantId)->triggered()->count();

@@ -1,4 +1,8 @@
 <?php
+/**
+ * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+ */
+
 namespace plugin\ads_api\controller;
 
 use plugin\ads_account\model\PlatformAccount;
@@ -7,7 +11,7 @@ use app\support\ApiResponse;
 
 class AccountController
 {
-    public function index(Request $request): \Webman\Http\Response
+    public function index(Request $request): Webman\Http\Response
     {
         $query = PlatformAccount::query()
             ->where('tenant_id', $request->tenantId ?? 1);
@@ -27,20 +31,20 @@ class AccountController
         );
     }
 
-    public function show(int $id): \Webman\Http\Response
+    public function show(int $id): Webman\Http\Response
     {
         $account = PlatformAccount::findOrFail($id);
         return ApiResponse::success($account);
     }
 
-    public function destroy(int $id): \Webman\Http\Response
+    public function destroy(int $id): Webman\Http\Response
     {
         $account = PlatformAccount::findOrFail($id);
         $account->update(['status' => 0]);
         return ApiResponse::success(null, 'Account disabled');
     }
 
-    public function sync(Request $request, int $id): \Webman\Http\Response
+    public function sync(Request $request, int $id): Webman\Http\Response
     {
         $account = PlatformAccount::findOrFail($id);
         $account->update(['last_sync_at' => now()]);

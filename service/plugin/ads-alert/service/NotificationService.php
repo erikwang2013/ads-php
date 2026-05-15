@@ -1,4 +1,8 @@
 <?php
+/**
+ * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+ */
+
 namespace plugin\ads_alert\service;
 
 use plugin\ads_alert\model\AlertLog;
@@ -44,7 +48,7 @@ class NotificationService
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             // notifications table may not exist yet — silently skip
             echo "Web notification insert failed: {$e->getMessage()}\n";
         }
@@ -88,7 +92,7 @@ class NotificationService
                 'timestamp'    => now()->toDateTimeString(),
             ], JSON_UNESCAPED_UNICODE);
             $redis->publish('alert:new', $payload);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             // Redis might not be configured — silently skip
             echo "Redis publish failed: {$e->getMessage()}\n";
         }

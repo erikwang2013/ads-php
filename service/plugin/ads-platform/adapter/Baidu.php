@@ -1,4 +1,8 @@
 <?php
+/**
+ * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+ */
+
 namespace plugin\ads_platform\adapter;
 
 use plugin\ads_platform\src\{
@@ -91,7 +95,7 @@ class Baidu implements PlatformAdapter
 
     // ── Campaigns ─────────────────────────────────────────────
 
-    public function fetchCampaigns(string $accessToken, string $accountId): \Generator
+    public function fetchCampaigns(string $accessToken, string $accountId): Generator
     {
         $mapping  = $this->campaignFieldMapping();
         $pageNum  = 0;
@@ -113,7 +117,7 @@ class Baidu implements PlatformAdapter
 
     // ── AdGroups ──────────────────────────────────────────────
 
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator
     {
         $mapping = $this->adgroupFieldMapping();
         $pageNum = 0;
@@ -136,7 +140,7 @@ class Baidu implements PlatformAdapter
 
     // ── Creatives ─────────────────────────────────────────────
 
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator
     {
         $mapping = $this->creativeFieldMapping();
         $pageNum = 0;
@@ -159,7 +163,7 @@ class Baidu implements PlatformAdapter
 
     // ── Reports (async: create → poll → fetch) ────────────────
 
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator
     {
         $mapping = $this->reportFieldMapping();
 
@@ -173,7 +177,7 @@ class Baidu implements PlatformAdapter
         ], $accessToken);
         $reportId = $createResp['body']['data']['reportId'] ?? '';
         if (!$reportId) {
-            throw new \RuntimeException('Baidu report: failed to create report job');
+            throw new RuntimeException('Baidu report: failed to create report job');
         }
 
         // Step 2 – poll until completed (max 60 s)
@@ -186,12 +190,12 @@ class Baidu implements PlatformAdapter
             ], $accessToken);
             $status = $statusResp['body']['data']['status'] ?? 'failed';
             if ($status === 'failed') {
-                throw new \RuntimeException('Baidu report: report job failed');
+                throw new RuntimeException('Baidu report: report job failed');
             }
             $maxRetries--;
         }
         if ($status !== 'completed') {
-            throw new \RuntimeException('Baidu report: report job timed out');
+            throw new RuntimeException('Baidu report: report job timed out');
         }
 
         // Step 3 – pull data (paginated)
@@ -353,18 +357,18 @@ class Baidu implements PlatformAdapter
             $error = curl_error($ch);
             $errno = curl_errno($ch);
             curl_close($ch);
-            throw new \RuntimeException("Baidu OAuth network error [{$errno}]: {$error}");
+            throw new RuntimeException("Baidu OAuth network error [{$errno}]: {$error}");
         }
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
         $decoded = json_decode($body, true);
         if (!is_array($decoded)) {
-            throw new \RuntimeException('Baidu OAuth: invalid JSON response');
+            throw new RuntimeException('Baidu OAuth: invalid JSON response');
         }
         if ($httpCode !== 200 || (isset($decoded['error']) && $decoded['error'])) {
             $desc = $decoded['error_description'] ?? $decoded['error'] ?? "HTTP {$httpCode}";
-            throw new \RuntimeException('Baidu OAuth error: ' . $desc);
+            throw new RuntimeException('Baidu OAuth error: ' . $desc);
         }
         return $decoded;
     }
@@ -406,14 +410,14 @@ class Baidu implements PlatformAdapter
             $error = curl_error($ch);
             $errno = curl_errno($ch);
             curl_close($ch);
-            throw new \RuntimeException("Baidu API network error [{$errno}]: {$error}");
+            throw new RuntimeException("Baidu API network error [{$errno}]: {$error}");
         }
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
         $decoded = json_decode($body, true);
         if (!is_array($decoded)) {
-            throw new \RuntimeException('Baidu API: invalid JSON response');
+            throw new RuntimeException('Baidu API: invalid JSON response');
         }
 
         // Baidu error envelope: {header: {errorCode: ...}, body: {}}
@@ -421,7 +425,7 @@ class Baidu implements PlatformAdapter
         $errorCode = $header['errorCode'] ?? 0;
         if ($httpCode !== 200 || $errorCode !== 0) {
             $errorMsg = $header['errorMsg'] ?? "HTTP {$httpCode}";
-            throw new \RuntimeException('Baidu API error [code ' . $errorCode . ']: ' . $errorMsg);
+            throw new RuntimeException('Baidu API error [code ' . $errorCode . ']: ' . $errorMsg);
         }
         return $decoded;
     }

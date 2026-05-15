@@ -1,4 +1,8 @@
 <?php
+/**
+ * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+ */
+
 namespace plugin\ads_platform\adapter;
 
 use plugin\ads_platform\src\{
@@ -104,7 +108,7 @@ class Youku implements PlatformAdapter
 
     // ── Campaigns ─────────────────────────────────────────────
 
-    public function fetchCampaigns(string $accessToken, string $accountId): \Generator
+    public function fetchCampaigns(string $accessToken, string $accountId): Generator
     {
         $mapping = $this->campaignFieldMapping();
         $page    = 1;
@@ -124,21 +128,21 @@ class Youku implements PlatformAdapter
 
     // ── AdGroups ──────────────────────────────────────────────
 
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator
     {
         yield from [];
     }
 
     // ── Creatives ─────────────────────────────────────────────
 
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator
     {
         yield from [];
     }
 
     // ── Reports ───────────────────────────────────────────────
 
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator
     {
         $mapping = $this->reportFieldMapping();
         $page    = 1;
@@ -258,18 +262,18 @@ class Youku implements PlatformAdapter
             $error = curl_error($ch);
             $errno = curl_errno($ch);
             curl_close($ch);
-            throw new \RuntimeException("Youku OAuth network error [{$errno}]: {$error}");
+            throw new RuntimeException("Youku OAuth network error [{$errno}]: {$error}");
         }
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
         $decoded = json_decode($body, true);
         if (!is_array($decoded)) {
-            throw new \RuntimeException('Youku OAuth: invalid JSON response');
+            throw new RuntimeException('Youku OAuth: invalid JSON response');
         }
         if ($httpCode !== 200 || isset($decoded['error'])) {
             $desc = $decoded['error_description'] ?? $decoded['error'] ?? "HTTP {$httpCode}";
-            throw new \RuntimeException('Youku OAuth error: ' . $desc);
+            throw new RuntimeException('Youku OAuth error: ' . $desc);
         }
         return $decoded;
     }
@@ -311,20 +315,20 @@ class Youku implements PlatformAdapter
             $error = curl_error($ch);
             $errno = curl_errno($ch);
             curl_close($ch);
-            throw new \RuntimeException("Youku API network error [{$errno}]: {$error}");
+            throw new RuntimeException("Youku API network error [{$errno}]: {$error}");
         }
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
         $decoded = json_decode($body, true);
         if (!is_array($decoded)) {
-            throw new \RuntimeException('Youku API: invalid JSON response');
+            throw new RuntimeException('Youku API: invalid JSON response');
         }
         if ($httpCode !== 200 || isset($decoded['error_response'])) {
             $err  = $decoded['error_response'] ?? [];
             $desc = ($err['msg'] ?? $err['message'] ?? '') ?: "HTTP {$httpCode}";
             $code = $err['code'] ?? 0;
-            throw new \RuntimeException("Youku API error [code {$code}]: {$desc}");
+            throw new RuntimeException("Youku API error [code {$code}]: {$desc}");
         }
         return $decoded;
     }

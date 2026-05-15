@@ -1,8 +1,11 @@
 <?php
+/**
+ * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+ */
+
 namespace plugin\ads_api\middleware;
 
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
+use Erikwang2013\JwtWebman\Jwt;
 use Webman\Http\Request;
 use Webman\Http\Response;
 use Webman\MiddlewareInterface;
@@ -18,10 +21,10 @@ class AuthMiddleware implements MiddlewareInterface
 
         $token = substr($header, 7);
         try {
-            $payload = JWT::decode($token, new Key(config('app.jwt.secret'), 'HS256'));
-            $request->userId = $payload->uid;
-            $request->tenantId = $payload->tid ?? 1;
-        } catch (\Throwable $e) {
+            $payload = Jwt::verify($token);
+            $request->userId = $payload['uid'];
+            $request->tenantId = $payload['tid'] ?? 1;
+        } catch (Throwable $e) {
             return new Response(401, ['Content-Type' => 'application/json'], json_encode(['code' => 401, 'message' => 'Token invalid or expired'], JSON_UNESCAPED_UNICODE));
         }
 

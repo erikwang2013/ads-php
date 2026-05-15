@@ -1,4 +1,8 @@
 <?php
+/**
+ * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+ */
+
 use plugin\ads_platform\src\AdapterRegistry;
 use plugin\ads_platform\adapter\Juliang;
 use plugin\ads_platform\adapter\Baidu;

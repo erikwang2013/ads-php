@@ -1,4 +1,8 @@
 <?php
+/**
+ * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+ */
+
 namespace plugin\ads_task\task;
 
 use plugin\ads_account\model\PlatformAccount;
@@ -85,7 +89,7 @@ class DataSyncTask
                 $account->update(['last_sync_at' => now()]);
                 echo "  Done.\n";
 
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 echo "  Failed: {$e->getMessage()}\n";
             }
         }

@@ -1,10 +1,14 @@
 <?php
 /**
+ * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+ */
+
+/**
  * Per-worker bootstrap for ads-php.
  * Called by support\App::run() in each worker process.
  */
 
-use Dotenv\Dotenv;
+use DotenvDotenv;
 use support\Log;
 use Webman\Bootstrap;
 use Webman\Config;

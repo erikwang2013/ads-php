@@ -1,4 +1,8 @@
 <?php
+/**
+ * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+ */
+
 namespace plugin\ads_platform\adapter;
 
 use plugin\ads_platform\src\{
@@ -118,7 +122,7 @@ class Google implements PlatformAdapter
 
     // ── Campaigns ─────────────────────────────────────────────
 
-    public function fetchCampaigns(string $accessToken, string $accountId): \Generator
+    public function fetchCampaigns(string $accessToken, string $accountId): Generator
     {
         $mapping = $this->campaignFieldMapping();
         $query   = 'SELECT campaign.id, campaign.name, campaign.status, campaign_budget.amount_micros FROM campaign';
@@ -135,14 +139,14 @@ class Google implements PlatformAdapter
 
     // ── AdGroups ──────────────────────────────────────────────
 
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator
     {
         yield from [];
     }
 
     // ── Creatives ─────────────────────────────────────────────
 
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator
     {
         $mapping   = $this->creativeFieldMapping();
         $query     = 'SELECT ad_group_ad.ad.id, ad_group_ad.ad.name, ad_group_ad.status FROM ad_group_ad';
@@ -159,7 +163,7 @@ class Google implements PlatformAdapter
 
     // ── Reports ───────────────────────────────────────────────
 
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator
     {
         $mapping   = $this->reportFieldMapping();
         $query     = $this->buildReportQuery($req);
@@ -326,18 +330,18 @@ class Google implements PlatformAdapter
             $error = curl_error($ch);
             $errno = curl_errno($ch);
             curl_close($ch);
-            throw new \RuntimeException("Google OAuth network error [{$errno}]: {$error}");
+            throw new RuntimeException("Google OAuth network error [{$errno}]: {$error}");
         }
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
         $decoded = json_decode($body, true);
         if (!is_array($decoded)) {
-            throw new \RuntimeException('Google OAuth: invalid JSON response');
+            throw new RuntimeException('Google OAuth: invalid JSON response');
         }
         if ($httpCode !== 200 || isset($decoded['error'])) {
             $desc = $decoded['error_description'] ?? $decoded['error'] ?? "HTTP {$httpCode}";
-            throw new \RuntimeException('Google OAuth error: ' . $desc);
+            throw new RuntimeException('Google OAuth error: ' . $desc);
         }
         return $decoded;
     }
@@ -387,20 +391,20 @@ class Google implements PlatformAdapter
             $error = curl_error($ch);
             $errno = curl_errno($ch);
             curl_close($ch);
-            throw new \RuntimeException("Google Ads API network error [{$errno}]: {$error}");
+            throw new RuntimeException("Google Ads API network error [{$errno}]: {$error}");
         }
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
         $decoded = json_decode($respBody, true);
         if (!is_array($decoded)) {
-            throw new \RuntimeException('Google Ads API: invalid JSON response');
+            throw new RuntimeException('Google Ads API: invalid JSON response');
         }
         if ($httpCode !== 200 || isset($decoded['error'])) {
             $err  = $decoded['error'] ?? [];
             $desc = $err['message'] ?? "HTTP {$httpCode}";
             $code = $err['code'] ?? 0;
-            throw new \RuntimeException("Google Ads API error [code {$code}]: {$desc}");
+            throw new RuntimeException("Google Ads API error [code {$code}]: {$desc}");
         }
         return $decoded;
     }
@@ -432,20 +436,20 @@ class Google implements PlatformAdapter
             $error = curl_error($ch);
             $errno = curl_errno($ch);
             curl_close($ch);
-            throw new \RuntimeException("Google Ads mutate network error [{$errno}]: {$error}");
+            throw new RuntimeException("Google Ads mutate network error [{$errno}]: {$error}");
         }
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
         $decoded = json_decode($respBody, true);
         if (!is_array($decoded)) {
-            throw new \RuntimeException('Google Ads mutate: invalid JSON response');
+            throw new RuntimeException('Google Ads mutate: invalid JSON response');
         }
         if ($httpCode !== 200 || isset($decoded['error'])) {
             $err  = $decoded['error'] ?? [];
             $desc = $err['message'] ?? "HTTP {$httpCode}";
             $code = $err['code'] ?? 0;
-            throw new \RuntimeException("Google Ads mutate error [code {$code}]: {$desc}");
+            throw new RuntimeException("Google Ads mutate error [code {$code}]: {$desc}");
         }
         return $decoded;
     }

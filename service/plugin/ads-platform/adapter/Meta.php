@@ -1,4 +1,8 @@
 <?php
+/**
+ * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+ */
+
 namespace plugin\ads_platform\adapter;
 
 use plugin\ads_platform\src\{
@@ -59,13 +63,13 @@ class Meta implements PlatformAdapter
         if ($body === false) {
             $error = curl_error($ch);
             curl_close($ch);
-            throw new \RuntimeException('Meta OAuth network error: ' . $error);
+            throw new RuntimeException('Meta OAuth network error: ' . $error);
         }
         curl_close($ch);
 
         $data = json_decode($body, true);
         if (!isset($data['access_token'])) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 'Meta OAuth error: ' . ($data['error']['message'] ?? 'unknown')
             );
         }
@@ -118,7 +122,7 @@ class Meta implements PlatformAdapter
         if ($body === false) {
             $error = curl_error($ch);
             curl_close($ch);
-            throw new \RuntimeException('Meta token refresh network error: ' . $error);
+            throw new RuntimeException('Meta token refresh network error: ' . $error);
         }
         curl_close($ch);
 
@@ -150,7 +154,7 @@ class Meta implements PlatformAdapter
 
     // ── Campaigns ─────────────────────────────────────────────
 
-    public function fetchCampaigns(string $accessToken, string $accountId): \Generator
+    public function fetchCampaigns(string $accessToken, string $accountId): Generator
     {
         $mapping = $this->campaignFieldMapping();
         $urlPath = $accountId . '/campaigns';
@@ -175,7 +179,7 @@ class Meta implements PlatformAdapter
 
     // ── AdGroups (AdSets in Meta) ─────────────────────────────
 
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator
     {
         $mapping = $this->adgroupFieldMapping();
         $urlPath = $accountId . '/adsets';
@@ -204,7 +208,7 @@ class Meta implements PlatformAdapter
 
     // ── Creatives (Ads in Meta) ───────────────────────────────
 
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator
     {
         $mapping = $this->creativeFieldMapping();
         $urlPath = $accountId . '/ads';
@@ -232,7 +236,7 @@ class Meta implements PlatformAdapter
 
     // ── Reports (Insights) ────────────────────────────────────
 
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator
     {
         $mapping = $this->reportFieldMapping();
         $urlPath = $accountId . '/insights';
@@ -426,18 +430,18 @@ class Meta implements PlatformAdapter
             $error = curl_error($ch);
             $errno = curl_errno($ch);
             curl_close($ch);
-            throw new \RuntimeException("Meta API network error [{$errno}]: {$error}");
+            throw new RuntimeException("Meta API network error [{$errno}]: {$error}");
         }
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
         $decoded = json_decode($body, true);
         if (!is_array($decoded)) {
-            throw new \RuntimeException('Meta API: invalid JSON response');
+            throw new RuntimeException('Meta API: invalid JSON response');
         }
         if ($httpCode >= 400 || isset($decoded['error'])) {
             $msg = $decoded['error']['message'] ?? $decoded['error']['error_user_msg'] ?? "HTTP {$httpCode}";
-            throw new \RuntimeException('Meta API error: ' . $msg);
+            throw new RuntimeException('Meta API error: ' . $msg);
         }
         return $decoded;
     }

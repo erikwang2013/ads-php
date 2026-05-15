@@ -1,4 +1,8 @@
 <?php
+/**
+ * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+ */
+
 namespace plugin\ads_platform\adapter;
 
 use plugin\ads_platform\src\{
@@ -65,18 +69,18 @@ class Pinterest implements PlatformAdapter
             $error = curl_error($ch);
             $errno = curl_errno($ch);
             curl_close($ch);
-            throw new \RuntimeException("Pinterest OAuth network error [{$errno}]: {$error}");
+            throw new RuntimeException("Pinterest OAuth network error [{$errno}]: {$error}");
         }
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
         $decoded = json_decode($body, true);
         if (!is_array($decoded)) {
-            throw new \RuntimeException('Pinterest OAuth: invalid JSON response');
+            throw new RuntimeException('Pinterest OAuth: invalid JSON response');
         }
         if ($httpCode !== 200 || isset($decoded['message'])) {
             $desc = $decoded['message'] ?? "HTTP {$httpCode}";
-            throw new \RuntimeException('Pinterest OAuth error: ' . $desc);
+            throw new RuntimeException('Pinterest OAuth error: ' . $desc);
         }
 
         return [
@@ -112,7 +116,7 @@ class Pinterest implements PlatformAdapter
             $error = curl_error($ch);
             $errno = curl_errno($ch);
             curl_close($ch);
-            throw new \RuntimeException("Pinterest OAuth network error [{$errno}]: {$error}");
+            throw new RuntimeException("Pinterest OAuth network error [{$errno}]: {$error}");
         }
         curl_close($ch);
 
@@ -164,7 +168,7 @@ class Pinterest implements PlatformAdapter
 
     // ── Campaigns ─────────────────────────────────────────────
 
-    public function fetchCampaigns(string $accessToken, string $accountId): \Generator
+    public function fetchCampaigns(string $accessToken, string $accountId): Generator
     {
         $mapping  = $this->campaignFieldMapping();
         $urlPath  = "ad_accounts/{$accountId}/campaigns";
@@ -186,7 +190,7 @@ class Pinterest implements PlatformAdapter
 
     // ── AdGroups ──────────────────────────────────────────────
 
-    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): \Generator
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator
     {
         $mapping  = $this->adgroupFieldMapping();
         $urlPath  = "ad_accounts/{$accountId}/ad_groups";
@@ -211,7 +215,7 @@ class Pinterest implements PlatformAdapter
 
     // ── Creatives ─────────────────────────────────────────────
 
-    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator
     {
         $mapping  = $this->creativeFieldMapping();
         $urlPath  = "ad_accounts/{$accountId}/ads";
@@ -236,7 +240,7 @@ class Pinterest implements PlatformAdapter
 
     // ── Reports (Analytics) ───────────────────────────────────
 
-    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): \Generator
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator
     {
         $mapping  = $this->reportFieldMapping();
         $urlPath  = "ad_accounts/{$accountId}/analytics";
@@ -426,18 +430,18 @@ class Pinterest implements PlatformAdapter
             $error = curl_error($ch);
             $errno = curl_errno($ch);
             curl_close($ch);
-            throw new \RuntimeException("Pinterest API network error [{$errno}]: {$error}");
+            throw new RuntimeException("Pinterest API network error [{$errno}]: {$error}");
         }
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
         $decoded = json_decode($body, true);
         if (!is_array($decoded)) {
-            throw new \RuntimeException('Pinterest API: invalid JSON response');
+            throw new RuntimeException('Pinterest API: invalid JSON response');
         }
         if ($httpCode >= 400 || isset($decoded['message'])) {
             $msg = $decoded['message'] ?? "HTTP {$httpCode}";
-            throw new \RuntimeException('Pinterest API error: ' . $msg);
+            throw new RuntimeException('Pinterest API error: ' . $msg);
         }
         return $decoded;
     }

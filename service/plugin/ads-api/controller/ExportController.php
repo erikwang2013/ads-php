@@ -1,4 +1,8 @@
 <?php
+/**
+ * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+ */
+
 namespace plugin\ads_api\controller;
 
 use plugin\ads_report\service\ReportExporter;
@@ -25,7 +29,7 @@ class ExportController
 
             // Read file into response
             return (new Response())->file($filePath, $filename);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return ApiResponse::error('导出失败: ' . $e->getMessage());
         }
     }
