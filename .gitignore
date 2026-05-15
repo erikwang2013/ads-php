@@ -1,0 +1,15 @@
+/runtime
+/.idea
+/.vscode
+/vendor
+*.log
+.env
+/tests/tmp
+/tests/.phpunit.result.cache
+/composer.lock
+/.cursor
+/.claude
+/service/vendor
+/admin/vendor
+/service/composer.lock
+/admin/composer.lock
