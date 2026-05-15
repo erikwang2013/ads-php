@@ -26,6 +26,9 @@ use plugin\ads_platform\adapter\Pinterest;
 use plugin\ads_platform\adapter\Tiktok;
 use plugin\ads_platform\adapter\Twitter;
 use plugin\ads_platform\adapter\Youtube;
+use plugin\ads_platform\adapter\Jingdong;
+use plugin\ads_platform\adapter\Pinduoduo;
+use plugin\ads_platform\adapter\Google;
 
 AdapterRegistry::register(new Juliang());
 AdapterRegistry::register(new Baidu());
@@ -53,3 +56,6 @@ AdapterRegistry::register(new Linkedin());
 AdapterRegistry::register(new Snapchat());
 AdapterRegistry::register(new Pinterest());
 AdapterRegistry::register(new Twitter());
+AdapterRegistry::register(new Jingdong());
+AdapterRegistry::register(new Pinduoduo());
+AdapterRegistry::register(new Google());
