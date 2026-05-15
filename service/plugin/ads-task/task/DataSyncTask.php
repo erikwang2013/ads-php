@@ -8,6 +8,7 @@ namespace plugin\ads_task\task;
 use plugin\ads_account\model\PlatformAccount;
 use plugin\ads_platform\src\AdapterRegistry;
 use plugin\ads_platform\src\ReportRequest;
+use erik\support\CacheService;
 use Illuminate\Database\Capsule\Manager as DB;
 
 class DataSyncTask
@@ -85,6 +86,9 @@ class DataSyncTask
                         ]
                     );
                 }
+
+                // Flush cached dashboard on fresh data
+                CacheService::flush('cache:dashboard:');
 
                 $account->update(['last_sync_at' => now()]);
                 echo "  Done.\n";

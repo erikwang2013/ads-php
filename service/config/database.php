@@ -32,6 +32,27 @@ return [
 
             // Table prefix (empty = no prefix)
             'prefix'    => '',
+
+            // Connection pooling: enable persistent connections to avoid
+            // per-request handshake overhead under high concurrency.
+            'persistent' => env('DB_PERSISTENT', false),
+
+            // Connection timeout in seconds — keep low so report queries
+            // fail fast rather than piling up under heavy dashboard load.
+            'timeout'    => (int) env('DB_TIMEOUT', 3),
+
+            // PDO options for performance tuning
+            'options' => [
+                // Buffer entire result sets on fetch to reduce network round-trips
+                \PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
+
+                // Run init commands on every new connection (SET NAMES, timezone, etc.)
+                \PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'utf8mb4', time_zone='+00:00'",
+
+                // Let MySQL's query cache do its work — don't add PDO-level statement caching
+                // (performance tests show statement caching hurts more than it helps with webman's
+                // per-request worker model)
+            ],
         ],
     ],
 ];
