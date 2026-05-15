@@ -16,7 +16,7 @@ class CampaignData
     public static function fromArray(array $data): self
     {
         return new self(
-            name:        $data['name'],
+            name:        $data['name'] ?? '',
             dailyBudget: (int) ($data['daily_budget'] ?? 0),
             totalBudget: isset($data['total_budget']) ? (int) $data['total_budget'] : null,
             startDate:   $data['start_date'] ?? null,

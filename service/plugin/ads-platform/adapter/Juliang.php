@@ -90,8 +90,7 @@ class Juliang implements PlatformAdapter
             foreach ($list as $row) {
                 yield $mapping->map($row);
             }
-            $pageInfo = $resp['data']['page_info'] ?? [];
-            $hasMore = $page > 1 ? ($page <= ($pageInfo['total_page'] ?? 0)) : !empty($list);
+            $hasMore = !empty($list);
             $page++;
         } while ($hasMore);
     }
@@ -103,6 +102,8 @@ class Juliang implements PlatformAdapter
 
     public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): \Generator
     {
+        // Note: Juliang API creative/get doesn't filter by ad_group_id natively;
+        // all creatives for the advertiser are fetched
         $mapping = $this->creativeFieldMapping();
         $page = 1;
         do {
@@ -115,8 +116,7 @@ class Juliang implements PlatformAdapter
             foreach ($list as $row) {
                 yield $mapping->map($row);
             }
-            $pageInfo = $resp['data']['page_info'] ?? [];
-            $hasMore = $page > 1 ? ($page <= ($pageInfo['total_page'] ?? 0)) : !empty($list);
+            $hasMore = !empty($list);
             $page++;
         } while ($hasMore);
     }
@@ -138,8 +138,7 @@ class Juliang implements PlatformAdapter
             foreach ($list as $row) {
                 yield $mapping->map($row);
             }
-            $pageInfo = $resp['data']['page_info'] ?? [];
-            $hasMore = $page > 1 ? ($page <= ($pageInfo['total_page'] ?? 0)) : !empty($list);
+            $hasMore = !empty($list);
             $page++;
         } while ($hasMore);
     }
@@ -157,12 +156,15 @@ class Juliang implements PlatformAdapter
 
     public function updateCampaign(string $accessToken, string $accountId, string $platformId, CampaignData $data): void
     {
-        $this->request('POST', '2/campaign/update/', array_filter([
+        $params = [
             'advertiser_id' => (int) $accountId,
             'campaign_id'   => $platformId,
             'campaign_name' => $data->name,
-            'budget'        => $data->dailyBudget > 0 ? $data->dailyBudget / 100 : null,
-        ]), $accessToken);
+        ];
+        if ($data->dailyBudget > 0) {
+            $params['budget'] = $data->dailyBudget / 100;
+        }
+        $this->request('POST', '2/campaign/update/', $params, $accessToken);
     }
 
     public function toggleCampaign(string $accessToken, string $accountId, string $platformId, bool $enabled): void
@@ -248,12 +250,18 @@ class Juliang implements PlatformAdapter
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params, JSON_UNESCAPED_UNICODE));
         }
         curl_setopt_array($ch, [
-            CURLOPT_URL            => $url,
-            CURLOPT_HTTPHEADER     => array_map(fn($k, $v) => "$k: $v", array_keys($headers), $headers),
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT        => 30,
+            CURLOPT_URL               => $url,
+            CURLOPT_HTTPHEADER        => array_map(fn($k, $v) => "$k: $v", array_keys($headers), $headers),
+            CURLOPT_RETURNTRANSFER    => true,
+            CURLOPT_TIMEOUT           => 30,
+            CURLOPT_CONNECTTIMEOUT    => 10,
         ]);
         $body = curl_exec($ch);
+        if ($body === false) {
+            $error = curl_error($ch);
+            curl_close($ch);
+            throw new \RuntimeException('Juliang API network error: ' . $error);
+        }
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
