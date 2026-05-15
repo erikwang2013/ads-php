@@ -5,6 +5,7 @@ use plugin\ads_api\controller\PlatformController;
 use plugin\ads_api\controller\AccountController;
 use plugin\ads_api\controller\CampaignController;
 use plugin\ads_api\controller\DashboardController;
+use plugin\ads_api\controller\ReportController;
 
 // Public routes
 \Webman\Route::post('/api/v1/auth/login', [AuthController::class, 'login']);
@@ -29,4 +30,5 @@ use plugin\ads_api\controller\DashboardController;
     \Webman\Route::post('/campaigns/{id:\d+}/toggle', [CampaignController::class, 'toggle']);
 
     \Webman\Route::get('/reports/summary', [DashboardController::class, 'summary']);
+    \Webman\Route::get('/reports/custom', [ReportController::class, 'custom']);
 })->middleware([AuthMiddleware::class]);
