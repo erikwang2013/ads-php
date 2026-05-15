@@ -6,6 +6,7 @@ use plugin\ads_api\controller\AccountController;
 use plugin\ads_api\controller\CampaignController;
 use plugin\ads_api\controller\DashboardController;
 use plugin\ads_api\controller\ReportController;
+use plugin\ads_api\controller\AlertController;
 
 // Public routes
 \Webman\Route::post('/api/v1/auth/login', [AuthController::class, 'login']);
@@ -31,4 +32,12 @@ use plugin\ads_api\controller\ReportController;
 
     \Webman\Route::get('/reports/summary', [DashboardController::class, 'summary']);
     \Webman\Route::get('/reports/custom', [ReportController::class, 'custom']);
+
+    \Webman\Route::get('/alerts/rules', [AlertController::class, 'rules']);
+    \Webman\Route::post('/alerts/rules', [AlertController::class, 'createRule']);
+    \Webman\Route::put('/alerts/rules/{id:\d+}', [AlertController::class, 'updateRule']);
+    \Webman\Route::delete('/alerts/rules/{id:\d+}', [AlertController::class, 'deleteRule']);
+    \Webman\Route::get('/alerts/logs', [AlertController::class, 'logs']);
+    \Webman\Route::post('/alerts/logs/{id:\d+}/acknowledge', [AlertController::class, 'acknowledge']);
+    \Webman\Route::get('/alerts/unread-count', [AlertController::class, 'unreadCount']);
 })->middleware([AuthMiddleware::class]);
