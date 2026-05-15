@@ -1,12 +1,15 @@
 # 多平台广告管理系统设计
 
+Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+
 ## 概述
 
-对接巨量引擎、京东广告、淘宝广告、拼多多广告、百度广告、谷歌广告、YouTube广告、TikTok广告等国内外广告厂商的统一广告管理平台。
+对接 **29 个广告平台** 的统一广告管理平台，覆盖国内外主流广告厂商，支持广告投放管理、跨平台数据报表、实时告警监控。
 
-- **服务端**：webman v2（PHP 8.2+）
-- **管理后台**：webman-admin v2（Vue3 + TypeScript + Element Plus）
-- **App**：Flutter（iOS / Android / Web/PC 响应式）+ HarmonyOS（ArkTS + ArkUI）
+- **服务端**: webman v2 (PHP 8.2+)
+- **管理后台**: webman-admin v2 (Vue 3 + TypeScript + Element Plus + ECharts 5)
+- **App**: Flutter (iOS/Android/Web PC 响应式) + HarmonyOS (ArkTS + ArkUI)
+- **基础设施**: Docker + Nginx + MySQL 8.0 + Redis 7 + Elasticsearch
 
 业务场景覆盖自用投放、SaaS 多租户、代运营三种模式。
 
@@ -15,94 +18,137 @@
 ## 总体架构
 
 ```
-┌─────────────────────────────────────────────────────┐
-│                    Client Layer                       │
-│  ┌──────────┐  ┌──────────┐  ┌──────────────────┐   │
-│  │ Flutter  │  │ HarmonyOS│  │ webman-admin v2  │   │
-│  │   App    │  │   App    │  │   (Vue3+TS)      │   │
-│  └────┬─────┘  └────┬─────┘  └────────┬─────────┘   │
-└───────┼──────────────┼────────────────┼─────────────┘
+┌──────────────────────────────────────────────────────────┐
+│                     Client Layer                          │
+│  ┌──────────┐  ┌──────────┐  ┌──────────────────┐       │
+│  │ Flutter  │  │HarmonyOS │  │ webman-admin v2  │       │
+│  │ App (PC) │  │   App    │  │ (Vue3+TS+Element)│       │
+│  └────┬─────┘  └────┬─────┘  └────────┬─────────┘       │
+└───────┼──────────────┼────────────────┼─────────────────┘
         │              │                │
         └──────────────┼────────────────┘
-                       │ HTTP/WebSocket
-               ┌───────┴────────┐
-               │   API Gateway   │
-               │  (webman v2)   │
-               └───────┬────────┘
+                       │ HTTP (hashids ID + JWT + encryption)
+           ┌───────────┴───────────┐
+           │  Middleware Pipeline   │
+           │  CORS → RateLimit →   │
+           │  SQLGuard → Valid →   │
+           │  Encryption → Tenant  │
+           └───────────┬───────────┘
                        │
-        ┌──────────────┼──────────────┐
-        │              │              │
-   ┌────┴────┐   ┌────┴────┐   ┌────┴────┐
-   │ Tenant  │   │  Auth   │   │  Rate   │
-   │Resolver │   │ Service │   │ Limiter │
-   └────┬────┘   └────┬────┘   └────┬────┘
-        │              │              │
-   ┌────┴──────────────┴──────────────┴────┐
-   │            Service Layer               │
-   │  ┌──────────┐ ┌──────┐ ┌──────────┐  │
-   │  │ Campaign │ │Report│ │Account   │  │
-   │  │ Manager  │ │Engine│ │Manager   │  │
-   │  └────┬─────┘ └──┬───┘ └────┬─────┘  │
-   │       └──────────┼──────────┘         │
-   │          ┌───────┴────────┐           │
-   │          │ Platform       │           │
-   │          │ Adapter Layer  │           │
-   │          └───────┬────────┘           │
-   └──────────────────┼────────────────────┘
-                      │
-   ┌──────────────────┼────────────────────┐
-   │       Platform Adapters               │
-   │  ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐     │
-   │  │巨量 │ │百度 │ │淘宝 │ │Google│ ... │
-   │  │引擎 │ │广告 │ │广告 │ │ Ads │     │
-   │  └──┬──┘ └──┬──┘ └──┬──┘ └──┬──┘     │
-   └─────┼───────┼───────┼───────┼─────────┘
-         │       │       │       │
-    外部广告平台 APIs
+    ┌──────────────────┼──────────────────┐
+    │            Service Layer             │
+    │  ┌──────────┐ ┌──────┐ ┌──────────┐ │
+    │  │ Campaign │ │Report│ │  Alert   │ │
+    │  │ Manager  │ │Engine│ │  Engine  │ │
+    │  └────┬─────┘ └──┬───┘ └────┬─────┘ │
+    │       └──────────┼──────────┘        │
+    │          ┌───────┴────────┐          │
+    │          │ Platform       │          │
+    │          │ Adapter Layer  │          │
+    │          │ (29 adapters)  │          │
+    │          └───────┬────────┘          │
+    └──────────────────┼───────────────────┘
+                       │
+    ┌──────────────────┼───────────────────┐
+    │       Platform Adapters (29)         │
+    │  国内16: Juliang/Baidu/Taobao/...    │
+    │  国际13: Google/Meta/TikTok/...       │
+    └──────────────────┼───────────────────┘
+                       │
+              外部广告平台 APIs
 ```
 
 ---
 
 ## 一、服务端模块拆解
 
-webman v2 使用插件机制，`service/plugin/` 下划分：
+webman v2 插件化架构，`service/plugin/` 下 7 个插件：
 
 ```
 service/
+├── config/                     # 配置（带注释）
+│   ├── app.php, database.php, redis.php
+│   ├── middleware.php, server.php
+│   ├── log.php, container.php, scout.php
+├── support/                    # Erik Stack 工具类
+│   ├── ApiResponse.php         # 统一 JSON 响应（含 hashids ID 编码）
+│   ├── SnowflakeTrait.php      # 分布式 ID 生成
+│   ├── HashidsService.php      # API ID 加解密
+│   ├── CacheService.php        # Redis 缓存层
+│   └── QueryOptimizer.php      # SQL 优化器
 ├── plugin/
-│   ├── ads-tenant/          # 多租户管理
-│   │   ├── config/plugin.php, database.php
-│   │   ├── model/Tenant.php, TenantDatabase.php
-│   │   └── middleware/TenantIdentify.php
+│   ├── ads-tenant/             # 多租户管理
+│   │   ├── model/Tenant.php
+│   │   ├── middleware/TenantIdentify.php
+│   │   └── migration/create_tenants.sql
 │   │
-│   ├── ads-account/         # 广告账户 & 授权
+│   ├── ads-account/            # 广告账户 & OAuth 授权（含 encryptable 加密）
 │   │   ├── model/PlatformAccount.php, AuthToken.php
-│   │   └── service/OAuthService.php
+│   │   ├── service/OAuthService.php
+│   │   └── migration/create_platform_accounts.sql
 │   │
-│   ├── ads-campaign/        # 投放管理（统一模型）
-│   │   ├── model/Campaign.php, AdGroup.php, Creative.php
-│   │   └── service/CampaignService.php, SyncService.php
-│   │
-│   ├── ads-report/          # 报表引擎
-│   │   ├── model/ReportMetric.php, ReportExtra.php
-│   │   └── service/ReportAggregator.php, ReportCache.php
-│   │
-│   ├── ads-platform/        # 平台适配器核心
+│   ├── ads-platform/           # 平台适配器核心
 │   │   ├── src/PlatformAdapter.php, AdapterRegistry.php, FieldMapping.php
-│   │   └── adapter/Juliang.php, Baidu.php, Taobao.php, Google.php, Tiktok.php ...
+│   │   ├── src/CampaignData.php, ReportRequest.php
+│   │   ├── adapter/            # 29 个适配器（国内16 + 国际13）
+│   │   └── migration/create_campaign_tables.sql
 │   │
-│   ├── ads-task/            # 异步任务 & 调度
-│   │   ├── task/DataSyncTask.php, ReportBuildTask.php, TokenRefreshTask.php
+│   ├── ads-api/                # RESTful API（25+ 端点）
+│   │   ├── controller/         # 7 个控制器
+│   │   ├── middleware/          # 7 个中间件
+│   │   └── config/route.php
+│   │
+│   ├── ads-task/               # 定时任务调度
+│   │   ├── task/DataSyncTask.php, TokenRefreshTask.php, AlertCheckTask.php
 │   │   └── config/cron.php
 │   │
-│   └── ads-api/             # RESTful API 路由
-│       ├── controller/CampaignController.php, ReportController.php ...
-│       └── config/route.php
+│   ├── ads-report/             # 报表引擎 & 导出
+│   │   ├── service/ReportBuilder.php, ReportExporter.php, PdfExporter.php
+│   │   └── config/plugin.php
+│   │
+│   └── ads-alert/              # 告警监控
+│       ├── model/AlertRule.php, AlertLog.php
+│       ├── service/AlertEngine.php, NotificationService.php
+│       └── migration/create_alerts.sql
 ```
 
 ---
 
-## 二、平台适配器（核心）
+## 二、平台适配器
+
+### 已适配平台 (29)
+
+| 地区 | # | 平台 | 适配器类 | 认证 | 金额 | 报表 |
+|------|---|------|---------|------|------|------|
+| 国内 | 1 | 巨量引擎 | Juliang | OAuth2 Access-Token | 元→分 | 同步分页 |
+| 国内 | 2 | 百度营销 | Baidu | OAuth2 + 信封签名 | 元→分 | 异步轮询 |
+| 国内 | 3 | 淘宝/阿里妈妈 | Taobao | OAuth2 + MD5签名 | 元→分 | 同步分页 |
+| 国内 | 4 | 腾讯广告 | Tencent | OAuth2 + nonce | 分原生 | 同步分页 |
+| 国内 | 5 | 快手磁力引擎 | Kuaishou | OAuth2 URL参数 | 元→分 | 同步分页 |
+| 国内 | 6 | 小红书蒲公英 | Xiaohongshu | OAuth2 Bearer | 分原生 | 同步分页 |
+| 国内 | 7 | 微博粉丝通 | Weibo | OAuth2 Bearer | 分原生 | 同步分页 |
+| 国内 | 8 | B站花火 | Bilibili | OAuth2 Bearer | 分原生 | 同步分页 |
+| 国内 | 9 | 优酷广告 | Youku | OAuth2 + MD5签名 | 元→分 | 同步分页 |
+| 国内 | 10 | 美团广告 | Meituan | OAuth2 Bearer | 分原生 | 同步分页 |
+| 国内 | 11 | 知乎广告 | Zhihu | OAuth2 Bearer | 元→分 | 同步分页 |
+| 国内 | 12 | 360推广 | Qihoo360 | API Key + Sign | 元→分 | 同步分页 |
+| 国内 | 13 | 搜狗推广 | Sogou | API Key + Sign | 元→分 | 同步分页 |
+| 国内 | 14 | 友盟 | Umeng | API Key + MD5 | 元→分 | 同步分页 |
+| 国内 | 15 | 京东京准通 | Jingdong | OAuth2 + MD5 | 元→分 | 同步分页 |
+| 国内 | 16 | 拼多多广告 | Pinduoduo | OAuth2 + 自定义Sign | 分原生 | 同步分页 |
+| 国际 | 17 | Google Ads | Google | OAuth2 + GAQL | 微元→分 | pageToken |
+| 国际 | 18 | YouTube Ads | Youtube | OAuth2 + GAQL | 微元→分 | pageToken |
+| 国际 | 19 | Meta Ads | Meta | OAuth2 URL参数 | 分原生 | 异步 |
+| 国际 | 20 | TikTok Ads | Tiktok | OAuth2 Access-Token | 微元→分 | 同步分页 |
+| 国际 | 21 | LinkedIn Ads | Linkedin | OAuth2 Bearer | 微元→分 | 同步分页 |
+| 国际 | 22 | Snapchat Ads | Snapchat | OAuth2 Bearer | 微元→分 | 同步分页 |
+| 国际 | 23 | Pinterest Ads | Pinterest | OAuth2 Bearer | 微元→分 | 同步分页 |
+| 国际 | 24 | Twitter/X Ads | Twitter | OAuth2 Bearer | 微元→分 | 同步分页 |
+| 国际 | 25 | Amazon Ads | Amazon | OAuth2 + Profile | 分原生 | 异步 |
+| 国际 | 26 | The Trade Desk | TheTradeDesk | HMAC-SHA256 | 分原生 | 异步 |
+| 国际 | 27 | Spotify Ads | Spotify | OAuth2 Bearer | 分原生 | 异步 |
+| 国际 | 28 | Twitch Ads | Twitch | OAuth2 Bearer+ClientId | 分原生 | 同步 |
+| 国际 | 29 | Netflix Ads | Netflix | OAuth2 client_credentials | 分原生 | 同步 |
 
 ### 接口定义
 
@@ -114,81 +160,77 @@ interface PlatformAdapter
     public function capabilities(): array;
 
     // 授权
-    public function buildAuthUrl(string $redirectUri): string;
-    public function exchangeToken(string $code): array;
+    public function buildAuthUrl(string $redirectUri, string $state): string;
+    public function exchangeToken(string $code, string $redirectUri): array;
     public function refreshToken(string $refreshToken): array;
+    public function fetchAccountInfo(string $accessToken): array;
 
-    // 数据同步（流式返回统一对象）
-    public function fetchCampaigns(string $accountId): Generator;
-    public function fetchAdGroups(string $accountId, string $campaignId): Generator;
-    public function fetchCreatives(string $accountId, string $adGroupId): Generator;
-    public function fetchReports(string $accountId, ReportRequest $req): Generator;
+    // 数据同步（Generator 流式）
+    public function fetchCampaigns(string $accessToken, string $accountId): Generator;
+    public function fetchAdGroups(string $accessToken, string $accountId, string $campaignId): Generator;
+    public function fetchCreatives(string $accessToken, string $accountId, string $adGroupId): Generator;
+    public function fetchReports(string $accessToken, string $accountId, ReportRequest $req): Generator;
 
     // 投放操作
-    public function createCampaign(string $accountId, CampaignData $data): string;
-    public function updateCampaign(string $accountId, string $platformId, CampaignData $data): void;
-    public function toggleCampaign(string $accountId, string $platformId, bool $enabled): void;
+    public function createCampaign(string $accessToken, string $accountId, CampaignData $data): string;
+    public function updateCampaign(string $accessToken, string $accountId, string $platformId, CampaignData $data): void;
+    public function toggleCampaign(string $accessToken, string $accountId, string $platformId, bool $enabled): void;
 }
 ```
 
 ### 字段映射
 
-每个适配器维护自己的字段映射表，将平台原始字段转为统一字段，不在映射表中的字段落入 `extra` JSON 扩展字段。
+每个适配器通过 `FieldMapping` 将平台原始字段转为统一模型，平台特有字段自动落入 `extra` JSON。金额统一为 **分**（人民币）/ **分-cent**（美元）。
 
 ```php
-// 巨量引擎适配器
+// 巨量引擎：元→分，百分比→小数
 protected array $fieldMap = [
-    'campaign_id'   => 'platform_campaign_id',
-    'campaign_name' => 'name',
-    'budget'        => 'daily_budget',       // 分 → 分
-    'stat_cost'     => 'cost',
-    'show_cnt'      => 'impressions',
-    'click_cnt'     => 'clicks',
-    'convert_cnt'   => 'conversions',
+    'campaign_id' => 'platform_campaign_id',
+    'stat_cost'   => 'cost',         // 元 → ×100 → 分
+    'show_cnt'    => 'impressions',
+    'click_cnt'   => 'clicks',
+    'ctr'         => 'ctr',          // 百分比 → ÷100 → 小数
 ];
 
-// Google Ads 适配器
+// Google Ads：微元→分
 protected array $fieldMap = [
-    'campaign.id'               => 'platform_campaign_id',
-    'campaign.name'             => 'name',
-    'campaign_budget.amount_micros' => 'daily_budget',  // 微元 → 分
-    'metrics.cost_micros'       => 'cost',
-    'metrics.impressions'       => 'impressions',
-    'metrics.clicks'            => 'clicks',
-    'metrics.conversions'       => 'conversions',
+    'campaign.id'                => 'platform_campaign_id',
+    'metrics.cost_micros'        => 'cost',         // 微元 → ÷10000 → 分
+    'metrics.impressions'        => 'impressions',
+    'metrics.clicks'             => 'clicks',
 ];
 ```
 
 ---
 
-## 三、数据库设计（核心表）
+## 三、数据库设计
 
-### 数据模型策略
+### 命名规范
+- 表前缀: `erik_`
+- 主键: `BIGINT UNSIGNED PRIMARY KEY` (无自增，Snowflake ID 生成)
+- 引擎: InnoDB，字符集: utf8mb4
 
-混合模式：核心字段统一（cost, impressions, clicks, conversions），平台特有字段用 JSON `extra` 字段存储。
-
-### 租户隔离策略
-
-混合模式：中小租户共享数据库（tenant_id 隔离），大客户/高敏感客户独立数据库，通过 `tenants.db_type` 和 `tenants.db_config` 动态路由。
-
-### 核心表
+### 核心表 (13张)
 
 ```sql
 -- 租户
-CREATE TABLE tenants (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+CREATE TABLE erik_tenants (
+    id BIGINT UNSIGNED PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
+    domain VARCHAR(255) DEFAULT NULL,
     db_type ENUM('shared','dedicated') DEFAULT 'shared',
     db_config JSON NULL,
     plan ENUM('free','pro','enterprise') DEFAULT 'free',
     status TINYINT DEFAULT 1,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_domain_status (domain, status)
 );
 
--- 平台账户
-CREATE TABLE platform_accounts (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    tenant_id BIGINT NOT NULL,
+-- 平台账户 (access_token/refresh_token 由 encryptable 自动加解密)
+CREATE TABLE erik_platform_accounts (
+    id BIGINT UNSIGNED PRIMARY KEY,
+    tenant_id BIGINT UNSIGNED NOT NULL,
     platform VARCHAR(32) NOT NULL,
     account_id_on_platform VARCHAR(128) NOT NULL,
     account_name VARCHAR(255),
@@ -198,14 +240,29 @@ CREATE TABLE platform_accounts (
     status TINYINT DEFAULT 1,
     sync_enabled TINYINT DEFAULT 1,
     last_sync_at DATETIME,
-    UNIQUE KEY uk_platform_account (tenant_id, platform, account_id_on_platform)
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_platform_account (tenant_id, platform, account_id_on_platform),
+    INDEX idx_tenant_platform (tenant_id, platform)
+);
+
+-- OAuth 状态 Token
+CREATE TABLE erik_auth_tokens (
+    id BIGINT UNSIGNED PRIMARY KEY,
+    tenant_id BIGINT UNSIGNED NOT NULL,
+    platform VARCHAR(32) NOT NULL,
+    state VARCHAR(64) NOT NULL,
+    redirect_uri VARCHAR(512),
+    expires_at DATETIME NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_state (state)
 );
 
 -- 统一广告计划
-CREATE TABLE campaigns (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    tenant_id BIGINT NOT NULL,
-    platform_account_id BIGINT NOT NULL,
+CREATE TABLE erik_campaigns (
+    id BIGINT UNSIGNED PRIMARY KEY,
+    tenant_id BIGINT UNSIGNED NOT NULL,
+    platform_account_id BIGINT UNSIGNED NOT NULL,
     platform VARCHAR(32) NOT NULL,
     platform_campaign_id VARCHAR(128) NOT NULL,
     name VARCHAR(255) NOT NULL,
@@ -216,27 +273,32 @@ CREATE TABLE campaigns (
     end_date DATE,
     extra JSON,
     synced_at DATETIME,
-    UNIQUE KEY uk_platform_campaign (platform_account_id, platform_campaign_id)
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_platform_campaign (platform_account_id, platform_campaign_id),
+    INDEX idx_tenant (tenant_id)
 );
 
 -- 统一广告组
-CREATE TABLE ad_groups (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    campaign_id BIGINT NOT NULL,
+CREATE TABLE erik_ad_groups (
+    id BIGINT UNSIGNED PRIMARY KEY,
+    campaign_id BIGINT UNSIGNED NOT NULL,
     platform_adgroup_id VARCHAR(128) NOT NULL,
     name VARCHAR(255),
     status VARCHAR(32),
-    bid_amount BIGINT DEFAULT 0,          -- 单位：分
+    bid_amount BIGINT DEFAULT 0,
     bid_type VARCHAR(32),
     targeting JSON,
     extra JSON,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     UNIQUE KEY uk_platform_adgroup (campaign_id, platform_adgroup_id)
 );
 
 -- 统一创意
-CREATE TABLE creatives (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    ad_group_id BIGINT NOT NULL,
+CREATE TABLE erik_creatives (
+    id BIGINT UNSIGNED PRIMARY KEY,
+    ad_group_id BIGINT UNSIGNED NOT NULL,
     platform_creative_id VARCHAR(128) NOT NULL,
     title VARCHAR(500),
     description TEXT,
@@ -244,181 +306,186 @@ CREATE TABLE creatives (
     media_urls JSON,
     landing_url VARCHAR(2048),
     extra JSON,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     UNIQUE KEY uk_platform_creative (ad_group_id, platform_creative_id)
 );
 
 -- 报表核心指标
-CREATE TABLE report_metrics (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    tenant_id BIGINT NOT NULL,
-    platform_account_id BIGINT NOT NULL,
+CREATE TABLE erik_report_metrics (
+    id BIGINT UNSIGNED PRIMARY KEY,
+    tenant_id BIGINT UNSIGNED NOT NULL,
+    platform_account_id BIGINT UNSIGNED NOT NULL,
     platform VARCHAR(32) NOT NULL,
-    campaign_id BIGINT,
-    ad_group_id BIGINT,
-    creative_id BIGINT,
+    campaign_id BIGINT UNSIGNED,
+    ad_group_id BIGINT UNSIGNED,
+    creative_id BIGINT UNSIGNED,
     date DATE NOT NULL,
     granularity VARCHAR(16) DEFAULT 'daily',
-
-    cost BIGINT DEFAULT 0,                -- 消耗，单位：分
+    cost BIGINT DEFAULT 0,              -- 消耗，单位：分
     impressions BIGINT DEFAULT 0,
     clicks BIGINT DEFAULT 0,
     conversions DECIMAL(10,2) DEFAULT 0,
-    ctr DECIMAL(8,4) DEFAULT 0,
-    cpm DECIMAL(10,2) DEFAULT 0,          -- 分
-    cpc DECIMAL(10,2) DEFAULT 0,          -- 分
-    cvr DECIMAL(8,4) DEFAULT 0,
-
+    ctr DECIMAL(10,6) DEFAULT 0,
+    cpm DECIMAL(10,2) DEFAULT 0,
+    cpc DECIMAL(10,2) DEFAULT 0,
+    cvr DECIMAL(10,6) DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     UNIQUE KEY uk_report (tenant_id, platform, platform_account_id, campaign_id, ad_group_id, creative_id, date, granularity),
     INDEX idx_date (date),
-    INDEX idx_campaign_date (campaign_id, date)
+    INDEX idx_campaign_date (campaign_id, date),
+    INDEX idx_platform_account (platform_account_id)
 );
 
 -- 报表扩展数据
-CREATE TABLE report_extras (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    report_metric_id BIGINT NOT NULL,
+CREATE TABLE erik_report_extras (
+    id BIGINT UNSIGNED PRIMARY KEY,
+    report_metric_id BIGINT UNSIGNED NOT NULL,
     platform VARCHAR(32) NOT NULL,
     extra JSON,
-    FOREIGN KEY (report_metric_id) REFERENCES report_metrics(id)
+    FOREIGN KEY (report_metric_id) REFERENCES erik_report_metrics(id) ON DELETE CASCADE
+);
+
+-- 告警规则
+CREATE TABLE erik_alert_rules (
+    id BIGINT UNSIGNED PRIMARY KEY,
+    tenant_id BIGINT UNSIGNED NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    metric VARCHAR(32) NOT NULL,
+    condition VARCHAR(16) NOT NULL,
+    threshold DECIMAL(12,2) NOT NULL,
+    scope VARCHAR(32) DEFAULT 'tenant',
+    platform VARCHAR(32),
+    campaign_id BIGINT UNSIGNED,
+    check_interval INT DEFAULT 5,
+    channels JSON,
+    enabled TINYINT DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_tenant_enabled (tenant_id, enabled)
+);
+
+-- 告警记录
+CREATE TABLE erik_alert_logs (
+    id BIGINT UNSIGNED PRIMARY KEY,
+    tenant_id BIGINT UNSIGNED NOT NULL,
+    rule_id BIGINT UNSIGNED NOT NULL,
+    rule_name VARCHAR(100) NOT NULL,
+    metric VARCHAR(32) NOT NULL,
+    current_value DECIMAL(12,2) NOT NULL,
+    threshold DECIMAL(12,2) NOT NULL,
+    condition VARCHAR(16) NOT NULL,
+    status ENUM('triggered','acknowledged','resolved') DEFAULT 'triggered',
+    extra JSON,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_tenant_status (tenant_id, status),
+    INDEX idx_rule (rule_id)
 );
 ```
 
 ---
 
-## 四、Web 管理后台（webman-admin v2）
+## 四、Erik Stack 集成
 
-技术栈：Vue3 + TypeScript + Element Plus + ECharts 5 + Pinia
+| 包 | 用途 | 集成位置 |
+|----|------|---------|
+| `erikwang2013/snowflake-php` | 分布式主键 ID | SnowflakeTrait → 所有 Model creating 事件 |
+| `erikwang2013/hashids` | API 请求/响应 ID 加解密 | ApiResponse 自动编码 id/*_id 字段 |
+| `erikwang2013/jwt-webman` | JWT 认证令牌 | AuthMiddleware + AuthController |
+| `erikwang2013/encryption` | API 层敏感数据加解密 | EncryptionMiddleware (X-Encrypted 头) |
+| `erikwang2013/encryptable` | DB 字段自动加解密 | PlatformAccount/AuthToken $encryptable |
+| `erikwang2013/webman-scout` | Elasticsearch 数据同步 | config/scout.php |
+| `erikwang2013/season` | 国家旗帜 | PlatformBadge.vue (Unicode 国旗) |
 
-### 页面结构
+---
+
+## 五、安全中间件栈
+
+请求经过 7 层中间件处理：
+
+```
+Request → CORS → RateLimit → SQLGuard → Validation → Encryption → TenantIdentify → Controller
+```
+
+| 中间件 | 功能 |
+|--------|------|
+| CorsMiddleware | 跨域请求处理，支持 X-Tenant-Id/X-Encrypted |
+| RateLimitMiddleware | Redis 滑动窗口限流，默认 60次/60秒 |
+| SqlGuardMiddleware | SQL 注入模式检测（UNION/DROP/ALTER/注释） |
+| ValidationMiddleware | 输入裁剪 + HTML 标签过滤 |
+| EncryptionMiddleware | 请求解密 + 响应加密（X-Encrypted 头） |
+| AuthMiddleware | JWT Bearer Token 验证（erikwang2013/jwt-webman） |
+| TenantIdentify | 多租户解析（X-Tenant-Id 头 / Session） |
+
+---
+
+## 六、Web 管理后台
+
+技术栈: Vue 3 + TypeScript + Element Plus + ECharts 5 + Pinia + Axios
+
+### 已实现页面
 
 ```
 admin/src/views/
-├── dashboard/
-│   ├── Index.vue              # 总览：指标卡片 + 趋势图 + 平台占比 + TOP10
-│   └── PlatformCompare.vue    # 跨平台对比
+├── login/LoginPage.vue              # 登录
+├── dashboard/DashboardPage.vue      # 仪表盘（KPI趋势/平台对比/TOP10/日期筛选/PDF导出）
 ├── account/
-│   ├── AccountList.vue        # 平台账户列表
-│   ├── AccountBind.vue        # OAuth 绑定引导
-│   └── TokenManage.vue        # Token 状态/刷新
-├── campaign/
-│   ├── CampaignList.vue       # 跨平台计划列表（表格+筛选+批量操作）
-│   ├── CampaignCreate.vue     # 创建（动态表单schema）
-│   ├── CampaignEdit.vue       # 编辑
-│   └── CampaignBatch.vue      # 批量启停/改价/改预算
-├── creative/
-│   ├── CreativeList.vue
-│   └── CreativeAnalyze.vue    # 创意效果分析
-├── report/
-│   ├── ReportDaily.vue        # 日报
-│   ├── ReportHourly.vue       # 小时报
-│   ├── ReportCustom.vue       # 自定义报表（维度/指标自选）
-│   └── ReportExport.vue       # 导出 Excel/PDF
-├── tenant/
-│   ├── TenantList.vue         # 租户管理
-│   ├── TenantConfig.vue       # 套餐/配额/数据库路由
-│   └── TenantBill.vue         # 计费账单
-├── task/
-│   ├── SyncTask.vue           # 同步任务状态
-│   └── TaskLog.vue            # 任务日志
-└── system/
-    ├── UserManage.vue
-    ├── RolePermission.vue
-    └── AuditLog.vue
+│   ├── AccountList.vue              # 平台账户列表（同步/解绑）
+│   └── AccountBind.vue              # OAuth 绑定引导（3步向导）
+├── campaign/CampaignList.vue        # 广告计划（CRUD/批量操作/筛选/分页）
+├── alert/
+│   ├── AlertRuleList.vue            # 告警规则 CRUD
+│   └── AlertLogList.vue             # 告警记录（状态筛选/确认）
+├── report/ReportExport.vue          # 报表导出（CSV/Excel/PDF）
+└── components/
+    ├── layout/AppLayout.vue, SideNav.vue, TopBar.vue
+    ├── MetricCard.vue               # KPI 指标卡片（含趋势箭头）
+    └── PlatformBadge.vue            # 平台标签（含国旗）
 ```
 
-### 关键页面能力
+### TypeScript
 
-| 页面 | 能力 |
-|------|------|
-| 仪表盘 | 顶部指标卡片行，ECharts 趋势图（按平台分色），平台占比饼图，TOP10 排名 |
-| 计划列表 | 表格列含平台标签/状态/日预算/今日花费/CTR/CVR，按平台和状态筛选，批量操作 |
-| 创建计划 | 选平台→选账户→动态加载该平台表单（后端适配器返回表单 schema） |
-| 自定义报表 | 拖拽选择维度，勾选指标，动态图表+表格，保存查询模板 |
+- Axios 泛型类型 `UnwrappedInstance` 自动解包 `ApiResponse<T>` 封装
+- `vue-tsc --noEmit` **零错误**
 
 ---
 
-## 五、Flutter App（Mobile + Web/PC 响应式）
+## 七、Flutter App
 
-### 响应式断点
+PC Web 优先的响应式设计，3 个断点自适应。
 
-| 断点 | 宽度 | 布局 | 目标 |
+| 断点 | 宽度 | 布局 | 导航 |
 |------|------|------|------|
-| Mobile | < 600px | 单列，底部导航栏，卡片列表 | 手机 |
-| Tablet | 600-1200px | 双列网格，侧边抽屉导航 | 平板 |
-| Desktop | > 1200px | 多列网格，固定侧边导航，数据表格 | PC |
+| Mobile | < 600px | 单列卡片 | 底部 NavigationBar |
+| Tablet | 600-1200px | 双列网格 | Drawer 抽屉 |
+| Desktop | > 1200px | 多列网格 + DataTable | 固定 SideNav (250px) |
 
-### 页面结构
+**PC 端与管理后台分工**:
 
-```
-lib/
-├── features/
-│   ├── dashboard/
-│   │   ├── dashboard_page.dart        # 自适应布局
-│   │   └── widgets/summary_card.dart, trend_chart.dart, platform_ranking.dart
-│   ├── campaign/
-│   │   ├── campaign_list_page.dart     # Mobile:卡片 / PC:表格
-│   │   ├── campaign_detail_page.dart   # Mobile:纵向 / PC:左右分栏
-│   │   ├── campaign_create_page.dart   # PC完整表单 / Mobile分步向导
-│   │   └── widgets/campaign_card.dart, campaign_table.dart, campaign_form.dart
-│   ├── report/
-│   │   ├── report_page.dart            # Mobile简要 / PC完整报表
-│   │   ├── custom_report_page.dart     # PC拖拽维度/指标
-│   │   └── widgets/report_chart.dart, report_table.dart
-│   ├── account/
-│   │   ├── account_page.dart
-│   │   └── bind_account_page.dart      # WebView OAuth
-│   ├── alert/
-│   │   ├── alert_list_page.dart
-│   │   └── alert_rule_page.dart
-│   └── settings/
-├── shared/
-│   ├── models/
-│   ├── api/Dio封装 + endpoints
-│   ├── widgets/responsive_layout.dart, data_table_view.dart, side_nav.dart
-│   └── utils/
-└── core/theme.dart, router.dart(GoRouter), di.dart
-```
-
-### PC 端 / Mobile 端差异
-
-| 页面 | Mobile | PC |
-|------|--------|----|
-| 创建计划 | 分步向导（3步） | 完整表单，一屏完成 |
-| 计划列表 | 卡片 + 下拉筛选 | DataGrid 表格 + 顶部筛选 + 批量操作栏 |
-| 自定义报表 | 不支持 | 拖拽维度/指标 + 图表 + 导出 |
-| 计划详情 | 纵向滚动 | 左右分栏：数据表格 \| 趋势图 |
-| 导航 | 底部 TabBar | 左侧固定 SideNav |
-
-### Flutter Web/PC 与管理后台分工
-
-- **webman-admin**：重型管理（深度报表/系统配置/租户管理）
-- **Flutter Web/PC**：轻量运营面板（实时盯盘/告警处理/轻量投放，无需 VPN 随时访问）
+- **webman-admin**: 重型管理（深度报表/系统配置/租户管理/批量操作）
+- **Flutter Web/PC**: 轻量运营面板（实时盯盘/告警处理/轻量投放，无需 VPN）
 
 ---
 
-## 六、HarmonyOS App
+## 八、HarmonyOS App
 
-技术栈：ArkTS + ArkUI，功能与 Flutter App 一致。
+技术栈: ArkTS + ArkUI。功能与 Flutter App 对齐。
 
 ```
 entry/src/main/ets/
-├── pages/LoginPage, DashboardPage, CampaignListPage, CampaignDetailPage, ReportPage,
-│         AccountPage, AlertPage, SettingsPage
-├── widgets/MetricCard, TrendChart, PlatformBadge, CampaignCard, EmptyState
-├── model/Campaign, ReportMetric, PlatformAccount
-├── api/ApiClient + Endpoints
-├── store/AppState, UserStore
-├── service/PushService, BackgroundTaskService
-└── utils/CurrencyUtil, DateUtil, NumUtil
+├── entryability/EntryAbility.ets
+├── pages/LoginPage, DashboardPage, CampaignListPage, AccountPage, ReportPage, AlertPage
+├── model/Campaign, ReportMetric, PlatformAccount, AlertRule
+├── api/ApiClient (GET/POST/PUT/DELETE + Bearer Token)
+├── widgets/MetricCard, PlatformBadge, StatusChip, EmptyState
+└── utils/FormatUtil
 ```
-
-鸿蒙特有特性：桌面服务卡片（2×2 显示今日花费/ROI）、推送直达、平板报表大屏流转。
 
 ---
 
-## 七、API 设计
+## 九、API 设计
 
-前缀 `/api/v1`，RESTful 风格，统一响应格式：
+前缀 `/api/v1`，统一响应格式：
 
 ```json
 {
@@ -427,74 +494,67 @@ entry/src/main/ets/
   "data": {
     "list": [...],
     "pagination": { "page": 1, "per_page": 20, "total": 156, "total_pages": 8 },
-    "summary": {
-      "total_cost": 1258000,
-      "total_impressions": 238000,
-      "total_clicks": 15200,
-      "avg_ctr": 6.39,
-      "avg_cvr": 2.81,
-      "avg_roi": 3.2
-    }
+    "summary": { "total_cost": 1258000, "avg_ctr": 6.39, "avg_roi": 3.2 }
   }
 }
 ```
 
-### 主要端点
+### 全部端点
 
 ```
-POST   /api/v1/auth/login|refresh
+# 认证
+POST   /api/v1/auth/login
 GET    /api/v1/auth/me
 
-GET    /api/v1/accounts                        # 账户列表
-POST   /api/v1/accounts                        # 绑定账户
-DELETE /api/v1/accounts/:id                    # 解绑
-POST   /api/v1/accounts/:id/sync               # 手动同步
-GET    /api/v1/platforms                       # 平台列表
-GET    /api/v1/platforms/:code/oauth-url       # OAuth URL
-POST   /api/v1/platforms/:code/callback        # OAuth 回调
+# 平台 & 账户
+GET    /api/v1/platforms
+GET    /api/v1/accounts
+GET    /api/v1/accounts/:id
+DELETE /api/v1/accounts/:id
+POST   /api/v1/accounts/:id/sync
+GET    /api/v1/platforms/:code/oauth-url
+POST   /api/v1/platforms/:code/callback
 
-GET    /api/v1/campaigns                       # 计划列表
-POST   /api/v1/campaigns                       # 创建
-GET    /api/v1/campaigns/:id                   # 详情
-PUT    /api/v1/campaigns/:id                   # 更新
-POST   /api/v1/campaigns/:id/toggle            # 启停
-POST   /api/v1/campaigns/batch-toggle          # 批量启停
-POST   /api/v1/campaigns/batch-bid             # 批量改出价
+# 广告计划
+GET    /api/v1/campaigns
+POST   /api/v1/campaigns
+GET    /api/v1/campaigns/:id
+PUT    /api/v1/campaigns/:id
+POST   /api/v1/campaigns/:id/toggle
 
-GET    /api/v1/reports/daily|hourly|custom     # 报表
-GET    /api/v1/reports/summary                 # 仪表盘汇总
+# 报表
+GET    /api/v1/reports/summary
+GET    /api/v1/reports/custom
+GET    /api/v1/reports/export
+GET    /api/v1/reports/export-dashboard
 
-GET    /api/v1/tenants                         # 租户列表
-POST   /api/v1/tenants                         # 创建租户
-PUT    /api/v1/tenants/:id                     # 更新
-GET    /api/v1/tenants/:id/billing             # 账单
-
-GET    /api/v1/alerts                          # 告警列表
-POST   /api/v1/alerts                          # 创建规则
-PUT    /api/v1/alerts/:id                      # 更新
-DELETE /api/v1/alerts/:id                      # 删除
+# 告警
+GET    /api/v1/alerts/rules
+POST   /api/v1/alerts/rules
+PUT    /api/v1/alerts/rules/:id
+DELETE /api/v1/alerts/rules/:id
+GET    /api/v1/alerts/logs
+POST   /api/v1/alerts/logs/:id/acknowledge
+GET    /api/v1/alerts/unread-count
 ```
 
 ---
 
-## 八、数据同步 & 任务调度
+## 十、数据同步 & 任务调度
 
-使用 `webman/crontab`，Redis 队列做异步任务。
+使用 webman/crontab，Redis 缓存加速。
 
 | 任务 | 频率 | 说明 |
 |------|------|------|
-| TokenRefreshTask | 每小时 | 扫描即将过期的 Token，自动刷新 |
-| DataSyncTask | 每10分钟 | 拉取各平台近2小时投放数据 |
-| ReportBuildTask | 每天凌晨 | 预计算昨日日报、月报汇总 |
-| DailySummaryTask | 每30分钟 | 更新仪表盘缓存 |
-| AlertCheckTask | 每5分钟 | 检查告警规则，触发推送 |
-| CleanupTask | 每天凌晨 | 清理过期日志、临时文件 |
+| TokenRefreshTask | 每 55 分钟 | 扫描过期 Token，自动刷新 |
+| DataSyncTask | 每 10 分钟 | 拉取各平台计划+近2日报表，同步后清仪表盘缓存 |
+| AlertCheckTask | 每 5 分钟 | 遍历启用规则，评估阈值，触发推送 |
 
-同步策略：适配器内实现统一速率控制，Generator 流式处理，增量同步优先，失败自动重试 3 次。
+同步策略：适配器 Generator 流式处理，游标/分页防漏，失败自动重试 3 次，curl_errno 检查。
 
 ---
 
-## 九、部署架构
+## 十一、部署架构
 
 ```
                     ┌──────────────┐
@@ -513,51 +573,30 @@ DELETE /api/v1/alerts/:id                      # 删除
               ┌────────────┼────────────┐
               │            │            │
          ┌────┴────┐  ┌────┴────┐  ┌────┴────┐
-         │  MySQL  │  │  Redis  │  │  NFS/   │
-         │ 主从    │  │  缓存   │  │  OSS    │
+         │  MySQL  │  │  Redis  │  │   ES    │
+         │ 主从    │  │  缓存   │  │  搜索   │
          └─────────┘  └─────────┘  └─────────┘
 ```
 
-技术选型：PHP 8.2+ / MySQL 8.0 / Redis 7 / webman/redis-queue / Vue 3 + TS + Element Plus / ECharts 5 / Flutter 3.x / ArkTS
+### Docker 一键部署
+
+```bash
+docker-compose up -d          # MySQL + Redis + PHP + Nginx
+make db-init                  # 初始化数据库
+make admin-dev                # 前端开发模式
+```
 
 ---
 
-## 十、分阶段实施计划
+## 十二、实施历史
 
-```
-Phase 1 — 基础骨架（2-3周）
-├── webman v2 项目初始化
-├── webman-admin v2 项目初始化
-├── 多租户插件（ads-tenant）
-├── 认证 & 权限（RBAC）
-├── 账户管理 + OAuth 流程框架
-└── 巨量引擎适配器（第一个平台，跑通全链路）
-
-Phase 2 — 投放 + 报表（2-3周）
-├── 统一投放管理（ads-campaign）
-├── 报表引擎（ads-report）
-├── 仪表盘（Admin 首页）
-├── 百度广告适配器
-└── 淘宝广告适配器
-
-Phase 3 — 扩展平台 + 增强（2-3周）
-├── Google Ads 适配器
-├── TikTok Ads 适配器
-├── 自定义报表
-├── 任务调度与同步监控
-├── 告警系统
-└── 计费基础
-
-Phase 4 — App + 鸿蒙 + 剩余平台（3-4周）
-├── Flutter App（仪表盘/计划列表/告警）
-├── HarmonyOS App
-├── 拼多多/京东/YouTube 适配器
-├── 批量操作增强
-└── 性能优化 & 压测
-
-Phase 5 — 稳定与运营（持续）
-├── 数据质量监控
-├── API 文档 & SDK
-├── 运维工具
-└── 持续优化
-```
+| 阶段 | 内容 | 状态 |
+|------|------|------|
+| Phase 1 | webman v2 + 管理后台骨架 + 多租户 + OAuth + 巨量 | ✅ |
+| Phase 2 | 百度适配器 + 淘宝适配器 + 数据同步 + 报表引擎 | ✅ |
+| Phase 3 | 腾讯 + 友盟 + 快手 + 小红书 (4新) | ✅ |
+| Phase 4 | 微博 + B站 + 优酷 + 美团 + 知乎 + 360 + 搜狗 + 京东 + 拼多多 (9新国内) | ✅ |
+| Phase 4 | Meta + LinkedIn + Snapchat + Pinterest + Twitter + Amazon + TTD + Spotify + Twitch + Netflix + Google + YouTube + TikTok (13新国际) | ✅ |
+| Phase 5 | 告警系统 + 报表导出 + Flutter App + HarmonyOS App + 仪表盘增强 | ✅ |
+| Phase 6 | Erik Stack 集成（snowflake/hashids/jwt-webman/encryption/encryptable/scout/season）| ✅ |
+| Phase 7 | Docker 部署 + 安全加固 (RateLimit/CORS/SQLGuard) + 缓存层 + README | ✅ |
