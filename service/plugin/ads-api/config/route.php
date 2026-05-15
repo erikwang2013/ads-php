@@ -1,0 +1,32 @@
+<?php
+use plugin\ads_api\middleware\AuthMiddleware;
+use plugin\ads_api\controller\AuthController;
+use plugin\ads_api\controller\PlatformController;
+use plugin\ads_api\controller\AccountController;
+use plugin\ads_api\controller\CampaignController;
+use plugin\ads_api\controller\DashboardController;
+
+// Public routes
+\Webman\Route::post('/api/v1/auth/login', [AuthController::class, 'login']);
+\Webman\Route::get('/api/v1/platforms', [PlatformController::class, 'index']);
+
+// Authenticated routes
+\Webman\Route::group('/api/v1', function () {
+    \Webman\Route::get('/auth/me', [AuthController::class, 'me']);
+
+    \Webman\Route::get('/platforms/{code}/oauth-url', [PlatformController::class, 'oauthUrl']);
+    \Webman\Route::post('/platforms/{code}/callback', [PlatformController::class, 'callback']);
+
+    \Webman\Route::get('/accounts', [AccountController::class, 'index']);
+    \Webman\Route::get('/accounts/{id}', [AccountController::class, 'show']);
+    \Webman\Route::delete('/accounts/{id}', [AccountController::class, 'destroy']);
+    \Webman\Route::post('/accounts/{id:\d+}/sync', [AccountController::class, 'sync']);
+
+    \Webman\Route::get('/campaigns', [CampaignController::class, 'index']);
+    \Webman\Route::post('/campaigns', [CampaignController::class, 'store']);
+    \Webman\Route::get('/campaigns/{id}', [CampaignController::class, 'show']);
+    \Webman\Route::put('/campaigns/{id}', [CampaignController::class, 'update']);
+    \Webman\Route::post('/campaigns/{id:\d+}/toggle', [CampaignController::class, 'toggle']);
+
+    \Webman\Route::get('/reports/summary', [DashboardController::class, 'summary']);
+})->middleware([AuthMiddleware::class]);
