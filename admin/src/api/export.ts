@@ -22,4 +22,12 @@ export const exportApi = {
   exportReport(params: Record<string, any>) {
     return raw.get('/reports/export', { params })
   },
+
+  /**
+   * Download dashboard PDF report.
+   * @param params - query params: date_start, date_end, format
+   */
+  exportDashboard(params: Record<string, any>) {
+    return raw.get('/reports/export-dashboard', { params })
+  },
 }

@@ -69,6 +69,7 @@
           <el-radio-group v-model="form.format">
             <el-radio label="csv">CSV</el-radio>
             <el-radio label="excel">Excel (.xls)</el-radio>
+            <el-radio label="pdf-dashboard">Dashboard PDF</el-radio>
           </el-radio-group>
         </el-form-item>
 
@@ -107,8 +108,12 @@ const exporting = ref(false)
 const buildParams = () => {
   const params: Record<string, any> = {
     format: form.format,
-    dimensions: form.dimensions.join(','),
-    metrics: form.metrics.join(','),
+  }
+  if (form.format === 'pdf-dashboard') {
+    params.format = 'pdf'
+  } else {
+    params.dimensions = form.dimensions.join(',')
+    params.metrics = form.metrics.join(',')
   }
   if (dateRange.value && dateRange.value.length === 2) {
     params.date_start = dateRange.value[0]
@@ -121,11 +126,11 @@ const buildParams = () => {
 }
 
 const handleExport = async () => {
-  if (form.metrics.length === 0) {
+  if (form.format !== 'pdf-dashboard' && form.metrics.length === 0) {
     ElMessage.warning('请至少选择一个指标')
     return
   }
-  if (form.dimensions.length === 0) {
+  if (form.format !== 'pdf-dashboard' && form.dimensions.length === 0) {
     ElMessage.warning('请至少选择一个维度')
     return
   }
@@ -133,13 +138,20 @@ const handleExport = async () => {
   exporting.value = true
   try {
     const params = buildParams()
-    const response = await exportApi.exportReport(params)
+    const isDashboardPdf = form.format === 'pdf-dashboard'
+
+    const response = isDashboardPdf
+      ? await exportApi.exportDashboard(params)
+      : await exportApi.exportReport(params)
+
     const blob = response.data instanceof Blob
       ? response.data
       : new Blob([response.data])
 
-    const ext = form.format === 'csv' ? 'csv' : 'xls'
-    const filename = `report_${formatDate(new Date())}.${ext}`
+    const ext = isDashboardPdf ? 'pdf' : form.format === 'csv' ? 'csv' : 'xls'
+    const filename = isDashboardPdf
+      ? `dashboard_${formatDate(new Date())}.${ext}`
+      : `report_${formatDate(new Date())}.${ext}`
 
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')

@@ -6,6 +6,7 @@
 namespace plugin\ads_api\controller;
 
 use plugin\ads_report\service\ReportExporter;
+use plugin\ads_report\service\PdfExporter;
 use Webman\Http\Request;
 use Webman\Http\Response;
 use app\support\ApiResponse;
@@ -32,5 +33,19 @@ class ExportController
         } catch (Throwable $e) {
             return ApiResponse::error('导出失败: ' . $e->getMessage());
         }
+    }
+
+    public function exportDashboard(Request $request): Response
+    {
+        $tenantId = $request->tenantId ?? 1;
+        $format   = $request->get('format', 'pdf');
+
+        if ($format === 'pdf') {
+            $exporter = new PdfExporter();
+            $filePath = $exporter->exportDashboardPdf($tenantId, $request->all());
+            return (new Response())->file($filePath, 'dashboard_' . date('YmdHis') . '.pdf');
+        }
+
+        return ApiResponse::error('Unsupported format');
     }
 }

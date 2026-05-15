@@ -38,6 +38,7 @@ Webman\Route::group('/api/v1', function () {
     Webman\Route::get('/reports/summary', [DashboardController::class, 'summary']);
     Webman\Route::get('/reports/custom', [ReportController::class, 'custom']);
     Webman\Route::get('/reports/export', [ExportController::class, 'export']);
+    Webman\Route::get('/reports/export-dashboard', [ExportController::class, 'exportDashboard']);
 
     Webman\Route::get('/alerts/rules', [AlertController::class, 'rules']);
     Webman\Route::post('/alerts/rules', [AlertController::class, 'createRule']);
