@@ -1,0 +1,25 @@
+<?php
+/**
+ * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+ */
+
+
+declare(strict_types=1);
+
+namespace Doctrine\Inflector\Rules\Turkish;
+
+use Doctrine\Inflector\GenericLanguageInflectorFactory;
+use Doctrine\Inflector\Rules\Ruleset;
+
+final class InflectorFactory extends GenericLanguageInflectorFactory
+{
+    protected function getSingularRuleset(): Ruleset
+    {
+        return Rules::getSingularRuleset();
+    }
+
+    protected function getPluralRuleset(): Ruleset
+    {
+        return Rules::getPluralRuleset();
+    }
+}

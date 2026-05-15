@@ -1,0 +1,515 @@
+2026-05-15 14:49:51 pid:1203616 Workerman[start.php] start in DAEMON mode
+2026-05-15 14:49:52 pid:1203628 Error: Failed opening required '/home/wwwroot/ads-php/service/support/bootstrap.php' (include_path='.:/usr/local/php/lib/php') in /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php:116
+Stack trace:
+#0 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2641): support\App::support\{closure}()
+#1 [internal function]: Workerman\Worker->Workerman\{closure}()
+#2 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2659): Fiber->start()
+#3 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1756): Workerman\Worker->run()
+#4 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1554): Workerman\Worker::forkOneWorkerForLinux()
+#5 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1534): Workerman\Worker::forkWorkersForLinux()
+#6 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(603): Workerman\Worker::forkWorkers()
+#7 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(147): Workerman\Worker::runAll()
+#8 /home/wwwroot/ads-php/service/start.php(27): support\App::run()
+#9 {main}
+2026-05-15 14:49:52 pid:1203629 Error: Failed opening required '/home/wwwroot/ads-php/service/support/bootstrap.php' (include_path='.:/usr/local/php/lib/php') in /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php:116
+Stack trace:
+#0 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2641): support\App::support\{closure}()
+#1 [internal function]: Workerman\Worker->Workerman\{closure}()
+#2 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2659): Fiber->start()
+#3 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1756): Workerman\Worker->run()
+#4 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1554): Workerman\Worker::forkOneWorkerForLinux()
+#5 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1534): Workerman\Worker::forkWorkersForLinux()
+#6 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(603): Workerman\Worker::forkWorkers()
+#7 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(147): Workerman\Worker::runAll()
+#8 /home/wwwroot/ads-php/service/start.php(27): support\App::run()
+#9 {main}
+2026-05-15 14:49:52 pid:1203630 Error: Failed opening required '/home/wwwroot/ads-php/service/support/bootstrap.php' (include_path='.:/usr/local/php/lib/php') in /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php:116
+Stack trace:
+#0 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2641): support\App::support\{closure}()
+#1 [internal function]: Workerman\Worker->Workerman\{closure}()
+#2 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2659): Fiber->start()
+#3 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1756): Workerman\Worker->run()
+#4 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1554): Workerman\Worker::forkOneWorkerForLinux()
+#5 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1534): Workerman\Worker::forkWorkersForLinux()
+#6 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(603): Workerman\Worker::forkWorkers()
+#7 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(147): Workerman\Worker::runAll()
+#8 /home/wwwroot/ads-php/service/start.php(27): support\App::run()
+#9 {main}
+2026-05-15 14:49:52 pid:1203631 Error: Failed opening required '/home/wwwroot/ads-php/service/support/bootstrap.php' (include_path='.:/usr/local/php/lib/php') in /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php:116
+Stack trace:
+#0 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2641): support\App::support\{closure}()
+#1 [internal function]: Workerman\Worker->Workerman\{closure}()
+#2 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2659): Fiber->start()
+#3 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1756): Workerman\Worker->run()
+#4 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1554): Workerman\Worker::forkOneWorkerForLinux()
+#5 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1534): Workerman\Worker::forkWorkersForLinux()
+#6 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(603): Workerman\Worker::forkWorkers()
+#7 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(147): Workerman\Worker::runAll()
+#8 /home/wwwroot/ads-php/service/start.php(27): support\App::run()
+#9 {main}
+2026-05-15 14:49:52 pid:1203632 Error: Failed opening required '/home/wwwroot/ads-php/service/support/bootstrap.php' (include_path='.:/usr/local/php/lib/php') in /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php:116
+Stack trace:
+#0 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2641): support\App::support\{closure}()
+#1 [internal function]: Workerman\Worker->Workerman\{closure}()
+#2 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2659): Fiber->start()
+#3 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1756): Workerman\Worker->run()
+#4 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1554): Workerman\Worker::forkOneWorkerForLinux()
+#5 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1534): Workerman\Worker::forkWorkersForLinux()
+#6 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(603): Workerman\Worker::forkWorkers()
+#7 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(147): Workerman\Worker::runAll()
+#8 /home/wwwroot/ads-php/service/start.php(27): support\App::run()
+#9 {main}
+2026-05-15 14:49:52 pid:1203633 Error: Failed opening required '/home/wwwroot/ads-php/service/support/bootstrap.php' (include_path='.:/usr/local/php/lib/php') in /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php:116
+Stack trace:
+#0 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2641): support\App::support\{closure}()
+#1 [internal function]: Workerman\Worker->Workerman\{closure}()
+#2 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2659): Fiber->start()
+#3 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1756): Workerman\Worker->run()
+#4 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1554): Workerman\Worker::forkOneWorkerForLinux()
+#5 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1534): Workerman\Worker::forkWorkersForLinux()
+#6 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(603): Workerman\Worker::forkWorkers()
+#7 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(147): Workerman\Worker::runAll()
+#8 /home/wwwroot/ads-php/service/start.php(27): support\App::run()
+#9 {main}
+2026-05-15 14:49:52 pid:1203634 Error: Failed opening required '/home/wwwroot/ads-php/service/support/bootstrap.php' (include_path='.:/usr/local/php/lib/php') in /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php:116
+Stack trace:
+#0 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2641): support\App::support\{closure}()
+#1 [internal function]: Workerman\Worker->Workerman\{closure}()
+#2 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2659): Fiber->start()
+#3 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1756): Workerman\Worker->run()
+#4 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1554): Workerman\Worker::forkOneWorkerForLinux()
+#5 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1534): Workerman\Worker::forkWorkersForLinux()
+#6 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(603): Workerman\Worker::forkWorkers()
+#7 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(147): Workerman\Worker::runAll()
+#8 /home/wwwroot/ads-php/service/start.php(27): support\App::run()
+#9 {main}
+2026-05-15 14:49:52 pid:1203635 Error: Failed opening required '/home/wwwroot/ads-php/service/support/bootstrap.php' (include_path='.:/usr/local/php/lib/php') in /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php:116
+Stack trace:
+#0 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2641): support\App::support\{closure}()
+#1 [internal function]: Workerman\Worker->Workerman\{closure}()
+#2 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2659): Fiber->start()
+#3 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1756): Workerman\Worker->run()
+#4 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1554): Workerman\Worker::forkOneWorkerForLinux()
+#5 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1534): Workerman\Worker::forkWorkersForLinux()
+#6 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(603): Workerman\Worker::forkWorkers()
+#7 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(147): Workerman\Worker::runAll()
+#8 /home/wwwroot/ads-php/service/start.php(27): support\App::run()
+#9 {main}
+2026-05-15 14:49:52 pid:1203636 Error: Failed opening required '/home/wwwroot/ads-php/service/support/bootstrap.php' (include_path='.:/usr/local/php/lib/php') in /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php:116
+Stack trace:
+#0 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2641): support\App::support\{closure}()
+#1 [internal function]: Workerman\Worker->Workerman\{closure}()
+#2 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2659): Fiber->start()
+#3 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1756): Workerman\Worker->run()
+#4 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1554): Workerman\Worker::forkOneWorkerForLinux()
+#5 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1534): Workerman\Worker::forkWorkersForLinux()
+#6 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(603): Workerman\Worker::forkWorkers()
+#7 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(147): Workerman\Worker::runAll()
+#8 /home/wwwroot/ads-php/service/start.php(27): support\App::run()
+#9 {main}
+2026-05-15 14:49:52 pid:1203637 Error: Failed opening required '/home/wwwroot/ads-php/service/support/bootstrap.php' (include_path='.:/usr/local/php/lib/php') in /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php:116
+Stack trace:
+#0 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2641): support\App::support\{closure}()
+#1 [internal function]: Workerman\Worker->Workerman\{closure}()
+#2 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2659): Fiber->start()
+#3 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1756): Workerman\Worker->run()
+#4 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1554): Workerman\Worker::forkOneWorkerForLinux()
+#5 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1534): Workerman\Worker::forkWorkersForLinux()
+#6 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(603): Workerman\Worker::forkWorkers()
+#7 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(147): Workerman\Worker::runAll()
+#8 /home/wwwroot/ads-php/service/start.php(27): support\App::run()
+#9 {main}
+2026-05-15 14:49:52 pid:1203639 Error: Failed opening required '/home/wwwroot/ads-php/service/support/bootstrap.php' (include_path='.:/usr/local/php/lib/php') in /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php:116
+Stack trace:
+#0 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2641): support\App::support\{closure}()
+#1 [internal function]: Workerman\Worker->Workerman\{closure}()
+#2 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2659): Fiber->start()
+#3 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1756): Workerman\Worker->run()
+#4 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1554): Workerman\Worker::forkOneWorkerForLinux()
+#5 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1534): Workerman\Worker::forkWorkersForLinux()
+#6 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(603): Workerman\Worker::forkWorkers()
+#7 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(147): Workerman\Worker::runAll()
+#8 /home/wwwroot/ads-php/service/start.php(27): support\App::run()
+#9 {main}
+2026-05-15 14:49:52 pid:1203638 Error: Failed opening required '/home/wwwroot/ads-php/service/support/bootstrap.php' (include_path='.:/usr/local/php/lib/php') in /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php:116
+Stack trace:
+#0 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2641): support\App::support\{closure}()
+#1 [internal function]: Workerman\Worker->Workerman\{closure}()
+#2 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2659): Fiber->start()
+#3 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1756): Workerman\Worker->run()
+#4 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1554): Workerman\Worker::forkOneWorkerForLinux()
+#5 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1534): Workerman\Worker::forkWorkersForLinux()
+#6 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(603): Workerman\Worker::forkWorkers()
+#7 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(147): Workerman\Worker::runAll()
+#8 /home/wwwroot/ads-php/service/start.php(27): support\App::run()
+#9 {main}
+2026-05-15 14:49:52 pid:1203641 Error: Failed opening required '/home/wwwroot/ads-php/service/support/bootstrap.php' (include_path='.:/usr/local/php/lib/php') in /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php:116
+Stack trace:
+#0 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2641): support\App::support\{closure}()
+#1 [internal function]: Workerman\Worker->Workerman\{closure}()
+#2 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2659): Fiber->start()
+#3 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1756): Workerman\Worker->run()
+#4 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1554): Workerman\Worker::forkOneWorkerForLinux()
+#5 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1534): Workerman\Worker::forkWorkersForLinux()
+#6 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(603): Workerman\Worker::forkWorkers()
+#7 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(147): Workerman\Worker::runAll()
+#8 /home/wwwroot/ads-php/service/start.php(27): support\App::run()
+#9 {main}
+2026-05-15 14:49:52 pid:1203642 Error: Failed opening required '/home/wwwroot/ads-php/service/support/bootstrap.php' (include_path='.:/usr/local/php/lib/php') in /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php:116
+Stack trace:
+#0 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2641): support\App::support\{closure}()
+#1 [internal function]: Workerman\Worker->Workerman\{closure}()
+#2 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2659): Fiber->start()
+#3 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1756): Workerman\Worker->run()
+#4 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1554): Workerman\Worker::forkOneWorkerForLinux()
+#5 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1534): Workerman\Worker::forkWorkersForLinux()
+#6 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(603): Workerman\Worker::forkWorkers()
+#7 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(147): Workerman\Worker::runAll()
+#8 /home/wwwroot/ads-php/service/start.php(27): support\App::run()
+#9 {main}
+2026-05-15 14:49:52 pid:1203640 Error: Failed opening required '/home/wwwroot/ads-php/service/support/bootstrap.php' (include_path='.:/usr/local/php/lib/php') in /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php:116
+Stack trace:
+#0 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2641): support\App::support\{closure}()
+#1 [internal function]: Workerman\Worker->Workerman\{closure}()
+#2 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2659): Fiber->start()
+#3 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1756): Workerman\Worker->run()
+#4 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1554): Workerman\Worker::forkOneWorkerForLinux()
+#5 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1534): Workerman\Worker::forkWorkersForLinux()
+#6 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(603): Workerman\Worker::forkWorkers()
+#7 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(147): Workerman\Worker::runAll()
+#8 /home/wwwroot/ads-php/service/start.php(27): support\App::run()
+#9 {main}
+2026-05-15 14:49:52 pid:1203643 Error: Failed opening required '/home/wwwroot/ads-php/service/support/bootstrap.php' (include_path='.:/usr/local/php/lib/php') in /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php:116
+Stack trace:
+#0 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2641): support\App::support\{closure}()
+#1 [internal function]: Workerman\Worker->Workerman\{closure}()
+#2 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2659): Fiber->start()
+#3 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1756): Workerman\Worker->run()
+#4 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1554): Workerman\Worker::forkOneWorkerForLinux()
+#5 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1534): Workerman\Worker::forkWorkersForLinux()
+#6 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(603): Workerman\Worker::forkWorkers()
+#7 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(147): Workerman\Worker::runAll()
+#8 /home/wwwroot/ads-php/service/start.php(27): support\App::run()
+#9 {main}
+2026-05-15 14:58:24 pid:1207684 Workerman[start.php] stop
+2026-05-15 14:58:24 pid:1207684 Workerman[start.php] is stopping ...
+2026-05-15 14:58:24 pid:1203627 Workerman[start.php] received signal SIGINT
+2026-05-15 14:58:24 pid:1203627 Workerman[start.php] stopping
+2026-05-15 14:58:24 pid:1203627 Workerman[start.php] has been stopped
+2026-05-15 14:58:29 pid:1207684 Workerman[start.php] stop fail
+2026-05-15 14:58:30 pid:1207737 Workerman[start.php] start in DAEMON mode
+2026-05-15 14:58:31 pid:1207743 ErrorException: Undefined array key "default" in /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/Log.php:54
+Stack trace:
+#0 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/Log.php(54): support\App::{closure}()
+#1 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(117): support\Log::channel()
+#2 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2641): support\App::support\{closure}()
+#3 [internal function]: Workerman\Worker->Workerman\{closure}()
+#4 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2659): Fiber->start()
+#5 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1756): Workerman\Worker->run()
+#6 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1554): Workerman\Worker::forkOneWorkerForLinux()
+#7 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1534): Workerman\Worker::forkWorkersForLinux()
+#8 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(603): Workerman\Worker::forkWorkers()
+#9 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(147): Workerman\Worker::runAll()
+#10 /home/wwwroot/ads-php/service/start.php(27): support\App::run()
+#11 {main}
+2026-05-15 14:58:31 pid:1207745 ErrorException: Undefined array key "default" in /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/Log.php:54
+Stack trace:
+#0 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/Log.php(54): support\App::{closure}()
+#1 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(117): support\Log::channel()
+#2 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2641): support\App::support\{closure}()
+#3 [internal function]: Workerman\Worker->Workerman\{closure}()
+#4 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2659): Fiber->start()
+#5 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1756): Workerman\Worker->run()
+#6 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1554): Workerman\Worker::forkOneWorkerForLinux()
+#7 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1534): Workerman\Worker::forkWorkersForLinux()
+#8 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(603): Workerman\Worker::forkWorkers()
+#9 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(147): Workerman\Worker::runAll()
+#10 /home/wwwroot/ads-php/service/start.php(27): support\App::run()
+#11 {main}
+2026-05-15 14:58:31 pid:1207744 ErrorException: Undefined array key "default" in /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/Log.php:54
+Stack trace:
+#0 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/Log.php(54): support\App::{closure}()
+#1 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(117): support\Log::channel()
+#2 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2641): support\App::support\{closure}()
+#3 [internal function]: Workerman\Worker->Workerman\{closure}()
+#4 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2659): Fiber->start()
+#5 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1756): Workerman\Worker->run()
+#6 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1554): Workerman\Worker::forkOneWorkerForLinux()
+#7 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1534): Workerman\Worker::forkWorkersForLinux()
+#8 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(603): Workerman\Worker::forkWorkers()
+#9 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(147): Workerman\Worker::runAll()
+#10 /home/wwwroot/ads-php/service/start.php(27): support\App::run()
+#11 {main}
+2026-05-15 14:58:31 pid:1207746 ErrorException: Undefined array key "default" in /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/Log.php:54
+Stack trace:
+#0 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/Log.php(54): support\App::{closure}()
+#1 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(117): support\Log::channel()
+#2 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2641): support\App::support\{closure}()
+#3 [internal function]: Workerman\Worker->Workerman\{closure}()
+#4 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2659): Fiber->start()
+#5 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1756): Workerman\Worker->run()
+#6 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1554): Workerman\Worker::forkOneWorkerForLinux()
+#7 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1534): Workerman\Worker::forkWorkersForLinux()
+#8 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(603): Workerman\Worker::forkWorkers()
+#9 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(147): Workerman\Worker::runAll()
+#10 /home/wwwroot/ads-php/service/start.php(27): support\App::run()
+#11 {main}
+2026-05-15 14:58:31 pid:1207753 ErrorException: Undefined array key "default" in /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/Log.php:54
+Stack trace:
+#0 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/Log.php(54): support\App::{closure}()
+#1 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(117): support\Log::channel()
+#2 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2641): support\App::support\{closure}()
+#3 [internal function]: Workerman\Worker->Workerman\{closure}()
+#4 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2659): Fiber->start()
+#5 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1756): Workerman\Worker->run()
+#6 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1554): Workerman\Worker::forkOneWorkerForLinux()
+#7 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1534): Workerman\Worker::forkWorkersForLinux()
+#8 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(603): Workerman\Worker::forkWorkers()
+#9 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(147): Workerman\Worker::runAll()
+#10 /home/wwwroot/ads-php/service/start.php(27): support\App::run()
+#11 {main}
+2026-05-15 14:58:31 pid:1207755 ErrorException: Undefined array key "default" in /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/Log.php:54
+Stack trace:
+#0 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/Log.php(54): support\App::{closure}()
+#1 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(117): support\Log::channel()
+#2 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2641): support\App::support\{closure}()
+#3 [internal function]: Workerman\Worker->Workerman\{closure}()
+#4 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2659): Fiber->start()
+#5 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1756): Workerman\Worker->run()
+#6 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1554): Workerman\Worker::forkOneWorkerForLinux()
+#7 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1534): Workerman\Worker::forkWorkersForLinux()
+#8 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(603): Workerman\Worker::forkWorkers()
+#9 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(147): Workerman\Worker::runAll()
+#10 /home/wwwroot/ads-php/service/start.php(27): support\App::run()
+#11 {main}
+2026-05-15 14:58:31 pid:1207748 ErrorException: Undefined array key "default" in /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/Log.php:54
+Stack trace:
+#0 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/Log.php(54): support\App::{closure}()
+#1 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(117): support\Log::channel()
+#2 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2641): support\App::support\{closure}()
+#3 [internal function]: Workerman\Worker->Workerman\{closure}()
+#4 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2659): Fiber->start()
+#5 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1756): Workerman\Worker->run()
+#6 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1554): Workerman\Worker::forkOneWorkerForLinux()
+#7 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1534): Workerman\Worker::forkWorkersForLinux()
+#8 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(603): Workerman\Worker::forkWorkers()
+#9 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(147): Workerman\Worker::runAll()
+#10 /home/wwwroot/ads-php/service/start.php(27): support\App::run()
+#11 {main}
+2026-05-15 14:58:31 pid:1207758 ErrorException: Undefined array key "default" in /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/Log.php:54
+Stack trace:
+#0 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/Log.php(54): support\App::{closure}()
+#1 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(117): support\Log::channel()
+#2 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2641): support\App::support\{closure}()
+#3 [internal function]: Workerman\Worker->Workerman\{closure}()
+#4 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2659): Fiber->start()
+#5 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1756): Workerman\Worker->run()
+#6 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1554): Workerman\Worker::forkOneWorkerForLinux()
+#7 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1534): Workerman\Worker::forkWorkersForLinux()
+#8 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(603): Workerman\Worker::forkWorkers()
+#9 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(147): Workerman\Worker::runAll()
+#10 /home/wwwroot/ads-php/service/start.php(27): support\App::run()
+#11 {main}
+2026-05-15 14:58:31 pid:1207760 ErrorException: Undefined array key "default" in /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/Log.php:54
+Stack trace:
+#0 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/Log.php(54): support\App::{closure}()
+#1 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(117): support\Log::channel()
+#2 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2641): support\App::support\{closure}()
+#3 [internal function]: Workerman\Worker->Workerman\{closure}()
+#4 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2659): Fiber->start()
+#5 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1756): Workerman\Worker->run()
+#6 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1554): Workerman\Worker::forkOneWorkerForLinux()
+#7 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1534): Workerman\Worker::forkWorkersForLinux()
+#8 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(603): Workerman\Worker::forkWorkers()
+#9 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(147): Workerman\Worker::runAll()
+#10 /home/wwwroot/ads-php/service/start.php(27): support\App::run()
+#11 {main}
+2026-05-15 14:58:31 pid:1207767 ErrorException: Undefined array key "default" in /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/Log.php:54
+Stack trace:
+#0 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/Log.php(54): support\App::{closure}()
+#1 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(117): support\Log::channel()
+#2 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2641): support\App::support\{closure}()
+#3 [internal function]: Workerman\Worker->Workerman\{closure}()
+#4 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2659): Fiber->start()
+#5 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1756): Workerman\Worker->run()
+#6 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1554): Workerman\Worker::forkOneWorkerForLinux()
+#7 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1534): Workerman\Worker::forkWorkersForLinux()
+#8 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(603): Workerman\Worker::forkWorkers()
+#9 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(147): Workerman\Worker::runAll()
+#10 /home/wwwroot/ads-php/service/start.php(27): support\App::run()
+#11 {main}
+2026-05-15 14:58:31 pid:1207775 ErrorException: Undefined array key "default" in /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/Log.php:54
+Stack trace:
+#0 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/Log.php(54): support\App::{closure}()
+#1 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(117): support\Log::channel()
+#2 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2641): support\App::support\{closure}()
+#3 [internal function]: Workerman\Worker->Workerman\{closure}()
+#4 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2659): Fiber->start()
+#5 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1756): Workerman\Worker->run()
+#6 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1554): Workerman\Worker::forkOneWorkerForLinux()
+#7 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1534): Workerman\Worker::forkWorkersForLinux()
+#8 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(603): Workerman\Worker::forkWorkers()
+#9 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(147): Workerman\Worker::runAll()
+#10 /home/wwwroot/ads-php/service/start.php(27): support\App::run()
+#11 {main}
+2026-05-15 14:58:31 pid:1207764 ErrorException: Undefined array key "default" in /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/Log.php:54
+Stack trace:
+#0 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/Log.php(54): support\App::{closure}()
+#1 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(117): support\Log::channel()
+#2 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2641): support\App::support\{closure}()
+#3 [internal function]: Workerman\Worker->Workerman\{closure}()
+#4 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2659): Fiber->start()
+#5 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1756): Workerman\Worker->run()
+#6 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1554): Workerman\Worker::forkOneWorkerForLinux()
+#7 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1534): Workerman\Worker::forkWorkersForLinux()
+#8 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(603): Workerman\Worker::forkWorkers()
+#9 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(147): Workerman\Worker::runAll()
+#10 /home/wwwroot/ads-php/service/start.php(27): support\App::run()
+#11 {main}
+2026-05-15 14:58:31 pid:1207777 ErrorException: Undefined array key "default" in /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/Log.php:54
+Stack trace:
+#0 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/Log.php(54): support\App::{closure}()
+#1 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(117): support\Log::channel()
+#2 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2641): support\App::support\{closure}()
+#3 [internal function]: Workerman\Worker->Workerman\{closure}()
+#4 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2659): Fiber->start()
+#5 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1756): Workerman\Worker->run()
+#6 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1554): Workerman\Worker::forkOneWorkerForLinux()
+#7 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1534): Workerman\Worker::forkWorkersForLinux()
+#8 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(603): Workerman\Worker::forkWorkers()
+#9 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(147): Workerman\Worker::runAll()
+#10 /home/wwwroot/ads-php/service/start.php(27): support\App::run()
+#11 {main}
+2026-05-15 14:58:31 pid:1207782 ErrorException: Undefined array key "default" in /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/Log.php:54
+Stack trace:
+#0 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/Log.php(54): support\App::{closure}()
+#1 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(117): support\Log::channel()
+#2 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2641): support\App::support\{closure}()
+#3 [internal function]: Workerman\Worker->Workerman\{closure}()
+#4 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2659): Fiber->start()
+#5 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1756): Workerman\Worker->run()
+#6 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1554): Workerman\Worker::forkOneWorkerForLinux()
+#7 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1534): Workerman\Worker::forkWorkersForLinux()
+#8 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(603): Workerman\Worker::forkWorkers()
+#9 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(147): Workerman\Worker::runAll()
+#10 /home/wwwroot/ads-php/service/start.php(27): support\App::run()
+#11 {main}
+2026-05-15 14:58:31 pid:1207772 ErrorException: Undefined array key "default" in /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/Log.php:54
+Stack trace:
+#0 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/Log.php(54): support\App::{closure}()
+#1 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(117): support\Log::channel()
+#2 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2641): support\App::support\{closure}()
+#3 [internal function]: Workerman\Worker->Workerman\{closure}()
+#4 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2659): Fiber->start()
+#5 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1756): Workerman\Worker->run()
+#6 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1554): Workerman\Worker::forkOneWorkerForLinux()
+#7 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1534): Workerman\Worker::forkWorkersForLinux()
+#8 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(603): Workerman\Worker::forkWorkers()
+#9 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(147): Workerman\Worker::runAll()
+#10 /home/wwwroot/ads-php/service/start.php(27): support\App::run()
+#11 {main}
+2026-05-15 14:58:31 pid:1207768 ErrorException: Undefined array key "default" in /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/Log.php:54
+Stack trace:
+#0 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/Log.php(54): support\App::{closure}()
+#1 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(117): support\Log::channel()
+#2 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2641): support\App::support\{closure}()
+#3 [internal function]: Workerman\Worker->Workerman\{closure}()
+#4 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(2659): Fiber->start()
+#5 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1756): Workerman\Worker->run()
+#6 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1554): Workerman\Worker::forkOneWorkerForLinux()
+#7 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(1534): Workerman\Worker::forkWorkersForLinux()
+#8 /home/wwwroot/ads-php/service/vendor/workerman/workerman/src/Worker.php(603): Workerman\Worker::forkWorkers()
+#9 /home/wwwroot/ads-php/service/vendor/workerman/webman-framework/src/support/App.php(147): Workerman\Worker::runAll()
+#10 /home/wwwroot/ads-php/service/start.php(27): support\App::run()
+#11 {main}
+2026-05-15 15:11:23 pid:1213475 Workerman[start.php] start in DAEMON mode
+2026-05-15 15:11:23 pid:1213475 Workerman[start.php] already running
+2026-05-15 15:12:03 pid:1207742 Workerman[start.php] received signal SIGTERM
+2026-05-15 15:12:03 pid:1207742 Workerman[start.php] stopping
+2026-05-15 15:12:03 pid:1207742 Workerman[start.php] has been stopped
+2026-05-15 15:12:06 pid:1213779 Workerman[start.php] start in DAEMON mode
+2026-05-15 15:16:12 pid:1213784 Workerman[start.php] received signal SIGTERM
+2026-05-15 15:16:12 pid:1213784 Workerman[start.php] stopping
+2026-05-15 15:16:14 pid:1213784 worker[webman:1213787] exit with status 9
+2026-05-15 15:16:14 pid:1213784 worker[webman:1213785] exit with status 9
+2026-05-15 15:16:14 pid:1213784 worker[webman:1213788] exit with status 9
+2026-05-15 15:16:14 pid:1213784 worker[webman:1213817] exit with status 9
+2026-05-15 15:16:14 pid:1213784 worker[webman:1213790] exit with status 9
+2026-05-15 15:16:14 pid:1213784 worker[webman:1213792] exit with status 9
+2026-05-15 15:16:14 pid:1213784 worker[webman:1213786] exit with status 9
+2026-05-15 15:16:14 pid:1213784 worker[webman:1213800] exit with status 9
+2026-05-15 15:16:14 pid:1213784 worker[webman:1213810] exit with status 9
+2026-05-15 15:16:14 pid:1213784 worker[webman:1213794] exit with status 9
+2026-05-15 15:16:14 pid:1213784 worker[webman:1213812] exit with status 9
+2026-05-15 15:16:14 pid:1213784 worker[webman:1213806] exit with status 9
+2026-05-15 15:16:14 pid:1213784 worker[webman:1213801] exit with status 9
+2026-05-15 15:16:14 pid:1213784 worker[webman:1213821] exit with status 9
+2026-05-15 15:16:14 pid:1213784 worker[webman:1213813] exit with status 9
+2026-05-15 15:16:14 pid:1213784 worker[webman:1213823] exit with status 9
+2026-05-15 15:16:14 pid:1213784 Workerman[start.php] has been stopped
+2026-05-15 15:16:14 pid:1216107 Workerman[start.php] start in DAEMON mode
+2026-05-15 15:18:41 pid:1217662 Workerman[start.php] restart
+2026-05-15 15:18:41 pid:1217662 Workerman[start.php] is stopping ...
+2026-05-15 15:18:41 pid:1216112 Workerman[start.php] received signal SIGINT
+2026-05-15 15:18:41 pid:1216112 Workerman[start.php] stopping
+2026-05-15 15:18:43 pid:1216112 worker[webman:1216116] exit with status 9
+2026-05-15 15:18:43 pid:1216112 worker[webman:1216115] exit with status 9
+2026-05-15 15:18:43 pid:1216112 worker[webman:1216114] exit with status 9
+2026-05-15 15:18:43 pid:1216112 worker[webman:1216136] exit with status 9
+2026-05-15 15:18:43 pid:1216112 worker[webman:1216120] exit with status 9
+2026-05-15 15:18:43 pid:1216112 worker[webman:1216146] exit with status 9
+2026-05-15 15:18:43 pid:1216112 worker[webman:1216119] exit with status 9
+2026-05-15 15:18:43 pid:1216112 worker[webman:1216127] exit with status 9
+2026-05-15 15:18:43 pid:1216112 worker[webman:1216130] exit with status 9
+2026-05-15 15:18:43 pid:1216112 worker[webman:1216113] exit with status 9
+2026-05-15 15:18:43 pid:1216112 worker[webman:1216131] exit with status 9
+2026-05-15 15:18:43 pid:1216112 worker[webman:1216122] exit with status 9
+2026-05-15 15:18:43 pid:1216112 worker[webman:1216134] exit with status 9
+2026-05-15 15:18:43 pid:1216112 worker[webman:1216138] exit with status 9
+2026-05-15 15:18:43 pid:1216112 worker[webman:1216142] exit with status 9
+2026-05-15 15:18:43 pid:1216112 worker[webman:1216150] exit with status 9
+2026-05-15 15:18:43 pid:1216112 Workerman[start.php] has been stopped
+2026-05-15 15:18:46 pid:1217662 Workerman[start.php] stop fail
+2026-05-15 15:30:48 pid:1223497 Workerman[start.php] start in DAEMON mode
+2026-05-15 15:34:05 pid:1223503 Workerman[start.php] received signal SIGTERM
+2026-05-15 15:34:05 pid:1223503 Workerman[start.php] stopping
+2026-05-15 15:34:07 pid:1223503 worker[webman:1223506] exit with status 9
+2026-05-15 15:34:07 pid:1223503 worker[webman:1223507] exit with status 9
+2026-05-15 15:34:07 pid:1223503 worker[webman:1223513] exit with status 9
+2026-05-15 15:34:07 pid:1223503 worker[webman:1223534] exit with status 9
+2026-05-15 15:34:07 pid:1223503 worker[webman:1223510] exit with status 9
+2026-05-15 15:34:07 pid:1223503 worker[webman:1223514] exit with status 9
+2026-05-15 15:34:07 pid:1223503 worker[webman:1223525] exit with status 9
+2026-05-15 15:34:07 pid:1223503 worker[webman:1223505] exit with status 9
+2026-05-15 15:34:07 pid:1223503 worker[webman:1223533] exit with status 9
+2026-05-15 15:34:07 pid:1223503 worker[webman:1223508] exit with status 9
+2026-05-15 15:34:07 pid:1223503 worker[webman:1223504] exit with status 9
+2026-05-15 15:34:07 pid:1223503 worker[webman:1223536] exit with status 9
+2026-05-15 15:34:07 pid:1223503 worker[webman:1223516] exit with status 9
+2026-05-15 15:34:07 pid:1223503 worker[webman:1223527] exit with status 9
+2026-05-15 15:34:07 pid:1223503 worker[webman:1223518] exit with status 9
+2026-05-15 15:34:07 pid:1223503 worker[webman:1223530] exit with status 9
+2026-05-15 15:34:07 pid:1223503 Workerman[start.php] has been stopped
+2026-05-15 15:34:07 pid:1225071 Workerman[start.php] start in DAEMON mode
+2026-05-15 16:07:09 pid:1239886 Workerman[start.php] stop
+2026-05-15 16:07:09 pid:1239886 Workerman[start.php] is stopping ...
+2026-05-15 16:07:09 pid:1225076 Workerman[start.php] received signal SIGINT
+2026-05-15 16:07:09 pid:1225076 Workerman[start.php] stopping
+2026-05-15 16:07:11 pid:1225076 worker[webman:1225077] exit with status 9
+2026-05-15 16:07:11 pid:1225076 worker[webman:1225078] exit with status 9
+2026-05-15 16:07:11 pid:1225076 worker[webman:1225084] exit with status 9
+2026-05-15 16:07:11 pid:1225076 worker[webman:1225080] exit with status 9
+2026-05-15 16:07:11 pid:1225076 worker[webman:1225093] exit with status 9
+2026-05-15 16:07:11 pid:1225076 worker[webman:1225098] exit with status 9
+2026-05-15 16:07:11 pid:1225076 worker[webman:1225111] exit with status 9
+2026-05-15 16:07:11 pid:1225076 worker[webman:1225114] exit with status 9
+2026-05-15 16:07:11 pid:1225076 worker[webman:1225115] exit with status 9
+2026-05-15 16:07:11 pid:1225076 worker[webman:1225079] exit with status 9
+2026-05-15 16:07:11 pid:1225076 worker[webman:1225081] exit with status 9
+2026-05-15 16:07:11 pid:1225076 worker[webman:1225087] exit with status 9
+2026-05-15 16:07:11 pid:1225076 worker[webman:1225101] exit with status 9
+2026-05-15 16:07:11 pid:1225076 worker[webman:1225102] exit with status 9
+2026-05-15 16:07:11 pid:1225076 worker[webman:1225106] exit with status 9
+2026-05-15 16:07:11 pid:1225076 worker[webman:1225096] exit with status 9
+2026-05-15 16:07:11 pid:1225076 Workerman[start.php] has been stopped
+2026-05-15 16:07:14 pid:1239886 Workerman[start.php] stop fail

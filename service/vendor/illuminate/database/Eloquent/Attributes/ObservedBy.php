@@ -1,0 +1,23 @@
+<?php
+/**
+ * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+ */
+
+
+namespace Illuminate\Database\Eloquent\Attributes;
+
+use Attribute;
+
+#[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
+class ObservedBy
+{
+    /**
+     * Create a new attribute instance.
+     *
+     * @param  array|string  $classes
+     * @return void
+     */
+    public function __construct(public array|string $classes)
+    {
+    }
+}

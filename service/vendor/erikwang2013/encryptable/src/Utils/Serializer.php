@@ -1,0 +1,59 @@
+<?php
+
+/**
+ * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+ */
+
+namespace Maize\Encryptable\Utils;
+
+use Maize\Encryptable\Exceptions\SerializationException;
+use Maize\Encryptable\Exceptions\UnserializationException;
+
+class Serializer
+{
+    const SUPPORTED_TYPES = [
+        'string',
+        'integer',
+        'double',
+        'boolean',
+        'NULL',
+    ];
+
+    public static function serialize($value): string
+    {
+        $valueType = gettype($value);
+
+        if (! in_array($valueType, self::SUPPORTED_TYPES, true)) {
+            throw new SerializationException;
+        }
+
+        if ($valueType === 'NULL') {
+            return 'NULL:';
+        }
+
+        $value = strval($value);
+
+        return "{$valueType}:{$value}";
+    }
+
+    public static function unserialize(string $payload): mixed
+    {
+        $payload = explode(':', $payload, 2);
+
+        if (count($payload) !== 2) {
+            throw new UnserializationException;
+        }
+
+        [$valueType, $value] = $payload;
+
+        if ($valueType === 'NULL') {
+            return null;
+        }
+
+        if (! settype($value, $valueType)) {
+            throw new UnserializationException;
+        }
+
+        return $value;
+    }
+}
