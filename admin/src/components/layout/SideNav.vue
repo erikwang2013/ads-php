@@ -42,12 +42,20 @@
       <el-menu-item index="/alerts">告警规则</el-menu-item>
       <el-menu-item index="/alerts/logs">告警记录</el-menu-item>
     </el-sub-menu>
+    <el-sub-menu index="system">
+      <template #title>
+        <el-icon><Setting /></el-icon>
+        <span>系统管理</span>
+      </template>
+      <el-menu-item index="/system/users">用户管理</el-menu-item>
+      <el-menu-item index="/system/audit">审计日志</el-menu-item>
+    </el-sub-menu>
   </el-menu>
 </template>
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import { DataAnalysis, Promotion, User, Bell, Document } from '@element-plus/icons-vue'
+import { DataAnalysis, Promotion, User, Bell, Document, Setting } from '@element-plus/icons-vue'
 import { useAlertStore } from '@/stores/alert'
 defineProps<{ collapsed: boolean }>()
 const route = useRoute()

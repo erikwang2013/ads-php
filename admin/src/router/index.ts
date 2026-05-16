@@ -55,6 +55,18 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/report/ReportExport.vue'),
         meta: { title: '报表导出' },
       },
+      {
+        path: 'system/users',
+        name: 'UserManage',
+        component: () => import('@/views/system/UserManage.vue'),
+        meta: { title: '用户管理' },
+      },
+      {
+        path: 'system/audit',
+        name: 'AuditLog',
+        component: () => import('@/views/system/AuditLog.vue'),
+        meta: { title: '审计日志' },
+      },
     ],
   },
 ]
