@@ -201,7 +201,7 @@ ads-php/
 
 **命名规范**: 表前缀 `erik_`，主键 `BIGINT UNSIGNED PRIMARY KEY`（无自增，Snowflake ID），引擎 InnoDB，字符集 utf8mb4
 
-**13 张表**: `erik_tenants` / `erik_platform_accounts` / `erik_auth_tokens` / `erik_campaigns` / `erik_ad_groups` / `erik_creatives` / `erik_report_metrics` / `erik_report_extras` / `erik_alert_rules` / `erik_alert_logs`
+**14 张表**: `erik_tenants` / `erik_platform_accounts` / `erik_auth_tokens` / `erik_campaigns` / `erik_ad_groups` / `erik_creatives` / `erik_report_metrics` / `erik_report_extras` / `erik_alert_rules` / `erik_alert_logs` / `erik_sync_errors` / `admin_users` / `admin_roles` / `admin_audit_logs`
 
 ---
 
@@ -212,6 +212,22 @@ ads-php/
 | TokenRefreshTask | 每 55 分钟 | 扫描过期 Token，自动刷新 |
 | DataSyncTask | 每 10 分钟 | 拉取各平台计划+报表，写入统一表，清仪表盘缓存 |
 | AlertCheckTask | 每 5 分钟 | 遍历启用告警规则，评估阈值，触发推送 |
+| RetrySyncTask | 每 3 分钟 | 重试失败的同步任务（最多3次，指数退避） |
+
+---
+
+## 测试
+
+```bash
+cd service && ./vendor/bin/phpunit
+# 20 测试 / 41 断言 — 覆盖 FieldMapping / Hashids / ReportBuilder / CampaignData / AdapterRegistry
+```
+
+## CI/CD
+
+GitHub Actions 自动管线：**PHP Syntax → PHPUnit → TypeScript → Docker Build**
+
+`.github/dependabot.yml` 每周自动更新 Composer + npm + Docker 依赖。
 
 ---
 

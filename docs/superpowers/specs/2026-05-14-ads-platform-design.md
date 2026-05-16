@@ -6,12 +6,25 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 对接 **29 个广告平台** 的统一广告管理平台，覆盖国内外主流广告厂商，支持广告投放管理、跨平台数据报表、实时告警监控。
 
-- **服务端**: webman v2 (PHP 8.2+)
-- **管理后台**: webman-admin v2 (Vue 3 + TypeScript + Element Plus + ECharts 5)
-- **App**: Flutter (iOS/Android/Web PC 响应式) + HarmonyOS (ArkTS + ArkUI)
+- **service** — 用户端业务服务，webman v2 (PHP 8.2+)，监听 :8788
+- **admin** — 独立管理后台，webman-admin v2 (PHP 后端 :8789 + Vue 3 SPA)
+- **apps** — 客户端 App，Flutter (iOS/Android/Web PC) + HarmonyOS (ArkTS)
 - **基础设施**: Docker + Nginx + MySQL 8.0 + Redis 7 + Elasticsearch
 
 业务场景覆盖自用投放、SaaS 多租户、代运营三种模式。
+
+### 通信架构
+
+```
+admin:8789 (管理后台)          service:8788 (业务API)
+┌─────────────────┐    HTTP    ┌──────────────────┐
+│ webman-admin v2 │ ────────→  │ webman v2 API    │
+│ PHP后端+Vue SPA │ ServiceProxy│ 7插件・29适配器   │
+└────────┬────────┘            └────────┬─────────┘
+         │                              │
+    管理操作                        业务数据
+  (用户/RBAC/审计)           (广告/报表/告警/同步)
+```
 
 ---
 
@@ -549,8 +562,9 @@ GET    /api/v1/alerts/unread-count
 | TokenRefreshTask | 每 55 分钟 | 扫描过期 Token，自动刷新 |
 | DataSyncTask | 每 10 分钟 | 拉取各平台计划+近2日报表，同步后清仪表盘缓存 |
 | AlertCheckTask | 每 5 分钟 | 遍历启用规则，评估阈值，触发推送 |
+| RetrySyncTask | 每 3 分钟 | 重试失败同步（erik_sync_errors 表，最多3次，指数退避） |
 
-同步策略：适配器 Generator 流式处理，游标/分页防漏，失败自动重试 3 次，curl_errno 检查。
+同步策略：适配器 Generator 流式处理，游标/分页防漏，失败自动重试，curl_errno 检查，平台级 QPS 限流。
 
 ---
 
@@ -600,3 +614,62 @@ make admin-dev                # 前端开发模式
 | Phase 5 | 告警系统 + 报表导出 + Flutter App + HarmonyOS App + 仪表盘增强 | ✅ |
 | Phase 6 | Erik Stack 集成（snowflake/hashids/jwt-webman/encryption/encryptable/scout/season）| ✅ |
 | Phase 7 | Docker 部署 + 安全加固 (RateLimit/CORS/SQLGuard) + 缓存层 + README | ✅ |
+| Phase 8 | 目录重组 (apps/) + Admin 独立 webman-admin v2 (PHP后端+ServiceProxy) + RBAC + 审计日志 | ✅ |
+| Phase 9 | API 文档 + 平台速率限制 + 同步重试队列 + PHPUnit 20测试 + GitHub Actions CI/CD | ✅ |
+
+---
+
+## 十三、Admin 管理后台架构
+
+### PHP 后端（端口 8789）
+
+```
+admin/
+├── public/web/              # Vue SPA 源码（开发模式 Vite :5173）
+├── app/
+│   ├── controller/
+│   │   ├── AuthController.php       # 管理员登录（JWT）
+│   │   ├── AdminUserController.php  # 用户 CRUD（bcrypt 密码）
+│   │   ├── AuditLogController.php   # 审计日志查询
+│   │   └── ServiceProxy.php         # HTTP 代理 → service:8788
+│   ├── middleware/AuthCheck.php     # JWT/Session 双重认证
+│   └── service/AuditService.php     # 操作审计写入
+├── config/route.php                # Admin API 路由
+└── migration/create_admin_tables.sql # admin_users/roles/audit_logs
+```
+
+### 角色权限（RBAC）
+
+| 角色 | slug | 权限 |
+|------|------|------|
+| 超级管理员 | super_admin | `*` 全部权限 |
+| 运营经理 | ops_manager | dashboard, campaigns, reports, alerts, accounts |
+| 数据分析师 | analyst | dashboard, reports |
+
+### Admin 与 Service 通信
+
+Admin 通过 `ServiceProxy`（cURL）调用 service API，转发 JWT Token。Admin 自身负责认证鉴权和用户管理，业务数据完全由 service 提供。
+
+---
+
+## 十四、测试 & CI/CD
+
+### PHPUnit 测试套件
+
+```bash
+cd service && ./vendor/bin/phpunit
+# 20 tests / 41 assertions
+# FieldMappingTest (5) / HashidsServiceTest (5)
+# ReportBuilderTest (3) / CampaignDataTest (3)
+# AdapterRegistryTest (4)
+```
+
+### GitHub Actions CI
+
+```yaml
+Push/PR → PHP Syntax → PHPUnit (MySQL 8.0) → TypeScript (vue-tsc) → Docker Build
+```
+
+### Dependabot
+
+每周自动更新 Composer + npm + Docker 依赖。
