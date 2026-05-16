@@ -1,1 +1,0 @@
-import{a}from"./index-C-n4mCk5.js";const o={list(){return a.get("/platforms")},getOAuthUrl(r,t){return a.get(`/platforms/${r}/oauth-url`,{params:{redirect_uri:t}})},callback(r,t,l){return a.post(`/platforms/${r}/callback`,{state:t,code:l})}};export{o as p};

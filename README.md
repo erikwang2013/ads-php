@@ -180,6 +180,20 @@ ads-php/
 | GET | /api/v1/alerts/logs | 告警记录（按状态筛选） |
 | POST | /api/v1/alerts/logs/:id/acknowledge | 确认告警 |
 | GET | /api/v1/alerts/unread-count | 未读告警数量 |
+| GET | /api/v1/docs | API 文档（HTML，免认证） |
+
+### Admin 端点（端口 8789）
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| POST | /api/admin/login | 管理员登录 |
+| GET | /api/admin/me | 当前管理员信息（含角色权限） |
+| GET | /api/admin/users | 用户管理列表 |
+| POST | /api/admin/users | 创建管理员用户 |
+| PUT | /api/admin/users/:id | 更新管理员用户 |
+| DELETE | /api/admin/users/:id | 禁用管理员用户 |
+| GET | /api/admin/audit-logs | 审计日志（按操作人/类型/日期筛选） |
+| GET | /api/admin/roles | 可用角色列表 |
 
 ---
 
