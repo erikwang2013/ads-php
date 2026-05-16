@@ -111,7 +111,7 @@ make db-init
 cd service && composer install && php start.php start
 
 # 管理后台 (端口 5173)
-cd admin && npm install && npm run dev
+cd admin/public/web && npm install && npm run dev
 
 # Flutter App
 cd apps/flutter && flutter run -d chrome  # Web PC
@@ -120,7 +120,7 @@ cd apps/flutter && flutter run -d chrome  # Web PC
 cd apps/flutter && flutter run -d android # Mobile
 
 # TypeScript 检查
-cd admin && npx vue-tsc --noEmit   # 零错误
+cd admin/public/web && npx vue-tsc --noEmit   # 零错误
 ```
 
 ---
@@ -129,43 +129,27 @@ cd admin && npx vue-tsc --noEmit   # 零错误
 
 ```
 ads-php/
-├── service/                    # 用户端业务服务 (webman v2)
-│   ├── plugin/
-│   │   ├── ads-tenant/         # 多租户管理
-│   │   ├── ads-account/        # 账户 & OAuth 授权（含encryptable加密）
-│   │   ├── ads-platform/       # 29 个广告平台适配器
-│   │   ├── ads-api/            # RESTful API (7 控制器 + 7 中间件)
-│   │   ├── ads-task/           # 定时任务调度
-│   │   ├── ads-report/         # 报表引擎 & 导出
-│   │   └── ads-alert/          # 告警监控 & 推送
-│   ├── config/                 # 配置文件（带注释）
-│   └── support/                # Erik Stack 工具类
-├── admin/                      # 独立管理后台 (webman-admin v2, PHP + Vue3)
-│   ├── start.php               # 入口引导 (端口 8789)
-│   ├── config/                 # 管理后台配置 (app/database/redis/server)
-│   ├── app/
-│   │   ├── controller/         # 管理端控制器 (ServiceProxy → service:8788)
-│   │   └── middleware/         # 管理端中间件 (AuthCheck: JWT + Session)
-│   └── src/                    # Vue 3 + TS + Element Plus + ECharts
-│       ├── views/              # 页面 (dashboard/campaign/account/alert/report/system)
-│       ├── components/         # 组件 (layout/MetricCard/PlatformBadge)
-│       ├── api/                # Axios API 层 (7 模块)
-│       ├── stores/             # Pinia 状态 (auth/alert/admin)
-│       └── router/             # Vue Router
-├── apps/                       # 客户端 App
-│   ├── flutter/                # Flutter App (PC Web/Mobile 响应式)
-│   │   └── lib/                # Dart + Riverpod + GoRouter + Dio
-│   └── harmonyos/              # HarmonyOS App (ArkTS)
-│       └── entry/src/main/ets/ # ArkUI + HTTP Client
-├── docker/                     # Docker & Nginx 配置
-├── docs/                       # 设计文档 & 实施计划
-├── docker-compose.yml          # Docker 一键部署
-├── Dockerfile                  # PHP 镜像
-├── Dockerfile.admin            # 管理后台 Nginx 镜像
-└── Makefile                    # 运维快捷命令
+├── service/                     # 用户端业务服务 (webman v2 :8788)
+│   ├── plugin/                  # 7 个业务插件
+│   ├── config/                  # 配置文件
+│   ├── support/                 # Erik Stack 工具类
+│   └── tests/                   # PHPUnit 测试
+├── admin/                       # 独立管理后台 (webman-admin v2 :8789)
+│   ├── public/web/              # Vue 3 + TS SPA 源码 (vite.config.ts, src/)
+│   ├── app/                     # PHP 后端 (controller/middleware/service)
+│   ├── config/                  # Admin 配置
+│   └── start.php                # Admin 入口
+├── apps/                        # 客户端 App
+│   ├── flutter/                 # Flutter (PC Web/Mobile 响应式)
+│   └── harmonyos/               # HarmonyOS (ArkTS)
+├── docker/                      # Docker & Nginx 配置
+├── .github/                     # CI/CD workflows
+├── docs/                        # 设计文档 & 实施计划
+├── docker-compose.yml           # Docker 一键部署
+├── Dockerfile                   # PHP 镜像
+├── Dockerfile.admin             # Admin Nginx 镜像
+└── Makefile                     # 运维快捷命令
 ```
-
----
 
 ## API 端点
 
