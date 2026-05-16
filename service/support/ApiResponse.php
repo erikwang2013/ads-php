@@ -6,10 +6,43 @@
 namespace app\support;
 
 use erik\support\HashidsService;
+use erik\support\I18n;
 
 class ApiResponse
 {
     protected static ?HashidsService $hashids = null;
+
+    /**
+     * Current request language, lazily detected.
+     */
+    protected static ?string $lang = null;
+
+    /**
+     * Get or detect the current request language.
+     */
+    public static function lang(): string
+    {
+        if (static::$lang === null) {
+            static::$lang = I18n::detectLang();
+        }
+        return static::$lang;
+    }
+
+    /**
+     * Explicitly set the language for the current context.
+     */
+    public static function setLang(string $lang): void
+    {
+        static::$lang = $lang;
+    }
+
+    /**
+     * Translate a message key if it exists in I18n, otherwise return as-is.
+     */
+    protected static function t(string $message): string
+    {
+        return I18n::get($message, static::lang()) ?: $message;
+    }
 
     /**
      * Get or create the shared HashidsService instance.
@@ -64,7 +97,8 @@ class ApiResponse
         if ($encodeIds && is_array($data)) {
             $data = static::encodeIdsRecursive($data);
         }
-        return static::json(0, $message, $data);
+        $msg = static::t($message);
+        return static::json(0, $msg, $data);
     }
 
     public static function error(string $message, int $code = 1, int $httpCode = 200): Webman\Http\Response

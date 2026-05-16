@@ -8,6 +8,15 @@
     </div>
     <div class="right">
       <span class="username">{{ authStore.user?.username }}</span>
+      <el-dropdown @command="switchLang">
+        <span class="lang-switch">{{ locale === 'zh-CN' ? '中文' : 'EN' }}</span>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item command="zh-CN">中文</el-dropdown-item>
+            <el-dropdown-item command="en">English</el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
       <el-button text @click="authStore.logout()">退出</el-button>
     </div>
   </div>
@@ -16,6 +25,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { Fold, Expand } from '@element-plus/icons-vue'
 import { useAuthStore } from '@/stores/auth'
 
@@ -24,6 +34,8 @@ defineEmits(['toggle'])
 const authStore = useAuthStore()
 const route = useRoute()
 const title = computed(() => route.meta.title as string || '')
+const { locale } = useI18n()
+function switchLang(cmd: string) { locale.value = cmd; localStorage.setItem('lang', cmd) }
 </script>
 
 <style scoped>
