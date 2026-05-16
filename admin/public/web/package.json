@@ -14,7 +14,7 @@
     "dayjs": "^1.11",
     "echarts": "^5.5",
     "element-plus": "^2.8",
-    "pinia": "^2.2",
+    "pinia": "^3.0",
     "vue": "^3.5",
     "vue-echarts": "^7.0",
     "vue-i18n": "^9.14.4",
