@@ -14,4 +14,5 @@
 /service/vendor
 /admin/vendor
 /service/composer.lock
+/service/.phpunit.result.cache
 /admin/composer.lock
