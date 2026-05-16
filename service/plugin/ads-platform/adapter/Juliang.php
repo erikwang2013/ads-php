@@ -266,7 +266,7 @@ class Juliang implements PlatformAdapter
         if ($body === false) {
             $error = curl_error($ch);
             curl_close($ch);
-            throw new RuntimeException('Juliang API network error: ' . $error);
+            throw new RuntimeException('Juliang API network error (code ' . curl_errno($ch) . '): ' . $error);
         }
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);

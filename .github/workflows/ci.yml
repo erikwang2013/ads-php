@@ -56,9 +56,9 @@ jobs:
         with:
           node-version: '20'
       - name: Install dependencies
-        run: cd admin && npm ci
+        run: cd admin/public/web && npm ci
       - name: Type check
-        run: cd admin && npx vue-tsc --noEmit
+        run: cd admin/public/web && npx vue-tsc --noEmit
 
   docker-build:
     name: Docker Build

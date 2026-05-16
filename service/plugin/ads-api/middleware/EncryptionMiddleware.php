@@ -16,7 +16,7 @@ class EncryptionMiddleware implements MiddlewareInterface
         // Decrypt request body if encrypted
         $body = $request->rawBody();
         if (!empty($body) && $request->header('X-Encrypted')) {
-            $decrypted = Encryption::decrypt($body, getenv('APP_ENCRYPTION_KEY') ?: '');
+            $decrypted = Encryption::decrypt($body, env('APP_ENCRYPTION_KEY', ''));
             $request->setRawBody($decrypted);
         }
 
@@ -25,7 +25,7 @@ class EncryptionMiddleware implements MiddlewareInterface
 
         // Encrypt response if requested
         if ($request->header('X-Encrypted')) {
-            $encrypted = Encryption::encrypt($response->rawBody(), getenv('APP_ENCRYPTION_KEY') ?: '');
+            $encrypted = Encryption::encrypt($response->rawBody(), env('APP_ENCRYPTION_KEY', ''));
             return new Response(200, ['Content-Type' => 'application/octet-stream', 'X-Encrypted' => '1'], $encrypted);
         }
 

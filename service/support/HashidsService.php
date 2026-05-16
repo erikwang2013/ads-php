@@ -14,8 +14,8 @@ class HashidsService
     public function __construct()
     {
         $this->hashids = new Hashids(
-            getenv('HASHIDS_SALT') ?: 'ads-platform-salt',
-            (int)(getenv('HASHIDS_MIN_LENGTH') ?: 8)
+            env('HASHIDS_SALT', 'ads-platform-salt'),
+            (int) env('HASHIDS_MIN_LENGTH', 8)
         );
     }
 

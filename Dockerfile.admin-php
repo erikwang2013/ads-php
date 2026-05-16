@@ -1,0 +1,9 @@
+FROM php:8.2-cli-alpine
+RUN apk add --no-cache curl git unzip mysql-client redis && docker-php-ext-install pdo pdo_mysql pcntl
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+WORKDIR /app
+COPY admin/composer.json admin/composer.lock* ./
+RUN composer install --no-dev --optimize-autoloader
+COPY admin/ ./
+EXPOSE 8789
+CMD ["php", "start.php", "start"]

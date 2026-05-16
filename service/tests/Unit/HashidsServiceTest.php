@@ -1,4 +1,7 @@
 <?php
+/**
+ * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+ */
 namespace Tests\Unit;
 
 use erik\support\HashidsService;

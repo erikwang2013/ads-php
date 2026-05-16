@@ -12,7 +12,7 @@ class DocController
     public function index(): \Webman\Http\Response
     {
         $routes = [
-            ['method' => 'POST', 'path' => '/api/v1/auth/login', 'desc' => '登录获取 JWT Token', 'auth' => false, 'body' => '{"username":"admin","password":"admin123"}'],
+            ['method' => 'POST', 'path' => '/api/v1/auth/login', 'desc' => '登录获取 JWT Token', 'auth' => false, 'body' => '{"username":"admin","password":"******"}'],
             ['method' => 'GET',  'path' => '/api/v1/auth/me', 'desc' => '当前用户信息', 'auth' => true],
 
             ['method' => 'GET',  'path' => '/api/v1/platforms', 'desc' => '支持的广告平台列表', 'auth' => true],

@@ -7,7 +7,7 @@ updates:
     labels: [dependencies, php]
 
   - package-ecosystem: npm
-    directory: /admin
+    directory: /admin/public/web
     schedule:
       interval: weekly
     labels: [dependencies, javascript]

@@ -1,5 +1,7 @@
 <?php
 /**
+ * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+ *
  * Admin panel database — stores users, roles, permissions.
  * Business data (campaigns, reports) lives in the service database.
  */

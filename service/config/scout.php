@@ -1,5 +1,7 @@
 <?php
 /**
+ * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+ *
  * Elasticsearch / Meilisearch configuration for webman-scout.
  * Models that use the Searchable trait will auto-sync to the configured driver.
  */
