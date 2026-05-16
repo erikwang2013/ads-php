@@ -5,7 +5,7 @@
 
 namespace erik\support;
 
-use Erikwang2013\Hashids\Hashids;
+use Hashids\Hashids;
 
 class HashidsService
 {

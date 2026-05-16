@@ -10,7 +10,7 @@ class FieldMapping
     public function __construct(
         protected array $fieldMap,
         protected array $statusMap,
-        protected ?callable $valueTransformer = null,
+        protected mixed $valueTransformer = null,
     ) {}
 
     public function map(array $raw): array

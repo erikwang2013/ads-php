@@ -1,6 +1,9 @@
 {
     "name": "ads/service",
     "type": "project",
+    "require-dev": {
+        "phpunit/phpunit": "^10.0"
+    },
     "require": {
         "php": ">=8.2",
         "workerman/webman-framework": "^2.0",
@@ -23,11 +26,14 @@
     "autoload": {
         "psr-4": {
             "app\\": "",
-            "erik\\": "support/",
+            "erik\\support\\": "support/",
             "plugin\\ads_platform\\": "plugin/ads-platform/",
             "plugin\\ads_account\\": "plugin/ads-account/",
             "plugin\\ads_api\\": "plugin/ads-api/",
-            "plugin\\ads_tenant\\": "plugin/ads-tenant/"
+            "plugin\\ads_tenant\\": "plugin/ads-tenant/",
+            "plugin\\ads_report\\": "plugin/ads-report/",
+            "plugin\\ads_alert\\": "plugin/ads-alert/",
+            "plugin\\ads_task\\": "plugin/ads-task/"
         }
     },
     "minimum-stability": "stable",

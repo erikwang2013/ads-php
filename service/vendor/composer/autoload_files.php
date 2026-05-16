@@ -31,7 +31,9 @@ return array(
     '37a3dc5111fe8f707ab4c132ef1dbc62' => $vendorDir . '/guzzlehttp/guzzle/src/functions_include.php',
     '253c157292f75eb38082b5acb06f3f01' => $vendorDir . '/nikic/fast-route/src/functions.php',
     'e39a8b23c42d4e1452234d762b03835a' => $vendorDir . '/ramsey/uuid/src/functions.php',
+    '6124b4c8570aa390c21fafd04a26c69f' => $vendorDir . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
     'd2136ff22b54ac75cd96a40e0022218e' => $vendorDir . '/workerman/webman-framework/src/support/helpers.php',
     '7f32199f264e2b121084d959b3d0d3b6' => $vendorDir . '/erikwang2013/season/src/helpers.php',
     'c5bbb99cef388ad73769828ea44fba58' => $vendorDir . '/erikwang2013/webman-scout/helpers.php',
+    'ec07570ca5a812141189b1fa81503674' => $vendorDir . '/phpunit/phpunit/src/Framework/Assert/Functions.php',
 );
