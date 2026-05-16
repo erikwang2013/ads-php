@@ -1,0 +1,23 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deploy target'
+        required: true
+        default: 'staging'
+        type: choice
+        options: [staging, production]
+
+jobs:
+  deploy:
+    name: Deploy to ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy
+        run: |
+          echo "Deploying to ${{ inputs.environment }}..."
+          echo "Build: ${{ github.sha }}"
+          echo "Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz"

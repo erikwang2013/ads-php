@@ -1,0 +1,19 @@
+version: 2
+updates:
+  - package-ecosystem: composer
+    directory: /service
+    schedule:
+      interval: weekly
+    labels: [dependencies, php]
+
+  - package-ecosystem: npm
+    directory: /admin
+    schedule:
+      interval: weekly
+    labels: [dependencies, javascript]
+
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: monthly
+    labels: [dependencies, docker]

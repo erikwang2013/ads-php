@@ -1,0 +1,72 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  php-syntax:
+    name: PHP Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+      - name: Check PHP syntax
+        run: |
+          find service -name "*.php" -not -path "*/vendor/*" -exec php -l {} \; | grep -v "No syntax errors"
+          find admin -name "*.php" -not -path "*/vendor/*" -exec php -l {} \; 2>/dev/null | grep -v "No syntax errors" || true
+
+  php-tests:
+    name: PHPUnit Tests
+    runs-on: ubuntu-latest
+    needs: php-syntax
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: test
+          MYSQL_DATABASE: ads_test
+        ports: ['3306:3306']
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+      - name: Install dependencies
+        run: cd service && composer install --no-interaction
+      - name: Run migrations
+        run: |
+          for f in service/plugin/*/migration/*.sql; do
+            mysql -h 127.0.0.1 -u root -ptest ads_test < "$f"
+          done
+      - name: Run tests
+        run: cd service && ./vendor/bin/phpunit
+
+  typescript:
+    name: TypeScript Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: cd admin && npm ci
+      - name: Type check
+        run: cd admin && npx vue-tsc --noEmit
+
+  docker-build:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    needs: [php-tests, typescript]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build PHP image
+        run: docker build -t ads-php -f Dockerfile .
+      - name: Build Admin image
+        run: docker build -t ads-admin -f Dockerfile.admin .
