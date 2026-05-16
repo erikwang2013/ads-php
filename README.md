@@ -231,6 +231,20 @@ GitHub Actions 自动管线：**PHP Syntax → PHPUnit → TypeScript → Docker
 
 ---
 
+## Skills
+
+`docs/skills/` — 6 个可复用项目技能：
+
+| Skill | 说明 |
+|------|------|
+| `adapter-generator` | 生成新的广告平台适配器（14 方法模板） |
+| `migration-generator` | 生成 SQL 迁移文件（erik_ 前缀 + BIGINT PK） |
+| `erik-stack` | Erik Stack 7 包集成使用指南 |
+| `admin-page-generator` | 生成 Vue3 管理后台页面 |
+| `api-endpoint` | 添加 RESTful API 端点 |
+| `tdd-workflow` | TDD 验证流程（测试→实现→语法→TypeScript→提交） |
+
+
 ## 许可证
 
 Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
