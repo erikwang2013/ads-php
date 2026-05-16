@@ -2,12 +2,11 @@
 /**
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
  *
- * Dependency Injection container configuration (PSR-11 compatible).
+ * 依赖注入容器配置（PSR-11 兼容）
  *
- * Bind interfaces to concrete implementations, or register singleton
- * services that should be shared across the application lifecycle.
+ * 在此将接口绑定到具体实现类，或注册需要在应用生命周期内共享的单例服务。
  *
- * Example usage:
+ * 使用示例：
  *   $container->add(LoggerInterface::class, MonologLogger::class);
  *   $container->addSingleton(Database::class, fn() => new Database($config));
  *
@@ -16,8 +15,10 @@
 
 $container = new Webman\Container();
 
-// --- Service Bindings ---
-// Register commonly used services below for constructor injection
-// and app-level singleton access via app()->get(SomeService::class).
+// ============================================================================
+// 服务绑定
+// ============================================================================
+// 在下面注册常用服务，之后可通过 app()->get(服务名::class) 获取实例，
+// 或通过构造函数自动注入。
 
 return $container;

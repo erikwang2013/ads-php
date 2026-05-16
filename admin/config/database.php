@@ -2,45 +2,42 @@
 /**
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
  *
- * Admin panel database configuration.
+ * 管理后台数据库配置
  *
- * Stores admin-specific tables: admin_users, admin_roles, admin_audit_logs.
- * Business data (campaigns, reports, platform accounts) lives in the
- * service database and is accessed via the service API (:8788), NOT
- * through direct database queries from the admin panel.
+ * 存储 admin 专用表：admin_users / admin_roles / admin_audit_logs。
  *
- * Both admin and service share the same physical MySQL server but
- * use separate table prefixes for clean logical separation.
+ * 业务数据（erik_campaigns、erik_report_metrics 等）存储在同一个 MySQL 实例中，
+ * 但 admin 不直接操作业务表——所有业务查询通过 service API（:8788）完成。
+ * 两者通过表命名前缀区分：业务表 erik_* ，管理表 admin_*。
  */
 
 return [
-    // Default connection name — used by DB::table() when no connection is specified
+    // 默认连接名
     'default' => 'admin',
 
     'connections' => [
         'admin' => [
-            // PDO driver — mysql, pgsql, sqlite, sqlsrv
+            // PDO 驱动：mysql / pgsql / sqlite / sqlsrv
             'driver'    => 'mysql',
 
-            // Connection host (set via DB_HOST env var, defaults to localhost)
+            // 数据库主机地址
             'host'      => env('DB_HOST', '127.0.0.1'),
 
-            // Connection port
+            // 数据库端口
             'port'      => env('DB_PORT', '3306'),
 
-            // Database name — shared with the service for operational simplicity
+            // 数据库名——与 service 共享同一个库以简化运维
             'database'  => env('DB_DATABASE', 'ads'),
 
-            // Authentication credentials
+            // 认证凭据
             'username'  => env('DB_USERNAME', 'root'),
             'password'  => env('DB_PASSWORD', ''),
 
-            // Character set and collation for UTF-8 support (including emoji)
+            // 字符集与排序规则
             'charset'   => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
 
-            // Table prefix — admin tables use literal 'admin_' in their names
-            // (admin_users, admin_roles, admin_audit_logs) rather than a prefix here.
+            // 表前缀：留空，各表自行以 admin_ 命名（admin_users, admin_roles 等）
             'prefix'    => '',
         ],
     ],

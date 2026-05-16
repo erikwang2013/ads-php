@@ -2,33 +2,33 @@
 /**
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
  *
- * Admin panel application configuration.
+ * 管理后台应用配置
  *
- * The admin panel is a standalone webman-admin v2 instance that:
- * - Serves the Vue 3 SPA from public/web/
- * - Provides admin-specific APIs (user management, audit logs, RBAC)
- * - Proxies business API calls to the service backend (:8788) via ServiceProxy
+ * admin 是一个独立的 webman-admin v2 实例，职责：
+ *   - 提供 Vue 3 SPA 的静态文件服务（public/web/）
+ *   - 处理管理员认证（JWT + Session 双通道）
+ *   - 提供管理员专用 API（用户管理 / RBAC / 审计日志）
+ *   - 通过 ServiceProxy 将业务查询转发到 service API（:8788）
  */
 
 return [
-    // Enable debug mode — shows detailed error messages in responses.
-    // Set to false in production.
+    // 调试模式：开启后返回详细错误信息，生产环境关闭
     'debug' => env('APP_DEBUG', false),
 
-    // Default timezone for the application
+    // 默认时区
     'default_timezone' => 'Asia/Shanghai',
 
-    // Base URL of the user-facing business service API.
-    // All admin business queries (campaigns, reports, accounts, alerts)
-    // are proxied through ServiceProxy to this endpoint.
+    // 业务服务 API 地址
+    // admin 中所有的广告数据查询（计划、报表、账户、告警等）均通过
+    // ServiceProxy（cURL HTTP 代理）转发到此地址，不在 admin 内直接操作业务表。
     'service_api_url' => env('SERVICE_API_URL', 'http://127.0.0.1:8788/api/v1'),
 
-    // JWT authentication configuration for admin panel
+    // JWT 认证配置（erikwang2013/jwt-webman）
     'jwt' => [
-        // Secret key used to sign and verify admin JWT tokens
+        // 签名密钥，必须与 service 的 JWT_SECRET 不同以保证安全隔离
         'secret' => env('JWT_SECRET', ''),
 
-        // Token time-to-live in seconds (default: 86400 = 24 hours)
+        // Token 有效期（秒），默认 86400 = 24 小时
         'ttl' => (int) env('JWT_TTL', 86400),
     ],
 ];

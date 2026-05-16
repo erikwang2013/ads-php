@@ -2,22 +2,23 @@
 /**
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
  *
- * Global middleware stack for the admin panel.
+ * 管理后台全局中间件配置
  *
- * Request flow per middleware registered below:
- *   Request → middleware::process() → next middleware → ... → controller
+ * 请求流：Request → global middleware → route middleware → Controller
  *
- * Currently the admin panel relies on the webman-admin plugin's built-in
- * session/auth handling. Add additional middleware (CORS, rate limiting,
- * etc.) here as the admin panel grows.
+ * 当前 admin 依赖 webman-admin 插件内置的 session/auth 处理。
+ * 认证中间件 AuthCheck 在路由层单独注册（见 route.php），非全局生效。
  *
- * Auth is handled per-route-group in config/route.php via AuthCheck.
+ * 随着管理后台功能扩展，可在此添加：
+ *   - 跨域中间件（CORS）
+ *   - 限流中间件（RateLimit）
+ *   - 操作审计中间件（AuditLog）
  */
 
 return [
     'global' => [
-        // Add global middleware class names here, e.g.:
-        // \admin\middleware\CorsMiddleware::class,
-        // \admin\middleware\RateLimitMiddleware::class,
+        // 在此添加全局中间件类名，例如：
+        // admin\middleware\CorsMiddleware::class,
+        // admin\middleware\RateLimitMiddleware::class,
     ],
 ];

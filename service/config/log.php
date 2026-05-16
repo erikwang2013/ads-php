@@ -1,33 +1,35 @@
 <?php
 /**
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+ *
+ * 日志配置（Monolog）
  */
 
 return [
-    // Default log channel configuration
+    // 默认日志通道
     'default' => [
-        // Registered log handlers (Monolog handlers)
+        // 已注册的日志处理器
         'handlers' => [
             [
-                // RotatingFileHandler: writes logs to files, rotated daily
+                // RotatingFileHandler：按日轮转的日志文件
                 'class' => Monolog\Handler\RotatingFileHandler::class,
                 'constructor' => [
-                    // Log file path within the runtime directory
+                    // 日志文件路径（位于 runtime 目录下）
                     runtime_path() . '/logs/webman.log',
 
-                    // Maximum number of daily log files to retain (7 days)
+                    // 保留最近 7 天的日志文件
                     7,
 
-                    // Minimum log level to record (DEBUG = all messages)
+                    // 最低记录级别（DEBUG = 记录所有日志）
                     Monolog\Logger::DEBUG,
                 ],
                 'formatter' => [
-                    // LineFormatter: single-line log entries with timestamp
+                    // LineFormatter：单行格式，带时间戳
                     'class' => Monolog\Formatter\LineFormatter::class,
                     'constructor' => [
-                        null,             // Default format string
-                        'Y-m-d H:i:s',    // Date format in log entries
-                        true,             // Include stack traces in log output
+                        null,             // 使用默认格式字符串
+                        'Y-m-d H:i:s',    // 日志中的日期格式
+                        true,             // 输出中包含异常堆栈信息
                     ],
                 ],
             ]

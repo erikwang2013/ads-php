@@ -2,25 +2,26 @@
 /**
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
  *
- * Admin panel server configuration.
+ * 管理后台服务器配置
  *
- * Key ports in the architecture:
- *   :8788 — service (user-facing business API, webman v2)
- *   :8789 — admin   (management panel, webman-admin v2)
- *   :5173 — vite   (frontend dev server, proxy /api → :8788)
+ * 架构端口一览：
+ *   :8788 — service  用户端业务 API（webman v2）
+ *   :8789 — admin    管理后台（webman-admin v2） ← 本文件
+ *   :5173 — vite     前端开发服务器（开发模式，代理 /api → :8788）
+ *
+ * 生产模式：
+ *   Nginx :80 → /          → admin:8789（管理后台 SPA）
+ *   Nginx :80 → /api/*     → service:8788（业务 API）
  */
 
 return [
-    // Listen address — the admin panel binds to port 8789.
-    // In production, Nginx reverse-proxies :80 → :8789 for the admin SPA
-    // and :80/api/* → :8788 for the service API.
+    // 监听地址：绑定所有网卡，端口 8789
     'listen' => 'http://0.0.0.0:8789',
 
-    // Stream context options (e.g., SSL certificate paths for HTTPS)
+    // 流上下文（SSL 证书路径等）
     'context' => [],
 
-    // Number of worker processes — admin panel is lighter than service,
-    // typically 1-2 workers are sufficient as it primarily serves the SPA
-    // and handles low-volume admin API requests.
+    // Worker 进程数：管理后台负载较轻，2 个 worker 足够
+    // 主要工作是返回 SPA 静态文件和少量管理 API 请求
     'count' => 2,
 ];
