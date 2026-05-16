@@ -16,3 +16,4 @@
 /service/composer.lock
 /service/.phpunit.result.cache
 /admin/composer.lock
+/.github
