@@ -14,7 +14,7 @@
     "pinia": "^2.2",
     "axios": "^1.7",
     "element-plus": "^2.8",
-    "echarts": "^5.5",
+    "echarts": "^6.0",
     "vue-echarts": "^7.0",
     "@element-plus/icons-vue": "^2.3",
     "dayjs": "^1.11"
