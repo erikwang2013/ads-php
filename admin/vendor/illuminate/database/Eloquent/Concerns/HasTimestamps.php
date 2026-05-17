@@ -2,7 +2,6 @@
 
 namespace Illuminate\Database\Eloquent\Concerns;
 
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Date;
 
 trait HasTimestamps
@@ -24,17 +23,13 @@ trait HasTimestamps
     /**
      * Update the model's update timestamp.
      *
-     * @param  array|string|null  $attribute
+     * @param  string|null  $attribute
      * @return bool
      */
     public function touch($attribute = null)
     {
         if ($attribute) {
-            $time = $this->freshTimestamp();
-
-            foreach (Arr::wrap($attribute) as $column) {
-                $this->{$column} = $time;
-            }
+            $this->$attribute = $this->freshTimestamp();
 
             return $this->save();
         }
@@ -51,7 +46,7 @@ trait HasTimestamps
     /**
      * Update the model's update timestamp without raising any events.
      *
-     * @param  array|string|null  $attribute
+     * @param  string|null  $attribute
      * @return bool
      */
     public function touchQuietly($attribute = null)
@@ -160,7 +155,7 @@ trait HasTimestamps
     }
 
     /**
-     * Get the fully-qualified "created at" column.
+     * Get the fully qualified "created at" column.
      *
      * @return string|null
      */
@@ -172,7 +167,7 @@ trait HasTimestamps
     }
 
     /**
-     * Get the fully-qualified "updated at" column.
+     * Get the fully qualified "updated at" column.
      *
      * @return string|null
      */

@@ -4,13 +4,13 @@ namespace Illuminate\Support;
 
 use ArrayIterator;
 use Illuminate\Contracts\Support\ValidatedData;
-use Illuminate\Support\Traits\Dumpable;
 use Illuminate\Support\Traits\InteractsWithData;
+use Symfony\Component\VarDumper\VarDumper;
 use Traversable;
 
 class ValidatedInput implements ValidatedData
 {
-    use Dumpable, InteractsWithData;
+    use InteractsWithData;
 
     /**
      * The underlying input.
@@ -23,6 +23,7 @@ class ValidatedInput implements ValidatedData
      * Create a new validated input container.
      *
      * @param  array  $input
+     * @return void
      */
     public function __construct(array $input)
     {
@@ -43,7 +44,7 @@ class ValidatedInput implements ValidatedData
     /**
      * Get the raw, underlying input array.
      *
-     * @param  mixed  $keys
+     * @param  array|mixed|null  $keys
      * @return array
      */
     public function all($keys = null)
@@ -98,14 +99,29 @@ class ValidatedInput implements ValidatedData
     }
 
     /**
-     * Dump the items.
+     * Dump the validated inputs items and end the script.
      *
      * @param  mixed  ...$keys
+     * @return never
+     */
+    public function dd(...$keys)
+    {
+        $this->dump(...$keys);
+
+        exit(1);
+    }
+
+    /**
+     * Dump the items.
+     *
+     * @param  mixed  $keys
      * @return $this
      */
-    public function dump(...$keys)
+    public function dump($keys = [])
     {
-        dump(count($keys) > 0 ? $this->only($keys) : $this->all());
+        $keys = is_array($keys) ? $keys : func_get_args();
+
+        VarDumper::dump(count($keys) > 0 ? $this->only($keys) : $this->all());
 
         return $this;
     }
@@ -146,7 +162,6 @@ class ValidatedInput implements ValidatedData
     /**
      * Determine if an input item is set.
      *
-     * @param  string  $name
      * @return bool
      */
     public function __isset($name)

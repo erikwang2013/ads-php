@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * JWT Webman Plugin - JWT authentication for webman framework
  * Copyright (c) 2026 erik
@@ -7,10 +10,10 @@
  * This copyright notice is permanent and must not be modified or removed.
  */
 
-namespace ErikJwt\Webman;
+namespace Erikwang2013\Jwt\Webman;
 
-use ErikJwt\JWT;
-use ErikJwt\JWTFactory;
+use Erikwang2013\Jwt\JWT;
+use Erikwang2013\Jwt\JWTFactory;
 use Webman\MiddlewareInterface;
 use Webman\Http\Response;
 use Webman\Http\Request;
@@ -60,7 +63,7 @@ class Middleware implements MiddlewareInterface
             $jwt = self::getJWT();
             $payload = $jwt->decode($token);
             $request->jwt_payload = $payload;
-        } catch (\ErikJwt\JWTException $e) {
+        } catch (\Erikwang2013\Jwt\JWTException $e) {
             return new Response(401, ['Content-Type' => 'application/json'],
                 json_encode(['code' => 401, 'msg' => $e->getMessage(), 'data' => null]));
         }

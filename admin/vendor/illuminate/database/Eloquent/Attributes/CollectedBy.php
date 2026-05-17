@@ -11,6 +11,7 @@ class CollectedBy
      * Create a new attribute instance.
      *
      * @param  class-string<\Illuminate\Database\Eloquent\Collection<*, *>>  $collectionClass
+     * @return void
      */
     public function __construct(public string $collectionClass)
     {

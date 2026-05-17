@@ -25,7 +25,7 @@ abstract class MorphOneOrMany extends HasOneOrMany
     /**
      * The class name of the parent model.
      *
-     * @var class-string<TRelatedModel>
+     * @var string
      */
     protected $morphClass;
 
@@ -37,6 +37,7 @@ abstract class MorphOneOrMany extends HasOneOrMany
      * @param  string  $type
      * @param  string  $id
      * @param  string  $localKey
+     * @return void
      */
     public function __construct(Builder $query, Model $parent, $type, $id, $localKey)
     {
@@ -116,7 +117,7 @@ abstract class MorphOneOrMany extends HasOneOrMany
      */
     public function upsert(array $values, $uniqueBy, $update = null)
     {
-        if (! empty($values) && ! is_array(array_first($values))) {
+        if (! empty($values) && ! is_array(reset($values))) {
             $values = [$values];
         }
 
@@ -158,7 +159,7 @@ abstract class MorphOneOrMany extends HasOneOrMany
     /**
      * Get the class name of the parent model.
      *
-     * @return class-string<TRelatedModel>
+     * @return string
      */
     public function getMorphClass()
     {

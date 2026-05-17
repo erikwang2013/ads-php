@@ -22,7 +22,7 @@ class UriQueryString implements Arrayable, Stringable
     /**
      * Retrieve all data from the instance.
      *
-     * @param  mixed  $keys
+     * @param  array|mixed|null  $keys
      * @return array
      */
     public function all($keys = null)

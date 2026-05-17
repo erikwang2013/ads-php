@@ -7,7 +7,7 @@
  */
 
 if (!function_exists('jwt')) {
-    function jwt(): \ErikJwt\JWT
+    function jwt(): \Erikwang2013\Jwt\JWT
     {
         return app('erik.jwt');
     }

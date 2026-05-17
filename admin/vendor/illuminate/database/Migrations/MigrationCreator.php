@@ -26,7 +26,7 @@ class MigrationCreator
     /**
      * The registered post create hooks.
      *
-     * @var (\Closure(string, string): void)[]
+     * @var array
      */
     protected $postCreate = [];
 
@@ -35,6 +35,7 @@ class MigrationCreator
      *
      * @param  \Illuminate\Filesystem\Filesystem  $files
      * @param  string  $customStubPath
+     * @return void
      */
     public function __construct(Filesystem $files, $customStubPath)
     {
@@ -82,7 +83,7 @@ class MigrationCreator
      * Ensure that a migration with the given name doesn't already exist.
      *
      * @param  string  $name
-     * @param  string|null  $migrationPath
+     * @param  string  $migrationPath
      * @return void
      *
      * @throws \InvalidArgumentException
@@ -113,16 +114,16 @@ class MigrationCreator
     {
         if (is_null($table)) {
             $stub = $this->files->exists($customPath = $this->customStubPath.'/migration.stub')
-                ? $customPath
-                : $this->stubPath().'/migration.stub';
+                            ? $customPath
+                            : $this->stubPath().'/migration.stub';
         } elseif ($create) {
             $stub = $this->files->exists($customPath = $this->customStubPath.'/migration.create.stub')
-                ? $customPath
-                : $this->stubPath().'/migration.create.stub';
+                            ? $customPath
+                            : $this->stubPath().'/migration.create.stub';
         } else {
             $stub = $this->files->exists($customPath = $this->customStubPath.'/migration.update.stub')
-                ? $customPath
-                : $this->stubPath().'/migration.update.stub';
+                            ? $customPath
+                            : $this->stubPath().'/migration.update.stub';
         }
 
         return $this->files->get($stub);
@@ -154,7 +155,7 @@ class MigrationCreator
      * Get the class name of a migration name.
      *
      * @param  string  $name
-     * @return class-string<\Illuminate\Database\Migrations\Migration>
+     * @return string
      */
     protected function getClassName($name)
     {
@@ -190,7 +191,7 @@ class MigrationCreator
     /**
      * Register a post migration create hook.
      *
-     * @param  (\Closure(string, string): void)  $callback
+     * @param  \Closure  $callback
      * @return void
      */
     public function afterCreate(Closure $callback)

@@ -49,47 +49,6 @@ class Number
     }
 
     /**
-     * Parse the given string according to the specified format type.
-     *
-     * @param  string  $string
-     * @param  int|null  $type
-     * @param  string|null  $locale
-     * @return int|float|false
-     */
-    public static function parse(string $string, ?int $type = NumberFormatter::TYPE_DOUBLE, ?string $locale = null): int|float|false
-    {
-        static::ensureIntlExtensionIsInstalled();
-
-        $formatter = new NumberFormatter($locale ?? static::$locale, NumberFormatter::DECIMAL);
-
-        return $formatter->parse($string, $type);
-    }
-
-    /**
-     * Parse a string into an integer according to the specified locale.
-     *
-     * @param  string  $string
-     * @param  string|null  $locale
-     * @return int|false
-     */
-    public static function parseInt(string $string, ?string $locale = null): int|false
-    {
-        return self::parse($string, NumberFormatter::TYPE_INT32, $locale);
-    }
-
-    /**
-     * Parse a string into a float according to the specified locale.
-     *
-     * @param  string  $string
-     * @param  string|null  $locale
-     * @return float|false
-     */
-    public static function parseFloat(string $string, ?string $locale = null): float|false
-    {
-        return self::parse($string, NumberFormatter::TYPE_DOUBLE, $locale);
-    }
-
-    /**
      * Spell out the given number in the given locale.
      *
      * @param  int|float  $number
@@ -207,9 +166,7 @@ class Number
     {
         $units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 
-        $unitCount = count($units);
-
-        for ($i = 0; ($bytes / 1024) > 0.9 && ($i < $unitCount - 1); $i++) {
+        for ($i = 0; ($bytes / 1024) > 0.9 && ($i < count($units) - 1); $i++) {
             $bytes /= 1024;
         }
 
@@ -222,7 +179,7 @@ class Number
      * @param  int|float  $number
      * @param  int  $precision
      * @param  int|null  $maxPrecision
-     * @return string|false
+     * @return bool|string
      */
     public static function abbreviate(int|float $number, int $precision = 0, ?int $maxPrecision = null)
     {
@@ -236,7 +193,7 @@ class Number
      * @param  int  $precision
      * @param  int|null  $maxPrecision
      * @param  bool  $abbreviate
-     * @return string|false
+     * @return false|string
      */
     public static function forHumans(int|float $number, int $precision = 0, ?int $maxPrecision = null, bool $abbreviate = false)
     {
@@ -277,7 +234,7 @@ class Number
         }
 
         switch (true) {
-            case (float) $number === 0.0:
+            case floatval($number) === 0.0:
                 return $precision > 0 ? static::format(0, $precision, $maxPrecision) : '0';
             case $number < 0:
                 return sprintf('-%s', static::summarize(abs($number), $precision, $maxPrecision, $units));
@@ -310,22 +267,21 @@ class Number
      *
      * @param  int|float  $to
      * @param  int|float  $by
-     * @param  int|float  $start
      * @param  int|float  $offset
-     * @return list<array{int|float, int|float}>
+     * @return array
      */
-    public static function pairs(int|float $to, int|float $by, int|float $start = 0, int|float $offset = 1)
+    public static function pairs(int|float $to, int|float $by, int|float $offset = 1)
     {
         $output = [];
 
-        for ($lower = $start; $lower < $to; $lower += $by) {
-            $upper = $lower + $by - $offset;
+        for ($lower = 0; $lower < $to; $lower += $by) {
+            $upper = $lower + $by;
 
             if ($upper > $to) {
                 $upper = $to;
             }
 
-            $output[] = [$lower, $upper];
+            $output[] = [$lower + $offset, $upper];
         }
 
         return $output;
@@ -345,11 +301,9 @@ class Number
     /**
      * Execute the given callback using the given locale.
      *
-     * @template TReturn
-     *
      * @param  string  $locale
-     * @param  callable(): TReturn  $callback
-     * @return TReturn
+     * @param  callable  $callback
+     * @return mixed
      */
     public static function withLocale(string $locale, callable $callback)
     {
@@ -357,21 +311,15 @@ class Number
 
         static::useLocale($locale);
 
-        try {
-            return $callback();
-        } finally {
-            static::useLocale($previousLocale);
-        }
+        return tap($callback(), fn () => static::useLocale($previousLocale));
     }
 
     /**
      * Execute the given callback using the given currency.
      *
-     * @template TReturn
-     *
      * @param  string  $currency
-     * @param  callable(): TReturn  $callback
-     * @return TReturn
+     * @param  callable  $callback
+     * @return mixed
      */
     public static function withCurrency(string $currency, callable $callback)
     {
@@ -379,11 +327,7 @@ class Number
 
         static::useCurrency($currency);
 
-        try {
-            return $callback();
-        } finally {
-            static::useCurrency($previousCurrency);
-        }
+        return tap($callback(), fn () => static::useCurrency($previousCurrency));
     }
 
     /**
@@ -432,8 +376,6 @@ class Number
      * Ensure the "intl" PHP extension is installed.
      *
      * @return void
-     *
-     * @throws \RuntimeException
      */
     protected static function ensureIntlExtensionIsInstalled()
     {

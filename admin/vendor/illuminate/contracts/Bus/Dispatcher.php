@@ -44,7 +44,7 @@ interface Dispatcher
      * Retrieve the handler for a command.
      *
      * @param  mixed  $command
-     * @return mixed
+     * @return bool|mixed
      */
     public function getCommandHandler($command);
 

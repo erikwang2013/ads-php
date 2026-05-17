@@ -5,7 +5,6 @@ namespace Illuminate\Support\Facades;
 use Closure;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Benchmark;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Js;
 use Illuminate\Support\Number;
@@ -247,12 +246,12 @@ abstract class Facade
     /**
      * Clear a resolved facade instance.
      *
-     * @param  ?string  $name
+     * @param  string  $name
      * @return void
      */
-    public static function clearResolvedInstance($name = null)
+    public static function clearResolvedInstance($name)
     {
-        unset(static::$resolvedInstance[$name ?? static::getFacadeAccessor()]);
+        unset(static::$resolvedInstance[$name]);
     }
 
     /**
@@ -277,7 +276,6 @@ abstract class Facade
             'Arr' => Arr::class,
             'Artisan' => Artisan::class,
             'Auth' => Auth::class,
-            'Benchmark' => Benchmark::class,
             'Blade' => Blade::class,
             'Broadcast' => Broadcast::class,
             'Bus' => Bus::class,
@@ -314,8 +312,8 @@ abstract class Facade
             'Session' => Session::class,
             'Storage' => Storage::class,
             'Str' => Str::class,
-            'Uri' => Uri::class,
             'URL' => URL::class,
+            'Uri' => Uri::class,
             'Validator' => Validator::class,
             'View' => View::class,
             'Vite' => Vite::class,

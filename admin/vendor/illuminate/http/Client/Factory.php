@@ -62,14 +62,14 @@ class Factory
     /**
      * The recorded response array.
      *
-     * @var list<array{0: \Illuminate\Http\Client\Request, 1: \Illuminate\Http\Client\Response|null}>
+     * @var array
      */
     protected $recorded = [];
 
     /**
      * All created response sequences.
      *
-     * @var list<\Illuminate\Http\Client\ResponseSequence>
+     * @var array
      */
     protected $responseSequences = [];
 
@@ -81,16 +81,10 @@ class Factory
     protected $preventStrayRequests = false;
 
     /**
-     * A list of URL patterns that are allowed to bypass the stray request guard.
-     *
-     * @var array<int, string>
-     */
-    protected $allowedStrayRequestUrls = [];
-
-    /**
      * Create a new factory instance.
      *
      * @param  \Illuminate\Contracts\Events\Dispatcher|null  $dispatcher
+     * @return void
      */
     public function __construct(?Dispatcher $dispatcher = null)
     {
@@ -161,48 +155,22 @@ class Factory
      */
     public static function response($body = null, $status = 200, $headers = [])
     {
-        return Create::promiseFor(
-            static::psr7Response($body, $status, $headers)
-        );
-    }
-
-    /**
-     * Create a new PSR-7 response instance for use during stubbing.
-     *
-     * @param  array|string|null  $body
-     * @param  int  $status
-     * @param  array<string, mixed>  $headers
-     * @return \GuzzleHttp\Psr7\Response
-     */
-    public static function psr7Response($body = null, $status = 200, $headers = [])
-    {
         if (is_array($body)) {
             $body = json_encode($body);
 
             $headers['Content-Type'] = 'application/json';
         }
 
-        return new Psr7Response($status, $headers, $body);
-    }
+        $response = new Psr7Response($status, $headers, $body);
 
-    /**
-     * Create a new RequestException instance for use during stubbing.
-     *
-     * @param  array|string|null  $body
-     * @param  int  $status
-     * @param  array<string, mixed>  $headers
-     * @return \Illuminate\Http\Client\RequestException
-     */
-    public static function failedRequest($body = null, $status = 200, $headers = [])
-    {
-        return new RequestException(new Response(static::psr7Response($body, $status, $headers)));
+        return Create::promiseFor($response);
     }
 
     /**
      * Create a new connection exception for use during stubbing.
      *
      * @param  string|null  $message
-     * @return \Closure(\Illuminate\Http\Client\Request): \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp\Promise\PromiseInterface
      */
     public static function failedConnection($message = null)
     {
@@ -228,7 +196,7 @@ class Factory
     /**
      * Register a stub callable that will intercept requests and be able to return stub responses.
      *
-     * @param  callable|array<string, mixed>|null  $callback
+     * @param  callable|array|null  $callback
      * @return $this
      */
     public function fake($callback = null)
@@ -290,7 +258,7 @@ class Factory
      * Stub the given URL using the given callback.
      *
      * @param  string  $url
-     * @param  \Illuminate\Http\Client\Response|\GuzzleHttp\Promise\PromiseInterface|callable|int|string|array|\Illuminate\Http\Client\ResponseSequence  $callback
+     * @param  \Illuminate\Http\Client\Response|\GuzzleHttp\Promise\PromiseInterface|callable|int|string|array  $callback
      * @return $this
      */
     public function stubUrl($url, $callback)
@@ -340,22 +308,13 @@ class Factory
     }
 
     /**
-     * Allow stray, unfaked requests entirely, or optionally allow only specific URLs.
+     * Indicate that an exception should not be thrown if any request is not faked.
      *
-     * @param  array<int, string>|null  $only
      * @return $this
      */
-    public function allowStrayRequests(?array $only = null)
+    public function allowStrayRequests()
     {
-        if (is_null($only)) {
-            $this->preventStrayRequests(false);
-
-            $this->allowedStrayRequestUrls = [];
-        } else {
-            $this->allowedStrayRequestUrls = array_values($only);
-        }
-
-        return $this;
+        return $this->preventStrayRequests(false);
     }
 
     /**
@@ -363,7 +322,7 @@ class Factory
      *
      * @return $this
      */
-    public function record()
+    protected function record()
     {
         $this->recording = true;
 
@@ -387,7 +346,7 @@ class Factory
     /**
      * Assert that a request / response pair was recorded matching a given truth test.
      *
-     * @param  callable|(\Closure(\Illuminate\Http\Client\Request, \Illuminate\Http\Client\Response|null): bool)  $callback
+     * @param  callable  $callback
      * @return void
      */
     public function assertSent($callback)
@@ -401,7 +360,7 @@ class Factory
     /**
      * Assert that the given request was sent in the given order.
      *
-     * @param  list<string|(\Closure(\Illuminate\Http\Client\Request, \Illuminate\Http\Client\Response|null): bool)|callable>  $callbacks
+     * @param  array  $callbacks
      * @return void
      */
     public function assertSentInOrder($callbacks)
@@ -423,7 +382,7 @@ class Factory
     /**
      * Assert that a request / response pair was not recorded matching a given truth test.
      *
-     * @param  callable|(\Closure(\Illuminate\Http\Client\Request, \Illuminate\Http\Client\Response|null): bool)  $callback
+     * @param  callable  $callback
      * @return void
      */
     public function assertNotSent($callback)
@@ -476,8 +435,8 @@ class Factory
     /**
      * Get a collection of the request / response pairs matching the given truth test.
      *
-     * @param  (\Closure(\Illuminate\Http\Client\Request, \Illuminate\Http\Client\Response|null): bool)|callable  $callback
-     * @return \Illuminate\Support\Collection<int, array{0: \Illuminate\Http\Client\Request, 1: \Illuminate\Http\Client\Response|null}>
+     * @param  callable  $callback
+     * @return \Illuminate\Support\Collection
      */
     public function recorded($callback = null)
     {
@@ -485,13 +444,12 @@ class Factory
             return new Collection;
         }
 
-        $collect = new Collection($this->recorded);
+        $callback = $callback ?: function () {
+            return true;
+        };
 
-        if ($callback) {
-            return $collect->filter(fn ($pair) => $callback($pair[0], $pair[1]));
-        }
-
-        return $collect;
+        return (new Collection($this->recorded))
+            ->filter(fn ($pair) => $callback($pair[0], $pair[1]));
     }
 
     /**
@@ -502,10 +460,7 @@ class Factory
     public function createPendingRequest()
     {
         return tap($this->newPendingRequest(), function ($request) {
-            $request
-                ->stub($this->stubCallbacks)
-                ->preventStrayRequests($this->preventStrayRequests)
-                ->allowStrayRequests($this->allowedStrayRequestUrls);
+            $request->stub($this->stubCallbacks)->preventStrayRequests($this->preventStrayRequests);
         });
     }
 

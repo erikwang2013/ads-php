@@ -12,7 +12,7 @@ use Illuminate\Support\Testing\Fakes\EventFake;
  * @method static void push(string $event, object|array $payload = [])
  * @method static void flush(string $event)
  * @method static void subscribe(object|string $subscriber)
- * @method static array|null until(string|object $event, mixed $payload = [])
+ * @method static mixed until(string|object $event, mixed $payload = [])
  * @method static array|null dispatch(string|object $event, mixed $payload = [], bool $halt = false)
  * @method static array getListeners(string $eventName)
  * @method static \Closure makeListener(\Closure|string|array $listener, bool $wildcard = false)
@@ -21,7 +21,6 @@ use Illuminate\Support\Testing\Fakes\EventFake;
  * @method static void forgetPushed()
  * @method static \Illuminate\Events\Dispatcher setQueueResolver(callable $resolver)
  * @method static \Illuminate\Events\Dispatcher setTransactionManagerResolver(callable $resolver)
- * @method static mixed defer(callable $callback, string[]|null $events = null)
  * @method static array getRawListeners()
  * @method static void macro(string $name, object|callable $macro)
  * @method static void mixin(object $mixin, bool $replace = true)
@@ -30,7 +29,6 @@ use Illuminate\Support\Testing\Fakes\EventFake;
  * @method static \Illuminate\Support\Testing\Fakes\EventFake except(array|string $eventsToDispatch)
  * @method static void assertListening(string $expectedEvent, string|array $expectedListener)
  * @method static void assertDispatched(string|\Closure $event, callable|int|null $callback = null)
- * @method static void assertDispatchedOnce(string $event)
  * @method static void assertDispatchedTimes(string $event, int $times = 1)
  * @method static void assertNotDispatched(string|\Closure $event, callable|null $callback = null)
  * @method static void assertNothingDispatched()
@@ -52,8 +50,8 @@ class Event extends Facade
     public static function fake($eventsToFake = [])
     {
         $actualDispatcher = static::isFake()
-            ? static::getFacadeRoot()->dispatcher
-            : static::getFacadeRoot();
+                ? static::getFacadeRoot()->dispatcher
+                : static::getFacadeRoot();
 
         return tap(new EventFake($actualDispatcher, $eventsToFake), function ($fake) {
             static::swap($fake);
@@ -91,14 +89,12 @@ class Event extends Facade
 
         static::fake($eventsToFake);
 
-        try {
-            return $callable();
-        } finally {
+        return tap($callable(), function () use ($originalDispatcher) {
             static::swap($originalDispatcher);
 
             Model::setEventDispatcher($originalDispatcher);
             Cache::refreshEventDispatcher();
-        }
+        });
     }
 
     /**
@@ -114,14 +110,12 @@ class Event extends Facade
 
         static::fakeExcept($eventsToAllow);
 
-        try {
-            return $callable();
-        } finally {
+        return tap($callable(), function () use ($originalDispatcher) {
             static::swap($originalDispatcher);
 
             Model::setEventDispatcher($originalDispatcher);
             Cache::refreshEventDispatcher();
-        }
+        });
     }
 
     /**

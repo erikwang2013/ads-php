@@ -102,14 +102,6 @@ class FilesystemServiceProvider extends ServiceProvider
                         $isProduction
                     ))($request, $path);
                 })->where('path', '.*')->name('storage.'.$disk);
-
-                Route::put($uri.'/{path}', function (Request $request, string $path) use ($disk, $config, $isProduction) {
-                    return (new ReceiveFile(
-                        $disk,
-                        $config,
-                        $isProduction
-                    ))($request, $path);
-                })->where('path', '.*')->name('storage.'.$disk.'.upload');
             });
         }
     }

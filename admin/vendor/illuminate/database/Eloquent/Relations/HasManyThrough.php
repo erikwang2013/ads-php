@@ -29,7 +29,7 @@ class HasManyThrough extends HasOneOrManyThrough
             $this->farParent,
             $this->throughParent,
             $this->getFirstKeyName(),
-            $this->getForeignKeyName(),
+            $this->secondKey,
             $this->getLocalKeyName(),
             $this->getSecondLocalKeyName(),
         ));
@@ -54,9 +54,7 @@ class HasManyThrough extends HasOneOrManyThrough
         // link them up with their children using the keyed dictionary to make the
         // matching very convenient and easy work. Then we'll just return them.
         foreach ($models as $model) {
-            $key = $this->getDictionaryKey($model->getAttribute($this->localKey));
-
-            if ($key !== null && isset($dictionary[$key])) {
+            if (isset($dictionary[$key = $this->getDictionaryKey($model->getAttribute($this->localKey))])) {
                 $model->setRelation(
                     $relation, $this->related->newCollection($dictionary[$key])
                 );
@@ -70,7 +68,7 @@ class HasManyThrough extends HasOneOrManyThrough
     public function getResults()
     {
         return ! is_null($this->farParent->{$this->localKey})
-            ? $this->get()
-            : $this->related->newCollection();
+                ? $this->get()
+                : $this->related->newCollection();
     }
 }

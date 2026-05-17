@@ -26,6 +26,7 @@ class ResponseReceived
      *
      * @param  \Illuminate\Http\Client\Request  $request
      * @param  \Illuminate\Http\Client\Response  $response
+     * @return void
      */
     public function __construct(Request $request, Response $response)
     {

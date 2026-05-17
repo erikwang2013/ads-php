@@ -37,29 +37,10 @@ class Processor
     }
 
     /**
-     * Process the results of a schemas query.
-     *
-     * @param  list<array<string, mixed>>  $results
-     * @return list<array{name: string, path: string|null, default: bool}>
-     */
-    public function processSchemas($results)
-    {
-        return array_map(function ($result) {
-            $result = (object) $result;
-
-            return [
-                'name' => $result->name,
-                'path' => $result->path ?? null, // SQLite Only...
-                'default' => (bool) $result->default,
-            ];
-        }, $results);
-    }
-
-    /**
      * Process the results of a tables query.
      *
-     * @param  list<array<string, mixed>>  $results
-     * @return list<array{name: string, schema: string|null, schema_qualified_name: string, size: int|null, comment: string|null, collation: string|null, engine: string|null}>
+     * @param  array  $results
+     * @return array
      */
     public function processTables($results)
     {
@@ -68,8 +49,7 @@ class Processor
 
             return [
                 'name' => $result->name,
-                'schema' => $result->schema ?? null,
-                'schema_qualified_name' => isset($result->schema) ? $result->schema.'.'.$result->name : $result->name,
+                'schema' => $result->schema ?? null, // PostgreSQL and SQL Server
                 'size' => isset($result->size) ? (int) $result->size : null,
                 'comment' => $result->comment ?? null, // MySQL and PostgreSQL
                 'collation' => $result->collation ?? null, // MySQL only
@@ -81,8 +61,8 @@ class Processor
     /**
      * Process the results of a views query.
      *
-     * @param  list<array<string, mixed>>  $results
-     * @return list<array{name: string, schema: string, schema_qualified_name: string, definition: string}>
+     * @param  array  $results
+     * @return array
      */
     public function processViews($results)
     {
@@ -91,8 +71,7 @@ class Processor
 
             return [
                 'name' => $result->name,
-                'schema' => $result->schema ?? null,
-                'schema_qualified_name' => isset($result->schema) ? $result->schema.'.'.$result->name : $result->name,
+                'schema' => $result->schema ?? null, // PostgreSQL and SQL Server
                 'definition' => $result->definition,
             ];
         }, $results);
@@ -101,8 +80,8 @@ class Processor
     /**
      * Process the results of a types query.
      *
-     * @param  list<array<string, mixed>>  $results
-     * @return list<array{name: string, schema: string, type: string, type: string, category: string, implicit: bool}>
+     * @param  array  $results
+     * @return array
      */
     public function processTypes($results)
     {
@@ -112,8 +91,8 @@ class Processor
     /**
      * Process the results of a columns query.
      *
-     * @param  list<array<string, mixed>>  $results
-     * @return list<array{name: string, type: string, type_name: string, nullable: bool, default: mixed, auto_increment: bool, comment: string|null, generation: array{type: string, expression: string|null}|null}>
+     * @param  array  $results
+     * @return array
      */
     public function processColumns($results)
     {
@@ -123,8 +102,8 @@ class Processor
     /**
      * Process the results of an indexes query.
      *
-     * @param  list<array<string, mixed>>  $results
-     * @return list<array{name: string, columns: list<string>, type: string, unique: bool, primary: bool}>
+     * @param  array  $results
+     * @return array
      */
     public function processIndexes($results)
     {
@@ -134,8 +113,8 @@ class Processor
     /**
      * Process the results of a foreign keys query.
      *
-     * @param  list<array<string, mixed>>  $results
-     * @return list<array{name: string, columns: list<string>, foreign_schema: string, foreign_table: string, foreign_columns: list<string>, on_update: string, on_delete: string}>
+     * @param  array  $results
+     * @return array
      */
     public function processForeignKeys($results)
     {

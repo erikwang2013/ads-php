@@ -14,7 +14,7 @@ class MessageBag implements Jsonable, JsonSerializable, MessageBagContract, Mess
     /**
      * All of the registered messages.
      *
-     * @var array<string, array<string>>
+     * @var array
      */
     protected $messages = [];
 
@@ -28,7 +28,8 @@ class MessageBag implements Jsonable, JsonSerializable, MessageBagContract, Mess
     /**
      * Create a new message bag instance.
      *
-     * @param  array<string, Arrayable|string|array<string>>  $messages
+     * @param  array  $messages
+     * @return void
      */
     public function __construct(array $messages = [])
     {
@@ -42,7 +43,7 @@ class MessageBag implements Jsonable, JsonSerializable, MessageBagContract, Mess
     /**
      * Get the keys present in the message bag.
      *
-     * @return array<string>
+     * @return array
      */
     public function keys()
     {
@@ -95,7 +96,7 @@ class MessageBag implements Jsonable, JsonSerializable, MessageBagContract, Mess
     /**
      * Merge a new array of messages into the message bag.
      *
-     * @param  \Illuminate\Contracts\Support\MessageProvider|array<string, array<string>>  $messages
+     * @param  \Illuminate\Contracts\Support\MessageProvider|array  $messages
      * @return $this
      */
     public function merge($messages)
@@ -193,7 +194,7 @@ class MessageBag implements Jsonable, JsonSerializable, MessageBagContract, Mess
      *
      * @param  string  $key
      * @param  string|null  $format
-     * @return array<string>|array<string, array<string>>
+     * @return array
      */
     public function get($key, $format = null)
     {
@@ -218,7 +219,7 @@ class MessageBag implements Jsonable, JsonSerializable, MessageBagContract, Mess
      *
      * @param  string  $key
      * @param  string|null  $format
-     * @return array<string, array<string>>
+     * @return array
      */
     protected function getMessagesForWildcardKey($key, $format)
     {
@@ -234,7 +235,7 @@ class MessageBag implements Jsonable, JsonSerializable, MessageBagContract, Mess
      * Get all of the messages for every key in the message bag.
      *
      * @param  string|null  $format
-     * @return array<string>
+     * @return array
      */
     public function all($format = null)
     {
@@ -243,7 +244,7 @@ class MessageBag implements Jsonable, JsonSerializable, MessageBagContract, Mess
         $all = [];
 
         foreach ($this->messages as $key => $messages) {
-            array_push($all, ...$this->transform($messages, $format, $key));
+            $all = array_merge($all, $this->transform($messages, $format, $key));
         }
 
         return $all;
@@ -276,10 +277,10 @@ class MessageBag implements Jsonable, JsonSerializable, MessageBagContract, Mess
     /**
      * Format an array of messages.
      *
-     * @param  array<string>  $messages
+     * @param  array  $messages
      * @param  string  $format
      * @param  string  $messageKey
-     * @return array<string>
+     * @return array
      */
     protected function transform($messages, $format, $messageKey)
     {
@@ -310,7 +311,7 @@ class MessageBag implements Jsonable, JsonSerializable, MessageBagContract, Mess
     /**
      * Get the raw messages in the message bag.
      *
-     * @return array<string, array<string>>
+     * @return array
      */
     public function messages()
     {
@@ -320,7 +321,7 @@ class MessageBag implements Jsonable, JsonSerializable, MessageBagContract, Mess
     /**
      * Get the raw messages in the message bag.
      *
-     * @return array<string, array<string>>
+     * @return array
      */
     public function getMessages()
     {
@@ -429,18 +430,6 @@ class MessageBag implements Jsonable, JsonSerializable, MessageBagContract, Mess
     public function toJson($options = 0)
     {
         return json_encode($this->jsonSerialize(), $options);
-    }
-
-    /**
-     * Convert the object to pretty print formatted JSON.
-     *
-     * @params int $options
-     *
-     * @return string
-     */
-    public function toPrettyJson(int $options = 0)
-    {
-        return $this->toJson(JSON_PRETTY_PRINT | $options);
     }
 
     /**

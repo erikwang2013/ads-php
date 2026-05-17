@@ -13,6 +13,25 @@ use Illuminate\Filesystem\Filesystem;
 class SQLiteConnection extends Connection
 {
     /**
+     * Create a new database connection instance.
+     *
+     * @param  \PDO|\Closure  $pdo
+     * @param  string  $database
+     * @param  string  $tablePrefix
+     * @param  array  $config
+     * @return void
+     */
+    public function __construct($pdo, $database = '', $tablePrefix = '', array $config = [])
+    {
+        parent::__construct($pdo, $database, $tablePrefix, $config);
+
+        $this->configureForeignKeyConstraints();
+        $this->configureBusyTimeout();
+        $this->configureJournalMode();
+        $this->configureSynchronous();
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getDriverTitle()
@@ -21,21 +40,95 @@ class SQLiteConnection extends Connection
     }
 
     /**
-     * Run the statement to start a new transaction.
+     * Enable or disable foreign key constraints if configured.
      *
      * @return void
      */
-    protected function executeBeginTransactionStatement()
+    protected function configureForeignKeyConstraints(): void
     {
-        if (version_compare(PHP_VERSION, '8.4.0', '>=')) {
-            $mode = $this->getConfig('transaction_mode') ?? 'DEFERRED';
+        $enableForeignKeyConstraints = $this->getConfig('foreign_key_constraints');
 
-            $this->getPdo()->exec("BEGIN {$mode} TRANSACTION");
-
+        if ($enableForeignKeyConstraints === null) {
             return;
         }
 
-        $this->getPdo()->beginTransaction();
+        $schemaBuilder = $this->getSchemaBuilder();
+
+        try {
+            $enableForeignKeyConstraints
+                ? $schemaBuilder->enableForeignKeyConstraints()
+                : $schemaBuilder->disableForeignKeyConstraints();
+        } catch (QueryException $e) {
+            if (! $e->getPrevious() instanceof SQLiteDatabaseDoesNotExistException) {
+                throw $e;
+            }
+        }
+    }
+
+    /**
+     * Set the busy timeout if configured.
+     *
+     * @return void
+     */
+    protected function configureBusyTimeout(): void
+    {
+        $milliseconds = $this->getConfig('busy_timeout');
+
+        if ($milliseconds === null) {
+            return;
+        }
+
+        try {
+            $this->getSchemaBuilder()->setBusyTimeout($milliseconds);
+        } catch (QueryException $e) {
+            if (! $e->getPrevious() instanceof SQLiteDatabaseDoesNotExistException) {
+                throw $e;
+            }
+        }
+    }
+
+    /**
+     * Set the journal mode if configured.
+     *
+     * @return void
+     */
+    protected function configureJournalMode(): void
+    {
+        $mode = $this->getConfig('journal_mode');
+
+        if ($mode === null) {
+            return;
+        }
+
+        try {
+            $this->getSchemaBuilder()->setJournalMode($mode);
+        } catch (QueryException $e) {
+            if (! $e->getPrevious() instanceof SQLiteDatabaseDoesNotExistException) {
+                throw $e;
+            }
+        }
+    }
+
+    /**
+     * Set the synchronous mode if configured.
+     *
+     * @return void
+     */
+    protected function configureSynchronous(): void
+    {
+        $mode = $this->getConfig('synchronous');
+
+        if ($mode === null) {
+            return;
+        }
+
+        try {
+            $this->getSchemaBuilder()->setSynchronous($mode);
+        } catch (QueryException $e) {
+            if (! $e->getPrevious() instanceof SQLiteDatabaseDoesNotExistException) {
+                throw $e;
+            }
+        }
     }
 
     /**
@@ -59,7 +152,7 @@ class SQLiteConnection extends Connection
      */
     protected function isUniqueConstraintError(Exception $exception)
     {
-        return (bool) preg_match('#(column(s)? .* (is|are) not unique|UNIQUE constraint failed: .*)#i', $exception->getMessage());
+        return boolval(preg_match('#(column(s)? .* (is|are) not unique|UNIQUE constraint failed: .*)#i', $exception->getMessage()));
     }
 
     /**
@@ -69,7 +162,9 @@ class SQLiteConnection extends Connection
      */
     protected function getDefaultQueryGrammar()
     {
-        return new QueryGrammar($this);
+        ($grammar = new QueryGrammar)->setConnection($this);
+
+        return $this->withTablePrefix($grammar);
     }
 
     /**
@@ -93,7 +188,9 @@ class SQLiteConnection extends Connection
      */
     protected function getDefaultSchemaGrammar()
     {
-        return new SchemaGrammar($this);
+        ($grammar = new SchemaGrammar)->setConnection($this);
+
+        return $this->withTablePrefix($grammar);
     }
 
     /**

@@ -142,7 +142,7 @@ class DbCommand extends Command
     {
         return [
             'mysql' => 'mysql',
-            'mariadb' => 'mariadb',
+            'mariadb' => 'mysql',
             'pgsql' => 'psql',
             'sqlite' => 'sqlite3',
             'sqlsrv' => 'sqlcmd',
@@ -157,21 +157,15 @@ class DbCommand extends Command
      */
     protected function getMysqlArguments(array $connection)
     {
-        $optionalArguments = [
-            'password' => '--password='.$connection['password'],
-            'unix_socket' => '--socket='.($connection['unix_socket'] ?? ''),
-            'charset' => '--default-character-set='.($connection['charset'] ?? ''),
-        ];
-
-        if (! $connection['password']) {
-            unset($optionalArguments['password']);
-        }
-
         return array_merge([
             '--host='.$connection['host'],
             '--port='.$connection['port'],
             '--user='.$connection['username'],
-        ], $this->getOptionalArguments($optionalArguments, $connection), [$connection['database']]);
+        ], $this->getOptionalArguments([
+            'password' => '--password='.$connection['password'],
+            'unix_socket' => '--socket='.($connection['unix_socket'] ?? ''),
+            'charset' => '--default-character-set='.($connection['charset'] ?? ''),
+        ], $connection), [$connection['database']]);
     }
 
     /**

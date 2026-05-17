@@ -13,7 +13,7 @@ if (! function_exists('collect')) {
      * @param  \Illuminate\Contracts\Support\Arrayable<TKey, TValue>|iterable<TKey, TValue>|null  $value
      * @return \Illuminate\Support\Collection<TKey, TValue>
      */
-    function collect($value = []): Collection
+    function collect($value = [])
     {
         return new Collection($value);
     }
@@ -31,36 +31,6 @@ if (! function_exists('data_fill')) {
     function data_fill(&$target, $key, $value)
     {
         return data_set($target, $key, $value, false);
-    }
-}
-
-if (! function_exists('data_has')) {
-    /**
-     * Determine if a key / property exists on an array or object using "dot" notation.
-     *
-     * @param  mixed  $target
-     * @param  string|array|int|null  $key
-     * @return bool
-     */
-    function data_has($target, $key): bool
-    {
-        if (is_null($key) || $key === []) {
-            return false;
-        }
-
-        $key = is_array($key) ? $key : explode('.', $key);
-
-        foreach ($key as $segment) {
-            if (Arr::accessible($target) && Arr::exists($target, $segment)) {
-                $target = $target[$segment];
-            } elseif (is_object($target) && property_exists($target, $segment)) {
-                $target = $target->{$segment};
-            } else {
-                return false;
-            }
-        }
-
-        return true;
     }
 }
 
@@ -107,9 +77,9 @@ if (! function_exists('data_get')) {
             $segment = match ($segment) {
                 '\*' => '*',
                 '\{first}' => '{first}',
-                '{first}' => array_key_first(Arr::from($target)),
+                '{first}' => array_key_first(is_array($target) ? $target : (new Collection($target))->all()),
                 '\{last}' => '{last}',
-                '{last}' => array_key_last(Arr::from($target)),
+                '{last}' => array_key_last(is_array($target) ? $target : (new Collection($target))->all()),
                 default => $segment,
             };
 
@@ -233,7 +203,7 @@ if (! function_exists('head')) {
      */
     function head($array)
     {
-        return empty($array) ? false : array_first($array);
+        return reset($array);
     }
 }
 
@@ -246,7 +216,7 @@ if (! function_exists('last')) {
      */
     function last($array)
     {
-        return empty($array) ? false : array_last($array);
+        return end($array);
     }
 }
 
@@ -271,19 +241,13 @@ if (! function_exists('when')) {
     /**
      * Return a value if the given condition is true.
      *
-     * @template TValue
-     * @template TArgs
-     * @template TDefault
-     *
      * @param  mixed  $condition
-     * @param  TValue|\Closure(TArgs): TValue  $value
-     * @param  TDefault|\Closure(): TDefault  $default
-     * @return ($condition is true|positive-int|non-falsy-string|non-empty-array ? TValue : ($condition is callable ? TValue|TDefault : TDefault))
+     * @param  \Closure|mixed  $value
+     * @param  \Closure|mixed  $default
+     * @return mixed
      */
     function when($condition, $value, $default = null)
     {
-        $condition = $condition instanceof Closure ? $condition() : $condition;
-
         if ($condition) {
             return value($value, $condition);
         }

@@ -90,7 +90,7 @@ class Filesystem
                 if (flock($handle, LOCK_SH)) {
                     clearstatcache(true, $path);
 
-                    $contents = stream_get_contents($handle);
+                    $contents = fread($handle, $this->size($path) ?: 1);
 
                     flock($handle, LOCK_UN);
                 }
@@ -223,9 +223,9 @@ class Filesystem
 
         // Fix permissions of tempPath because `tempnam()` creates it with permissions set to 0600...
         if (! is_null($mode)) {
-            @chmod($tempPath, $mode);
+            chmod($tempPath, $mode);
         } else {
-            @chmod($tempPath, 0777 - umask());
+            chmod($tempPath, 0777 - umask());
         }
 
         file_put_contents($tempPath, $content);
@@ -431,7 +431,7 @@ class Filesystem
     }
 
     /**
-     * Guess the file extension from the MIME type of a given file.
+     * Guess the file extension from the mime-type of a given file.
      *
      * @param  string  $path
      * @return string|null
@@ -453,7 +453,7 @@ class Filesystem
      * Get the file type of a given file.
      *
      * @param  string  $path
-     * @return string|false
+     * @return string
      */
     public function type($path)
     {
@@ -461,7 +461,7 @@ class Filesystem
     }
 
     /**
-     * Get the MIME type of a given file.
+     * Get the mime-type of a given file.
      *
      * @param  string  $path
      * @return string|false
@@ -582,10 +582,10 @@ class Filesystem
      * @param  bool  $hidden
      * @return \Symfony\Component\Finder\SplFileInfo[]
      */
-    public function files($directory, $hidden = false, array|string|int $depth = 0)
+    public function files($directory, $hidden = false)
     {
         return iterator_to_array(
-            Finder::create()->files()->ignoreDotFiles(! $hidden)->in($directory)->depth($depth)->sortByName(),
+            Finder::create()->files()->ignoreDotFiles(! $hidden)->in($directory)->depth(0)->sortByName(),
             false
         );
     }
@@ -599,7 +599,10 @@ class Filesystem
      */
     public function allFiles($directory, $hidden = false)
     {
-        return $this->files($directory, $hidden, []);
+        return iterator_to_array(
+            Finder::create()->files()->ignoreDotFiles(! $hidden)->in($directory)->sortByName(),
+            false
+        );
     }
 
     /**
@@ -608,25 +611,15 @@ class Filesystem
      * @param  string  $directory
      * @return array
      */
-    public function directories($directory, array|string|int $depth = 0)
+    public function directories($directory)
     {
         $directories = [];
 
-        foreach (Finder::create()->in($directory)->directories()->depth($depth)->sortByName() as $dir) {
+        foreach (Finder::create()->in($directory)->directories()->depth(0)->sortByName() as $dir) {
             $directories[] = $dir->getPathname();
         }
 
         return $directories;
-    }
-
-    /**
-     * Get all the directories within a given directory (recursive).
-     *
-     * @return array
-     */
-    public function allDirectories(string $directory): array
-    {
-        return $this->directories($directory, []);
     }
 
     /**

@@ -33,18 +33,12 @@ class DatabaseTransactionRecord
     protected $callbacks = [];
 
     /**
-     * The callbacks that should be executed after rollback.
-     *
-     * @var array
-     */
-    protected $callbacksForRollback = [];
-
-    /**
      * Create a new database transaction record instance.
      *
      * @param  string  $connection
      * @param  int  $level
      * @param  \Illuminate\Database\DatabaseTransactionRecord|null  $parent
+     * @return void
      */
     public function __construct($connection, $level, ?DatabaseTransactionRecord $parent = null)
     {
@@ -65,17 +59,6 @@ class DatabaseTransactionRecord
     }
 
     /**
-     * Register a callback to be executed after rollback.
-     *
-     * @param  callable  $callback
-     * @return void
-     */
-    public function addCallbackForRollback($callback)
-    {
-        $this->callbacksForRollback[] = $callback;
-    }
-
-    /**
      * Execute all of the callbacks.
      *
      * @return void
@@ -88,18 +71,6 @@ class DatabaseTransactionRecord
     }
 
     /**
-     * Execute all of the callbacks for rollback.
-     *
-     * @return void
-     */
-    public function executeCallbacksForRollback()
-    {
-        foreach ($this->callbacksForRollback as $callback) {
-            $callback();
-        }
-    }
-
-    /**
      * Get all of the callbacks.
      *
      * @return array
@@ -107,15 +78,5 @@ class DatabaseTransactionRecord
     public function getCallbacks()
     {
         return $this->callbacks;
-    }
-
-    /**
-     * Get all of the callbacks for rollback.
-     *
-     * @return array
-     */
-    public function getCallbacksForRollback()
-    {
-        return $this->callbacksForRollback;
     }
 }

@@ -37,6 +37,7 @@ class Attribute
      *
      * @param  callable|null  $get
      * @param  callable|null  $set
+     * @return void
      */
     public function __construct(?callable $get = null, ?callable $set = null)
     {

@@ -242,8 +242,7 @@ trait AsPivot
      */
     public function hasTimestampAttributes($attributes = null)
     {
-        return ($createdAt = $this->getCreatedAtColumn()) !== null
-            && array_key_exists($createdAt, $attributes ?? $this->attributes);
+        return array_key_exists($this->getCreatedAtColumn(), $attributes ?? $this->attributes);
     }
 
     /**

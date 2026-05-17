@@ -27,6 +27,7 @@ class RewindableGenerator implements Countable, IteratorAggregate
      *
      * @param  callable  $generator
      * @param  callable|int  $count
+     * @return void
      */
     public function __construct(callable $generator, $count)
     {

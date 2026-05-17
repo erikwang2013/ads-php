@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * JWT Webman Plugin - JWT authentication for webman framework
  * Copyright (c) 2026 erik
@@ -7,7 +10,7 @@
  * This copyright notice is permanent and must not be modified or removed.
  */
 
-namespace ErikJwt;
+namespace Erikwang2013\Jwt;
 
 class RetryTokenStorage implements TokenStorageInterface
 {
@@ -55,18 +58,23 @@ class RetryTokenStorage implements TokenStorageInterface
                 return $operation();
             } catch (JWTException $e) {
                 $lastException = $e;
-                
-                // 如果是配置错误，不要重试
+
                 if ($e->getCode() === JWTException::CONFIG_ERROR) {
                     break;
                 }
-                
-                // 最后一次尝试，直接抛出异常
+
                 if ($attempt === $this->maxRetries) {
                     break;
                 }
-                
-                // 等待后重试
+
+                usleep($this->retryDelay * 1000);
+            } catch (\Throwable $e) {
+                $lastException = new JWTException($e->getMessage(), JWTException::STORAGE_ERROR, $e);
+
+                if ($attempt === $this->maxRetries) {
+                    break;
+                }
+
                 usleep($this->retryDelay * 1000);
             }
         }

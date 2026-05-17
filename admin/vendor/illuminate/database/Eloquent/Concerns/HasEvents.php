@@ -18,7 +18,7 @@ trait HasEvents
      *
      * Allows for object-based events for native Eloquent events.
      *
-     * @var array<string, class-string>
+     * @var array
      */
     protected $dispatchesEvents = [];
 
@@ -27,7 +27,7 @@ trait HasEvents
      *
      * These are extra user-defined events observers may subscribe to.
      *
-     * @var string[]
+     * @var array
      */
     protected $observables = [];
 
@@ -38,7 +38,7 @@ trait HasEvents
      */
     public static function bootHasEvents()
     {
-        static::whenBooted(fn () => static::observe(static::resolveObserveAttributes()));
+        static::observe(static::resolveObserveAttributes());
     }
 
     /**
@@ -66,7 +66,7 @@ trait HasEvents
     /**
      * Register observers with the model.
      *
-     * @param  object|string[]|string  $classes
+     * @param  object|array|string  $classes
      * @return void
      *
      * @throws \RuntimeException
@@ -106,7 +106,7 @@ trait HasEvents
      * Resolve the observer's class name from an object or string.
      *
      * @param  object|string  $class
-     * @return class-string
+     * @return string
      *
      * @throws \InvalidArgumentException
      */
@@ -126,7 +126,7 @@ trait HasEvents
     /**
      * Get the observable event names.
      *
-     * @return string[]
+     * @return array
      */
     public function getObservableEvents()
     {
@@ -134,7 +134,7 @@ trait HasEvents
             [
                 'retrieved', 'creating', 'created', 'updating', 'updated',
                 'saving', 'saved', 'restoring', 'restored', 'replicating',
-                'trashed', 'deleting', 'deleted', 'forceDeleting', 'forceDeleted',
+                'deleting', 'deleted', 'forceDeleting', 'forceDeleted',
             ],
             $this->observables
         );
@@ -143,7 +143,7 @@ trait HasEvents
     /**
      * Set the observable event names.
      *
-     * @param  string[]  $observables
+     * @param  array  $observables
      * @return $this
      */
     public function setObservableEvents(array $observables)
@@ -156,7 +156,7 @@ trait HasEvents
     /**
      * Add an observable event name.
      *
-     * @param  string|string[]  $observables
+     * @param  array|mixed  $observables
      * @return void
      */
     public function addObservableEvents($observables)
@@ -169,7 +169,7 @@ trait HasEvents
     /**
      * Remove an observable event name.
      *
-     * @param  string|string[]  $observables
+     * @param  array|mixed  $observables
      * @return void
      */
     public function removeObservableEvents($observables)
@@ -230,8 +230,8 @@ trait HasEvents
      * Fire a custom model event for the given event.
      *
      * @param  string  $event
-     * @param  'until'|'dispatch'  $method
-     * @return array|null|void
+     * @param  string  $method
+     * @return mixed|null
      */
     protected function fireCustomModelEvent($event, $method)
     {

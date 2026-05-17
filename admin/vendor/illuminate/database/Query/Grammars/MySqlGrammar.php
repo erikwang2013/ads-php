@@ -18,30 +18,6 @@ class MySqlGrammar extends Grammar
     protected $operators = ['sounds like'];
 
     /**
-     * Compile a select query into SQL.
-     *
-     * @param  \Illuminate\Database\Query\Builder  $query
-     * @return string
-     */
-    public function compileSelect(Builder $query)
-    {
-        $sql = parent::compileSelect($query);
-
-        if ($query->timeout === null) {
-            return $sql;
-        }
-
-        $milliseconds = $query->timeout * 1000;
-
-        return preg_replace(
-            '/^select\b/i',
-            'select /*+ MAX_EXECUTION_TIME('.$milliseconds.') */',
-            $sql,
-            1
-        );
-    }
-
-    /**
      * Compile a "where like" clause.
      *
      * @param  \Illuminate\Database\Query\Builder  $query
@@ -55,18 +31,6 @@ class MySqlGrammar extends Grammar
         $where['operator'] .= $where['caseSensitive'] ? 'like binary' : 'like';
 
         return $this->whereBasic($query, $where);
-    }
-
-    /**
-     * Compile a "where null safe equals" clause.
-     *
-     * @param  \Illuminate\Database\Query\Builder  $query
-     * @param  array  $where
-     * @return string
-     */
-    protected function whereNullSafeEquals(Builder $query, $where)
-    {
-        return $this->wrap($where['column']).' <=> '.$this->parameter($where['value']);
     }
 
     /**
@@ -139,25 +103,17 @@ class MySqlGrammar extends Grammar
      * @param  \Illuminate\Database\Query\Builder  $query
      * @param  \Illuminate\Database\Query\IndexHint  $indexHint
      * @return string
-     *
-     * @throws \InvalidArgumentException
      */
     protected function compileIndexHint(Builder $query, $indexHint)
     {
-        $index = $indexHint->index;
-
-        $indexes = array_map('trim', explode(',', $index));
-
-        foreach ($indexes as $i) {
-            if (! preg_match('/^[a-zA-Z0-9_$]+$/', $i)) {
-                throw new InvalidArgumentException('Index name contains invalid characters.');
-            }
+        if (! preg_match('/^[a-zA-Z0-9_$]+$/', $indexHint->index)) {
+            throw new InvalidArgumentException('Index name contains invalid characters.');
         }
 
         return match ($indexHint->type) {
-            'hint' => "use index ({$index})",
-            'force' => "force index ({$index})",
-            default => "ignore index ({$index})",
+            'hint' => "use index ({$indexHint->index})",
+            'force' => "force index ({$indexHint->index})",
+            default => "ignore index ({$indexHint->index})",
         };
     }
 
@@ -184,7 +140,7 @@ class MySqlGrammar extends Grammar
     {
         $version = $query->getConnection()->getServerVersion();
 
-        return ! $query->getConnection()->isMaria() && version_compare($version, '8.0.11', '<');
+        return ! $query->getConnection()->isMaria() && version_compare($version, '8.0.11') < 0;
     }
 
     /**
@@ -501,7 +457,6 @@ class MySqlGrammar extends Grammar
      * @param  array  $values
      * @return array
      */
-    #[\Override]
     public function prepareBindingsForUpdate(array $bindings, array $values)
     {
         $values = (new Collection($values))

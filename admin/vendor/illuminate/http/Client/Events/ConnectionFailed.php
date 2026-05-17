@@ -26,6 +26,7 @@ class ConnectionFailed
      *
      * @param  \Illuminate\Http\Client\Request  $request
      * @param  \Illuminate\Http\Client\ConnectionException  $exception
+     * @return void
      */
     public function __construct(Request $request, ConnectionException $exception)
     {

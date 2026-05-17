@@ -461,13 +461,13 @@ New composer.json:
     },
     "autoload": {
         "psr-4": {
-            "ErikJwt\\": "src/erik-jwt"
+            "Erikwang2013\Jwt\\": "src/erik-jwt"
         }
     },
     "extra": {
         "laravel": {
-            "providers": ["ErikJwt\\Laravel\\JWTServiceProvider"],
-            "aliases": {"JWT": "ErikJwt\\Laravel\\Facade"}
+            "providers": ["Erikwang2013\Jwt\\Laravel\\JWTServiceProvider"],
+            "aliases": {"JWT": "Erikwang2013\Jwt\\Laravel\\Facade"}
         }
     },
     "repositories": {
@@ -517,9 +517,9 @@ mkdir -p src/erik-jwt/Webman
  * This copyright notice is permanent and must not be modified or removed.
  */
 
-namespace ErikJwt\Webman;
+namespace Erikwang2013\Jwt\Webman;
 
-use ErikJwt\JWTFactory;
+use Erikwang2013\Jwt\JWTFactory;
 use Webman\MiddlewareInterface;
 use Webman\Http\Response;
 use Webman\Http\Request;
@@ -555,7 +555,7 @@ class Middleware implements MiddlewareInterface
             ]);
             $payload = $jwt->decode($token);
             $request->jwt_payload = $payload;
-        } catch (\ErikJwt\JWTException $e) {
+        } catch (\Erikwang2013\Jwt\JWTException $e) {
             return new Response(401, ['Content-Type' => 'application/json'],
                 json_encode(['code' => 401, 'msg' => $e->getMessage(), 'data' => null]));
         }
@@ -642,9 +642,9 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
 ```php
 <?php
 
-namespace ErikJwt\Laravel;
+namespace Erikwang2013\Jwt\Laravel;
 
-use ErikJwt\JWTFactory;
+use Erikwang2013\Jwt\JWTFactory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\ServiceProvider;
@@ -704,7 +704,7 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
 ```php
 <?php
 
-namespace ErikJwt\Laravel;
+namespace Erikwang2013\Jwt\Laravel;
 
 use Illuminate\Support\Facades\Facade as LaravelFacade;
 
@@ -745,10 +745,10 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
 ```php
 <?php
 
-namespace ErikJwt\Laravel;
+namespace Erikwang2013\Jwt\Laravel;
 
 use Closure;
-use ErikJwt\JWTException;
+use Erikwang2013\Jwt\JWTException;
 use Illuminate\Http\Request;
 
 class Middleware
@@ -815,7 +815,7 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
 ```php
 <?php
 
-namespace ErikJwt\Laravel;
+namespace Erikwang2013\Jwt\Laravel;
 
 use Illuminate\Console\Command;
 
@@ -874,7 +874,7 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
 <?php
 
 if (!function_exists('jwt')) {
-    function jwt(): \ErikJwt\JWT
+    function jwt(): \Erikwang2013\Jwt\JWT
     {
         return app('erik.jwt');
     }
@@ -953,9 +953,9 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
 ```php
 <?php
 
-namespace ErikJwt\ThinkPHP;
+namespace Erikwang2013\Jwt\ThinkPHP;
 
-use ErikJwt\JWTFactory;
+use Erikwang2013\Jwt\JWTFactory;
 use think\Service;
 
 class JWTService extends Service
@@ -1009,7 +1009,7 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
 ```php
 <?php
 
-namespace ErikJwt\ThinkPHP;
+namespace Erikwang2013\Jwt\ThinkPHP;
 
 use think\Facade;
 
@@ -1050,10 +1050,10 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
 ```php
 <?php
 
-namespace ErikJwt\ThinkPHP;
+namespace Erikwang2013\Jwt\ThinkPHP;
 
 use Closure;
-use ErikJwt\JWTException;
+use Erikwang2013\Jwt\JWTException;
 use think\Request;
 use think\Response;
 
@@ -1118,7 +1118,7 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
 ```php
 <?php
 
-namespace ErikJwt\ThinkPHP;
+namespace Erikwang2013\Jwt\ThinkPHP;
 
 use think\console\Command;
 use think\console\Input;
@@ -1190,7 +1190,7 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
 <?php
 
 if (!function_exists('jwt')) {
-    function jwt(): \ErikJwt\JWT
+    function jwt(): \Erikwang2013\Jwt\JWT
     {
         return app('erik.jwt');
     }
@@ -1273,7 +1273,7 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
 
 declare(strict_types=1);
 
-namespace ErikJwt\Hyperf;
+namespace Erikwang2013\Jwt\Hyperf;
 
 use Attribute;
 use Hyperf\Di\Annotation\AbstractAnnotation;
@@ -1306,7 +1306,7 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
 
 declare(strict_types=1);
 
-namespace ErikJwt\Hyperf;
+namespace Erikwang2013\Jwt\Hyperf;
 
 use Hyperf\Contract\ConfigInterface;
 use Psr\Container\ContainerInterface;
@@ -1317,7 +1317,7 @@ class ConfigProvider
     {
         return [
             'dependencies' => [
-                \ErikJwt\JWT::class => function (ContainerInterface $container) {
+                \Erikwang2013\Jwt\JWT::class => function (ContainerInterface $container) {
                     $config = $container->get(ConfigInterface::class)->get('jwt', []);
                     $logger = $container->get(\Psr\Log\LoggerInterface::class);
 
@@ -1329,11 +1329,11 @@ class ConfigProvider
                         $connections['pdo'] = $container->get(\Hyperf\DbConnection\Db::class)->connection()->getPdo();
                     }
 
-                    return \ErikJwt\JWTFactory::createFromConfig($config, $logger, $connections);
+                    return \Erikwang2013\Jwt\JWTFactory::createFromConfig($config, $logger, $connections);
                 },
             ],
             'middlewares' => [
-                'http' => [\ErikJwt\Hyperf\Middleware::class],
+                'http' => [\Erikwang2013\Jwt\Hyperf\Middleware::class],
             ],
             'commands' => [
                 InstallCommand::class,
@@ -1378,10 +1378,10 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
 
 declare(strict_types=1);
 
-namespace ErikJwt\Hyperf;
+namespace Erikwang2013\Jwt\Hyperf;
 
-use ErikJwt\JWT as JWTInstance;
-use ErikJwt\JWTException;
+use Erikwang2013\Jwt\JWT as JWTInstance;
+use Erikwang2013\Jwt\JWTException;
 use Hyperf\Contract\ConfigInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -1471,9 +1471,9 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
 
 declare(strict_types=1);
 
-namespace ErikJwt\Hyperf;
+namespace Erikwang2013\Jwt\Hyperf;
 
-use ErikJwt\JWTException;
+use Erikwang2013\Jwt\JWTException;
 use Hyperf\Di\Annotation\Aspect;
 use Hyperf\Di\Aop\AbstractAspect;
 use Hyperf\Di\Aop\ProceedingJoinPoint;
@@ -1497,7 +1497,7 @@ class JWTAspect extends AbstractAspect
 
     public function process(ProceedingJoinPoint $proceedingJoinPoint)
     {
-        $jwt    = $this->container->get(\ErikJwt\JWT::class);
+        $jwt    = $this->container->get(\Erikwang2013\Jwt\JWT::class);
         $config = $this->container->get(\Hyperf\Contract\ConfigInterface::class)->get('jwt', []);
 
         $except = $config['middleware']['except'] ?? [];
@@ -1556,7 +1556,7 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
 
 declare(strict_types=1);
 
-namespace ErikJwt\Hyperf;
+namespace Erikwang2013\Jwt\Hyperf;
 
 use Hyperf\Command\Command;
 use Psr\Container\ContainerInterface;
@@ -1666,7 +1666,7 @@ After `composer require`, the plugin auto-registers via webman's plugin system.
 **Usage:**
 
 ```php
-use ErikJwt\JWTFactory;
+use Erikwang2013\Jwt\JWTFactory;
 
 $jwt = JWTFactory::createFromConfig(
     config('plugin.erikwang2013.jwt.jwt'),
@@ -1687,7 +1687,7 @@ $jwt->blacklist($token);
 ```php
 return [
     '' => [
-        \ErikJwt\Webman\Middleware::class,
+        \Erikwang2013\Jwt\Webman\Middleware::class,
     ],
 ];
 ```
@@ -1700,7 +1700,7 @@ After `composer require`, Laravel auto-discovers the ServiceProvider via `extra.
 
 ```php
 'providers' => [
-    ErikJwt\Laravel\JWTServiceProvider::class,
+    Erikwang2013\Jwt\Laravel\JWTServiceProvider::class,
 ],
 ```
 
@@ -1715,7 +1715,7 @@ php artisan jwt:install
 **Usage — Facade:**
 
 ```php
-use ErikJwt\Laravel\Facade as JWT;
+use Erikwang2013\Jwt\Laravel\Facade as JWT;
 
 $token   = JWT::encode(['user_id' => 1]);
 $payload = JWT::decode($token);
@@ -1731,7 +1731,7 @@ $token = jwt()->encode(['user_id' => 1]);
 **Usage — Dependency Injection:**
 
 ```php
-use ErikJwt\JWT;
+use Erikwang2013\Jwt\JWT;
 
 public function __construct(JWT $jwt) {
     $this->jwt = $jwt;
@@ -1765,7 +1765,7 @@ Register the service in `app/service.php` after `composer require`:
 
 ```php
 return [
-    \ErikJwt\ThinkPHP\JWTService::class,
+    \Erikwang2013\Jwt\ThinkPHP\JWTService::class,
 ];
 ```
 
@@ -1780,7 +1780,7 @@ php think jwt:install
 **Usage — Facade:**
 
 ```php
-use ErikJwt\ThinkPHP\JWT;
+use Erikwang2013\Jwt\ThinkPHP\JWT;
 
 $token   = JWT::encode(['user_id' => 1]);
 $payload = JWT::decode($token);
@@ -1813,7 +1813,7 @@ After `composer require`, register ConfigProvider in `config/autoload/dependenci
 
 ```php
 return [
-    \ErikJwt\Hyperf\ConfigProvider::class,
+    \Erikwang2013\Jwt\Hyperf\ConfigProvider::class,
 ];
 ```
 
@@ -1828,7 +1828,7 @@ php bin/hyperf.php jwt:install
 **Usage — Dependency Injection:**
 
 ```php
-use ErikJwt\JWT;
+use Erikwang2013\Jwt\JWT;
 use Hyperf\Di\Annotation\Inject;
 
 class UserController {
@@ -1847,7 +1847,7 @@ class UserController {
 **AOP Annotation:**
 
 ```php
-use ErikJwt\Hyperf\JWT as JWTAuth;
+use Erikwang2013\Jwt\Hyperf\JWT as JWTAuth;
 
 class UserController {
     #[JWTAuth]
@@ -1930,9 +1930,9 @@ Replace the entire file content:
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use ErikJwt\Config;
-use ErikJwt\JWTFactory;
-use ErikJwt\JWTException;
+use Erikwang2013\Jwt\Config;
+use Erikwang2013\Jwt\JWTFactory;
+use Erikwang2013\Jwt\JWTException;
 
 // Framework-agnostic example
 $config = [

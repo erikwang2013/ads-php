@@ -8,14 +8,14 @@ use Symfony\Component\Mime\MimeTypes;
 class MimeType
 {
     /**
-     * The MIME types instance.
+     * The mime types instance.
      *
      * @var \Symfony\Component\Mime\MimeTypes|null
      */
     private static $mime;
 
     /**
-     * Get the MIME types instance.
+     * Get the mime types instance.
      *
      * @return \Symfony\Component\Mime\MimeTypesInterface
      */
@@ -42,7 +42,7 @@ class MimeType
     }
 
     /**
-     * Get the MIME type for a given extension or return all MIME types.
+     * Get the MIME type for a given extension or return all mimes.
      *
      * @param  string  $extension
      * @return string

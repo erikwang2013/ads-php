@@ -2,6 +2,7 @@
 
 namespace Illuminate\Database\Schema\Grammars;
 
+use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Fluent;
@@ -37,14 +38,42 @@ class SqlServerGrammar extends Grammar
     protected $fluentCommands = ['Default'];
 
     /**
-     * Compile the query to determine the schemas.
+     * Compile a query to determine the name of the default schema.
      *
      * @return string
      */
-    public function compileSchemas()
+    public function compileDefaultSchema()
     {
-        return 'select name, iif(schema_id = schema_id(), 1, 0) as [default] from sys.schemas '
-            ."where name not in ('information_schema', 'sys') and name not like 'db[_]%' order by name";
+        return 'select schema_name()';
+    }
+
+    /**
+     * Compile a create database command.
+     *
+     * @param  string  $name
+     * @param  \Illuminate\Database\Connection  $connection
+     * @return string
+     */
+    public function compileCreateDatabase($name, $connection)
+    {
+        return sprintf(
+            'create database %s',
+            $this->wrapValue($name),
+        );
+    }
+
+    /**
+     * Compile a drop database if exists command.
+     *
+     * @param  string  $name
+     * @return string
+     */
+    public function compileDropDatabaseIfExists($name)
+    {
+        return sprintf(
+            'drop database if exists %s',
+            $this->wrapValue($name)
+        );
     }
 
     /**
@@ -65,56 +94,34 @@ class SqlServerGrammar extends Grammar
     /**
      * Compile the query to determine the tables.
      *
-     * @param  string|string[]|null  $schema
      * @return string
      */
-    public function compileTables($schema)
+    public function compileTables()
     {
         return 'select t.name as name, schema_name(t.schema_id) as [schema], sum(u.total_pages) * 8 * 1024 as size '
             .'from sys.tables as t '
             .'join sys.partitions as p on p.object_id = t.object_id '
             .'join sys.allocation_units as u on u.container_id = p.hobt_id '
-            ."where t.is_ms_shipped = 0 and t.name <> 'sysdiagrams'"
-            .$this->compileSchemaWhereClause($schema, 'schema_name(t.schema_id)')
-            .' group by t.name, t.schema_id '
-            .'order by [schema], t.name';
+            .'group by t.name, t.schema_id '
+            .'order by t.name';
     }
 
     /**
      * Compile the query to determine the views.
      *
-     * @param  string|string[]|null  $schema
      * @return string
      */
-    public function compileViews($schema)
+    public function compileViews()
     {
         return 'select name, schema_name(v.schema_id) as [schema], definition from sys.views as v '
             .'inner join sys.sql_modules as m on v.object_id = m.object_id '
-            .'where v.is_ms_shipped = 0'
-            .$this->compileSchemaWhereClause($schema, 'schema_name(v.schema_id)')
-            .' order by [schema], name';
-    }
-
-    /**
-     * Compile the query to compare the schema.
-     *
-     * @param  string|string[]|null  $schema
-     * @param  string  $column
-     * @return string
-     */
-    protected function compileSchemaWhereClause($schema, $column)
-    {
-        return match (true) {
-            ! empty($schema) && is_array($schema) => " and $column in (".$this->quoteString($schema).')',
-            ! empty($schema) => " and $column = ".$this->quoteString($schema),
-            default => '',
-        };
+            .'order by name';
     }
 
     /**
      * Compile the query to determine the columns.
      *
-     * @param  string|null  $schema
+     * @param  string  $schema
      * @param  string  $table
      * @return string
      */
@@ -144,7 +151,7 @@ class SqlServerGrammar extends Grammar
     /**
      * Compile the query to determine the indexes.
      *
-     * @param  string|null  $schema
+     * @param  string  $schema
      * @param  string  $table
      * @return string
      */
@@ -168,7 +175,7 @@ class SqlServerGrammar extends Grammar
     /**
      * Compile the query to determine the foreign keys.
      *
-     * @param  string|null  $schema
+     * @param  string  $schema
      * @param  string  $table
      * @return string
      */
@@ -205,10 +212,9 @@ class SqlServerGrammar extends Grammar
      */
     public function compileCreate(Blueprint $blueprint, Fluent $command)
     {
-        return sprintf('create table %s (%s)',
-            $this->wrapTable($blueprint, $blueprint->temporary ? '#'.$this->connection->getTablePrefix() : null),
-            implode(', ', $this->getColumns($blueprint))
-        );
+        $columns = implode(', ', $this->getColumns($blueprint));
+
+        return 'create table '.$this->wrapTable($blueprint)." ($columns)";
     }
 
     /**
@@ -226,8 +232,15 @@ class SqlServerGrammar extends Grammar
         );
     }
 
-    /** @inheritDoc */
-    public function compileRenameColumn(Blueprint $blueprint, Fluent $command)
+    /**
+     * Compile a rename column command.
+     *
+     * @param  \Illuminate\Database\Schema\Blueprint  $blueprint
+     * @param  \Illuminate\Support\Fluent  $command
+     * @param  \Illuminate\Database\Connection  $connection
+     * @return array|string
+     */
+    public function compileRenameColumn(Blueprint $blueprint, Fluent $command, Connection $connection)
     {
         return sprintf("sp_rename %s, %s, N'COLUMN'",
             $this->quoteString($this->wrapTable($blueprint).'.'.$this->wrap($command->from)),
@@ -235,8 +248,17 @@ class SqlServerGrammar extends Grammar
         );
     }
 
-    /** @inheritDoc */
-    public function compileChange(Blueprint $blueprint, Fluent $command)
+    /**
+     * Compile a change column command into a series of SQL statements.
+     *
+     * @param  \Illuminate\Database\Schema\Blueprint  $blueprint
+     * @param  \Illuminate\Support\Fluent  $command
+     * @param  \Illuminate\Database\Connection  $connection
+     * @return array|string
+     *
+     * @throws \RuntimeException
+     */
+    public function compileChange(Blueprint $blueprint, Fluent $command, Connection $connection)
     {
         return [
             $this->compileDropDefaultConstraint($blueprint, $command),
@@ -272,11 +294,10 @@ class SqlServerGrammar extends Grammar
      */
     public function compileUnique(Blueprint $blueprint, Fluent $command)
     {
-        return sprintf('create unique index %s on %s (%s)%s',
+        return sprintf('create unique index %s on %s (%s)',
             $this->wrap($command->index),
             $this->wrapTable($blueprint),
-            $this->columnize($command->columns),
-            $command->online ? ' with (online = on)' : ''
+            $this->columnize($command->columns)
         );
     }
 
@@ -289,11 +310,10 @@ class SqlServerGrammar extends Grammar
      */
     public function compileIndex(Blueprint $blueprint, Fluent $command)
     {
-        return sprintf('create index %s on %s (%s)%s',
+        return sprintf('create index %s on %s (%s)',
             $this->wrap($command->index),
             $this->wrapTable($blueprint),
-            $this->columnize($command->columns),
-            $command->online ? ' with (online = on)' : ''
+            $this->columnize($command->columns)
         );
     }
 
@@ -395,7 +415,7 @@ class SqlServerGrammar extends Grammar
     {
         $columns = $command->name === 'change'
             ? "'".$command->column->name."'"
-            : "'".implode("', '", $command->columns)."'";
+            : "'".implode("','", $command->columns)."'";
 
         $table = $this->wrapTable($blueprint);
         $tableName = $this->quoteString($this->wrapTable($blueprint));
@@ -771,10 +791,6 @@ class SqlServerGrammar extends Grammar
      */
     protected function typeDate(Fluent $column)
     {
-        if ($column->useCurrent) {
-            $column->default(new Expression('CAST(GETDATE() AS DATE)'));
-        }
-
         return 'date';
     }
 
@@ -862,10 +878,6 @@ class SqlServerGrammar extends Grammar
      */
     protected function typeYear(Fluent $column)
     {
-        if ($column->useCurrent) {
-            $column->default(new Expression('CAST(YEAR(GETDATE()) AS INTEGER)'));
-        }
-
         return $this->typeInteger($column);
     }
 
@@ -1029,9 +1041,24 @@ class SqlServerGrammar extends Grammar
     }
 
     /**
+     * Wrap a table in keyword identifiers.
+     *
+     * @param  \Illuminate\Database\Schema\Blueprint|\Illuminate\Contracts\Database\Query\Expression|string  $table
+     * @return string
+     */
+    public function wrapTable($table)
+    {
+        if ($table instanceof Blueprint && $table->temporary) {
+            $this->setTablePrefix('#');
+        }
+
+        return parent::wrapTable($table);
+    }
+
+    /**
      * Quote the given string literal.
      *
-     * @param  string|array<string>  $value
+     * @param  string|array  $value
      * @return string
      */
     public function quoteString($value)

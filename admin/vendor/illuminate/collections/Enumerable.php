@@ -45,10 +45,9 @@ interface Enumerable extends Arrayable, Countable, IteratorAggregate, Jsonable, 
      *
      * @param  int  $from
      * @param  int  $to
-     * @param  int  $step
      * @return static
      */
-    public static function range($from, $to, $step = 1);
+    public static function range($from, $to);
 
     /**
      * Wrap the given value in a collection if applicable.
@@ -626,13 +625,6 @@ interface Enumerable extends Arrayable, Countable, IteratorAggregate, Jsonable, 
     public function containsOneItem();
 
     /**
-     * Determine if the collection contains multiple items.
-     *
-     * @return bool
-     */
-    public function containsManyItems();
-
-    /**
      * Join all items from the collection using a string. The final items can use a separate glue string.
      *
      * @param  string  $glue
@@ -740,10 +732,8 @@ interface Enumerable extends Arrayable, Countable, IteratorAggregate, Jsonable, 
     /**
      * Merge the collection with the given items.
      *
-     * @template TMergeValue
-     *
-     * @param  \Illuminate\Contracts\Support\Arrayable<TKey, TMergeValue>|iterable<TKey, TMergeValue>  $items
-     * @return static<TKey, TValue|TMergeValue>
+     * @param  \Illuminate\Contracts\Support\Arrayable<TKey, TValue>|iterable<TKey, TValue>  $items
+     * @return static
      */
     public function merge($items);
 
@@ -994,7 +984,7 @@ interface Enumerable extends Arrayable, Countable, IteratorAggregate, Jsonable, 
     /**
      * Get the first item in the collection but throw an exception if no matching items exist.
      *
-     * @param  (callable(TValue, TKey): bool)|string|null  $key
+     * @param  (callable(TValue, TKey): bool)|string  $key
      * @param  mixed  $operator
      * @param  mixed  $value
      * @return TValue
@@ -1277,15 +1267,6 @@ interface Enumerable extends Arrayable, Countable, IteratorAggregate, Jsonable, 
      * @return string
      */
     public function toJson($options = 0);
-
-    /**
-     * Get the collection of items as pretty print formatted JSON.
-     *
-     *
-     * @param  int  $options
-     * @return string
-     */
-    public function toPrettyJson(int $options = 0);
 
     /**
      * Get a CachingIterator instance.

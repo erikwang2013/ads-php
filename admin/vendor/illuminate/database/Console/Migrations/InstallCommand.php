@@ -35,6 +35,7 @@ class InstallCommand extends Command
      * Create a new migration install command instance.
      *
      * @param  \Illuminate\Database\Migrations\MigrationRepositoryInterface  $repository
+     * @return void
      */
     public function __construct(MigrationRepositoryInterface $repository)
     {
@@ -52,9 +53,7 @@ class InstallCommand extends Command
     {
         $this->repository->setSource($this->input->getOption('database'));
 
-        if (! $this->repository->repositoryExists()) {
-            $this->repository->createRepository();
-        }
+        $this->repository->createRepository();
 
         $this->components->info('Migration table created successfully.');
     }

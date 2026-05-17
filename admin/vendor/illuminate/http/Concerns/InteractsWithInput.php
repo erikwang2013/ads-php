@@ -80,7 +80,7 @@ trait InteractsWithInput
     /**
      * Get all of the input and files for the request.
      *
-     * @param  mixed  $keys
+     * @param  array|mixed|null  $keys
      * @return array
      */
     public function all($keys = null)
@@ -118,14 +118,11 @@ trait InteractsWithInput
      * Retrieve input from the request as a Fluent object instance.
      *
      * @param  array|string|null  $key
-     * @param  array  $default
      * @return \Illuminate\Support\Fluent
      */
-    public function fluent($key = null, array $default = [])
+    public function fluent($key = null)
     {
-        $value = is_array($key) ? $this->only($key) : $this->input($key);
-
-        return new Fluent($value ?? $default);
+        return new Fluent(is_array($key) ? $this->only($key) : $this->input($key));
     }
 
     /**
@@ -178,7 +175,7 @@ trait InteractsWithInput
     /**
      * Get an array of all of the files on the request.
      *
-     * @return array<string, \Illuminate\Http\UploadedFile|\Illuminate\Http\UploadedFile[]>
+     * @return array
      */
     public function allFiles()
     {
@@ -190,8 +187,8 @@ trait InteractsWithInput
     /**
      * Convert the given array of Symfony UploadedFiles to custom Laravel UploadedFiles.
      *
-     * @param  array<string, \Symfony\Component\HttpFoundation\File\UploadedFile|\Symfony\Component\HttpFoundation\File\UploadedFile[]>  $files
-     * @return array<string, \Illuminate\Http\UploadedFile|\Illuminate\Http\UploadedFile[]>
+     * @param  array  $files
+     * @return array
      */
     protected function convertUploadedFiles(array $files)
     {
@@ -201,8 +198,8 @@ trait InteractsWithInput
             }
 
             return is_array($file)
-                ? $this->convertUploadedFiles($file)
-                : UploadedFile::createFromBase($file);
+                        ? $this->convertUploadedFiles($file)
+                        : UploadedFile::createFromBase($file);
         }, $files);
     }
 
@@ -243,7 +240,7 @@ trait InteractsWithInput
      *
      * @param  string|null  $key
      * @param  mixed  $default
-     * @return ($key is null ? array<string, \Illuminate\Http\UploadedFile|\Illuminate\Http\UploadedFile[]> : \Illuminate\Http\UploadedFile|\Illuminate\Http\UploadedFile[]|null)
+     * @return \Illuminate\Http\UploadedFile|\Illuminate\Http\UploadedFile[]|array|null
      */
     public function file($key = null, $default = null)
     {
@@ -253,7 +250,7 @@ trait InteractsWithInput
     /**
      * Retrieve data from the instance.
      *
-     * @param  string|null  $key
+     * @param  string  $key
      * @param  mixed  $default
      * @return mixed
      */

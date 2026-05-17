@@ -14,6 +14,7 @@ class ThrottleRequestsException extends TooManyRequestsHttpException
      * @param  \Throwable|null  $previous
      * @param  array  $headers
      * @param  int  $code
+     * @return void
      */
     public function __construct($message = '', ?Throwable $previous = null, array $headers = [], $code = 0)
     {

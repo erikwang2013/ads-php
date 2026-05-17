@@ -19,6 +19,7 @@ class ResourceResponse implements Responsable
      * Create a new resource response.
      *
      * @param  mixed  $resource
+     * @return void
      */
     public function __construct($resource)
     {
@@ -80,10 +81,6 @@ class ResourceResponse implements Responsable
      */
     protected function haveDefaultWrapperAndDataIsUnwrapped($data)
     {
-        if ($this->resource instanceof JsonResource && $this->resource::$forceWrapping) {
-            return $this->wrapper() !== null;
-        }
-
         return $this->wrapper() && ! array_key_exists($this->wrapper(), $data);
     }
 

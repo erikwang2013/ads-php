@@ -13,16 +13,12 @@ trait InteractsWithDictionary
      * Get a dictionary key attribute - casting it to a string if necessary.
      *
      * @param  mixed  $attribute
-     * @return string|int|null
+     * @return mixed
      *
      * @throws \InvalidArgumentException
      */
     protected function getDictionaryKey($attribute)
     {
-        if (is_null($attribute) || is_string($attribute) || is_int($attribute)) {
-            return $attribute;
-        }
-
         if (is_object($attribute)) {
             if (method_exists($attribute, '__toString')) {
                 return $attribute->__toString();
@@ -35,6 +31,6 @@ trait InteractsWithDictionary
             throw new InvalidArgumentException('Model attribute value is an object but does not have a __toString method.');
         }
 
-        return (string) $attribute;
+        return $attribute;
     }
 }

@@ -25,19 +25,16 @@ return [
     | The cipher used to encrypt data.
     | Once defined, never change it or encrypted data cannot be correctly decrypted.
     |
-    | Default is aes-128-ecb (matching MySQL's AES_DECRYPT default). ECB produces
-    | deterministic ciphertext — identical plaintext always encrypts to identical
-    | ciphertext. This enables encrypted-column querying (UniqueEncrypted /
-    | ExistsEncrypted rules) but leaks equality patterns. Use a CBC/GCM cipher
-    | (e.g. aes-256-cbc) if pattern concealment matters more than searchability.
-    | All previous keys must use the same cipher as the primary key.
-    |
-    | IMPORTANT: ECB mode provides NO integrity authentication. Ciphertext can be
-    | modified without detection. Do NOT rely on encryption alone for tamper-proofing.
+    | Default is aes-256-gcm (authenticated encryption with random IV). GCM provides
+    | both confidentiality and integrity — ciphertext tampering is detectable.
+    | Use aes-128-ecb only if you need deterministic encryption for encrypted-column
+    | querying (UniqueEncrypted / ExistsEncrypted rules). ECB produces identical
+    | ciphertext for identical plaintext, which enables equality lookups but leaks
+    | data patterns and provides no integrity protection.
     |
     */
 
-    'cipher' => env('ENCRYPTION_CIPHER', 'aes-128-ecb'),
+    'cipher' => env('ENCRYPTION_CIPHER', 'aes-256-gcm'),
 
     /*
     |--------------------------------------------------------------------------
@@ -50,5 +47,5 @@ return [
     |
     */
 
-    'previous_keys' => \Maize\Encryptable\Support\PreviousKeysParser::parse(env('ENCRYPTION_PREVIOUS_KEYS')),
+    'previous_keys' => \Erikwang2013\Encryptable\Support\PreviousKeysParser::parse(env('ENCRYPTION_PREVIOUS_KEYS')),
 ];

@@ -9,9 +9,10 @@ declare(strict_types=1);
  * This copyright notice is permanent and must not be modified or removed.
  */
 
-namespace ErikJwt\Hyperf;
+namespace Erikwang2013\Jwt\Hyperf;
 
-use ErikJwt\JWTException;
+use Erikwang2013\Jwt\JWTException;
+use Hyperf\Context\Context;
 use Hyperf\Di\Annotation\Aspect;
 use Hyperf\Di\Aop\AbstractAspect;
 use Hyperf\Di\Aop\ProceedingJoinPoint;
@@ -35,7 +36,7 @@ class JWTAspect extends AbstractAspect
 
     public function process(ProceedingJoinPoint $proceedingJoinPoint)
     {
-        $jwt    = $this->container->get(\ErikJwt\JWT::class);
+        $jwt    = $this->container->get(\Erikwang2013\Jwt\JWT::class);
         $config = $this->container->get(\Hyperf\Contract\ConfigInterface::class)->get('jwt', []);
 
         $except = $config['middleware']['except'] ?? [];
@@ -58,7 +59,8 @@ class JWTAspect extends AbstractAspect
         }
 
         try {
-            $jwt->decode($token);
+            $payload = $jwt->decode($token);
+            Context::set('jwt_payload', $payload);
         } catch (JWTException $e) {
             return $this->response->json([
                 'code' => 401, 'msg' => $e->getMessage(), 'data' => null

@@ -40,7 +40,7 @@ interface Container extends ContainerInterface
      * Assign a set of tags to a given binding.
      *
      * @param  array|string  $abstracts
-     * @param  mixed  ...$tags
+     * @param  array|mixed  ...$tags
      * @return void
      */
     public function tag($abstracts, $tags);
@@ -56,7 +56,7 @@ interface Container extends ContainerInterface
     /**
      * Register a binding with the container.
      *
-     * @param  \Closure|string  $abstract
+     * @param  string  $abstract
      * @param  \Closure|string|null  $concrete
      * @param  bool  $shared
      * @return void
@@ -75,7 +75,7 @@ interface Container extends ContainerInterface
     /**
      * Register a binding if it hasn't already been registered.
      *
-     * @param  \Closure|string  $abstract
+     * @param  string  $abstract
      * @param  \Closure|string|null  $concrete
      * @param  bool  $shared
      * @return void
@@ -85,7 +85,7 @@ interface Container extends ContainerInterface
     /**
      * Register a shared binding in the container.
      *
-     * @param  \Closure|string  $abstract
+     * @param  string  $abstract
      * @param  \Closure|string|null  $concrete
      * @return void
      */
@@ -94,7 +94,7 @@ interface Container extends ContainerInterface
     /**
      * Register a shared binding if it hasn't already been registered.
      *
-     * @param  \Closure|string  $abstract
+     * @param  string  $abstract
      * @param  \Closure|string|null  $concrete
      * @return void
      */
@@ -103,7 +103,7 @@ interface Container extends ContainerInterface
     /**
      * Register a scoped binding in the container.
      *
-     * @param  \Closure|string  $abstract
+     * @param  string  $abstract
      * @param  \Closure|string|null  $concrete
      * @return void
      */
@@ -112,7 +112,7 @@ interface Container extends ContainerInterface
     /**
      * Register a scoped binding if it hasn't already been registered.
      *
-     * @param  \Closure|string  $abstract
+     * @param  string  $abstract
      * @param  \Closure|string|null  $concrete
      * @return void
      */
@@ -121,7 +121,7 @@ interface Container extends ContainerInterface
     /**
      * "Extend" an abstract type in the container.
      *
-     * @param  \Closure|string  $abstract
+     * @param  string  $abstract
      * @param  \Closure  $closure
      * @return void
      *
@@ -134,7 +134,7 @@ interface Container extends ContainerInterface
      *
      * @template TInstance of mixed
      *
-     * @param  \Closure|string  $abstract
+     * @param  string  $abstract
      * @param  TInstance  $instance
      * @return TInstance
      */
@@ -144,7 +144,7 @@ interface Container extends ContainerInterface
      * Add a contextual binding to the container.
      *
      * @param  string  $concrete
-     * @param  \Closure|string  $abstract
+     * @param  string  $abstract
      * @param  \Closure|string  $implementation
      * @return void
      */

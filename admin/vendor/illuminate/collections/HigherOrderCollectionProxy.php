@@ -31,6 +31,7 @@ class HigherOrderCollectionProxy
      *
      * @param  \Illuminate\Support\Enumerable<TKey, TValue>  $collection
      * @param  string  $method
+     * @return void
      */
     public function __construct(Enumerable $collection, $method)
     {
@@ -61,9 +62,7 @@ class HigherOrderCollectionProxy
     public function __call($method, $parameters)
     {
         return $this->collection->{$this->method}(function ($value) use ($method, $parameters) {
-            return is_string($value)
-                ? $value::{$method}(...$parameters)
-                : $value->{$method}(...$parameters);
+            return $value->{$method}(...$parameters);
         });
     }
 }

@@ -15,7 +15,7 @@ trait HasUuids
      */
     public function newUniqueId()
     {
-        return (string) Str::uuid7();
+        return (string) Str::orderedUuid();
     }
 
     /**

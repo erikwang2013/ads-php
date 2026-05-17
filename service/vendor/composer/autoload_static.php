@@ -131,7 +131,6 @@ class ComposerStaticInit74b604ff567f5e4e1d20b34355289ade
         'M' => 
         array (
             'Monolog\\' => 8,
-            'Maize\\Encryptable\\' => 18,
         ),
         'L' => 
         array (
@@ -178,10 +177,12 @@ class ComposerStaticInit74b604ff567f5e4e1d20b34355289ade
         array (
             'Erikwang2013\\WebmanScout\\' => 25,
             'Erikwang2013\\Snowflake\\' => 23,
+            'Erikwang2013\\Season\\' => 20,
             'Erikwang2013\\Poster\\' => 20,
+            'Erikwang2013\\Jwt\\' => 17,
             'Erikwang2013\\Hashids\\' => 21,
             'Erikwang2013\\Encryption\\' => 24,
-            'ErikJwt\\' => 8,
+            'Erikwang2013\\Encryptable\\' => 25,
         ),
         'D' => 
         array (
@@ -192,7 +193,6 @@ class ComposerStaticInit74b604ff567f5e4e1d20b34355289ade
         'C' => 
         array (
             'CryptoSm\\' => 9,
-            'CountrySeason\\' => 14,
             'Carbon\\Doctrine\\' => 16,
             'Carbon\\' => 7,
         ),
@@ -437,10 +437,6 @@ class ComposerStaticInit74b604ff567f5e4e1d20b34355289ade
         array (
             0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
         ),
-        'Maize\\Encryptable\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/erikwang2013/encryptable/src',
-        ),
         'Laravel\\SerializableClosure\\' => 
         array (
             0 => __DIR__ . '/..' . '/laravel/serializable-closure/src',
@@ -556,9 +552,17 @@ class ComposerStaticInit74b604ff567f5e4e1d20b34355289ade
         array (
             0 => __DIR__ . '/..' . '/erikwang2013/snowflake-php/src',
         ),
+        'Erikwang2013\\Season\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/erikwang2013/season/src',
+        ),
         'Erikwang2013\\Poster\\' => 
         array (
             0 => __DIR__ . '/..' . '/erikwang2013/poster-php/src',
+        ),
+        'Erikwang2013\\Jwt\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/erikwang2013/jwt-webman/src/erik-jwt',
         ),
         'Erikwang2013\\Hashids\\' => 
         array (
@@ -568,9 +572,9 @@ class ComposerStaticInit74b604ff567f5e4e1d20b34355289ade
         array (
             0 => __DIR__ . '/..' . '/erikwang2013/encryption/src',
         ),
-        'ErikJwt\\' => 
+        'Erikwang2013\\Encryptable\\' => 
         array (
-            0 => __DIR__ . '/..' . '/erikwang2013/jwt-webman/src/erik-jwt',
+            0 => __DIR__ . '/..' . '/erikwang2013/encryptable/src',
         ),
         'Dotenv\\' => 
         array (
@@ -587,10 +591,6 @@ class ComposerStaticInit74b604ff567f5e4e1d20b34355289ade
         'CryptoSm\\' => 
         array (
             0 => __DIR__ . '/..' . '/pohoc/crypto-sm/src',
-        ),
-        'CountrySeason\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/erikwang2013/season/src',
         ),
         'Carbon\\Doctrine\\' => 
         array (

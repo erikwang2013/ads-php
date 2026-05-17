@@ -23,6 +23,7 @@ class IndexHint
      *
      * @param  string  $type
      * @param  string  $index
+     * @return void
      */
     public function __construct($type, $index)
     {

@@ -41,12 +41,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Maize\\Encryptable\\": "src"
+            "Erikwang2013\\Encryptable\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Maize\\Encryptable\\Tests\\": "tests"
+            "Erikwang2013\\Encryptable\\Tests\\": "tests"
         }
     },
     "scripts": {
@@ -64,14 +64,14 @@
         }
     },
     "extra": {
-        "class": "Maize\\Encryptable\\Composer\\Plugin",
+        "class": "Erikwang2013\\Encryptable\\Composer\\Plugin",
         "laravel": {
             "providers": [
-                "Maize\\Encryptable\\EncryptableServiceProvider"
+                "Erikwang2013\\Encryptable\\EncryptableServiceProvider"
             ]
         },
         "hyperf": {
-            "config": "Maize\\Encryptable\\Bridge\\Hyperf\\ConfigProvider"
+            "config": "Erikwang2013\\Encryptable\\Bridge\\Hyperf\\ConfigProvider"
         }
     },
     "suggest": {

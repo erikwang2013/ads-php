@@ -26,7 +26,7 @@ class Pool
     /**
      * The pool of requests.
      *
-     * @var array<array-key, \Illuminate\Http\Client\PendingRequest>
+     * @var array
      */
     protected $pool = [];
 
@@ -34,21 +34,12 @@ class Pool
      * Create a new requests pool.
      *
      * @param  \Illuminate\Http\Client\Factory|null  $factory
+     * @return void
      */
     public function __construct(?Factory $factory = null)
     {
         $this->factory = $factory ?: new Factory();
         $this->handler = Utils::chooseHandler();
-    }
-
-    /**
-     * Add a request to the pool with a numeric index.
-     *
-     * @return \Illuminate\Http\Client\PendingRequest|\GuzzleHttp\Promise\Promise
-     */
-    public function newRequest()
-    {
-        return $this->pool[] = $this->asyncRequest();
     }
 
     /**
@@ -75,7 +66,7 @@ class Pool
     /**
      * Retrieve the requests in the pool.
      *
-     * @return array<array-key, \Illuminate\Http\Client\PendingRequest>
+     * @return array
      */
     public function getRequests()
     {
@@ -83,7 +74,7 @@ class Pool
     }
 
     /**
-     * Add a request to the pool with a numeric index and forward the method call to the request.
+     * Add a request to the pool with a numeric index.
      *
      * @param  string  $method
      * @param  array  $parameters
@@ -91,6 +82,6 @@ class Pool
      */
     public function __call($method, $parameters)
     {
-        return $this->newRequest()->{$method}(...$parameters);
+        return $this->pool[] = $this->asyncRequest()->$method(...$parameters);
     }
 }

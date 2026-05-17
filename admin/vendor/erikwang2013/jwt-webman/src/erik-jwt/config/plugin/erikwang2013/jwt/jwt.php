@@ -8,24 +8,26 @@
  */
 
 return [
-    'enable' => true,
-    'secret_key' => getenv('JWT_SECRET_KEY'),  //签名密钥
-    'algorithm' => getenv('JWT_ALGORITHM'),  //签名算法：HS256, HS384, HS512, RS256等
-    'issuer' => getenv('JWT_ISSUER'),   //签发者标识，用于验证令牌来源
-    'audience' => getenv('JWT_AUDIENCE'),  //受众标识，用于验证令牌目标
-    'leeway' => getenv('JWT_LEEWAY'),            //时间容差（秒），用于处理时钟偏差
-    'default_expire' => getenv('JWT_DEFAULT_EXPIRE'), //默认令牌过期时间（秒）
-    'refresh_expire' => getenv('JWT_REFRESH_EXPIRE'),  //刷新令牌过期时间（秒）
-    'storage' => [
-        'type' => getenv('JWT_STORAGE_TYPE'),  //存储类型：redis, database, memcached, file
-        'database' => getenv('JWT_STORAGE_DATABASE'),
-        'prefix' => getenv('JWT_STORAGE_PREFIX')
+    'enable'         => true,
+    'secret_key'     => getenv('JWT_SECRET_KEY') ?: '',
+    'algorithm'      => getenv('JWT_ALGORITHM') ?: 'HS256',
+    'issuer'         => getenv('JWT_ISSUER') ?: '',
+    'audience'       => getenv('JWT_AUDIENCE') ?: '',
+    'leeway'         => (int) (getenv('JWT_LEEWAY') ?: 0),
+    'default_expire' => (int) (getenv('JWT_DEFAULT_EXPIRE') ?: 3600),
+    'refresh_expire' => (int) (getenv('JWT_REFRESH_EXPIRE') ?: 7200),
+    'storage'        => [
+        'type'     => getenv('JWT_STORAGE_TYPE') ?: 'file',
+        'database' => (int) (getenv('JWT_STORAGE_DATABASE') ?: 0),
+        'prefix'   => getenv('JWT_STORAGE_PREFIX') ?: 'jwt_blacklist:',
     ],
-    'advanced' => [
-        'retry_attempts' => getenv('JWT_ADVANCED_RETRY_ATTEMPTS'),   //操作失败重试次数
-        'retry_delay' => getenv('JWT_ADVANCED_RETRY_DELAY'),    //重试延迟（毫秒）
-        'auto_cleanup' => filter_var(getenv('JWT_ADVANCED_AUTO_CLEANUP') ?: '0', FILTER_VALIDATE_BOOLEAN),  //是否自动清理过期条目
-        'cleanup_interval' => getenv('JWT_ADVANCED_CLEANUP_INTERVAL')   //自动清理间隔（秒）
-    ]
+    'advanced'       => [
+        'retry_attempts'   => (int) (getenv('JWT_ADVANCED_RETRY_ATTEMPTS') ?: 3),
+        'retry_delay'      => (int) (getenv('JWT_ADVANCED_RETRY_DELAY') ?: 100),
+        'auto_cleanup'     => filter_var(getenv('JWT_ADVANCED_AUTO_CLEANUP') ?: '0', FILTER_VALIDATE_BOOLEAN),
+        'cleanup_interval' => (int) (getenv('JWT_ADVANCED_CLEANUP_INTERVAL') ?: 3600),
+    ],
+    'middleware'     => [
+        'except' => getenv('JWT_MIDDLEWARE_EXCEPT') ?: [],
+    ],
 ];
-

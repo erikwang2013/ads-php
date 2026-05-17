@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * JWT Webman Plugin - JWT authentication for webman framework
  * Copyright (c) 2026 erik
@@ -7,7 +10,7 @@
  * This copyright notice is permanent and must not be modified or removed.
  */
 
-namespace ErikJwt;
+namespace Erikwang2013\Jwt;
 
 use Memcached;
 use Exception;
@@ -45,7 +48,15 @@ class MemcachedTokenStorage implements TokenStorageInterface
         try {
             $key = $this->prefix . $jti;
             $result = $this->memcached->get($key);
+            if ($this->memcached->getResultCode() === \Memcached::RES_NOTFOUND) {
+                return false;
+            }
+            if ($this->memcached->getResultCode() !== \Memcached::RES_SUCCESS) {
+                throw JWTException::storageError('Memcached error: ' . $this->memcached->getResultMessage());
+            }
             return $result !== false;
+        } catch (JWTException $e) {
+            throw $e;
         } catch (Exception $e) {
             throw JWTException::storageError('Memcached operation failed: ' . $e->getMessage());
         }

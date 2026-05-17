@@ -6,7 +6,6 @@ use Closure;
 use Illuminate\Queue\CallQueuedClosure;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use Laravel\SerializableClosure\SerializableClosure;
 use PHPUnit\Framework\Assert as PHPUnit;
 use RuntimeException;
 
@@ -27,20 +26,6 @@ trait Queueable
      * @var string|null
      */
     public $queue;
-
-    /**
-     * The job "group" the job should be sent to.
-     *
-     * @var string|null
-     */
-    public $messageGroup;
-
-    /**
-     * The job deduplicator callback the job should use to generate the deduplication ID.
-     *
-     * @var \Laravel\SerializableClosure\SerializableClosure|null
-     */
-    public $deduplicator;
 
     /**
      * The number of seconds before the job should be made available.
@@ -113,38 +98,6 @@ trait Queueable
     public function onQueue($queue)
     {
         $this->queue = enum_value($queue);
-
-        return $this;
-    }
-
-    /**
-     * Set the desired job "group".
-     *
-     * This feature is only supported by some queues, such as Amazon SQS.
-     *
-     * @param  \UnitEnum|string  $group
-     * @return $this
-     */
-    public function onGroup($group)
-    {
-        $this->messageGroup = enum_value($group);
-
-        return $this;
-    }
-
-    /**
-     * Set the desired job deduplicator callback.
-     *
-     * This feature is only supported by some queues, such as Amazon SQS FIFO.
-     *
-     * @param  callable|null  $deduplicator
-     * @return $this
-     */
-    public function withDeduplicator($deduplicator)
-    {
-        $this->deduplicator = $deduplicator instanceof Closure
-            ? new SerializableClosure($deduplicator)
-            : $deduplicator;
 
         return $this;
     }
@@ -251,9 +204,11 @@ trait Queueable
      */
     public function chain($chain)
     {
-        $this->chained = ChainedBatch::prepareNestedBatches(new Collection($chain))
-            ->map(fn ($job) => $this->serializeJob($job))
-            ->all();
+        $jobs = ChainedBatch::prepareNestedBatches(new Collection($chain));
+
+        $this->chained = $jobs->map(function ($job) {
+            return $this->serializeJob($job);
+        })->all();
 
         return $this;
     }
@@ -266,11 +221,9 @@ trait Queueable
      */
     public function prependToChain($job)
     {
-        $jobs = ChainedBatch::prepareNestedBatches(Collection::wrap($job));
+        $jobs = ChainedBatch::prepareNestedBatches(new Collection([$job]));
 
-        foreach ($jobs->reverse() as $job) {
-            $this->chained = Arr::prepend($this->chained, $this->serializeJob($job));
-        }
+        $this->chained = Arr::prepend($this->chained, $this->serializeJob($jobs->first()));
 
         return $this;
     }
@@ -283,11 +236,9 @@ trait Queueable
      */
     public function appendToChain($job)
     {
-        $jobs = ChainedBatch::prepareNestedBatches(Collection::wrap($job));
+        $jobs = ChainedBatch::prepareNestedBatches(new Collection([$job]));
 
-        foreach ($jobs as $job) {
-            $this->chained = array_merge($this->chained, [$this->serializeJob($job)]);
-        }
+        $this->chained = array_merge($this->chained, [$this->serializeJob($jobs->first())]);
 
         return $this;
     }
@@ -322,7 +273,7 @@ trait Queueable
      */
     public function dispatchNextJobInChain()
     {
-        if (is_array($this->chained) && ! empty($this->chained)) {
+        if (! empty($this->chained)) {
             dispatch(tap(unserialize(array_shift($this->chained)), function ($next) {
                 $next->chained = $this->chained;
 

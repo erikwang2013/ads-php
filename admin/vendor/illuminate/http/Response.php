@@ -24,6 +24,7 @@ class Response extends SymfonyResponse
      * @param  mixed  $content
      * @param  int  $status
      * @param  array  $headers
+     * @return void
      *
      * @throws \InvalidArgumentException
      */

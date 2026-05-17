@@ -27,13 +27,7 @@ trait HasCollection
     {
         static::$resolvedCollectionClasses[static::class] ??= ($this->resolveCollectionFromAttribute() ?? static::$collectionClass);
 
-        $collection = new static::$resolvedCollectionClasses[static::class]($models);
-
-        if (Model::isAutomaticallyEagerLoadingRelationships()) {
-            $collection->withRelationshipAutoloading();
-        }
-
-        return $collection;
+        return new static::$resolvedCollectionClasses[static::class]($models);
     }
 
     /**

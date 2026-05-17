@@ -2,6 +2,7 @@
 
 namespace Illuminate\Database\Eloquent;
 
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Collection as BaseCollection;
@@ -17,9 +18,16 @@ use function Illuminate\Support\enum_value;
 class ModelInspector
 {
     /**
+     * The Laravel application instance.
+     *
+     * @var \Illuminate\Contracts\Foundation\Application
+     */
+    protected $app;
+
+    /**
      * The methods that can be called in a model to indicate a relation.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $relationMethods = [
         'hasMany',
@@ -38,10 +46,12 @@ class ModelInspector
     /**
      * Create a new model inspector instance.
      *
-     * @param  \Illuminate\Contracts\Foundation\Application  $app  The Laravel application instance.
+     * @param  \Illuminate\Contracts\Foundation\Application  $app
+     * @return void
      */
-    public function __construct(protected Application $app)
+    public function __construct(Application $app)
     {
+        $this->app = $app;
     }
 
     /**
@@ -49,9 +59,9 @@ class ModelInspector
      *
      * @param  class-string<\Illuminate\Database\Eloquent\Model>|string  $model
      * @param  string|null  $connection
-     * @return array{"class": class-string<\Illuminate\Database\Eloquent\Model>, database: string, table: string, policy: class-string|null, attributes: \Illuminate\Support\Collection, relations: \Illuminate\Support\Collection, events: \Illuminate\Support\Collection, observers: \Illuminate\Support\Collection, collection: class-string<\Illuminate\Database\Eloquent\Collection<\Illuminate\Database\Eloquent\Model>>, builder: class-string<\Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>>, "resource": class-string<\Illuminate\Http\Resources\Json\JsonResource>|null}
+     * @return array{"class": class-string<\Illuminate\Database\Eloquent\Model>, database: string, table: string, policy: class-string|null, attributes: \Illuminate\Support\Collection, relations: \Illuminate\Support\Collection, events: \Illuminate\Support\Collection, observers: \Illuminate\Support\Collection, collection: class-string<\Illuminate\Database\Eloquent\Collection<\Illuminate\Database\Eloquent\Model>>, builder: class-string<\Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>>}
      *
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     * @throws BindingResolutionException
      */
     public function inspect($model, $connection = null)
     {
@@ -75,7 +85,6 @@ class ModelInspector
             'observers' => $this->getObservers($model),
             'collection' => $this->getCollectedBy($model),
             'builder' => $this->getBuilder($model),
-            'resource' => $this->getResource($model),
         ];
     }
 
@@ -235,7 +244,7 @@ class ModelInspector
      * @param  \Illuminate\Database\Eloquent\Model  $model
      * @return \Illuminate\Support\Collection
      *
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     * @throws BindingResolutionException
      */
     protected function getObservers($model)
     {
@@ -287,17 +296,6 @@ class ModelInspector
     protected function getBuilder($model)
     {
         return $model->newQuery()::class;
-    }
-
-    /**
-     * Get the class used for JSON response transforming.
-     *
-     * @param  \Illuminate\Database\Eloquent\Model  $model
-     * @return \Illuminate\Http\Resources\Json\JsonResource|null
-     */
-    protected function getResource($model)
-    {
-        return rescue(static fn () => $model->toResource()::class, null, false);
     }
 
     /**
@@ -389,7 +387,7 @@ class ModelInspector
      *
      * @param  array<string, mixed>  $column
      * @param  \Illuminate\Database\Eloquent\Model  $model
-     * @return mixed
+     * @return mixed|null
      */
     protected function getColumnDefault($column, $model)
     {

@@ -47,6 +47,7 @@ abstract class MultipleInstanceManager
      * Create a new manager instance.
      *
      * @param  \Illuminate\Contracts\Foundation\Application  $app
+     * @return void
      */
     public function __construct($app)
     {
@@ -191,9 +192,6 @@ abstract class MultipleInstanceManager
      *
      * @param  string  $name
      * @param  \Closure  $callback
-     *
-     * @param-closure-this  $this  $callback
-     *
      * @return $this
      */
     public function extend($name, Closure $callback)

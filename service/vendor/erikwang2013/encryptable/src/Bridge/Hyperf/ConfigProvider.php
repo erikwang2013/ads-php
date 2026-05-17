@@ -1,15 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
  */
 
-namespace Maize\Encryptable\Bridge\Hyperf;
+namespace Erikwang2013\Encryptable\Bridge\Hyperf;
 
-use Maize\Encryptable\Contracts\DbDriverDetector;
-use Maize\Encryptable\Contracts\EncryptableConfigContract;
-use Maize\Encryptable\DBEncrypter;
-use Maize\Encryptable\PHPEncrypter;
+use Erikwang2013\Encryptable\Contracts\DbDriverDetector;
+use Erikwang2013\Encryptable\Contracts\EncryptableConfigContract;
+use Erikwang2013\Encryptable\DBEncrypter;
+use Erikwang2013\Encryptable\PHPEncrypter;
 
 class ConfigProvider
 {

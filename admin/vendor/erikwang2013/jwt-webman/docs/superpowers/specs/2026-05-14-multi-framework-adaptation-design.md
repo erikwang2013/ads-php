@@ -158,7 +158,7 @@ $jwt = JWTFactory::createFromConfig(\think\facade\Config::get('jwt'), null, [
 Files:
 - `Hyperf/ConfigProvider.php` — defines DI bindings:
   ```php
-  \ErikJwt\JWT::class => \ErikJwt\Hyperf\JWTFactory::class, // factory method
+  \Erikwang2013\Jwt\JWT::class => \Erikwang2013\Jwt\Hyperf\JWTFactory::class, // factory method
   ```
   Registers middleware, registers `InstallCommand`
 - `Hyperf/Middleware.php` — implements `Hyperf\Contract\MiddlewareInterface`, `process()` method
@@ -239,16 +239,16 @@ Relax framework dependencies — `workerman/webman`, `webman/redis`, `monolog/mo
     },
     "autoload": {
         "psr-4": {
-            "ErikJwt\\": "src/erik-jwt"
+            "Erikwang2013\Jwt\\": "src/erik-jwt"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "ErikJwt\\Laravel\\JWTServiceProvider"
+                "Erikwang2013\Jwt\\Laravel\\JWTServiceProvider"
             ],
             "aliases": {
-                "JWT": "ErikJwt\\Laravel\\Facade"
+                "JWT": "Erikwang2013\Jwt\\Laravel\\Facade"
             }
         }
     }

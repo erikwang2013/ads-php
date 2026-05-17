@@ -9,7 +9,7 @@
 
 declare(strict_types=1);
 
-namespace ErikJwt;
+namespace Erikwang2013\Jwt;
 
 class Install
 {

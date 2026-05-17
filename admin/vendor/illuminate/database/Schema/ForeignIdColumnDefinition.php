@@ -18,6 +18,7 @@ class ForeignIdColumnDefinition extends ColumnDefinition
      *
      * @param  \Illuminate\Database\Schema\Blueprint  $blueprint
      * @param  array  $attributes
+     * @return void
      */
     public function __construct(Blueprint $blueprint, $attributes = [])
     {
@@ -46,7 +47,7 @@ class ForeignIdColumnDefinition extends ColumnDefinition
      * Specify which column this foreign ID references on another table.
      *
      * @param  string  $column
-     * @param  string|null  $indexName
+     * @param  string  $indexName
      * @return \Illuminate\Database\Schema\ForeignKeyDefinition
      */
     public function references($column, $indexName = null)

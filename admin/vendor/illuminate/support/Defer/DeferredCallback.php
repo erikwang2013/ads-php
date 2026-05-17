@@ -10,6 +10,7 @@ class DeferredCallback
      * Create a new deferred callback instance.
      *
      * @param  callable  $callback
+     * @return void
      */
     public function __construct(public $callback, public ?string $name = null, public bool $always = false)
     {
@@ -22,7 +23,7 @@ class DeferredCallback
      * @param  string  $name
      * @return $this
      */
-    public function name(string $name): static
+    public function name(string $name): self
     {
         $this->name = $name;
 
@@ -35,7 +36,7 @@ class DeferredCallback
      * @param  bool  $always
      * @return $this
      */
-    public function always(bool $always = true): static
+    public function always(bool $always = true): self
     {
         $this->always = $always;
 

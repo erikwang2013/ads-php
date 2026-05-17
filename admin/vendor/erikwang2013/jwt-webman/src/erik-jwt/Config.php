@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * JWT Webman Plugin - JWT authentication for webman framework
  * Copyright (c) 2026 erik
@@ -7,7 +10,7 @@
  * This copyright notice is permanent and must not be modified or removed.
  */
 
-namespace ErikJwt;
+namespace Erikwang2013\Jwt;
 
 class Config
 {
@@ -15,7 +18,7 @@ class Config
 
     public function __construct(array $config = [])
     {
-        $this->config = $config !== [] ? $config : (config('plugin.erikwang2013.jwt.jwt') ?: []);
+        $this->config = $config;
     }
 
     public function get(string $key, $default = null)
@@ -51,11 +54,6 @@ class Config
     public function toArray(): array
     {
         return $this->config;
-    }
-
-    private function generateDefaultSecret(): string
-    {
-        return bin2hex(random_bytes(32));
     }
 
     /**

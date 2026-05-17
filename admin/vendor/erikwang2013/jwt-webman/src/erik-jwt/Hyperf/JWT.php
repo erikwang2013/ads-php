@@ -9,7 +9,7 @@ declare(strict_types=1);
  * This copyright notice is permanent and must not be modified or removed.
  */
 
-namespace ErikJwt\Hyperf;
+namespace Erikwang2013\Jwt\Hyperf;
 
 use Attribute;
 use Hyperf\Di\Annotation\AbstractAnnotation;

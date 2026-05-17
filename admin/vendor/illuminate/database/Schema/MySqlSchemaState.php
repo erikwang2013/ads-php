@@ -5,8 +5,6 @@ namespace Illuminate\Database\Schema;
 use Exception;
 use Illuminate\Database\Connection;
 use Illuminate\Support\Str;
-use Pdo\Mysql;
-use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
 class MySqlSchemaState extends SchemaState
@@ -73,9 +71,7 @@ class MySqlSchemaState extends SchemaState
      */
     public function load($path)
     {
-        $versionInfo = $this->detectClientVersion();
-
-        $command = 'mysql '.$this->connectionString($versionInfo).' --database="${:LARAVEL_LOAD_DATABASE}" < "${:LARAVEL_LOAD_PATH}"';
+        $command = 'mysql '.$this->connectionString().' --database="${:LARAVEL_LOAD_DATABASE}" < "${:LARAVEL_LOAD_PATH}"';
 
         $process = $this->makeProcess($command)->setTimeout(null);
 
@@ -91,9 +87,7 @@ class MySqlSchemaState extends SchemaState
      */
     protected function baseDumpCommand()
     {
-        $versionInfo = $this->detectClientVersion();
-
-        $command = 'mysqldump '.$this->connectionString($versionInfo).' --no-tablespaces --skip-add-locks --skip-comments --skip-set-charset --tz-utc --column-statistics=0';
+        $command = 'mysqldump '.$this->connectionString().' --no-tablespaces --skip-add-locks --skip-comments --skip-set-charset --tz-utc --column-statistics=0';
 
         if (! $this->connection->isMaria()) {
             $command .= ' --set-gtid-purged=OFF';
@@ -105,37 +99,20 @@ class MySqlSchemaState extends SchemaState
     /**
      * Generate a basic connection string (--socket, --host, --port, --user, --password) for the database.
      *
-     * @param  array{version: string, isMariaDb: bool}  $versionInfo
      * @return string
      */
-    protected function connectionString(array $versionInfo)
+    protected function connectionString()
     {
         $value = ' --user="${:LARAVEL_LOAD_USER}" --password="${:LARAVEL_LOAD_PASSWORD}"';
 
         $config = $this->connection->getConfig();
 
         $value .= $config['unix_socket'] ?? false
-            ? ' --socket="${:LARAVEL_LOAD_SOCKET}"'
-            : ' --host="${:LARAVEL_LOAD_HOST}" --port="${:LARAVEL_LOAD_PORT}"';
+                        ? ' --socket="${:LARAVEL_LOAD_SOCKET}"'
+                        : ' --host="${:LARAVEL_LOAD_HOST}" --port="${:LARAVEL_LOAD_PORT}"';
 
-        if (isset($config['options'][Mysql::ATTR_SSL_CA])) {
+        if (isset($config['options'][\PDO::MYSQL_ATTR_SSL_CA])) {
             $value .= ' --ssl-ca="${:LARAVEL_LOAD_SSL_CA}"';
-        }
-
-        if (isset($config['options'][Mysql::ATTR_SSL_CERT])) {
-            $value .= ' --ssl-cert="${:LARAVEL_LOAD_SSL_CERT}"';
-        }
-
-        if (isset($config['options'][Mysql::ATTR_SSL_KEY])) {
-            $value .= ' --ssl-key="${:LARAVEL_LOAD_SSL_KEY}"';
-        }
-
-        if (($config['options'][Mysql::ATTR_SSL_VERIFY_SERVER_CERT] ?? null) === false) {
-            if (version_compare($versionInfo['version'], '5.7.11', '>=') && ! $versionInfo['isMariaDb']) {
-                $value .= ' --ssl-mode=DISABLED';
-            } else {
-                $value .= ' --ssl=off';
-            }
         }
 
         return $value;
@@ -158,9 +135,7 @@ class MySqlSchemaState extends SchemaState
             'LARAVEL_LOAD_USER' => $config['username'],
             'LARAVEL_LOAD_PASSWORD' => $config['password'] ?? '',
             'LARAVEL_LOAD_DATABASE' => $config['database'],
-            'LARAVEL_LOAD_SSL_CA' => $config['options'][Mysql::ATTR_SSL_CA] ?? '',
-            'LARAVEL_LOAD_SSL_CERT' => $config['options'][Mysql::ATTR_SSL_CERT] ?? '',
-            'LARAVEL_LOAD_SSL_KEY' => $config['options'][Mysql::ATTR_SSL_KEY] ?? '',
+            'LARAVEL_LOAD_SSL_CA' => $config['options'][\PDO::MYSQL_ATTR_SSL_CA] ?? '',
         ];
     }
 
@@ -198,31 +173,5 @@ class MySqlSchemaState extends SchemaState
         }
 
         return $process;
-    }
-
-    /**
-     * Detect the MySQL client version.
-     *
-     * @return array{version: string, isMariaDb: bool}
-     */
-    protected function detectClientVersion(): array
-    {
-        [$version, $isMariaDb] = ['8.0.0', false];
-
-        try {
-            $versionOutput = $this->makeProcess('mysql --version')->mustRun()->getOutput();
-
-            if (preg_match('/(\d+\.\d+\.\d+)/', $versionOutput, $matches)) {
-                $version = $matches[1];
-            }
-
-            $isMariaDb = stripos($versionOutput, 'mariadb') !== false;
-        } catch (ProcessFailedException) {
-        }
-
-        return [
-            'version' => $version,
-            'isMariaDb' => $isMariaDb,
-        ];
     }
 }

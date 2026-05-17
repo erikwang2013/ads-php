@@ -230,17 +230,17 @@
         },
         {
             "name": "erikwang2013/encryptable",
-            "version": "v1.0.6",
-            "version_normalized": "1.0.6.0",
+            "version": "v2.0.0",
+            "version_normalized": "2.0.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/erikwang2013/encryptable.git",
-                "reference": "d29c00ebabcd48effb0ae6961355754b3ae87fa1"
+                "reference": "a258193b2ba0eef4a5053a8dedceb7f3a5f22064"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/erikwang2013/encryptable/zipball/d29c00ebabcd48effb0ae6961355754b3ae87fa1",
-                "reference": "d29c00ebabcd48effb0ae6961355754b3ae87fa1",
+                "url": "https://api.github.com/repos/erikwang2013/encryptable/zipball/a258193b2ba0eef4a5053a8dedceb7f3a5f22064",
+                "reference": "a258193b2ba0eef4a5053a8dedceb7f3a5f22064",
                 "shasum": ""
             },
             "require": {
@@ -271,23 +271,23 @@
                 "topthink/framework": "ThinkPHP 6–8: call ThinkphpEncryptable::register($app) during boot.",
                 "workerman/webman": "Webman: install suggested Illuminate packages, then register EncryptableServiceProvider."
             },
-            "time": "2026-05-14T13:25:18+00:00",
+            "time": "2026-05-17T11:22:27+00:00",
             "type": "composer-plugin",
             "extra": {
-                "class": "Maize\\Encryptable\\Composer\\Plugin",
+                "class": "Erikwang2013\\Encryptable\\Composer\\Plugin",
                 "hyperf": {
-                    "config": "Maize\\Encryptable\\Bridge\\Hyperf\\ConfigProvider"
+                    "config": "Erikwang2013\\Encryptable\\Bridge\\Hyperf\\ConfigProvider"
                 },
                 "laravel": {
                     "providers": [
-                        "Maize\\Encryptable\\EncryptableServiceProvider"
+                        "Erikwang2013\\Encryptable\\EncryptableServiceProvider"
                     ]
                 }
             },
             "installation-source": "dist",
             "autoload": {
                 "psr-4": {
-                    "Maize\\Encryptable\\": "src"
+                    "Erikwang2013\\Encryptable\\": "src"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -315,7 +315,7 @@
             ],
             "support": {
                 "issues": "https://github.com/erikwang2013/encryptable/issues",
-                "source": "https://github.com/erikwang2013/encryptable/tree/v1.0.6"
+                "source": "https://github.com/erikwang2013/encryptable/tree/v2.0.0"
             },
             "install-path": "../erikwang2013/encryptable"
         },
@@ -455,17 +455,17 @@
         },
         {
             "name": "erikwang2013/jwt-webman",
-            "version": "v1.0.9",
-            "version_normalized": "1.0.9.0",
+            "version": "v2.0.0",
+            "version_normalized": "2.0.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/erikwang2013/jwt-webman.git",
-                "reference": "11135ed4653541ea79a9d9ae042e5f94bab133a7"
+                "reference": "9fd2ef1e8f1eb539526544e743bd2d7434675f06"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/erikwang2013/jwt-webman/zipball/11135ed4653541ea79a9d9ae042e5f94bab133a7",
-                "reference": "11135ed4653541ea79a9d9ae042e5f94bab133a7",
+                "url": "https://api.github.com/repos/erikwang2013/jwt-webman/zipball/9fd2ef1e8f1eb539526544e743bd2d7434675f06",
+                "reference": "9fd2ef1e8f1eb539526544e743bd2d7434675f06",
                 "shasum": ""
             },
             "require": {
@@ -480,22 +480,22 @@
                 "topthink/framework": "For ThinkPHP framework integration",
                 "workerman/webman": "For webman framework integration"
             },
-            "time": "2026-05-14T13:25:31+00:00",
+            "time": "2026-05-17T12:32:03+00:00",
             "type": "library",
             "extra": {
                 "laravel": {
                     "aliases": {
-                        "JWT": "ErikJwt\\Laravel\\Facade"
+                        "JWT": "Erikwang2013\\Jwt\\Laravel\\Facade"
                     },
                     "providers": [
-                        "ErikJwt\\Laravel\\JWTServiceProvider"
+                        "Erikwang2013\\Jwt\\Laravel\\JWTServiceProvider"
                     ]
                 }
             },
             "installation-source": "dist",
             "autoload": {
                 "psr-4": {
-                    "ErikJwt\\": "src/erik-jwt"
+                    "Erikwang2013\\Jwt\\": "src/erik-jwt"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -609,46 +609,46 @@
         },
         {
             "name": "erikwang2013/season",
-            "version": "v1.0.3",
-            "version_normalized": "1.0.3.0",
+            "version": "v2.0.0",
+            "version_normalized": "2.0.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/erikwang2013/season.git",
-                "reference": "3ed2181e3f11648559efa2c2c450fc4b777ed8f6"
+                "reference": "e6b4783ce596995f5f0f63c1a3184b497c922cd5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/erikwang2013/season/zipball/3ed2181e3f11648559efa2c2c450fc4b777ed8f6",
-                "reference": "3ed2181e3f11648559efa2c2c450fc4b777ed8f6",
+                "url": "https://api.github.com/repos/erikwang2013/season/zipball/e6b4783ce596995f5f0f63c1a3184b497c922cd5",
+                "reference": "e6b4783ce596995f5f0f63c1a3184b497c922cd5",
                 "shasum": ""
             },
             "require": {
                 "ext-mbstring": "*",
-                "php": ">=8.0"
+                "php": ">=8.1"
             },
             "require-dev": {
                 "phpunit/phpunit": "^10.0 || ^11.0 || ^12.0"
             },
             "suggest": {
-                "hyperf/framework": "Hyperf 2 / 3 使用 CountrySeason\\Hyperf\\ConfigProvider 时需要",
-                "illuminate/support": "Laravel 7–11 使用 CountrySeason\\Laravel\\CountrySeasonServiceProvider 时需要",
-                "topthink/framework": "ThinkPHP 6 / 8 使用 CountrySeason\\ThinkPHP\\Service 时需要",
+                "hyperf/framework": "Hyperf 2 / 3 使用 Erikwang2013\\Season\\Hyperf\\ConfigProvider 时需要",
+                "illuminate/support": "Laravel 7–11 使用 Erikwang2013\\Season\\Laravel\\CountrySeasonServiceProvider 时需要",
+                "topthink/framework": "ThinkPHP 6 / 8 使用 Erikwang2013\\Season\\ThinkPHP\\Service 时需要",
                 "workerman/webman-framework": "用于在 webman 项目中作为插件使用"
             },
-            "time": "2026-05-14T14:43:03+00:00",
+            "time": "2026-05-17T11:02:49+00:00",
             "type": "library",
             "extra": {
                 "think": {
                     "services": [
-                        "CountrySeason\\ThinkPHP\\Service"
+                        "Erikwang2013\\Season\\ThinkPHP\\Service"
                     ]
                 },
                 "hyperf": {
-                    "config": "CountrySeason\\Hyperf\\ConfigProvider"
+                    "config": "Erikwang2013\\Season\\Hyperf\\ConfigProvider"
                 },
                 "laravel": {
                     "providers": [
-                        "CountrySeason\\Laravel\\CountrySeasonServiceProvider"
+                        "Erikwang2013\\Season\\Laravel\\CountrySeasonServiceProvider"
                     ]
                 },
                 "branch-alias": {
@@ -661,7 +661,7 @@
                     "src/helpers.php"
                 ],
                 "psr-4": {
-                    "CountrySeason\\": "src/"
+                    "Erikwang2013\\Season\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -687,14 +687,14 @@
             ],
             "support": {
                 "issues": "https://github.com/erikwang2013/season/issues",
-                "source": "https://github.com/erikwang2013/season/tree/v1.0.3"
+                "source": "https://github.com/erikwang2013/season/tree/v2.0.0"
             },
             "install-path": "../erikwang2013/season"
         },
         {
             "name": "erikwang2013/snowflake-php",
-            "version": "v1.0.4",
-            "version_normalized": "1.0.4.0",
+            "version": "v2.0.0",
+            "version_normalized": "2.0.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/erikwang2013/snowflake-php.git",
@@ -760,35 +760,35 @@
             "support": {
                 "email": "erik@erik.xyz",
                 "issues": "https://github.com/erikwang2013/snowflake-php/issues",
-                "source": "https://github.com/erikwang2013/snowflake-php/tree/v1.0.4"
+                "source": "https://github.com/erikwang2013/snowflake-php/tree/v2.0.0"
             },
             "install-path": "../erikwang2013/snowflake-php"
         },
         {
             "name": "erikwang2013/webman-scout",
-            "version": "v1.1.8",
-            "version_normalized": "1.1.8.0",
+            "version": "v2.0.3",
+            "version_normalized": "2.0.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/erikwang2013/webman-scout.git",
-                "reference": "c99ac230cb3e6eccf4d67ebfd61f283088be548c"
+                "reference": "301343bfa374aca12744b04885fc504e8446829d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/erikwang2013/webman-scout/zipball/c99ac230cb3e6eccf4d67ebfd61f283088be548c",
-                "reference": "c99ac230cb3e6eccf4d67ebfd61f283088be548c",
+                "url": "https://api.github.com/repos/erikwang2013/webman-scout/zipball/301343bfa374aca12744b04885fc504e8446829d",
+                "reference": "301343bfa374aca12744b04885fc504e8446829d",
                 "shasum": ""
             },
             "require": {
-                "illuminate/bus": "^9.0|^10.0|^11.0|^12.0",
-                "illuminate/contracts": "^9.0|^10.0|^11.0|^12.0",
-                "illuminate/database": "^9.0|^10.0|^11.0|^12.0",
-                "illuminate/http": "^9.0|^10.0|^11.0|^12.0",
-                "illuminate/pagination": "^9.0|^10.0|^11.0|^12.0",
-                "illuminate/queue": "^9.0|^10.0|^11.0|^12.0",
-                "illuminate/support": "^9.0|^10.0|^11.0|^12.0",
+                "illuminate/bus": "^7.0|^8.0|^9.0|^10.0|^11.0",
+                "illuminate/contracts": "^7.0|^8.0|^9.0|^10.0|^11.0",
+                "illuminate/database": "^7.0|^8.0|^9.0|^10.0|^11.0",
+                "illuminate/http": "^7.0|^8.0|^9.0|^10.0|^11.0",
+                "illuminate/pagination": "^7.0|^8.0|^9.0|^10.0|^11.0",
+                "illuminate/queue": "^7.0|^8.0|^9.0|^10.0|^11.0",
+                "illuminate/support": "^7.0|^8.0|^9.0|^10.0|^11.0",
                 "php": "^8.0",
-                "symfony/console": "^6.0|^7.0"
+                "symfony/console": "^5.4|^6.0|^7.0"
             },
             "conflict": {
                 "algolia/algoliasearch-client-php": "<3.2.0|>=5.0.0"
@@ -797,7 +797,7 @@
                 "algolia/algoliasearch-client-php": "^3.2|^4.0",
                 "meilisearch/meilisearch-php": "^1.0",
                 "mockery/mockery": "^1.0",
-                "orchestra/testbench": "^7.31|^8.36|^9.15|^10.8",
+                "orchestra/testbench": "^5.0|^6.0|^7.0|^8.0|^9.0",
                 "php-http/guzzle7-adapter": "^1.0",
                 "phpstan/phpstan": "^1.10",
                 "typesense/typesense-php": "^4.9.3"
@@ -807,7 +807,7 @@
                 "meilisearch/meilisearch-php": "Required to use the Meilisearch engine (^1.0).",
                 "typesense/typesense-php": "Required to use the Typesense engine (^4.9)."
             },
-            "time": "2026-03-23T09:29:56+00:00",
+            "time": "2026-05-14T08:53:54+00:00",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -833,12 +833,16 @@
                     "email": "erik@erik.xyz"
                 }
             ],
-            "description": "webman Scout provides a driver based solution to searching your Eloquent models.",
+            "description": "Scout-style full-text search for Webman, Laravel, ThinkPHP, and Hyperf (Eloquent models, multiple engines).",
             "keywords": [
                 "algolia",
                 "elasticsearch",
+                "hyperf",
+                "laravel",
                 "opensearch",
+                "scout",
                 "search",
+                "thinkphp",
                 "webman"
             ],
             "support": {

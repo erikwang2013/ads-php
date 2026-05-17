@@ -1,15 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
  */
 
-namespace Maize\Encryptable\Bridge\Hyperf;
+namespace Erikwang2013\Encryptable\Bridge\Hyperf;
 
 use Hyperf\Contract\ConfigInterface;
-use Maize\Encryptable\Contracts\EncryptableConfigContract;
-use Maize\Encryptable\Support\PackagePluginPaths;
-use Maize\Encryptable\Support\PreviousKeysParser;
+use Erikwang2013\Encryptable\Contracts\EncryptableConfigContract;
+use Erikwang2013\Encryptable\Support\PackagePluginPaths;
+use Erikwang2013\Encryptable\Support\PreviousKeysParser;
 
 class HyperfEncryptableConfig implements EncryptableConfigContract
 {
@@ -35,7 +37,7 @@ class HyperfEncryptableConfig implements EncryptableConfigContract
     {
         $prefix = PackagePluginPaths::hyperfPluginConfigDotPrefix();
         $cipher = $this->config->get($prefix.'.cipher')
-            ?? $this->config->get('encryptable.cipher', 'aes-128-ecb');
+            ?? $this->config->get('encryptable.cipher', 'aes-256-gcm');
 
         if ($cipher === null || $cipher === '') {
             return null;

@@ -23,6 +23,7 @@ class Optional implements ArrayAccess
      * Create a new optional instance.
      *
      * @param  mixed  $value
+     * @return void
      */
     public function __construct($value)
     {

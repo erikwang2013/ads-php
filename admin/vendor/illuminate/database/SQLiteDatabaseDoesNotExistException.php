@@ -17,6 +17,7 @@ class SQLiteDatabaseDoesNotExistException extends InvalidArgumentException
      * Create a new exception instance.
      *
      * @param  string  $path
+     * @return void
      */
     public function __construct($path)
     {

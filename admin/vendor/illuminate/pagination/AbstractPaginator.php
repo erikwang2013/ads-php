@@ -3,13 +3,11 @@
 namespace Illuminate\Pagination;
 
 use Closure;
-use Illuminate\Contracts\Support\CanBeEscapedWhenCastToString;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Traits\ForwardsCalls;
 use Illuminate\Support\Traits\Tappable;
-use Illuminate\Support\Traits\TransformsToResourceCollection;
 use Stringable;
 use Traversable;
 
@@ -20,9 +18,9 @@ use Traversable;
  *
  * @mixin \Illuminate\Support\Collection<TKey, TValue>
  */
-abstract class AbstractPaginator implements CanBeEscapedWhenCastToString, Htmlable, Stringable
+abstract class AbstractPaginator implements Htmlable, Stringable
 {
-    use ForwardsCalls, Tappable, TransformsToResourceCollection;
+    use ForwardsCalls, Tappable;
 
     /**
      * All of the items being paginated.
@@ -72,13 +70,6 @@ abstract class AbstractPaginator implements CanBeEscapedWhenCastToString, Htmlab
      * @var string
      */
     protected $pageName = 'page';
-
-    /**
-     * Indicates that the paginator's string representation should be escaped when __toString is invoked.
-     *
-     * @var bool
-     */
-    protected $escapeWhenCastingToString = false;
 
     /**
      * The number of links to display on each side of current page link.
@@ -353,12 +344,8 @@ abstract class AbstractPaginator implements CanBeEscapedWhenCastToString, Htmlab
     /**
      * Transform each item in the slice of items using a callback.
      *
-     * @template TMapValue
-     *
-     * @param  callable(TValue, TKey): TMapValue  $callback
+     * @param  callable  $callback
      * @return $this
-     *
-     * @phpstan-this-out static<TKey, TMapValue>
      */
     public function through(callable $callback)
     {
@@ -810,21 +797,6 @@ abstract class AbstractPaginator implements CanBeEscapedWhenCastToString, Htmlab
      */
     public function __toString()
     {
-        return $this->escapeWhenCastingToString
-            ? e((string) $this->render())
-            : (string) $this->render();
-    }
-
-    /**
-     * Indicate that the paginator's string representation should be escaped when __toString is invoked.
-     *
-     * @param  bool  $escape
-     * @return $this
-     */
-    public function escapeWhenCastingToString($escape = true)
-    {
-        $this->escapeWhenCastingToString = $escape;
-
-        return $this;
+        return (string) $this->render();
     }
 }

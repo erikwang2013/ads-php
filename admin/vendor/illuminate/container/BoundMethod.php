@@ -56,8 +56,7 @@ class BoundMethod
         // name. We will split on this @ sign and then build a callable array that
         // we can pass right back into the "call" method for dependency binding.
         $method = count($segments) === 2
-            ? $segments[1]
-            : $defaultMethod;
+                        ? $segments[1] : $defaultMethod;
 
         if (is_null($method)) {
             throw new InvalidArgumentException('Method not provided.');
@@ -147,8 +146,8 @@ class BoundMethod
         }
 
         return is_array($callback)
-            ? new ReflectionMethod($callback[0], $callback[1])
-            : new ReflectionFunction($callback);
+                        ? new ReflectionMethod($callback[0], $callback[1])
+                        : new ReflectionFunction($callback);
     }
 
     /**
@@ -166,7 +165,7 @@ class BoundMethod
         $container,
         $parameter,
         array &$parameters,
-        &$dependencies,
+        &$dependencies
     ) {
         $pendingDependencies = [];
 
@@ -185,8 +184,8 @@ class BoundMethod
                 $variadicDependencies = $container->make($className);
 
                 $pendingDependencies = array_merge($pendingDependencies, is_array($variadicDependencies)
-                    ? $variadicDependencies
-                    : [$variadicDependencies]);
+                            ? $variadicDependencies
+                            : [$variadicDependencies]);
             } else {
                 $pendingDependencies[] = $container->make($className);
             }

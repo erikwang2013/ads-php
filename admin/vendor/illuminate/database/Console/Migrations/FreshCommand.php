@@ -10,7 +10,6 @@ use Illuminate\Database\Events\DatabaseRefreshed;
 use Illuminate\Database\Migrations\Migrator;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputOption;
-use Throwable;
 
 #[AsCommand(name: 'migrate:fresh')]
 class FreshCommand extends Command
@@ -42,6 +41,7 @@ class FreshCommand extends Command
      * Create a new fresh command instance.
      *
      * @param  \Illuminate\Database\Migrations\Migrator  $migrator
+     * @return void
      */
     public function __construct(Migrator $migrator)
     {
@@ -65,13 +65,7 @@ class FreshCommand extends Command
         $database = $this->input->getOption('database');
 
         $this->migrator->usingConnection($database, function () use ($database) {
-            try {
-                $repositoryExists = $this->migrator->repositoryExists();
-            } catch (Throwable) {
-                $repositoryExists = false;
-            }
-
-            if ($repositoryExists) {
+            if ($this->migrator->repositoryExists()) {
                 $this->newLine();
 
                 $this->components->task('Dropping all tables', fn () => $this->callSilent('db:wipe', array_filter([
