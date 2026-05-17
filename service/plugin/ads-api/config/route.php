@@ -5,6 +5,7 @@
 
 use plugin\ads_api\middleware\AuthMiddleware;
 use plugin\ads_api\controller\AuthController;
+use plugin\ads_api\controller\CaptchaController;
 use plugin\ads_api\controller\PlatformController;
 use plugin\ads_api\controller\AccountController;
 use plugin\ads_api\controller\CampaignController;
@@ -13,6 +14,10 @@ use plugin\ads_api\controller\ReportController;
 use plugin\ads_api\controller\AlertController;
 use plugin\ads_api\controller\ExportController;
 use plugin\ads_api\controller\DocController;
+
+// Captcha (public)
+Webman\Route::get('/api/v1/captcha/generate', [CaptchaController::class, 'generate']);
+Webman\Route::post('/api/v1/captcha/verify', [CaptchaController::class, 'verify']);
 
 // Public routes
 Webman\Route::get('/docs', [DocController::class, 'index']);

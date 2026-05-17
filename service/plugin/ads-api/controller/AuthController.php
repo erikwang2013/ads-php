@@ -13,6 +13,17 @@ class AuthController
 {
     public function login(Request $request): Webman\Http\Response
     {
+        // 验证码检查
+        $captchaToken  = $request->post('captcha_token', '');
+        $captchaOffset = (int) $request->post('captcha_offset', 0);
+
+        if (!empty($captchaToken)) {
+            $captchaService = new \erik\support\CaptchaService();
+            if (!$captchaService->verify($captchaToken, $captchaOffset)) {
+                return ApiResponse::error('验证码验证失败');
+            }
+        }
+
         $username = $request->post('username', '');
         $password = $request->post('password', '');
         $tenantId = (int) $request->post('tenant_id', 1);

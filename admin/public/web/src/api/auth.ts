@@ -1,8 +1,8 @@
 import { api } from './index'
 
 export const authApi = {
-  login(username: string, password: string) {
-    return api.post('/auth/login', { username, password })
+  login(body: { username: string; password: string; captcha_token?: string; captcha_offset?: number }) {
+    return api.post('/auth/login', body)
   },
   me() {
     return api.get('/auth/me')

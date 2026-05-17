@@ -17,6 +17,10 @@
             </template>
           </el-input>
         </el-form-item>
+        <!-- Captcha -->
+        <el-form-item v-if="showCaptcha">
+          <CaptchaWidget @verified="onCaptchaVerified" @close="showCaptcha = false" />
+        </el-form-item>
         <el-form-item>
           <el-button type="primary" :loading="loading" style="width:100%" @click="handleLogin">登 录</el-button>
         </el-form-item>
@@ -30,6 +34,7 @@ import { reactive, ref } from 'vue'
 import type { FormInstance } from 'element-plus'
 import { User, Lock } from '@element-plus/icons-vue'
 import { useAuthStore } from '@/stores/auth'
+import CaptchaWidget from '@/components/CaptchaWidget.vue'
 
 const authStore = useAuthStore()
 const formRef = ref<FormInstance>()
@@ -39,16 +44,27 @@ const rules = {
   username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
 }
+const showCaptcha = ref(false)
+const captchaData = ref<{token:string,offset:number}|null>(null)
 
 async function handleLogin() {
   const valid = await formRef.value?.validate().catch(() => false)
   if (!valid) return
+  if (!captchaData.value) {
+    showCaptcha.value = true
+    return
+  }
   loading.value = true
   try {
-    await authStore.login(form.username, form.password)
-  } finally {
-    loading.value = false
-  }
+    await authStore.login(form.username, form.password, captchaData.value)
+    captchaData.value = null
+  } finally { loading.value = false }
+}
+
+function onCaptchaVerified(data: {token: string, offset: number}) {
+  captchaData.value = data
+  showCaptcha.value = false
+  handleLogin()
 }
 </script>
 

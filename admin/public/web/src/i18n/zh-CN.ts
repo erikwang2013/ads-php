@@ -12,6 +12,7 @@ export default {
   alert: { rules: '告警规则', logs: '告警记录', createRule: '创建规则', editRule: '编辑规则', ruleName: '规则名称', metric: '监控指标', condition: '条件', threshold: '阈值', scope: '监控范围', channels: '通知渠道', checkInterval: '检查间隔(分钟)', status: '状态', enabled: '已启用', disabled: '已禁用', triggered: '已触发', acknowledged: '已确认', resolved: '已解决', acknowledge: '确认', unreadCount: '未读数量', allStatus: '全部状态', web: '站内通知', email: '邮件', sms: '短信', tenant: '全租户', byPlatform: '按平台', byCampaign: '按计划' },
   system: { userManage: '用户管理', auditLog: '审计日志', username: '用户名', name: '姓名', email: '邮箱', role: '角色', lastLogin: '最后登录', actions: '操作', edit: '编辑', disable: '禁用', createUser: '创建用户', editUser: '编辑用户', password: '密码', passwordOptional: '密码（留空不修改）', operator: '操作人', action: '操作类型', resource: '资源', resourceId: '资源ID', detail: '详情', ip: 'IP地址', time: '操作时间' },
   common: { save: '保存', cancel: '取消', confirm: '确定', delete: '删除', edit: '编辑', search: '搜索', reset: '重置', loading: '加载中...', noData: '暂无数据', total: '共 {total} 条', page: '第 {page} 页', export: '导出', refresh: '刷新', back: '返回', logout: '退出', yes: '是', no: '否', success: '操作成功', error: '操作失败', networkError: '网络错误', confirmDelete: '确定要删除吗？', yuan: '元', fen: '分' },
+  captcha: { title: '安全验证', slideHint: '请按住滑块拖动', success: '验证通过', failed: '验证失败', required: '请先完成验证' },
   time: { minute: '分钟', hour: '小时', day: '天' },
   metric: { cost: '花费', impressions: '展示量', clicks: '点击量', conversions: '转化数', ctr: '点击率', cvr: '转化率', roi: 'ROI' },
   condition: { gt: '大于', gte: '大于等于', lt: '小于', lte: '小于等于' },

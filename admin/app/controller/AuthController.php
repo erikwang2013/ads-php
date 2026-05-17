@@ -15,6 +15,17 @@ class AuthController
      */
     public function login(Request $request): \Webman\Http\Response
     {
+        // 验证码检查
+        $captchaToken  = trim($request->input('captcha_token', ''));
+        $captchaOffset = (int) $request->input('captcha_offset', 0);
+
+        if (!empty($captchaToken)) {
+            $captchaService = new \erik\support\CaptchaService();
+            if (!$captchaService->verify($captchaToken, $captchaOffset)) {
+                return json(['code' => 422, 'message' => '验证码验证失败', 'data' => null]);
+            }
+        }
+
         $username = trim($request->input('username', ''));
         $password = $request->input('password', '');
 
