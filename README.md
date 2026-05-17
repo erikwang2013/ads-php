@@ -100,6 +100,8 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 **验证码**：登录等敏感操作需通过滑块验证码（erikwang2013/poster-php），token 有效期 5 分钟、偏移容差 5px
 
+**二次确认**：删除/解绑/批量操作等敏感操作采用"输入以确认"模式（`GlobalConfirm` + `useConfirmStore`），需输入目标名称或确认词方可执行
+
 ---
 
 ## 快速启动

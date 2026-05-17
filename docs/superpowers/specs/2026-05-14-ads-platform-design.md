@@ -437,6 +437,19 @@ POST /api/v1/captcha/verify    → 验证偏移量（5px 容差，5 分钟有效
 
 前端 `CaptchaWidget` 组件支持拖拽/触屏，失败自动刷新。后端 AuthController 在登录时校验 captcha_token + captcha_offset。
 
+### 二次确认
+
+删除、解绑、批量操作等敏感操作采用"输入以确认"模式：
+
+| 操作 | 确认方式 | 确认词 |
+|------|---------|--------|
+| 解绑账户 | 输入账户名称 | 账户名称 |
+| 批量启停计划 | 输入固定确认词 | `ENABLE` / `PAUSE` |
+| 删除告警规则 | 输入规则名称 | 规则名称 |
+| 禁用/启用用户 | 输入用户名 | 用户名 |
+
+通用 `GlobalConfirm` 组件 + `useConfirmStore` Pinia store 驱动，新增敏感操作只需调用 `confirmStore.show({...})`。
+
 ---
 
 ## 七、安全中间件栈（共 8 层）
@@ -645,6 +658,7 @@ make admin-dev                # 前端开发模式
 | Phase 9 | API 文档 + 平台速率限制 + 同步重试队列 + PHPUnit 20测试 + GitHub Actions CI/CD | ✅ |
 | Phase 10 | 配置文件中文注释 + .env 注释 + 平台凭据文档 + erik_ 表前缀重写 + BIGINT PK | ✅ |
 | Phase 11 | 国际化 (vue-i18n + I18n.php + Flutter + HarmonyOS) + 滑块验证码 (poster-php) | ✅ |
+| Phase 12 | 二次确认（输入以确认）— 解绑/删除/批量操作均需键入目标名称方可执行 | ✅ |
 
 ---
 
