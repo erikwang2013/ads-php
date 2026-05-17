@@ -11,7 +11,7 @@
         "illuminate/database": "^11.0",
         "illuminate/redis": "^11.0",
         "webman/redis-queue": "^2.0",
-        "firebase/php-jwt": "^7.0",
+        "firebase/php-jwt": "7.0.5 as 6.11.1",
         "vlucas/phpdotenv": "^5.0",
         "monolog/monolog": "^3.10",
         "illuminate/pagination": "^11.51",
