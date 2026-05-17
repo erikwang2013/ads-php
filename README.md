@@ -60,6 +60,22 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | HarmonyOS | ArkTS + ArkUI | 6 页，4 组件，HTTP 客户端 |
 | 部署 | Docker + Nginx | 一键启动全套服务 |
 
+## 架构图
+
+```mermaid
+graph LR
+    Clients["客户端<br/>Flutter · HarmonyOS · Admin"] --> Nginx["Nginx :80"]
+    Nginx -->|"/"| Admin["Admin :8789<br/>webman-admin v2<br/>RBAC · 审计 · SPA"]
+    Nginx -->|"/api/*"| Service["Service :8788<br/>webman v2<br/>29适配器 · 报表 · 告警"]
+    Admin -->|ServiceProxy| Service
+    Service --> MySQL["MySQL 8.0<br/>erik_ 14表"]
+    Service --> Redis["Redis 7"]
+    Service --> ES["Elasticsearch"]
+    Service -->|HTTPS| Platforms["29广告平台"]
+```
+
+> 完整架构图、业务逻辑图、部署图见 [设计文档](docs/superpowers/specs/2026-05-14-ads-platform-design.md)
+
 ## 架构说明
 
 - **`service/`** — webman v2 用户端业务 API 服务，监听端口 **8788**。处理广告平台对接、OAuth 授权、数据同步、报表引擎、告警监控等业务逻辑。
