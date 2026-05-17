@@ -35,35 +35,35 @@ admin:8789 (管理后台)          service:8788 (业务API)
 ```mermaid
 graph TB
     subgraph Clients["客户端层"]
-        Flutter["Flutter App<br/>PC Web / Mobile 响应式"]
-        HarmonyOS["HarmonyOS App<br/>ArkTS + ArkUI"]
-        AdminUI["webman-admin v2<br/>Vue3 + TS + Element Plus"]
+        Flutter["Flutter App — PC Web / Mobile 响应式"]
+        HarmonyOS["HarmonyOS App — ArkTS + ArkUI"]
+        AdminUI["webman-admin v2 — Vue3 + TS + Element Plus"]
     end
 
     subgraph Gateway["网关层 :80"]
-        Nginx["Nginx<br/>/ → admin :8789<br/>/api/* → service :8788"]
+        Nginx["Nginx — / -> admin :8789 — /api/* → service :8788"]
     end
 
     subgraph Admin["管理后台 :8789"]
-        AdminPHP["PHP 后端<br/>RBAC / 审计 / ServiceProxy"]
-        AdminSPA["Vue3 SPA<br/>仪表盘 / 计划 / 报表 / 告警"]
+        AdminPHP["PHP 后端 — RBAC / 审计 / ServiceProxy"]
+        AdminSPA["Vue3 SPA — 仪表盘 / 计划 / 报表 / 告警"]
     end
 
     subgraph Service["业务服务 :8788"]
-        API["ads-api<br/>RESTful 29端点"]
-        Middleware["7层中间件<br/>CORS→RateLimit→SQLGuard→Valid→Encrypt→JWT→Tenant"]
-        Platform["ads-platform<br/>29个平台适配器"]
-        Task["ads-task<br/>定时同步/告警/重试"]
-        Report["ads-report<br/>报表引擎/导出"]
-        Alert["ads-alert<br/>告警规则/推送"]
-        Account["ads-account<br/>OAuth/Token管理"]
-        Tenant["ads-tenant<br/>多租户/DB路由"]
+        API["ads-api — RESTful 29端点"]
+        Middleware["7层中间件 — CORS->RateLimit→SQLGuard→Valid→Encrypt→JWT→Tenant"]
+        Platform["ads-platform — 29个平台适配器"]
+        Task["ads-task — 定时同步/告警/重试"]
+        Report["ads-report — 报表引擎/导出"]
+        Alert["ads-alert — 告警规则/推送"]
+        Account["ads-account — OAuth/Token管理"]
+        Tenant["ads-tenant — 多租户/DB路由"]
     end
 
     subgraph Data["数据层"]
-        MySQL["MySQL 8.0<br/>erik_ 前缀 · 14表"]
-        Redis["Redis 7<br/>缓存/限流/队列"]
-        ES["Elasticsearch<br/>webman-scout 索引"]
+        MySQL["MySQL 8.0 — erik_ 前缀 · 14表"]
+        Redis["Redis 7 — 缓存/限流/队列"]
+        ES["Elasticsearch — webman-scout 索引"]
     end
 
     subgraph External["外部广告平台"]
@@ -527,14 +527,14 @@ POST /api/v1/captcha/verify    → 验证偏移量（5px 容差，5 分钟有效
 ```mermaid
 sequenceDiagram
     participant Client as 客户端
-    participant CORS as CORS<br/>跨域处理
-    participant Rate as RateLimit<br/>滑动窗口限流
-    participant SQL as SQLGuard<br/>注入检测
-    participant Valid as Validation<br/>输入过滤
-    participant Encrypt as Encryption<br/>加解密
-    participant JWT as AuthMiddleware<br/>JWT认证
-    participant Tenant as TenantIdentify<br/>多租户解析
-    participant Ctrl as Controller<br/>业务逻辑
+    participant CORS as CORS — 跨域处理
+    participant Rate as RateLimit — 滑动窗口限流
+    participant SQL as SQLGuard — 注入检测
+    participant Valid as Validation — 输入过滤
+    participant Encrypt as Encryption — 加解密
+    participant JWT as AuthMiddleware — JWT认证
+    participant Tenant as TenantIdentify — 多租户解析
+    participant Ctrl as Controller — 业务逻辑
 
     Client->>CORS: HTTP Request
     CORS->>Rate: 添加 CORS 头
@@ -700,7 +700,7 @@ sequenceDiagram
 
     Note over Browser: Vue SPA 加载完成
 
-    Browser->>Service: GET /api/v1/campaigns<br/>Authorization: Bearer {token}
+    Browser->>Service: GET /api/v1/campaigns — Authorization: Bearer {token}
     Service->>Service: JWT验证 → 租户解析
     Service->>Service: 查询 erik_campaigns
     Service-->>Browser: JSON (hashids ID)
@@ -746,30 +746,30 @@ flowchart TD
     Cron["Crontab 定时触发"]
     
     subgraph Sync["数据同步 (每10分钟)"]
-        S1["遍历活跃账户"] --> S2["PlatformRateLimiter<br/>平台级 QPS 控制"]
-        S2 --> S3["适配器 fetchCampaigns<br/>Generator 流式分页"]
-        S3 --> S4["FieldMapping 字段转换<br/>金额统一为分"]
-        S4 --> S5["upsert erik_campaigns<br/>同步时间戳"]
-        S3 --> S6["适配器 fetchReports<br/>近2日数据"]
+        S1["遍历活跃账户"] --> S2["PlatformRateLimiter — 平台级 QPS 控制"]
+        S2 --> S3["适配器 fetchCampaigns — Generator 流式分页"]
+        S3 --> S4["FieldMapping 字段转换 — 金额统一为分"]
+        S4 --> S5["upsert erik_campaigns — 同步时间戳"]
+        S3 --> S6["适配器 fetchReports — 近2日数据"]
         S6 --> S4
-        S4 --> S7["upsert erik_report_metrics<br/>按维度分组"]
-        S7 --> S8["CacheService::flush<br/>清仪表盘缓存"]
+        S4 --> S7["upsert erik_report_metrics — 按维度分组"]
+        S7 --> S8["CacheService::flush — 清仪表盘缓存"]
         S5 --> S8
     end
 
     subgraph Alert["告警检查 (每5分钟)"]
-        A1["遍历启用规则"] --> A2["AlertEngine::evaluate<br/>查询 erik_report_metrics"]
+        A1["遍历启用规则"] --> A2["AlertEngine::evaluate — 查询 erik_report_metrics"]
         A2 --> A3{"阈值触发?"}
-        A3 -->|是| A4["写入 erik_alert_logs<br/>Redis Pub/Sub"]
+        A3 -->|是| A4["写入 erik_alert_logs — Redis Pub/Sub"]
         A3 -->|否| A1
-        A4 --> A5["NotificationService::send<br/>Web/Email/SMS"]
+        A4 --> A5["NotificationService::send — Web/Email/SMS"]
     end
 
     subgraph Retry["失败重试 (每3分钟)"]
-        R1["扫描 erik_sync_errors<br/>retry_count < 3"] --> R2["重新同步单账户"]
+        R1["扫描 erik_sync_errors — retry_count < 3"] --> R2["重新同步单账户"]
         R2 --> R3{"成功?"}
         R3 -->|是| R4["删除错误记录"]
-        R3 -->|否| R5["retry_count+1<br/>指数退避 5^n 分钟"]
+        R3 -->|否| R5["retry_count+1 — 指数退避 5^n 分钟"]
     end
 
     Cron --> Sync
@@ -779,74 +779,35 @@ flowchart TD
 
 ### 适配器模式
 
+
 ```mermaid
-classDiagram
-    class PlatformAdapter {
-        <<interface>>
-        +code() string
-        +name() string
-        +capabilities() array
-        +buildAuthUrl(uri, state) string
-        +exchangeToken(code, uri) array
-        +refreshToken(token) array
-        +fetchAccountInfo(token) array
-        +fetchCampaigns(token, id) Generator
-        +fetchAdGroups(token, id, cid) Generator
-        +fetchCreatives(token, id, aid) Generator
-        +fetchReports(token, id, req) Generator
-        +createCampaign(token, id, data) string
-        +updateCampaign(token, id, pid, data) void
-        +toggleCampaign(token, id, pid, on) void
-    }
+flowchart TB
+    subgraph Core["适配器核心"]
+        Interface["PlatformAdapter 接口 — 14 methods"]
+        Registry["AdapterRegistry — register/get/all/has"]
+        Mapping["FieldMapping — 字段映射/状态转换/数值变换"]
+    end
 
-    class AdapterRegistry {
-        -adapters array
-        +register(adapter) void
-        +get(code) PlatformAdapter
-        +all() array
-        +has(code) bool
-    }
+    subgraph Adapters["平台适配器 (29个)"]
+        Juliang["巨量引擎 — 元转分 · Access-Token"]
+        Baidu["百度营销 — 元转分 · 信封签名"]
+        Taobao["淘宝 — 元转分 · MD5签名"]
+        Google["Google Ads — 微元转分 · GAQL"]
+        Meta["Meta Ads — 分原生 · URL参数"]
+        More["... 共29个平台"]
+    end
 
-    class FieldMapping {
-        -fieldMap array
-        -statusMap array
-        -valueTransformer callable
-        +map(raw) array
-    }
-
-    class Juliang {
-        巨量引擎 (字节跳动)
-        金额: 元→分
-        OAuth: Access-Token
-    }
-
-    class Baidu {
-        百度营销
-        金额: 元→分
-        OAuth: 信封签名
-    }
-
-    class Google {
-        Google Ads
-        金额: 微元→分
-        OAuth: GAQL
-    }
-
-    class Meta {
-        Meta Ads (FB+IG)
-        金额: 分原生
-        OAuth: URL参数
-    }
-
-    PlatformAdapter <|.. Juliang : implements
-    PlatformAdapter <|.. Baidu : implements
-    PlatformAdapter <|.. Google : implements
-    PlatformAdapter <|.. Meta : implements
-    AdapterRegistry --> PlatformAdapter : manages
-    Juliang --> FieldMapping : uses
-    Baidu --> FieldMapping : uses
-    Google --> FieldMapping : uses
-    Meta --> FieldMapping : uses
+    Registry --> Interface
+    Juliang -.->|implements| Interface
+    Baidu -.->|implements| Interface
+    Taobao -.->|implements| Interface
+    Google -.->|implements| Interface
+    Meta -.->|implements| Interface
+    More -.->|implements| Interface
+    Juliang --> Mapping
+    Baidu --> Mapping
+    Google --> Mapping
+    Meta --> Mapping
 ```
 
 ---
@@ -877,19 +838,19 @@ graph TB
     end
 
     subgraph Docker["Docker Compose"]
-        Nginx["Nginx :80<br/>反向代理"]
+        Nginx["Nginx :80 — 反向代理"]
         
         subgraph AdminSvc["admin-php :8789"]
-            AdminPHP["webman-admin v2<br/>PHP 后端"]
+            AdminPHP["webman-admin v2 — PHP 后端"]
         end
         
         subgraph ServiceSvc["php :8788"]
-            ServicePHP["webman v2<br/>业务 API"]
+            ServicePHP["webman v2 — 业务 API"]
         end
 
-        MySQL["MySQL 8.0 :3306<br/>erik_ + admin_ 表"]
-        Redis["Redis 7 :6379<br/>缓存 / 限流 / 队列"]
-        ES["Elasticsearch :9200<br/>数据索引"]
+        MySQL["MySQL 8.0 :3306 — erik_ + admin_ 表"]
+        Redis["Redis 7 :6379 — 缓存 / 限流 / 队列"]
+        ES["Elasticsearch :9200 — 数据索引"]
     end
 
     subgraph External["外部服务"]
@@ -899,7 +860,7 @@ graph TB
     Browser -->|":80"| Nginx
     Nginx -->|"/"| AdminSvc
     Nginx -->|"/api/*"| ServiceSvc
-    AdminPHP -->|"ServiceProxy<br/>localhost:8788"| ServiceSvc
+    AdminPHP -->|"ServiceProxy — localhost:8788"| ServiceSvc
     ServicePHP --> MySQL
     ServicePHP --> Redis
     ServicePHP --> ES
