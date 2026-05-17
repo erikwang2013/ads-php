@@ -409,10 +409,37 @@ CREATE TABLE erik_alert_logs (
 | `erikwang2013/encryptable` | DB 字段自动加解密 | PlatformAccount/AuthToken $encryptable |
 | `erikwang2013/webman-scout` | Elasticsearch 数据同步 | config/scout.php |
 | `erikwang2013/season` | 国家旗帜 | PlatformBadge.vue (Unicode 国旗) |
+| `erikwang2013/poster-php` | 滑块验证码 | CaptchaService + CaptchaWidget |
 
 ---
 
-## 五、安全中间件栈
+## 五、国际化 (i18n)
+
+全部界面支持 **中文 (zh-CN)** 和 **English (en)**：
+
+| 端 | 技术 | 翻译量 |
+|----|------|--------|
+| Admin | vue-i18n v9 | 158 keys (app/nav/login/dashboard/campaign/account/report/alert/system/common) |
+| Service API | `erik\support\I18n` | 12 消息 keys (Accept-Language header / ?lang= param) |
+| Flutter | AppLocalizations + Delegate | 20+ UI keys |
+| HarmonyOS | StringResources | 15+ UI keys |
+
+---
+
+## 六、验证码
+
+登录等敏感操作需完成滑块验证码（erikwang2013/poster-php）：
+
+```
+GET  /api/v1/captcha/generate  → 返回背景图 + 拼图块 + AES 加密 token
+POST /api/v1/captcha/verify    → 验证偏移量（5px 容差，5 分钟有效）
+```
+
+前端 `CaptchaWidget` 组件支持拖拽/触屏，失败自动刷新。后端 AuthController 在登录时校验 captcha_token + captcha_offset。
+
+---
+
+## 七、安全中间件栈（共 8 层）
 
 请求经过 7 层中间件处理：
 
@@ -616,6 +643,8 @@ make admin-dev                # 前端开发模式
 | Phase 7 | Docker 部署 + 安全加固 (RateLimit/CORS/SQLGuard) + 缓存层 + README | ✅ |
 | Phase 8 | 目录重组 (apps/) + Admin 独立 webman-admin v2 (PHP后端+ServiceProxy) + RBAC + 审计日志 | ✅ |
 | Phase 9 | API 文档 + 平台速率限制 + 同步重试队列 + PHPUnit 20测试 + GitHub Actions CI/CD | ✅ |
+| Phase 10 | 配置文件中文注释 + .env 注释 + 平台凭据文档 + erik_ 表前缀重写 + BIGINT PK | ✅ |
+| Phase 11 | 国际化 (vue-i18n + I18n.php + Flutter + HarmonyOS) + 滑块验证码 (poster-php) | ✅ |
 
 ---
 

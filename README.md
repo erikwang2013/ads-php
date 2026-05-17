@@ -79,12 +79,26 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | `erikwang2013/encryptable` | DB 字段级自动加解密 |
 | `erikwang2013/webman-scout` | Elasticsearch 数据同步 |
 | `erikwang2013/season` | 国家旗帜标识 |
+| `erikwang2013/poster-php` | 滑块验证码（登录保护） |
+
+## 国际化
+
+全部界面支持 **中文 (zh-CN)** / **English (en)** 双语切换：
+
+| 端 | 技术 | 切换方式 |
+|----|------|---------|
+| Admin | vue-i18n v9 | TopBar 语言下拉菜单，localStorage 持久化 |
+| Service API | `erik\support\I18n` | Accept-Language 请求头 / `?lang=` 参数 |
+| Flutter | AppLocalizations + Delegate | 系统语言自动检测 |
+| HarmonyOS | StringResources | `setLang()` 切换 |
 
 ## 安全
 
 **7 层中间件**：CORS → RateLimit (滑动窗口60次/60s) → SQLGuard (注入检测) → Validation (输入过滤) → Encryption (X-Encrypted) → JWT (Bearer Token) → TenantIdentify
 
 **数据加密**：`access_token`/`refresh_token` 由 encryptable 自动 DB 加解密，API 敏感传输由 encryption 中间件处理
+
+**验证码**：登录等敏感操作需通过滑块验证码（erikwang2013/poster-php），token 有效期 5 分钟、偏移容差 5px
 
 ---
 
@@ -181,6 +195,8 @@ ads-php/
 | POST | /api/v1/alerts/logs/:id/acknowledge | 确认告警 |
 | GET | /api/v1/alerts/unread-count | 未读告警数量 |
 | GET | /api/v1/docs | API 文档（HTML，免认证） |
+| GET | /api/v1/captcha/generate | 生成滑块验证码 |
+| POST | /api/v1/captcha/verify | 验证滑块偏移量 |
 
 ### Admin 端点（端口 8789）
 
