@@ -28,6 +28,6 @@ return [
         'cleanup_interval' => (int) (getenv('JWT_ADVANCED_CLEANUP_INTERVAL') ?: 3600),
     ],
     'middleware'     => [
-        'except' => getenv('JWT_MIDDLEWARE_EXCEPT') ?: [],
+        'except' => [],
     ],
 ];

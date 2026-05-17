@@ -143,7 +143,7 @@ class FileTokenStorage implements TokenStorageInterface
      */
     private function unlinkAsync(string $filePath): void
     {
-        if (is_callable('exec') && stripos(PHP_OS, 'WIN') !== 0) {
+        if (function_exists('exec') && stripos(PHP_OS, 'WIN') !== 0) {
             // Linux/Unix 系统使用后台删除
             exec("rm -f " . escapeshellarg($filePath) . " > /dev/null 2>&1 &");
         } else {

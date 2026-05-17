@@ -19,12 +19,12 @@ class RedisTokenStorage implements TokenStorageInterface
     private $prefix;
     private $redisResolver;
     private $connected = false;
+    private $connectionChecked = false;
 
     public function __construct(callable $redisResolver, string $prefix = 'jwt_blacklist:')
     {
         $this->prefix = $prefix;
         $this->redisResolver = $redisResolver;
-        $this->checkConnection();
     }
 
     /**
@@ -45,10 +45,17 @@ class RedisTokenStorage implements TokenStorageInterface
      */
     private function ensureConnection(): void
     {
-        if (!$this->connected) {
+        if (!$this->connectionChecked) {
             $this->checkConnection();
+            $this->connectionChecked = true;
         }
-        
+
+        if (!$this->connected) {
+            $this->connectionChecked = false;
+            $this->checkConnection();
+            $this->connectionChecked = true;
+        }
+
         if (!$this->connected) {
             throw JWTException::storageError('Redis is not connected');
         }
@@ -124,7 +131,9 @@ class RedisTokenStorage implements TokenStorageInterface
                 $redis->close();
             }
             $this->connected = false;
+            $this->connectionChecked = false;
             $this->checkConnection();
+            $this->connectionChecked = true;
             return $this->connected;
         } catch (Exception $e) {
             throw JWTException::storageError('Redis reconnection failed: ' . $e->getMessage());

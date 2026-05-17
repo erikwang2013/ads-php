@@ -455,22 +455,22 @@
         },
         {
             "name": "erikwang2013/jwt-webman",
-            "version": "v2.0.0",
-            "version_normalized": "2.0.0.0",
+            "version": "v2.0.2",
+            "version_normalized": "2.0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/erikwang2013/jwt-webman.git",
-                "reference": "9fd2ef1e8f1eb539526544e743bd2d7434675f06"
+                "reference": "f15d0f107057fa16122c5c30e3a01c56149e524e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/erikwang2013/jwt-webman/zipball/9fd2ef1e8f1eb539526544e743bd2d7434675f06",
-                "reference": "9fd2ef1e8f1eb539526544e743bd2d7434675f06",
+                "url": "https://api.github.com/repos/erikwang2013/jwt-webman/zipball/f15d0f107057fa16122c5c30e3a01c56149e524e",
+                "reference": "f15d0f107057fa16122c5c30e3a01c56149e524e",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
-                "firebase/php-jwt": "^6.0",
+                "firebase/php-jwt": "^7.0",
                 "php": ">=7.4",
                 "psr/log": "^1.0 | ^2.0 | ^3.0"
             },
@@ -480,7 +480,7 @@
                 "topthink/framework": "For ThinkPHP framework integration",
                 "workerman/webman": "For webman framework integration"
             },
-            "time": "2026-05-17T12:32:03+00:00",
+            "time": "2026-05-17T13:13:14+00:00",
             "type": "library",
             "extra": {
                 "laravel": {
@@ -853,17 +853,17 @@
         },
         {
             "name": "firebase/php-jwt",
-            "version": "v6.11.1",
-            "version_normalized": "6.11.1.0",
+            "version": "v7.0.5",
+            "version_normalized": "7.0.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/php-jwt.git",
-                "reference": "d1e91ecf8c598d073d0995afa8cd5c75c6e19e66"
+                "reference": "47ad26bab5e7c70ae8a6f08ed25ff83631121380"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/php-jwt/zipball/d1e91ecf8c598d073d0995afa8cd5c75c6e19e66",
-                "reference": "d1e91ecf8c598d073d0995afa8cd5c75c6e19e66",
+                "url": "https://api.github.com/repos/googleapis/php-jwt/zipball/47ad26bab5e7c70ae8a6f08ed25ff83631121380",
+                "reference": "47ad26bab5e7c70ae8a6f08ed25ff83631121380",
                 "shasum": ""
             },
             "require": {
@@ -871,6 +871,7 @@
             },
             "require-dev": {
                 "guzzlehttp/guzzle": "^7.4",
+                "phpfastcache/phpfastcache": "^9.2",
                 "phpspec/prophecy-phpunit": "^2.0",
                 "phpunit/phpunit": "^9.5",
                 "psr/cache": "^2.0||^3.0",
@@ -881,7 +882,7 @@
                 "ext-sodium": "Support EdDSA (Ed25519) signatures",
                 "paragonie/sodium_compat": "Support EdDSA (Ed25519) signatures when libsodium is not present"
             },
-            "time": "2025-04-09T20:32:01+00:00",
+            "time": "2026-04-01T20:38:03+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -913,7 +914,7 @@
             ],
             "support": {
                 "issues": "https://github.com/googleapis/php-jwt/issues",
-                "source": "https://github.com/googleapis/php-jwt/tree/v6.11.1"
+                "source": "https://github.com/googleapis/php-jwt/tree/v7.0.5"
             },
             "install-path": "../firebase/php-jwt"
         },

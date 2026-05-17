@@ -73,6 +73,9 @@ class JWT
 
     /**
      * 解码并验证JWT令牌
+     *
+     * 注意：FirebaseJWT::$leeway 是全局静态属性。同一进程中若存在
+     * 多个不同 leeway 的 JWT 实例，后面的调用会覆盖前面的值。
      */
     public function decode(string $token): array
     {

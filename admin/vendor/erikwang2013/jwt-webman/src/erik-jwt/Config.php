@@ -42,7 +42,10 @@ class Config
         $config = &$this->config;
         
         foreach ($keys as $k) {
-            if (!isset($config[$k]) || !is_array($config[$k])) {
+            if (isset($config[$k]) && !is_array($config[$k])) {
+                throw new JWTException("Cannot set '{$key}': '{$k}' is already a non-array value");
+            }
+            if (!isset($config[$k])) {
                 $config[$k] = [];
             }
             $config = &$config[$k];

@@ -29,7 +29,7 @@
     },
     "require": {
         "php": ">=7.4",
-        "firebase/php-jwt": "^6.0",
+        "firebase/php-jwt": "^7.0",
         "psr/log": "^1.0 | ^2.0 | ^3.0",
         "ext-json": "*"
     },

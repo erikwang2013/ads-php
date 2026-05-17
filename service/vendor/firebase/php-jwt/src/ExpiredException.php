@@ -1,14 +1,12 @@
 <?php
-/**
- * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
- */
-
 
 namespace Firebase\JWT;
 
 class ExpiredException extends \UnexpectedValueException implements JWTExceptionWithPayloadInterface
 {
     private object $payload;
+
+    private ?int $timestamp = null;
 
     public function setPayload(object $payload): void
     {
@@ -18,5 +16,15 @@ class ExpiredException extends \UnexpectedValueException implements JWTException
     public function getPayload(): object
     {
         return $this->payload;
+    }
+
+    public function setTimestamp(int $timestamp): void
+    {
+        $this->timestamp = $timestamp;
+    }
+
+    public function getTimestamp(): ?int
+    {
+        return $this->timestamp;
     }
 }

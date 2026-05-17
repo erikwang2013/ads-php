@@ -443,16 +443,16 @@
         },
         {
             "name": "erikwang2013/jwt-webman",
-            "version": "v2.0.1",
+            "version": "v2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/erikwang2013/jwt-webman.git",
-                "reference": "e042ce3db53afcb5f98e1e67292013cf64a0dff0"
+                "reference": "f15d0f107057fa16122c5c30e3a01c56149e524e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/erikwang2013/jwt-webman/zipball/e042ce3db53afcb5f98e1e67292013cf64a0dff0",
-                "reference": "e042ce3db53afcb5f98e1e67292013cf64a0dff0",
+                "url": "https://api.github.com/repos/erikwang2013/jwt-webman/zipball/f15d0f107057fa16122c5c30e3a01c56149e524e",
+                "reference": "f15d0f107057fa16122c5c30e3a01c56149e524e",
                 "shasum": ""
             },
             "require": {
@@ -510,7 +510,7 @@
                 "issues": "https://github.com/erikwang2013/jwt-webman/issues",
                 "source": "https://github.com/erikwang2013/jwt-webman"
             },
-            "time": "2026-05-17T13:03:53+00:00"
+            "time": "2026-05-17T13:13:14+00:00"
         },
         {
             "name": "erikwang2013/poster-php",
