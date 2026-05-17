@@ -32,70 +32,51 @@ admin:8789 (管理后台)          service:8788 (业务API)
 
 ### 系统架构图
 
-```mermaid
-graph TB
-    subgraph Clients["客户端层"]
-        Flutter["Flutter App, PC Web / Mobile 响应式"]
-        HarmonyOS["HarmonyOS App, ArkTS + ArkUI"]
-        AdminUI["webman-admin v2, Vue3 + TS + Element Plus"]
-    end
-
-    subgraph Gateway["网关层 :80"]
-        Nginx["Nginx, / to admin:8789, /api redirect to service:8788"]
-    end
-
-    subgraph Admin["管理后台 :8789"]
-        AdminPHP["PHP 后端, RBAC / 审计 / ServiceProxy"]
-        AdminSPA["Vue3 SPA, 仪表盘 / 计划 / 报表 / 告警"]
-    end
-
-    subgraph Service["业务服务 :8788"]
-        API["ads-api, RESTful 29端点"]
-        Middleware["7层中间件, CORS to RateLimit to SQLGuard to Valid to Encrypt to JWT to Tenant"]
-        Platform["ads-platform, 29个平台适配器"]
-        Task["ads-task, 定时同步/告警/重试"]
-        Report["ads-report, 报表引擎/导出"]
-        Alert["ads-alert, 告警规则/推送"]
-        Account["ads-account, OAuth/Token管理"]
-        Tenant["ads-tenant, 多租户/DB路由"]
-    end
-
-    subgraph Data["数据层"]
-        MySQL["MySQL 8.0, erik_ 前缀 14表"]
-        Redis["Redis 7, 缓存/限流/队列"]
-        ES["Elasticsearch, webman-scout 索引"]
-    end
-
-    subgraph External["外部广告平台"]
-        Juliang["巨量引擎"]
-        Baidu["百度营销"]
-        Google["Google Ads"]
-        Meta["Meta Ads"]
-        Others["... 共29平台"]
-    end
-
-    Clients --> Nginx
-    Nginx --> AdminPHP
-    Nginx --> API
-    AdminPHP --> AdminSPA
-    AdminPHP -->|ServiceProxy HTTP| API
-    API --> Middleware
-    Middleware --> Platform
-    Platform --> External
-    API --> Task
-    API --> Report
-    API --> Alert
-    API --> Account
-    API --> Tenant
-    Platform --> MySQL
-    Task --> MySQL
-    Report --> MySQL
-    Alert --> MySQL
-    Account --> MySQL
-    Tenant --> MySQL
-    Platform --> Redis
-    API --> Redis
-    Platform --> ES
+```text
+                          ┌──────────────────────────────┐
+                          │          Nginx :80           │
+                          │   / -> admin    /api -> svc  │
+                          └──────┬──────────────┬────────┘
+                                 │              │
+              ┌──────────────────┼──────┐       │
+              │      Admin :8789 │      │       │
+              │  ┌───────────────────┐  │       │
+              │  │  webman-admin v2  │  │       │
+              │  │  PHP + Vue3 SPA   │  │       │
+              │  │  RBAC / Audit     │──┼───────┘
+              │  └───────────────────┘  │   ServiceProxy
+              │         ServiceProxy ───┼── (HTTP call)
+              └─────────────────────────┘        │
+                                                 │
+         ┌───────────────────────────────────────┘
+         │             Service :8788
+         │  ┌─────────────────────────────────────┐
+         │  │ 7 Middleware: CORS, RateLimit,      │
+         │  │ SQLGuard, Valid, Encrypt, JWT,      │
+         │  │ TenantIdentify                      │
+         │  └─────────────────────────────────────┘
+         │  ┌──────────┐ ┌──────────┐ ┌─────────┐
+         │  │ Campaign │ │  Report  │ │  Alert  │
+         │  │ Manager  │ │  Engine  │ │  Engine │
+         │  └────┬─────┘ └────┬─────┘ └────┬────┘
+         │       └────────────┼────────────┘
+         │            ┌───────┴────────┐
+         │            │ 29 Platform    │
+         │            │ Adapters       │
+         │            └───────┬────────┘
+         └────────────────────┼──────────────┘
+                              │
+              ┌───────────────┼───────────────┐
+              │               │               │
+         ┌────┴────┐   ┌─────┴─────┐   ┌─────┴─────┐
+         │  MySQL  │   │  Redis 7  │   │  ES 搜索  │
+         │ 14 tables│   │ 缓存/队列 │   │  scout    │
+         └─────────┘   └───────────┘   └───────────┘
+                              │
+                    ┌─────────┴─────────┐
+                    │   29 广告平台 API  │
+                    │ 巨量/百度/淘宝/... │
+                    └───────────────────┘
 ```
 
 ```
@@ -524,27 +505,41 @@ POST /api/v1/captcha/verify    → 验证偏移量（5px 容差，5 分钟有效
 
 ### 请求流
 
-```mermaid
-sequenceDiagram
-    participant Client as 客户端
-    participant CORS as CORS, 跨域处理
-    participant Rate as RateLimit, 滑动窗口限流
-    participant SQL as SQLGuard, 注入检测
-    participant Valid as Validation, 输入过滤
-    participant Encrypt as Encryption, 加解密
-    participant JWT as AuthMiddleware, JWT认证
-    participant Tenant as TenantIdentify, 多租户解析
-    participant Ctrl as Controller, 业务逻辑
-
-    Client->>CORS: HTTP Request
-    CORS->>Rate: 添加 CORS 头
-    Rate->>SQL: 检查频率 (Redis 60次/60s)
-    SQL->>Valid: 检测注入模式
-    Valid->>Encrypt: 裁剪+过滤
-    Encrypt->>JWT: 解密 X-Encrypted 请求体
-    JWT->>Tenant: 验证 Bearer Token
-    Tenant->>Ctrl: 解析 X-Tenant-Id
-    Ctrl-->>Client: JSON Response (hashids ID 编码)
+```text
+                          HTTP Request
+                               │
+                               v
+                    ┌──────────────────┐
+                    │   CorsMiddleware │  CORS header
+                    └────────┬─────────┘
+                             v
+                    ┌──────────────────┐
+                    │ RateLimitMiddle  │  60 req / 60s
+                    └────────┬─────────┘
+                             v
+                    ┌──────────────────┐
+                    │ SQLGuardMiddle   │  Injection detect
+                    └────────┬─────────┘
+                             v
+                    ┌──────────────────┐
+                    │ ValidationMiddle │  Trim + strip tags
+                    └────────┬─────────┘
+                             v
+                    ┌──────────────────┐
+                    │ EncryptMiddle    │  X-Encrypted header
+                    └────────┬─────────┘
+                             v
+                    ┌──────────────────┐
+                    │ AuthMiddle (JWT) │  Bearer Token
+                    └────────┬─────────┘
+                             v
+                    ┌──────────────────┐
+                    │ TenantIdentify   │  X-Tenant-Id
+                    └────────┬─────────┘
+                             v
+                    ┌──────────────────┐
+                    │   Controller     │  Business Logic
+                    └──────────────────┘
 ```
 
 | 中间件 | 功能 |
@@ -684,130 +679,152 @@ GET    /api/v1/alerts/unread-count
 
 ### Admin ↔ Service 通信
 
-```mermaid
-sequenceDiagram
-    participant Browser as 浏览器
-    participant Admin as Admin:8789
-    participant Service as Service:8788
-    participant Platform as 广告平台API
-
-    Browser->>Admin: POST /api/admin/login
-    Admin->>Admin: 验证密码 + 滑块验证码
-    Admin-->>Browser: JWT Token
-
-    Browser->>Admin: GET / (Vue SPA)
-    Admin-->>Browser: index.html + app.js
-
-    Note over Browser: Vue SPA 加载完成
-
-    Browser->>Service: GET /api/v1/campaigns, Auth Bearer token
-    Service->>Service: JWT验证, 租户解析
-    Service->>Service: 查询 erik_campaigns
-    Service-->>Browser: JSON (hashids ID)
-
-    Browser->>Service: POST /api/v1/campaigns
-    Service->>Service: 验证请求, 适配器路由
-    Service->>Platform: 调用平台 API 创建计划
-    Platform-->>Service: campaign_id response
-    Service->>Service: 写入 erik_campaigns
-    Service-->>Browser: hashids ID
+```text
+ Browser                    Admin :8789               Service :8788
+    │                            │                         │
+    │  POST /api/admin/login     │                         │
+    │ ─────────────────────────> │                         │
+    │                            │  Verify password+captcha│
+    │ <─────── JWT Token ─────── │                         │
+    │                            │                         │
+    │  GET / (Vue SPA)           │                         │
+    │ ─────────────────────────> │                         │
+    │ <─────── index.html ────── │                         │
+    │                            │                         │
+    │  GET /api/v1/campaigns     │                         │
+    │ ──────────────────────────────────────────────────> │
+    │                            │     Bearer: {token}     │
+    │                            │     X-Tenant-Id: 1      │
+    │                            │                         │
+    │ <────────── JSON ───────────────────────────────── │
+    │                            │                         │
+    │  POST /api/v1/campaigns    │                         │
+    │ ──────────────────────────────────────────────────> │
+    │                            │                         │──> Platform API
+    │                            │                         │<── {campaign_id}
+    │                            │                         │
+    │ <────── {id: hashids} ──────────────────────────── │
 ```
 
 ### OAuth 平台授权流程
 
-```mermaid
-sequenceDiagram
-    participant User as 管理员
-    participant Admin as Admin Panel
-    participant Service as Service:8788
-    participant Platform as 广告平台
-
-    User->>Admin: 点击绑定账户, 选择平台
-    Admin->>Service: GET /platforms/{code}/oauth-url
-    Service->>Service: 生成 state 并存库
-    Service-->>Admin: auth_url and state
-    Admin->>Platform: 跳转授权页
-    User->>Platform: 登录并授权
-    Platform->>Admin: 回调 code and state
-    Admin->>Service: POST /platforms/{code}/callback
-    Service->>Service: 验证 state, 用 code 换 token
-    Service->>Platform: POST /oauth2/access_token
-    Platform-->>Service: access_token and refresh_token
-    Service->>Service: 加密存储 token (encryptable)
-    Service->>Platform: 拉取账户信息
-    Service-->>Admin: account_id hashids
-    Admin-->>User: 绑定成功
+```text
+ Admin            Service :8788           Ad Platform       User
+    │                    │                     │              │
+    │ GET oauth-url      │                     │              │
+    │──────────────────> │                     │              │
+    │                    │ gen state -> DB     │              │
+    │ <── {auth_url} ─── │                     │              │
+    │                    │                     │              │
+    │────────────────────────────────────────────────────>   │
+    │                    │               Redirect to login   │
+    │                    │                     │<─────────────│
+    │                    │                     │   授权确认    │
+    │                    │                     │─────────────>│
+    │                    │                     │              │
+    │ <── ?code=xxx ──────────────────────    │              │
+    │                    │                     │              │
+    │ POST callback      │                     │              │
+    │──────────────────> │                     │              │
+    │                    │ verify state        │              │
+    │                    │──────────────────>  │              │
+    │                    │  POST /oauth/token  │              │
+    │                    │<── {access_token} ──│              │
+    │                    │                     │              │
+    │                    │ encrypt + store     │              │
+    │                    │ fetch account info  │              │
+    │ <── {account_id} ─ │                     │              │
 ```
 
 ### 数据同步 & 告警流程
 
-```mermaid
-flowchart TD
-    Cron["Crontab 定时触发"]
-    
-    subgraph Sync["数据同步, 每10分钟"]
-        S1["遍历活跃账户"] --> S2["PlatformRateLimiter, 平台级 QPS 控制"]
-        S2 --> S3["适配器 fetchCampaigns, Generator 流式分页"]
-        S3 --> S4["FieldMapping 字段转换, 金额统一为分"]
-        S4 --> S5["upsert erik_campaigns, 同步时间戳"]
-        S3 --> S6["适配器 fetchReports, 近2日数据"]
-        S6 --> S4
-        S4 --> S7["upsert erik_report_metrics, 按维度分组"]
-        S7 --> S8["CacheService flush, 清仪表盘缓存"]
-        S5 --> S8
-    end
-
-    subgraph Alert["告警检查, 每5分钟"]
-        A1["遍历启用规则"] --> A2["AlertEngine evaluate, 查询 erik_report_metrics"]
-        A2 --> A3{"阈值触发?"}
-        A3 -->|是| A4["写入 erik_alert_logs, Redis Pub/Sub"]
-        A3 -->|否| A1
-        A4 --> A5["NotificationService send, Web/Email/SMS"]
-    end
-
-    subgraph Retry["失败重试, 每3分钟"]
-        R1["扫描 erik_sync_errors, retry_count 小于 3"] --> R2["重新同步单账户"]
-        R2 --> R3{"成功?"}
-        R3 -->|是| R4["删除错误记录"]
-        R3 -->|否| R5["retry_count+1, 指数退避 5^n 分钟"]
-    end
-
-    Cron --> Sync
-    Cron --> Alert
-    Cron --> Retry
+```text
+              ┌─────── Crontab ───────┐
+              │        │              │
+              v        v              v
+    ┌─────────────┐ ┌───────────┐ ┌──────────────┐
+    │ DataSync    │ │ AlertCheck│ │ RetrySync    │
+    │ (10 min)    │ │ (5 min)   │ │ (3 min)      │
+    └──────┬──────┘ └─────┬─────┘ └──────┬───────┘
+           │              │              │
+           v              v              v
+    ┌──────────────┐ ┌───────────┐ ┌──────────────┐
+    │ Rate Limiter │ │遍历启用规则│ │扫描错误队列  │
+    │ per platform │ └─────┬─────┘ │ retry < 3    │
+    └──────┬───────┘       │       └──────┬───────┘
+           │               v              │
+           v        ┌───────────┐         v
+    ┌──────────┐    │查询今日数据│  ┌──────────────┐
+    │Generator │    │report_     │  │单账户重试同步│
+    │fetch API │    │metrics表   │  └──────┬───────┘
+    └────┬─────┘    └─────┬─────┘         │
+         │                │               v
+         v                v        ┌─── 成功? ───┐
+    ┌──────────┐    ┌───────────┐  │yes        no│
+    │FieldMap  │    │阈值触发?   │  v           v
+    │金额统一  │    └──┬───┬───┘  ┌──┐    ┌──────────┐
+    │extra JSON│    yes│   │no   │清除│    │retry+1   │
+    └────┬─────┘      │   └──→  │记录│    │指数退避  │
+         │            v          └──┘    │5^n 分钟  │
+         v      ┌───────────┐           └──────────┘
+    ┌──────────┐│AlertLog   │
+    │upsert    ││写入DB     │
+    │campaigns ││Redis Pub  │
+    │metrics   ││Sub 推送   │
+    └────┬─────┘└───────────┘
+         │
+         v
+    ┌──────────┐
+    │清仪表盘  │
+    │Redis缓存 │
+    └──────────┘
 ```
 
 ### 适配器模式
 
 
-```mermaid
-flowchart TB
-    subgraph Core["适配器核心"]
-        Interface["PlatformAdapter 接口, 14 methods"]
-        Registry["AdapterRegistry, register/get/all/has"]
-        Mapping["FieldMapping, 字段映射/状态转换/数值变换"]
-    end
+```text
+                 ┌──────────────────────────────┐
+                 │      << interface >>          │
+                 │      PlatformAdapter          │
+                 ├──────────────────────────────┤
+                 │ code() / name() / capabilities│
+                 │ buildAuthUrl / exchangeToken  │
+                 │ fetchCampaigns (Generator)    │
+                 │ fetchAdGroups  (Generator)    │
+                 │ fetchCreatives (Generator)    │
+                 │ fetchReports   (Generator)    │
+                 │ createCampaign / update       │
+                 │ toggleCampaign                │
+                 └──────────┬───────────────────┘
+                            │ implements
+            ┌───────────────┼───────────────┐
+            │               │               │
+    ┌───────┴──────┐ ┌──────┴──────┐ ┌──────┴──────┐
+    │  Juliang     │ │  Baidu      │ │  Google     │
+    │  巨量引擎    │ │  百度营销   │ │  Google Ads │
+    │  yuan->fen   │ │  yuan->fen  │ │  u$->fen    │
+    │  AccessToken │ │  信封签名   │ │  GAQL       │
+    └──────┬───────┘ └──────┬──────┘ └──────┬──────┘
+           │                │               │
+           └────────────────┼───────────────┘
+                            │
+                   ┌────────┴────────┐
+                   │   FieldMapping  │
+                   ├─────────────────┤
+                   │ fieldMap: array │
+                   │ statusMap:array │
+                   │ transformer:fn  │
+                   │ map(raw):array  │
+                   └─────────────────┘
 
-    subgraph Adapters["平台适配器, 29个"]
-        Juliang["巨量引擎, 元转分, Access-Token"]
-        Baidu["百度营销, 元转分, 信封签名"]
-        Taobao["淘宝, 元转分, MD5签名"]
-        Google["Google Ads, 微元转分, GAQL"]
-        Meta["Meta Ads, 分原生, URL参数"]
-        More["... 共29个平台"]
-    end
-
-    Registry --> Interface
-    Juliang -.->|implements| Interface
-    Baidu -.->|implements| Interface
-    Taobao -.->|implements| Interface
-    Google -.->|implements| Interface
-    Meta -.->|implements| Interface
-    More -.->|implements| Interface
-    Juliang --> Mapping
-    Baidu --> Mapping
-    Google --> Mapping
-    Meta --> Mapping
+         AdapterRegistry (static)
+         ┌─────────────────────────┐
+         │ register(adapter):void  │
+         │ get(code): ?Adapter     │
+         │ all(): array            │
+         │ has(code): bool         │
+         └─────────────────────────┘
 ```
 
 ---
@@ -831,61 +848,61 @@ flowchart TB
 
 ### 容器化部署
 
-```mermaid
-graph TB
-    subgraph Internet["外部访问"]
-        Browser["浏览器 / App"]
-    end
-
-    subgraph Docker["Docker Compose"]
-        Nginx["Nginx:80, 反向代理"]
-        
-        subgraph AdminSvc["admin-php:8789"]
-            AdminPHP["webman-admin v2, PHP 后端"]
-        end
-        
-        subgraph ServiceSvc["php:8788"]
-            ServicePHP["webman v2, 业务 API"]
-        end
-
-        MySQL["MySQL 8.0:3306, erik_ + admin_ 表"]
-        Redis["Redis 7:6379, 缓存 / 限流 / 队列"]
-        ES["Elasticsearch:9200, 数据索引"]
-    end
-
-    subgraph External["外部服务"]
-        AdPlatforms["29 个广告平台 API"]
-    end
-
-    Browser -->|:80| Nginx
-    Nginx -->|/| AdminSvc
-    Nginx -->|/api/*| ServiceSvc
-    AdminPHP -->|ServiceProxy localhost:8788| ServiceSvc
-    ServicePHP --> MySQL
-    ServicePHP --> Redis
-    ServicePHP --> ES
-    AdminPHP --> MySQL
-    AdminPHP --> Redis
-    ServicePHP -->|cURL HTTPS| AdPlatforms
+```text
+                    ┌──────────────────────┐
+                    │   Browser / App      │
+                    └──────────┬───────────┘
+                               │ :80
+                               v
+                    ┌──────────────────────┐
+                    │   Nginx (reverse)    │
+                    │   / -> admin:8789    │
+                    │   /api -> svc:8788   │
+                    └──────┬───────┬───────┘
+                           │       │
+              ┌────────────┘       └────────────┐
+              v                                 v
+    ┌─────────────────┐               ┌─────────────────┐
+    │ admin-php :8789 │               │   php :8788     │
+    │ webman-admin v2 │─── Service ──>│  webman v2      │
+    │ Vue SPA + RBAC  │    Proxy HTTP │  Business API   │
+    └────────┬────────┘               └────────┬────────┘
+             │                                 │
+             └─────────────┬───────────────────┘
+                           │
+              ┌────────────┼────────────┐
+              │            │            │
+              v            v            v
+        ┌─────────┐ ┌──────────┐ ┌──────────┐
+        │MySQL 8.0│ │ Redis 7  │ │ ES 9200  │
+        │erik_*   │ │ cache,   │ │ search   │
+        │admin_*  │ │ queue    │ │          │
+        └─────────┘ └──────────┘ └──────────┘
 ```
 
 ### 生产部署流
 
-```mermaid
-flowchart LR
-    Git["GitHub Push"] --> CI["GitHub Actions CI"]
-    CI --> Syntax["PHP Syntax"]
-    CI --> PHPUnit["PHPUnit 20 tests"]
-    CI --> TS["vue-tsc"]
-    CI --> Docker["Docker Build"]
-    Syntax --> Deploy{"合并到 main"}
-    PHPUnit --> Deploy
-    TS --> Deploy
-    Docker --> Deploy
-    Deploy -->|手动触发| Staging["Staging 环境"]
-    Deploy -->|手动触发| Prod["Production 环境"]
-    Staging --> Verify["冒烟测试"]
-    Verify --> Prod
+```text
+   ┌─────────┐     ┌──────────────────────────────────────────────┐
+   │ GitHub  │     │            GitHub Actions CI                 │
+   │  Push   │────>│                                              │
+   └─────────┘     │  ┌──────────┐ ┌──────────┐ ┌──────────┐    │
+                   │  │PHP Syntax│ │ PHPUnit  │ │ vue-tsc  │    │
+                   │  │  0 err   │ │ 20 tests │ │  0 err   │    │
+                   │  └────┬─────┘ └────┬─────┘ └────┬─────┘    │
+                   │       └───────────┼─────────────┘          │
+                   │                   v                         │
+                   │         ┌─────────────────┐                 │
+                   │         │  Docker Build   │                 │
+                   │         │  PHP + Admin    │                 │
+                   │         └────────┬────────┘                 │
+                   └──────────────────┼──────────────────────────┘
+                                      │ merge to main
+                                      v
+                             ┌─────────────────┐
+                             │  Manual Deploy  │
+                             │  staging / prod │
+                             └─────────────────┘
 ```
 
 ### Docker 一键部署
