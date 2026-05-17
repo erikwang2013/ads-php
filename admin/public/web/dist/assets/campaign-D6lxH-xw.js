@@ -1,0 +1,1 @@
+import{b as a}from"./index-kJ0dteo1.js";const e={list(t){return a.get("/campaigns",{params:t})},create(t){return a.post("/campaigns",t)},show(t){return a.get(`/campaigns/${t}`)},update(t,p){return a.put(`/campaigns/${t}`,p)},toggle(t,p){return a.post(`/campaigns/${t}/toggle`,{enabled:p})}};export{e as c};
