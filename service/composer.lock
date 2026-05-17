@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4fd83faea638157eda1fa68e500c5bce",
+    "content-hash": "ccf535da4fef054ec992dd37a3d36c56",
     "packages": [
         {
             "name": "brick/math",
@@ -742,28 +742,28 @@
         },
         {
             "name": "erikwang2013/webman-scout",
-            "version": "v1.1.8",
+            "version": "v2.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/erikwang2013/webman-scout.git",
-                "reference": "c99ac230cb3e6eccf4d67ebfd61f283088be548c"
+                "reference": "301343bfa374aca12744b04885fc504e8446829d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/erikwang2013/webman-scout/zipball/c99ac230cb3e6eccf4d67ebfd61f283088be548c",
-                "reference": "c99ac230cb3e6eccf4d67ebfd61f283088be548c",
+                "url": "https://api.github.com/repos/erikwang2013/webman-scout/zipball/301343bfa374aca12744b04885fc504e8446829d",
+                "reference": "301343bfa374aca12744b04885fc504e8446829d",
                 "shasum": ""
             },
             "require": {
-                "illuminate/bus": "^9.0|^10.0|^11.0|^12.0",
-                "illuminate/contracts": "^9.0|^10.0|^11.0|^12.0",
-                "illuminate/database": "^9.0|^10.0|^11.0|^12.0",
-                "illuminate/http": "^9.0|^10.0|^11.0|^12.0",
-                "illuminate/pagination": "^9.0|^10.0|^11.0|^12.0",
-                "illuminate/queue": "^9.0|^10.0|^11.0|^12.0",
-                "illuminate/support": "^9.0|^10.0|^11.0|^12.0",
+                "illuminate/bus": "^7.0|^8.0|^9.0|^10.0|^11.0",
+                "illuminate/contracts": "^7.0|^8.0|^9.0|^10.0|^11.0",
+                "illuminate/database": "^7.0|^8.0|^9.0|^10.0|^11.0",
+                "illuminate/http": "^7.0|^8.0|^9.0|^10.0|^11.0",
+                "illuminate/pagination": "^7.0|^8.0|^9.0|^10.0|^11.0",
+                "illuminate/queue": "^7.0|^8.0|^9.0|^10.0|^11.0",
+                "illuminate/support": "^7.0|^8.0|^9.0|^10.0|^11.0",
                 "php": "^8.0",
-                "symfony/console": "^6.0|^7.0"
+                "symfony/console": "^5.4|^6.0|^7.0"
             },
             "conflict": {
                 "algolia/algoliasearch-client-php": "<3.2.0|>=5.0.0"
@@ -772,7 +772,7 @@
                 "algolia/algoliasearch-client-php": "^3.2|^4.0",
                 "meilisearch/meilisearch-php": "^1.0",
                 "mockery/mockery": "^1.0",
-                "orchestra/testbench": "^7.31|^8.36|^9.15|^10.8",
+                "orchestra/testbench": "^5.0|^6.0|^7.0|^8.0|^9.0",
                 "php-http/guzzle7-adapter": "^1.0",
                 "phpstan/phpstan": "^1.10",
                 "typesense/typesense-php": "^4.9.3"
@@ -806,19 +806,23 @@
                     "email": "erik@erik.xyz"
                 }
             ],
-            "description": "webman Scout provides a driver based solution to searching your Eloquent models.",
+            "description": "Scout-style full-text search for Webman, Laravel, ThinkPHP, and Hyperf (Eloquent models, multiple engines).",
             "keywords": [
                 "algolia",
                 "elasticsearch",
+                "hyperf",
+                "laravel",
                 "opensearch",
+                "scout",
                 "search",
+                "thinkphp",
                 "webman"
             ],
             "support": {
                 "issues": "https://github.com/erikwang2013/webman-scout/issues",
                 "source": "https://github.com/erikwang2013/webman-scout"
             },
-            "time": "2026-03-23T09:29:56+00:00"
+            "time": "2026-05-14T08:53:54+00:00"
         },
         {
             "name": "firebase/php-jwt",
@@ -7933,5 +7937,5 @@
         "php": ">=8.2"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }
