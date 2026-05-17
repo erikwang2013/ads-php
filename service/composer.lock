@@ -443,21 +443,21 @@
         },
         {
             "name": "erikwang2013/jwt-webman",
-            "version": "v2.0.0",
+            "version": "v2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/erikwang2013/jwt-webman.git",
-                "reference": "9fd2ef1e8f1eb539526544e743bd2d7434675f06"
+                "reference": "e042ce3db53afcb5f98e1e67292013cf64a0dff0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/erikwang2013/jwt-webman/zipball/9fd2ef1e8f1eb539526544e743bd2d7434675f06",
-                "reference": "9fd2ef1e8f1eb539526544e743bd2d7434675f06",
+                "url": "https://api.github.com/repos/erikwang2013/jwt-webman/zipball/e042ce3db53afcb5f98e1e67292013cf64a0dff0",
+                "reference": "e042ce3db53afcb5f98e1e67292013cf64a0dff0",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
-                "firebase/php-jwt": "^6.0",
+                "firebase/php-jwt": "^7.0",
                 "php": ">=7.4",
                 "psr/log": "^1.0 | ^2.0 | ^3.0"
             },
@@ -510,7 +510,7 @@
                 "issues": "https://github.com/erikwang2013/jwt-webman/issues",
                 "source": "https://github.com/erikwang2013/jwt-webman"
             },
-            "time": "2026-05-17T12:32:03+00:00"
+            "time": "2026-05-17T13:03:53+00:00"
         },
         {
             "name": "erikwang2013/poster-php",
