@@ -6,11 +6,11 @@ declare(strict_types=1);
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
  */
 
-namespace Snowflake\Tests;
+namespace Erikwang2013\Snowflake\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Snowflake\Resolvers\RandomSequenceResolver;
-use Snowflake\Resolvers\SequentialSequenceResolver;
+use Erikwang2013\Snowflake\Resolvers\RandomSequenceResolver;
+use Erikwang2013\Snowflake\Resolvers\SequentialSequenceResolver;
 
 class SequenceResolverTest extends TestCase
 {

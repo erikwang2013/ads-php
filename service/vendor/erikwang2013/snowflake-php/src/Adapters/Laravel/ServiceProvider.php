@@ -6,10 +6,10 @@ declare(strict_types=1);
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
  */
 
-namespace Snowflake\Adapters\Laravel;
+namespace Erikwang2013\Snowflake\Adapters\Laravel;
 
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
-use Snowflake\Snowflake;
+use Erikwang2013\Snowflake\Snowflake;
 
 class ServiceProvider extends BaseServiceProvider
 {

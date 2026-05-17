@@ -6,13 +6,13 @@ declare(strict_types=1);
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
  */
 
-namespace Snowflake\Tests;
+namespace Erikwang2013\Snowflake\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Snowflake\Exceptions\ClockDriftException;
-use Snowflake\Exceptions\InvalidDatacenterIdException;
-use Snowflake\Exceptions\InvalidWorkerIdException;
-use Snowflake\Snowflake;
+use Erikwang2013\Snowflake\Exceptions\ClockDriftException;
+use Erikwang2013\Snowflake\Exceptions\InvalidDatacenterIdException;
+use Erikwang2013\Snowflake\Exceptions\InvalidWorkerIdException;
+use Erikwang2013\Snowflake\Snowflake;
 
 class SnowflakeTest extends TestCase
 {
@@ -214,5 +214,67 @@ class SnowflakeTest extends TestCase
         $parsed = $snowflake->parseId($id);
 
         $this->assertGreaterThanOrEqual($epoch, $parsed['timestamp_ms']);
+    }
+
+    public function testFromConfigThrowsOnNonexistentResolverClass(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('must exist and implement');
+
+        Snowflake::fromConfig([
+            'sequence_resolver' => 'Some\\Nonexistent\\Class',
+        ]);
+    }
+
+    public function testFromConfigThrowsOnResolverNotImplementingInterface(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('must exist and implement');
+
+        Snowflake::fromConfig([
+            'sequence_resolver' => \stdClass::class,
+        ]);
+    }
+
+    public function testClockDriftExceptionIsThrown(): void
+    {
+        $snowflake = new Snowflake(clockToleranceMs: 0);
+
+        // Use reflection to force lastTimestamp into the future,
+        // simulating a backward clock jump.
+        $ref = new \ReflectionProperty(Snowflake::class, 'lastTimestamp');
+        $ref->setAccessible(true);
+        $ref->setValue($snowflake, PHP_INT_MAX);
+
+        $this->expectException(ClockDriftException::class);
+        $snowflake->id();
+    }
+
+    public function testClockDriftWithinToleranceDoesNotThrow(): void
+    {
+        $snowflake = new Snowflake(clockToleranceMs: 60_000);
+
+        $now = (int) (microtime(true) * 1000);
+        $ref = new \ReflectionProperty(Snowflake::class, 'lastTimestamp');
+        $ref->setAccessible(true);
+        $ref->setValue($snowflake, $now + 1000); // 1 second ahead
+
+        // Should not throw — 1s drift is within the 60s tolerance.
+        $id = $snowflake->id();
+        $this->assertGreaterThan(0, $id);
+    }
+
+    public function testMultiInstanceIdsAreUnique(): void
+    {
+        $a = new Snowflake(workerId: 0, datacenterId: 0);
+        $b = new Snowflake(workerId: 1, datacenterId: 0);
+
+        $ids = [];
+        for ($i = 0; $i < 5000; $i++) {
+            $ids[] = $a->id();
+            $ids[] = $b->id();
+        }
+
+        $this->assertCount(10000, array_unique($ids));
     }
 }

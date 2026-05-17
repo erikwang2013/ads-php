@@ -528,6 +528,86 @@
             "install-path": "../erikwang2013/jwt-webman"
         },
         {
+            "name": "erikwang2013/poster-php",
+            "version": "v1.0.1",
+            "version_normalized": "1.0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/erikwang2013/poster-php.git",
+                "reference": "91fe98fee782f22a467e190d56dd698df66fae8d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/erikwang2013/poster-php/zipball/91fe98fee782f22a467e190d56dd698df66fae8d",
+                "reference": "91fe98fee782f22a467e190d56dd698df66fae8d",
+                "shasum": ""
+            },
+            "require": {
+                "ext-gd": "*",
+                "ext-mbstring": "*",
+                "php": ">=8.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.0 || ^10.0 || ^11.0"
+            },
+            "suggest": {
+                "ext-imagick": "For ImageMagick image driver (more features, better performance)",
+                "ext-redis": "For Redis captcha storage (distributed deployments)"
+            },
+            "time": "2026-05-17T08:50:24+00:00",
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Erikwang2013\\Poster\\Adapters\\Laravel\\CaptchaServiceProvider",
+                        "Erikwang2013\\Poster\\Adapters\\Laravel\\PosterServiceProvider"
+                    ]
+                },
+                "thinkphp": {
+                    "services": [
+                        "Erikwang2013\\Poster\\Adapters\\ThinkPHP\\CaptchaService",
+                        "Erikwang2013\\Poster\\Adapters\\ThinkPHP\\PosterService"
+                    ]
+                }
+            },
+            "installation-source": "dist",
+            "autoload": {
+                "files": [
+                    "helpers.php"
+                ],
+                "psr-4": {
+                    "Erikwang2013\\Poster\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "erik",
+                    "email": "erik@erik.xyz",
+                    "homepage": "https://erik.xyz"
+                }
+            ],
+            "description": "PHP captcha (click/rotate/slider) and poster generation — framework-agnostic with adapters for Laravel, ThinkPHP, Webman, Hyperf.",
+            "keywords": [
+                "captcha",
+                "hyperf",
+                "image",
+                "laravel",
+                "poster",
+                "qr-code",
+                "thinkphp",
+                "webman"
+            ],
+            "support": {
+                "issues": "https://github.com/erikwang2013/poster-php/issues",
+                "source": "https://github.com/erikwang2013/poster-php/tree/v1.0.1"
+            },
+            "install-path": "../erikwang2013/poster-php"
+        },
+        {
             "name": "erikwang2013/season",
             "version": "v1.0.3",
             "version_normalized": "1.0.3.0",
@@ -613,17 +693,17 @@
         },
         {
             "name": "erikwang2013/snowflake-php",
-            "version": "v1.0.3",
-            "version_normalized": "1.0.3.0",
+            "version": "v1.0.4",
+            "version_normalized": "1.0.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/erikwang2013/snowflake-php.git",
-                "reference": "326efa2d62d1fdea455a5ee0b5b9bc180078e2a2"
+                "reference": "be7e55a2d7732a17befabbfba03bba827c754a3f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/erikwang2013/snowflake-php/zipball/326efa2d62d1fdea455a5ee0b5b9bc180078e2a2",
-                "reference": "326efa2d62d1fdea455a5ee0b5b9bc180078e2a2",
+                "url": "https://api.github.com/repos/erikwang2013/snowflake-php/zipball/be7e55a2d7732a17befabbfba03bba827c754a3f",
+                "reference": "be7e55a2d7732a17befabbfba03bba827c754a3f",
                 "shasum": ""
             },
             "require": {
@@ -638,25 +718,25 @@
                 "topthink/framework": "For ThinkPHP 6+ integration",
                 "workerman/webman-framework": "For Webman integration"
             },
-            "time": "2026-05-14T13:30:26+00:00",
+            "time": "2026-05-17T10:52:39+00:00",
             "type": "library",
             "extra": {
                 "hyperf": {
-                    "config": "Snowflake\\Adapters\\Hyperf\\ConfigProvider"
+                    "config": "Erikwang2013\\Snowflake\\Adapters\\Hyperf\\ConfigProvider"
                 },
                 "laravel": {
                     "aliases": {
-                        "Snowflake": "Snowflake\\Adapters\\Laravel\\Facade"
+                        "Snowflake": "Erikwang2013\\Snowflake\\Adapters\\Laravel\\Facade"
                     },
                     "providers": [
-                        "Snowflake\\Adapters\\Laravel\\ServiceProvider"
+                        "Erikwang2013\\Snowflake\\Adapters\\Laravel\\ServiceProvider"
                     ]
                 }
             },
             "installation-source": "dist",
             "autoload": {
                 "psr-4": {
-                    "Snowflake\\": "src/"
+                    "Erikwang2013\\Snowflake\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -680,7 +760,7 @@
             "support": {
                 "email": "erik@erik.xyz",
                 "issues": "https://github.com/erikwang2013/snowflake-php/issues",
-                "source": "https://github.com/erikwang2013/snowflake-php/tree/v1.0.3"
+                "source": "https://github.com/erikwang2013/snowflake-php/tree/v1.0.4"
             },
             "install-path": "../erikwang2013/snowflake-php"
         },

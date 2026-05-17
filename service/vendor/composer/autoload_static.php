@@ -34,6 +34,7 @@ class ComposerStaticInit74b604ff567f5e4e1d20b34355289ade
         'e39a8b23c42d4e1452234d762b03835a' => __DIR__ . '/..' . '/ramsey/uuid/src/functions.php',
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
         'd2136ff22b54ac75cd96a40e0022218e' => __DIR__ . '/..' . '/workerman/webman-framework/src/support/helpers.php',
+        'd1e6f78cc9c78467ea1153b97160bd90' => __DIR__ . '/..' . '/erikwang2013/poster-php/helpers.php',
         '7f32199f264e2b121084d959b3d0d3b6' => __DIR__ . '/..' . '/erikwang2013/season/src/helpers.php',
         'c5bbb99cef388ad73769828ea44fba58' => __DIR__ . '/..' . '/erikwang2013/webman-scout/helpers.php',
         'ec07570ca5a812141189b1fa81503674' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Assert/Functions.php',
@@ -109,7 +110,6 @@ class ComposerStaticInit74b604ff567f5e4e1d20b34355289ade
             'Support\\Exception\\' => 18,
             'Support\\Bootstrap\\' => 18,
             'Support\\' => 8,
-            'Snowflake\\' => 10,
         ),
         'R' => 
         array (
@@ -177,6 +177,8 @@ class ComposerStaticInit74b604ff567f5e4e1d20b34355289ade
         'E' => 
         array (
             'Erikwang2013\\WebmanScout\\' => 25,
+            'Erikwang2013\\Snowflake\\' => 23,
+            'Erikwang2013\\Poster\\' => 20,
             'Erikwang2013\\Hashids\\' => 21,
             'Erikwang2013\\Encryption\\' => 24,
             'ErikJwt\\' => 8,
@@ -386,10 +388,6 @@ class ComposerStaticInit74b604ff567f5e4e1d20b34355289ade
         array (
             0 => __DIR__ . '/..' . '/workerman/webman-framework/src/support',
         ),
-        'Snowflake\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/erikwang2013/snowflake-php/src',
-        ),
         'Ramsey\\Uuid\\' => 
         array (
             0 => __DIR__ . '/..' . '/ramsey/uuid/src',
@@ -553,6 +551,14 @@ class ComposerStaticInit74b604ff567f5e4e1d20b34355289ade
         'Erikwang2013\\WebmanScout\\' => 
         array (
             0 => __DIR__ . '/..' . '/erikwang2013/webman-scout/src',
+        ),
+        'Erikwang2013\\Snowflake\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/erikwang2013/snowflake-php/src',
+        ),
+        'Erikwang2013\\Poster\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/erikwang2013/poster-php/src',
         ),
         'Erikwang2013\\Hashids\\' => 
         array (

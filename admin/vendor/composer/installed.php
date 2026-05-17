@@ -3,7 +3,7 @@
         'name' => 'ads/admin',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '248e73c0fa741d79951138e40136f7222e8c323a',
+        'reference' => 'ac5058a6f53b5c6bc0319a42e29d2442d1d469ab',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'ads/admin' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '248e73c0fa741d79951138e40136f7222e8c323a',
+            'reference' => 'ac5058a6f53b5c6bc0319a42e29d2442d1d469ab',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

@@ -6,9 +6,9 @@ declare(strict_types=1);
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
  */
 
-namespace Snowflake\Resolvers;
+namespace Erikwang2013\Snowflake\Resolvers;
 
-use Snowflake\Contracts\SequenceResolver;
+use Erikwang2013\Snowflake\Contracts\SequenceResolver;
 
 /**
  * Classic Snowflake behavior: sequence starts at 0 each millisecond

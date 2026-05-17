@@ -10,7 +10,7 @@ return array(
     'support\\' => array($vendorDir . '/webman/database/src/support', $vendorDir . '/workerman/webman-framework/src/support'),
     'admin\\' => array($baseDir . '/app'),
     'Workerman\\Coroutine\\' => array($vendorDir . '/workerman/coroutine/src'),
-    'Workerman\\' => array($vendorDir . '/workerman/coroutine/src', $vendorDir . '/workerman/workerman/src'),
+    'Workerman\\' => array($vendorDir . '/workerman/workerman/src', $vendorDir . '/workerman/coroutine/src'),
     'Webman\\Event\\' => array($vendorDir . '/webman/event/src'),
     'Webman\\Database\\' => array($vendorDir . '/webman/database/src'),
     'Webman\\Captcha\\' => array($vendorDir . '/webman/captcha/src'),

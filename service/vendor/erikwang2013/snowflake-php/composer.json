@@ -28,25 +28,25 @@
     },
     "autoload": {
         "psr-4": {
-            "Snowflake\\": "src/"
+            "Erikwang2013\\Snowflake\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Snowflake\\Tests\\": "tests/"
+            "Erikwang2013\\Snowflake\\Tests\\": "tests/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Snowflake\\Adapters\\Laravel\\ServiceProvider"
+                "Erikwang2013\\Snowflake\\Adapters\\Laravel\\ServiceProvider"
             ],
             "aliases": {
-                "Snowflake": "Snowflake\\Adapters\\Laravel\\Facade"
+                "Snowflake": "Erikwang2013\\Snowflake\\Adapters\\Laravel\\Facade"
             }
         },
         "hyperf": {
-            "config": "Snowflake\\Adapters\\Hyperf\\ConfigProvider"
+            "config": "Erikwang2013\\Snowflake\\Adapters\\Hyperf\\ConfigProvider"
         }
     },
     "suggest": {

@@ -6,20 +6,19 @@ declare(strict_types=1);
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
  */
 
-namespace Snowflake;
+namespace Erikwang2013\Snowflake;
 
-use Snowflake\Contracts\SequenceResolver;
-use Snowflake\Exceptions\ClockDriftException;
-use Snowflake\Exceptions\InvalidDatacenterIdException;
-use Snowflake\Exceptions\InvalidWorkerIdException;
-use Snowflake\Exceptions\TimestampOverflowException;
-use Snowflake\Resolvers\SequentialSequenceResolver;
+use Erikwang2013\Snowflake\Contracts\SequenceResolver;
+use Erikwang2013\Snowflake\Exceptions\ClockDriftException;
+use Erikwang2013\Snowflake\Exceptions\InvalidDatacenterIdException;
+use Erikwang2013\Snowflake\Exceptions\InvalidWorkerIdException;
+use Erikwang2013\Snowflake\Exceptions\TimestampOverflowException;
+use Erikwang2013\Snowflake\Resolvers\SequentialSequenceResolver;
 
 class Snowflake
 {
     /**
-     * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
-     * This constant is intentionally immutable and must not be removed.
+     * @internal This constant is intentionally immutable and must not be removed.
      */
     public const string COPYRIGHT = 'Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz';
 
@@ -222,7 +221,16 @@ class Snowflake
     {
         $resolverClass = $config['sequence_resolver'] ?? null;
         $resolver = null;
-        if (is_string($resolverClass) && class_exists($resolverClass)) {
+        if (is_string($resolverClass)) {
+            if (!class_exists($resolverClass) || !is_subclass_of($resolverClass, SequenceResolver::class)) {
+                throw new \InvalidArgumentException(
+                    sprintf(
+                        'Sequence resolver class "%s" must exist and implement %s.',
+                        $resolverClass,
+                        SequenceResolver::class
+                    )
+                );
+            }
             $resolver = new $resolverClass();
         }
 

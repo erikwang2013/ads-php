@@ -165,8 +165,8 @@ class ComposerStaticInite848134c8c50a725013996ec26f405c8
         ),
         'Workerman\\' => 
         array (
-            0 => __DIR__ . '/..' . '/workerman/coroutine/src',
-            1 => __DIR__ . '/..' . '/workerman/workerman/src',
+            0 => __DIR__ . '/..' . '/workerman/workerman/src',
+            1 => __DIR__ . '/..' . '/workerman/coroutine/src',
         ),
         'Webman\\Event\\' => 
         array (

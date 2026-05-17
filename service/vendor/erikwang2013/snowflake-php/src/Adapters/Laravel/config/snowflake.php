@@ -58,7 +58,7 @@ return [
     | FQCN implementing Snowflake\Contracts\SequenceResolver.
     |
     */
-    'sequence_resolver' => \Snowflake\Resolvers\SequentialSequenceResolver::class,
+    'sequence_resolver' => \Erikwang2013\Snowflake\Resolvers\SequentialSequenceResolver::class,
 
     /*
     |--------------------------------------------------------------------------

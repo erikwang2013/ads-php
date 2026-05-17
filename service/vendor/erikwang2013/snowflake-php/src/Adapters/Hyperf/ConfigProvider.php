@@ -6,7 +6,7 @@ declare(strict_types=1);
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
  */
 
-namespace Snowflake\Adapters\Hyperf;
+namespace Erikwang2013\Snowflake\Adapters\Hyperf;
 
 class ConfigProvider
 {

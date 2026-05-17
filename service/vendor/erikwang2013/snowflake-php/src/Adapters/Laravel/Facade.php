@@ -6,7 +6,7 @@ declare(strict_types=1);
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
  */
 
-namespace Snowflake\Adapters\Laravel;
+namespace Erikwang2013\Snowflake\Adapters\Laravel;
 
 use Illuminate\Support\Facades\Facade as BaseFacade;
 
@@ -14,14 +14,14 @@ use Illuminate\Support\Facades\Facade as BaseFacade;
  * @method static int id()
  * @method static int nextId()
  * @method static array parseId(int $id)
- * @method static array parse(int $id, int $epoch = \Snowflake\Snowflake::DEFAULT_EPOCH)
+ * @method static array parse(int $id, int $epoch = \Erikwang2013\Snowflake\Snowflake::DEFAULT_EPOCH)
  *
- * @see \Snowflake\Snowflake
+ * @see \Erikwang2013\Snowflake\Snowflake
  */
 class Facade extends BaseFacade
 {
     protected static function getFacadeAccessor(): string
     {
-        return \Snowflake\Snowflake::class;
+        return \Erikwang2013\Snowflake\Snowflake::class;
     }
 }
