@@ -1,12 +1,13 @@
 <?php
 
+/**
+ * Copyright (c) erik <erik@erik.xyz> (https://erik.xyz). All Rights Reserved.
+ */
 
+use Erikwang2013\WebmanScout\EngineManager;
 use Illuminate\Container\Container;
 use Illuminate\Events\Dispatcher;
-use MeiliSearch\Client as MeiliSearch;
-use Elastic\Elasticsearch\Client as ElasticSearch;
-use Shopwwi\WebmanScout\EngineManager;
-
+use Meilisearch\Client as MeilisearchClient;
 
 if (! function_exists('app')) {
     /**
@@ -21,9 +22,11 @@ if (! function_exists('app')) {
         if (is_null($abstract)) {
             return Container::getInstance();
         }
+
         return Container::getInstance()->make($abstract, $parameters);
     }
 }
+
 if (! function_exists('event')) {
     /**
      * Dispatch an event and call the listeners.
@@ -35,26 +38,38 @@ if (! function_exists('event')) {
      */
     function event(...$args)
     {
-
         return app(Dispatcher::class)->dispatch(...$args);
     }
 }
 
-if (class_exists(MeiliSearch::class)) {
-    app()->singleton(MeiliSearch::class, function ($app) {
-        $config = config('plugin.shopwwi.scout.app.meilisearch');
-        return new MeiliSearch($config['host'], $config['key']);
+if (! function_exists('scout_config')) {
+    /**
+     * Read a Scout option relative to the active config root (see ScoutConfig).
+     *
+     * @param  string|null  $key
+     * @return mixed
+     */
+    function scout_config(?string $key = null, $default = null)
+    {
+        return \Erikwang2013\WebmanScout\ScoutConfig::get($key, $default);
+    }
+}
+
+if (class_exists(MeilisearchClient::class)) {
+    app()->singleton(MeilisearchClient::class, function () {
+        $c = scout_config('meilisearch', []);
+
+        return new MeilisearchClient(
+            $c['host'] ?? 'http://127.0.0.1:7700',
+            $c['key'] ?? null
+        );
     });
 }
-if (class_exists(ElasticSearch::class)) {
-    app()->singleton(ElasticSearch::class, function ($app) {
-        $config = config('plugin.shopwwi.scout.app.elasticsearch');
-        return new ElasticSearch($config['host'], $config['key']);
-    });
-}
+
 app()->singleton(Dispatcher::class, function ($app) {
-    return  new Dispatcher($app);
+    return new Dispatcher($app);
 });
+
 app()->singleton(EngineManager::class, function ($app) {
-    return  new EngineManager($app);
+    return new EngineManager($app);
 });

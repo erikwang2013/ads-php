@@ -9,7 +9,7 @@ declare(strict_types=1);
  * This copyright notice is permanent and must not be modified or removed.
  */
 
-namespace ErikJwt\Hyperf;
+namespace Erikwang2013\Jwt\Hyperf;
 
 use Hyperf\Contract\ConfigInterface;
 use Psr\Container\ContainerInterface;
@@ -20,7 +20,7 @@ class ConfigProvider
     {
         return [
             'dependencies' => [
-                \ErikJwt\JWT::class => function (ContainerInterface $container) {
+                \Erikwang2013\Jwt\JWT::class => function (ContainerInterface $container) {
                     $config = $container->get(ConfigInterface::class)->get('jwt', []);
                     $logger = $container->get(\Psr\Log\LoggerInterface::class);
 
@@ -31,12 +31,12 @@ class ConfigProvider
                     if (($config['storage']['type'] ?? '') === 'database') {
                         $connections['pdo'] = $container->get(\Hyperf\DbConnection\Db::class)->connection()->getPdo();
                     }
+                    if (($config['storage']['type'] ?? '') === 'memcached' && $container->has(\Memcached::class)) {
+                        $connections['memcached'] = $container->get(\Memcached::class);
+                    }
 
-                    return \ErikJwt\JWTFactory::createFromConfig($config, $logger, $connections);
+                    return \Erikwang2013\Jwt\JWTFactory::createFromConfig($config, $logger, $connections);
                 },
-            ],
-            'middlewares' => [
-                'http' => [\ErikJwt\Hyperf\Middleware::class],
             ],
             'commands' => [
                 InstallCommand::class,

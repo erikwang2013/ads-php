@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
  */
 
-namespace Maize\Encryptable\Support;
+namespace Erikwang2013\Encryptable\Support;
 
 /**
  * Composer 包名对应的「插件式」配置路径（与 Webman 官方 {@code config/plugin/{vendor}/{name}/} 一致；

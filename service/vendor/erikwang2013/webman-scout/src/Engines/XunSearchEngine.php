@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Copyright (c) erik <erik@erik.xyz> (https://erik.xyz). All Rights Reserved.
+ */
+
 namespace Erikwang2013\WebmanScout\Engines;
 
 use Erikwang2013\WebmanScout\Builder;
@@ -87,7 +91,7 @@ class XunSearchEngine extends Engine
         }
 
         // 刷新索引（可选，根据性能需求调整）
-        if (config('plugin.erikwang2013.webman-scout.app.xunsearch.auto_flush', true)) {
+        if (scout_config('xunsearch.auto_flush', true)) {
             $index->flushIndex();
         }
     }

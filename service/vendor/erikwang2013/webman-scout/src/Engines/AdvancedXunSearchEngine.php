@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Copyright (c) erik <erik@erik.xyz> (https://erik.xyz). All Rights Reserved.
+ */
+
 namespace Erikwang2013\WebmanScout\Engines;
 
 use Erikwang2013\WebmanScout\Builder as AdvancedScoutBuilder;
@@ -26,8 +30,8 @@ class AdvancedXunSearchEngine extends XunSearchEngine
     {
         // 检查缓存
         $cacheKey = $this->getCacheKey($builder);
-        $cacheEnabled = $builder->options['cache'] ?? config('plugin.erikwang2013.webman-scout.app.xunsearch.cache.enabled', true);
-        $cacheTtl = $builder->options['cache_ttl'] ?? config('plugin.erikwang2013.webman-scout.app.xunsearch.cache.ttl', 300);
+        $cacheEnabled = $builder->options['cache'] ?? scout_config('xunsearch.cache.enabled', true);
+        $cacheTtl = $builder->options['cache_ttl'] ?? scout_config('xunsearch.cache.ttl', 300);
         
         if ($cacheEnabled && $cached = $this->getAdvancedSearchCache($cacheKey)) {
             Log::debug('Advanced XunSearch cache hit', ['key' => $cacheKey]);
@@ -315,12 +319,12 @@ class AdvancedXunSearchEngine extends XunSearchEngine
     protected function applySearchOptions(\XSSearch $search, AdvancedScoutBuilder $builder): void
     {
         // 设置模糊搜索
-        if ($builder->options['fuzzy'] ?? config('plugin.erikwang2013.webman-scout.app.xunsearch.search.fuzzy', true)) {
+        if ($builder->options['fuzzy'] ?? scout_config('xunsearch.search.fuzzy', true)) {
             $search->setFuzzy(true);
         }
 
         // 设置自动同义词
-        if ($builder->options['auto_synonym'] ?? config('plugin.erikwang2013.webman-scout.app.xunsearch.search.auto_synonym', true)) {
+        if ($builder->options['auto_synonym'] ?? scout_config('xunsearch.search.auto_synonym', true)) {
             if (method_exists($search, 'setAutoSynonyms')) {
                 $search->setAutoSynonyms();
             }
@@ -625,7 +629,7 @@ class AdvancedXunSearchEngine extends XunSearchEngine
      */
     protected function getAdvancedSearchCache(string $key)
     {
-        $store = config('plugin.erikwang2013.webman-scout.app.xunsearch.cache.store', 'file');
+        $store = scout_config('xunsearch.cache.store', 'file');
         return Cache::store($store)->get($key);
     }
 
@@ -634,7 +638,7 @@ class AdvancedXunSearchEngine extends XunSearchEngine
      */
     protected function setAdvancedSearchCache(string $key, array $data, int $ttl): void
     {
-        $store = config('plugin.erikwang2013.webman-scout.app.xunsearch.cache.store', 'file');
+        $store = scout_config('xunsearch.cache.store', 'file');
         Cache::store($store)->put($key, $data, $ttl);
     }
 

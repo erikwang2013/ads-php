@@ -9,10 +9,10 @@ declare(strict_types=1);
  * This copyright notice is permanent and must not be modified or removed.
  */
 
-namespace ErikJwt\Hyperf;
+namespace Erikwang2013\Jwt\Hyperf;
 
-use ErikJwt\JWT as JWTInstance;
-use ErikJwt\JWTException;
+use Erikwang2013\Jwt\JWT as JWTInstance;
+use Erikwang2013\Jwt\JWTException;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\HttpServer\Contract\ResponseInterface as HttpResponseInterface;
 use Psr\Http\Message\ResponseInterface;

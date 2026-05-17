@@ -9,9 +9,9 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use ErikJwt\Config;
-use ErikJwt\JWTFactory;
-use ErikJwt\JWTException;
+use Erikwang2013\Jwt\Config;
+use Erikwang2013\Jwt\JWTFactory;
+use Erikwang2013\Jwt\JWTException;
 
 // Framework-agnostic example
 $config = [

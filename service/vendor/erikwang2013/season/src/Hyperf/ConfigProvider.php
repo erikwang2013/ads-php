@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace CountrySeason\Hyperf;
+namespace Erikwang2013\Season\Hyperf;
 
-use CountrySeason\SeasonService;
+use Erikwang2013\Season\SeasonService;
 use Hyperf\Contract\ConfigInterface;
 use Psr\Container\ContainerInterface;
 

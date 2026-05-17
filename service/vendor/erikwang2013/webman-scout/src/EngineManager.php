@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Copyright (c) erik <erik@erik.xyz> (https://erik.xyz). All Rights Reserved.
+ */
+
 namespace Erikwang2013\WebmanScout;
 
 use Algolia\AlgoliaSearch\Algolia;
@@ -64,9 +68,9 @@ class EngineManager extends Manager
         Algolia3UserAgent::addCustomUserAgent('Laravel Scout', Scout::VERSION); // @phpstan-ignore class.notFound
 
         return Algolia3Engine::make(
-            config: config('plugin.erikwang2013.webman-scout.app.algolia'),
+            config: scout_config('algolia'),
             headers: $this->defaultAlgoliaHeaders(),
-            softDelete: config('plugin.erikwang2013.webman-scout.app.soft_delete')
+            softDelete: scout_config('soft_delete')
         );
     }
 
@@ -80,9 +84,9 @@ class EngineManager extends Manager
         Algolia4UserAgent::addAlgoliaAgent('Laravel Scout', 'Laravel Scout', Scout::VERSION);
 
         return Algolia4Engine::make(
-            config: config('plugin.erikwang2013.webman-scout.app.algolia'),
+            config: scout_config('algolia'),
             headers: $this->defaultAlgoliaHeaders(),
-            softDelete: config('plugin.erikwang2013.webman-scout.app.soft_delete')
+            softDelete: scout_config('soft_delete')
         );
     }
 
@@ -109,7 +113,7 @@ class EngineManager extends Manager
      */
     protected function defaultAlgoliaHeaders()
     {
-        if (! config('plugin.erikwang2013.webman-scout.app.identify')) {
+        if (! scout_config('identify')) {
             return [];
         }
 
@@ -144,7 +148,7 @@ class EngineManager extends Manager
 
         return new MeilisearchEngine(
             $this->container->make(MeilisearchClient::class),
-            config('plugin.erikwang2013.webman-scout.app.soft_delete', false)
+            scout_config('soft_delete', false)
         );
     }
 
@@ -171,7 +175,7 @@ class EngineManager extends Manager
      */
     public function createElasticsearchDriver()
     {
-        $config = config('plugin.erikwang2013.webman-scout.app.elasticsearch');
+        $config = scout_config('elasticsearch');
 
         $this->ensureElasticSearchClientIsInstalled();
         $clientBuilder = ClientBuilder::create()->setHosts($config['hosts'] ?? ['http://127.0.0.1:9200']);
@@ -193,7 +197,7 @@ class EngineManager extends Manager
 
         return new ElasticSearchEngine(
             $clientBuilder->build(),
-            config('plugin.erikwang2013.webman-scout.app.soft_delete', false)
+            scout_config('soft_delete', false)
         );
     }
 
@@ -215,7 +219,7 @@ class EngineManager extends Manager
 
     public function createOpensearchDriver()
     {
-        $config = config('plugin.erikwang2013.webman-scout.app.opensearch');
+        $config = scout_config('opensearch');
         // 构建客户端
         $handlerStack = HandlerStack::create(new CurlHandler());
         $clientFactory = new GuzzleClientFactory();
@@ -245,7 +249,7 @@ class EngineManager extends Manager
         }
         return new OpenSearchEngine(
             $clientFactory->create($setConfig),
-            config('plugin.erikwang2013.webman-scout.app.soft_delete', false)
+            scout_config('soft_delete', false)
         );
     }
 
@@ -277,7 +281,7 @@ class EngineManager extends Manager
         $this->ensureXunSearchClientIsInstalled();
         return new XunSearchEngine(
             new XunSearchClient(),
-            config('plugin.erikwang2013.webman-scout.app.soft_delete', false)
+            scout_config('soft_delete', false)
         );
     }
 
@@ -305,7 +309,7 @@ class EngineManager extends Manager
      */
     public function createTypesenseDriver()
     {
-        $config = config('plugin.erikwang2013.webman-scout.app.typesense');
+        $config = scout_config('typesense');
         $this->ensureTypesenseClientIsInstalled();
 
         return new TypesenseEngine(new Typesense($config['client-settings']), $config['max_total_results'] ?? 1000);
@@ -374,7 +378,7 @@ class EngineManager extends Manager
      */
     public function getDefaultDriver()
     {
-        $driver = config('plugin.erikwang2013.webman-scout.app.driver');
+        $driver = scout_config('driver');
         if ($driver === null) {
             return 'null';
         }

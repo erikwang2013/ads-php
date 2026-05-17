@@ -2,17 +2,29 @@
 
 declare(strict_types=1);
 
-namespace CountrySeason;
+namespace Erikwang2013\Season;
 
 use DateTimeInterface;
 
 /**
  * Season service for dependency injection in webman / Laravel / ThinkPHP / Hyperf containers.
+ *
+ * @method string getSeason(string $countryCode, ?DateTimeInterface $date = null)
+ * @method string getSeasonNameZh(string $countryCode, ?DateTimeInterface $date = null)
+ * @method string getCountryFlagEmoji(string $countryCode)
+ * @method string getSeasonNameLocalized(string $countryCode, string $locale, ?DateTimeInterface $date = null)
+ * @method string|null getSeasonForDefault(?DateTimeInterface $date = null)
+ * @method string getHemisphere(string $countryCode)
+ * @method bool isValidCode(string $countryCode)
+ * @method list<string> getSupportedLocales()
  */
 class SeasonService
 {
     private ?string $defaultCountryCode = null;
 
+    /**
+     * @param string|null $defaultCountryCode ISO 3166-1 alpha-2 code; null or empty string means no default
+     */
     public function __construct(?string $defaultCountryCode = null)
     {
         $this->setDefaultCountryCode($defaultCountryCode);

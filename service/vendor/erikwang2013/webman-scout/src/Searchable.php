@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Copyright (c) erik <erik@erik.xyz> (https://erik.xyz). All Rights Reserved.
+ */
+
 namespace Erikwang2013\WebmanScout;
 
 
@@ -68,7 +72,7 @@ trait Searchable
             return;
         }
 
-        if (! config('plugin.erikwang2013.webman-scout.app.queue')) {
+        if (! scout_config('queue')) {
             return $this->syncMakeSearchable($models);
         }
 
@@ -104,7 +108,7 @@ trait Searchable
             return;
         }
 
-        if (! config('plugin.erikwang2013.webman-scout.app.queue')) {
+        if (! scout_config('queue')) {
             return $this->syncRemoveFromSearch($models);
         }
 
@@ -162,7 +166,7 @@ trait Searchable
             'model' => new static,
             'query' => $query,
             'callback' => $callback,
-            'softDelete' => static::usesSoftDelete() && config('plugin.erikwang2013.webman-scout.app.soft_delete', false),
+            'softDelete' => static::usesSoftDelete() && scout_config('soft_delete', false),
         ]);
     }
 
@@ -186,7 +190,7 @@ trait Searchable
     {
         $self = new static;
 
-        $softDelete = static::usesSoftDelete() && config('plugin.erikwang2013.webman-scout.app.soft_delete', false);
+        $softDelete = static::usesSoftDelete() && scout_config('soft_delete', false);
 
         return $self->newQuery()
             ->when(true, function ($query) use ($self) {
@@ -323,9 +327,9 @@ trait Searchable
             call_user_func($builder->queryCallback, $query);
         }
 
-        $whereIn = in_array($this->getScoutKeyType(), ['int', 'integer']) ?
-            'whereIntegerInRaw' :
-            'whereIn';
+        $useIntegerRaw = in_array($this->getScoutKeyType(), ['int', 'integer'])
+            && method_exists($query, 'whereIntegerInRaw');
+        $whereIn = $useIntegerRaw ? 'whereIntegerInRaw' : 'whereIn';
 
         return $query->{$whereIn}(
             $this->qualifyColumn($this->getScoutKeyName()), $ids
@@ -376,7 +380,7 @@ trait Searchable
      */
     public function searchableAs()
     {
-        return config('plugin.erikwang2013.webman-scout.app.prefix').$this->getTable();
+        return scout_config('prefix').$this->getTable();
     }
 
     /**
@@ -416,7 +420,7 @@ trait Searchable
      */
     public function syncWithSearchUsing()
     {
-        return config('plugin.erikwang2013.webman-scout.app.queue.connection') ?: config('queue.default');
+        return scout_config('queue.connection') ?: config('queue.default');
     }
 
     /**
@@ -426,7 +430,7 @@ trait Searchable
      */
     public function syncWithSearchUsingQueue()
     {
-        return config('plugin.erikwang2013.webman-scout.app.queue.queue');
+        return scout_config('queue.queue');
     }
 
     /**

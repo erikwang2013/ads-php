@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use CountrySeason\CountrySeason;
+use Erikwang2013\Season\CountrySeason;
 
 if (!function_exists('country_season')) {
     /**

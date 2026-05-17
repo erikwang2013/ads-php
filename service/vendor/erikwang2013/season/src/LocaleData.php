@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace CountrySeason;
+namespace Erikwang2013\Season;
 
 class LocaleData
 {
@@ -39,7 +39,7 @@ class LocaleData
             CountrySeason::SEASON_WINTER => 'Winter',
         ],
         'fr' => [
-            CountrySeason::SEASON_SPRING => 'Printemps',
+            CountrySeason::SEASON_SPRING => 'printemps',
             CountrySeason::SEASON_SUMMER => 'Été',
             CountrySeason::SEASON_AUTUMN => 'Automne',
             CountrySeason::SEASON_WINTER => 'Hiver',

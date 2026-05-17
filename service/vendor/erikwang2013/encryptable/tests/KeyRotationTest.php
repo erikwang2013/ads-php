@@ -6,12 +6,12 @@
 
 declare(strict_types=1);
 
-namespace Maize\Encryptable\Tests;
+namespace Erikwang2013\Encryptable\Tests;
 
-use Maize\Encryptable\Contracts\EncryptableConfigContract;
-use Maize\Encryptable\Encryption;
-use Maize\Encryptable\PHPEncrypter;
-use Maize\Encryptable\Support\PreviousKeysParser;
+use Erikwang2013\Encryptable\Contracts\EncryptableConfigContract;
+use Erikwang2013\Encryptable\Encryption;
+use Erikwang2013\Encryptable\PHPEncrypter;
+use Erikwang2013\Encryptable\Support\PreviousKeysParser;
 use PHPUnit\Framework\TestCase;
 
 final class KeyRotationTest extends TestCase

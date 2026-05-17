@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace CountrySeason;
+namespace Erikwang2013\Season;
 
 /**
  * Webman 插件安装/卸载
@@ -37,7 +37,7 @@ class Install
             $destFull = $base . '/' . $dest;
             $parent = \dirname($destFull);
             if (!\is_dir($parent)) {
-                \mkdir($parent, 0777, true);
+                \mkdir($parent, 0755, true);
             }
             copy_dir($sourceDir, $destFull);
         }

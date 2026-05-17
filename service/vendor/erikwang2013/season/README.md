@@ -25,7 +25,7 @@ Or manually copy `vendor/erikwang2013/season/src/config/plugin/erikwang2013/seas
 
 ## Laravel 7–11
 
-After `composer require`, unless you disable this package’s **package discovery** in `composer.json`, **`CountrySeason\Laravel\CountrySeasonServiceProvider`** is auto-registered and **`SeasonService`** is bound to the container (default country code comes from merged config).
+After `composer require`, unless you disable this package’s **package discovery** in `composer.json`, **`Erikwang2013\Season\Laravel\CountrySeasonServiceProvider`** is auto-registered and **`SeasonService`** is bound to the container (default country code comes from merged config).
 
 Optional: publish default config:
 
@@ -33,11 +33,11 @@ Optional: publish default config:
 php artisan vendor:publish --tag=country-season-config
 ```
 
-This creates `config/country_season.php`; `default_country_code` maps to **`COUNTRY_SEASON_DEFAULT`** (default `CN`). Inject `CountrySeason\SeasonService` in controllers or services.
+This creates `config/country_season.php`; `default_country_code` maps to **`COUNTRY_SEASON_DEFAULT`** (default `CN`). Inject `Erikwang2013\Season\SeasonService` in controllers or services.
 
 ## ThinkPHP 6 / 8
 
-Composer’s **think extension** discovery registers `CountrySeason\ThinkPHP\Service`, binds **`SeasonService`**, and merges the package `config/country_season.php` into **`country_season`**. Resolve `CountrySeason\SeasonService` from the container or use dependency injection.
+Composer’s **think extension** discovery registers `Erikwang2013\Season\ThinkPHP\Service`, binds **`SeasonService`**, and merges the package `config/country_season.php` into **`country_season`**. Resolve `Erikwang2013\Season\SeasonService` from the container or use dependency injection.
 
 ## Hyperf 2 / 3
 
@@ -56,7 +56,7 @@ After `config/autoload/country_season.php` exists, adjust as needed; otherwise b
 ### 1. Static API (any PHP project)
 
 ```php
-use CountrySeason\CountrySeason;
+use Erikwang2013\Season\CountrySeason;
 
 // English keys: spring | summer | autumn | winter
 $season = CountrySeason::getSeason('CN');        // e.g. winter
@@ -128,7 +128,7 @@ After integration, container **`SeasonService`** uses framework config (**`count
 Register once (e.g. in `config/bootstrap.php`), then resolve from the container:
 
 ```php
-use CountrySeason\SeasonService;
+use Erikwang2013\Season\SeasonService;
 use support\Container;
 
 Container::singleton(SeasonService::class, function () {
@@ -140,7 +140,7 @@ Container::singleton(SeasonService::class, function () {
 
 ```php
 use support\Container;
-use CountrySeason\SeasonService;
+use Erikwang2013\Season\SeasonService;
 
 /** @var SeasonService $seasonService */
 $seasonService = Container::get(SeasonService::class);
@@ -208,7 +208,7 @@ composer test
 
 ## Requirements
 
-- PHP >= 8.0
+- PHP >= 8.1
 - **mbstring** extension (flag emoji uses `mb_chr`)
 - Optional: `workerman/webman-framework`, `illuminate/support`, `topthink/framework`, `hyperf/framework`
 

@@ -1,6 +1,8 @@
 <?php
 
-
+/**
+ * Copyright (c) erik <erik@erik.xyz> (https://erik.xyz). All Rights Reserved.
+ */
 
 return [
     'enable' => true,

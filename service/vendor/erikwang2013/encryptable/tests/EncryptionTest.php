@@ -6,14 +6,14 @@
 
 declare(strict_types=1);
 
-namespace Maize\Encryptable\Tests;
+namespace Erikwang2013\Encryptable\Tests;
 
-use Maize\Encryptable\Contracts\EncryptableConfigContract;
-use Maize\Encryptable\Encryption;
-use Maize\Encryptable\Exceptions\SerializationException;
-use Maize\Encryptable\PHPEncrypter;
-use Maize\Encryptable\Support\PreviousKeysParser;
-use Maize\Encryptable\Utils\Serializer;
+use Erikwang2013\Encryptable\Contracts\EncryptableConfigContract;
+use Erikwang2013\Encryptable\Encryption;
+use Erikwang2013\Encryptable\Exceptions\SerializationException;
+use Erikwang2013\Encryptable\PHPEncrypter;
+use Erikwang2013\Encryptable\Support\PreviousKeysParser;
+use Erikwang2013\Encryptable\Utils\Serializer;
 use PHPUnit\Framework\TestCase;
 
 final class EncryptionTest extends TestCase
@@ -141,7 +141,7 @@ final class EncryptionTest extends TestCase
 
     public function test_serializer_throws_on_malformed_payload(): void
     {
-        $this->expectException(\Maize\Encryptable\Exceptions\UnserializationException::class);
+        $this->expectException(\Erikwang2013\Encryptable\Exceptions\UnserializationException::class);
         Serializer::unserialize('no-colon');
     }
 
@@ -169,7 +169,7 @@ final class EncryptionTest extends TestCase
         $badConfig = new KeyRingTestConfig('', []);
         $encrypter = new PHPEncrypter($badConfig);
 
-        $this->expectException(\Maize\Encryptable\Exceptions\MissingEncryptionKeyException::class);
+        $this->expectException(\Erikwang2013\Encryptable\Exceptions\MissingEncryptionKeyException::class);
         $encrypter->encrypt('test');
     }
 

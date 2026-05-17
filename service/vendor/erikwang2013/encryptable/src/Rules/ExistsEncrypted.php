@@ -1,17 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
  */
 
-namespace Maize\Encryptable\Rules;
+namespace Erikwang2013\Encryptable\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\ForwardsCalls;
 use Illuminate\Validation\Rules\Exists;
-use Maize\Encryptable\Encryption;
+use Erikwang2013\Encryptable\Encryption;
 
 class ExistsEncrypted implements Rule
 {

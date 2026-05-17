@@ -1,17 +1,23 @@
 <?php
 
+/**
+ * Copyright (c) erik <erik@erik.xyz> (https://erik.xyz). All Rights Reserved.
+ */
+
 namespace Erikwang2013\WebmanScout\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Erikwang2013\WebmanScout\Exceptions\ScoutException;
+use Erikwang2013\WebmanScout\Concerns\ResolvesScoutModel;
 use Symfony\Component\Console\Input\InputOption;
 use Webman\RedisQueue\Redis as QueueRedis;
 
 class QueueImportCommand extends Command
 {
+    use ResolvesScoutModel;
+
     /**
      * The name and signature of the console command.
      *
@@ -42,11 +48,7 @@ class QueueImportCommand extends Command
      */
     public function execute(InputInterface $input, OutputInterface $output): int
     {
-        $class = $input->getArgument('model');
-
-        if (! class_exists($class) && ! class_exists($class = app()->getNamespace() . "Models\\{$class}")) {
-            throw new ScoutException("Model [{$class}] not found.");
-        }
+        $class = $this->resolveModelClass((string) $input->getArgument('model'));
 
         $model = new $class;
 
@@ -55,7 +57,7 @@ class QueueImportCommand extends Command
         $min = $input->getOption('min') ?? $query->min($model->getScoutKeyName());
         $max = $input->getOption('max') ?? $query->max($model->getScoutKeyName());
 
-        $chunk = max(1, (int) ($input->getOption('chunk') ?? config('plugin.erikwang2013.webman-scout.app.chunk.searchable', 500)));
+        $chunk = max(1, (int) ($input->getOption('chunk') ?? scout_config('chunk.searchable', 500)));
 
         if (! $min || ! $max) {
             $output->writeln('No records found for [' . $class . '].');

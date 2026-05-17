@@ -1,18 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
  */
 
-namespace Maize\Encryptable;
+namespace Erikwang2013\Encryptable;
 
-use Maize\Encryptable\Exceptions\DecryptException;
-use Maize\Encryptable\Exceptions\EncryptException;
-use Maize\Encryptable\Utils\Serializer;
+use Erikwang2013\Encryptable\Exceptions\DecryptException;
+use Erikwang2013\Encryptable\Exceptions\EncryptException;
+use Erikwang2013\Encryptable\Utils\Serializer;
 
 class PHPEncrypter extends Encrypter
 {
-    public function encrypt($value, bool $serialize = true): ?string
+    private const FORMAT_V1 = "\x01";
+    private const HMAC_ALGO = 'sha256';
+    private const HMAC_LENGTH = 32;
+
+    public function encrypt(mixed $value, bool $serialize = true): ?string
     {
         if (is_null($value)) {
             return null;
@@ -28,11 +34,27 @@ class PHPEncrypter extends Encrypter
 
         $value = $this->addDirtyBit($value);
 
-        $value = $this->openSSLEncrypt($value);
+        $cipher = $this->getEncryptionCipher();
+        $ivLength = openssl_cipher_iv_length($cipher);
+        $iv = $ivLength > 0 ? random_bytes($ivLength) : '';
 
-        $value = $this->base64Encode($value);
+        $ciphertext = openssl_encrypt(
+            $value,
+            $cipher,
+            $this->getEncryptionKey(),
+            OPENSSL_RAW_DATA,
+            $iv
+        );
 
-        return $value;
+        if ($ciphertext === false) {
+            throw new EncryptException(
+                'OpenSSL encryption failed: ' . (openssl_error_string() ?: 'unknown error')
+            );
+        }
+
+        $hmac = hash_hmac(self::HMAC_ALGO, $iv . $ciphertext, $this->getHmacKey(), true);
+
+        return $this->base64Encode(self::FORMAT_V1 . $iv . $ciphertext . $hmac);
     }
 
     public function decrypt(?string $payload, bool $unserialize = true): mixed
@@ -41,21 +63,29 @@ class PHPEncrypter extends Encrypter
             return null;
         }
 
-        if (! $this->isEncrypted($payload)) {
+        if (! is_string($payload)) {
             return $payload;
         }
 
-        $payload = $this->base64Decode($payload);
-
-        $payload = $this->openSSLDecrypt($payload);
-
-        $payload = $this->removeDirtyBit($payload);
-
-        if ($unserialize) {
-            $payload = Serializer::unserialize($payload);
+        try {
+            $decoded = $this->base64Decode($payload);
+        } catch (DecryptException) {
+            return $payload;
         }
 
-        return $payload;
+        $plain = $this->tryOpenSSLDecrypt($decoded);
+
+        if ($plain === null) {
+            return $payload;
+        }
+
+        $plain = $this->removeDirtyBit($plain);
+
+        if ($unserialize) {
+            $plain = Serializer::unserialize($plain);
+        }
+
+        return $plain;
     }
 
     /**
@@ -76,32 +106,67 @@ class PHPEncrypter extends Encrypter
         return $this->encrypt($plain, $serialize);
     }
 
-    public function isEncrypted($value): bool
+    public function isEncrypted(mixed $value): bool
     {
         if (! is_string($value)) {
             return false;
         }
 
+        try {
+            $decoded = $this->base64Decode($value);
+        } catch (DecryptException) {
+            return false;
+        }
+
+        return $this->tryOpenSSLDecrypt($decoded) !== null;
+    }
+
+    /**
+     * Attempt decryption with all keys in the ring. Returns plaintext on success, null on failure.
+     */
+    private function tryOpenSSLDecrypt(string $decoded): ?string
+    {
         $cipher = $this->getEncryptionCipher();
 
+        if (str_starts_with($decoded, self::FORMAT_V1)) {
+            return $this->tryDecryptV1($decoded, $cipher);
+        }
+
+        return $this->tryDecryptV0($decoded, $cipher);
+    }
+
+    private function tryDecryptV1(string $data, string $cipher): ?string
+    {
+        $ivLength = openssl_cipher_iv_length($cipher);
+        $iv = $ivLength > 0 ? substr($data, 1, $ivLength) : '';
+        $hmac = substr($data, -self::HMAC_LENGTH);
+        $ciphertext = substr($data, 1 + $ivLength, -self::HMAC_LENGTH);
+
         foreach ($this->getDecryptionKeyRing() as $key) {
-            try {
-                $decoded = $this->base64Decode($value);
-                $decrypted = openssl_decrypt(
-                    $decoded,
-                    $cipher,
-                    $key,
-                    OPENSSL_RAW_DATA
-                );
-                if ($decrypted !== false && str_starts_with($decrypted, self::DIRTY_BIT_KEY)) {
-                    return true;
-                }
-            } catch (\Throwable) {
+            $expectedHmac = hash_hmac(self::HMAC_ALGO, $iv . $ciphertext, self::deriveHmacKey($key), true);
+            if (! hash_equals($expectedHmac, $hmac)) {
                 continue;
+            }
+
+            $plain = openssl_decrypt($ciphertext, $cipher, $key, OPENSSL_RAW_DATA, $iv);
+            if ($plain !== false && str_starts_with($plain, self::DIRTY_BIT_KEY)) {
+                return $plain;
             }
         }
 
-        return false;
+        return null;
+    }
+
+    private function tryDecryptV0(string $data, string $cipher): ?string
+    {
+        foreach ($this->getDecryptionKeyRing() as $key) {
+            $plain = openssl_decrypt($data, $cipher, $key, OPENSSL_RAW_DATA);
+            if ($plain !== false && str_starts_with($plain, self::DIRTY_BIT_KEY)) {
+                return $plain;
+            }
+        }
+
+        return null;
     }
 
     protected function addDirtyBit(string $value): string
@@ -109,23 +174,7 @@ class PHPEncrypter extends Encrypter
         $prefix = self::DIRTY_BIT_KEY;
 
         if (! str_starts_with($value, $prefix)) {
-            return $prefix.$value;
-        }
-
-        return $value;
-    }
-
-    protected function openSSLEncrypt(string $value): string
-    {
-        $value = openssl_encrypt(
-            $value,
-            $this->getEncryptionCipher(),
-            $this->getEncryptionKey(),
-            OPENSSL_RAW_DATA
-        );
-
-        if ($value === false) {
-            throw new EncryptException('Could not encrypt the data.');
+            return $prefix . $value;
         }
 
         return $value;
@@ -133,51 +182,42 @@ class PHPEncrypter extends Encrypter
 
     protected function base64Encode(string $value): string
     {
-        $value = base64_encode($value);
+        $encoded = base64_encode($value);
 
-        if ($value === false) {
-            throw new EncryptException('Could not encrypt the data.');
+        if ($encoded === false) {
+            throw new EncryptException('Base64 encoding failed.');
         }
 
-        return $value;
+        return $encoded;
     }
 
     protected function base64Decode(string $payload): string
     {
-        $payload = base64_decode($payload, true);
+        $decoded = base64_decode($payload, true);
 
-        if ($payload === false) {
-            throw new DecryptException('Could not decrypt the data.');
+        if ($decoded === false) {
+            throw new DecryptException('Base64 decoding failed.');
         }
 
-        return $payload;
-    }
-
-    protected function openSSLDecrypt(string $payload): string
-    {
-        $cipher = $this->getEncryptionCipher();
-
-        foreach ($this->getDecryptionKeyRing() as $key) {
-            $decrypted = openssl_decrypt(
-                $payload,
-                $cipher,
-                $key,
-                OPENSSL_RAW_DATA
-            );
-            if ($decrypted !== false && str_starts_with($decrypted, self::DIRTY_BIT_KEY)) {
-                return $decrypted;
-            }
-        }
-
-        throw new DecryptException('Could not decrypt the data.');
+        return $decoded;
     }
 
     protected function removeDirtyBit(string $payload): string
     {
         if (! str_starts_with($payload, self::DIRTY_BIT_KEY)) {
-            throw new DecryptException('Could not decrypt the data.');
+            throw new DecryptException('Decryption failed: missing integrity marker.');
         }
 
         return substr($payload, strlen(self::DIRTY_BIT_KEY));
+    }
+
+    private function getHmacKey(): string
+    {
+        return self::deriveHmacKey($this->getEncryptionKey());
+    }
+
+    private static function deriveHmacKey(string $encryptionKey): string
+    {
+        return hash('sha256', $encryptionKey . ':hmac', true);
     }
 }

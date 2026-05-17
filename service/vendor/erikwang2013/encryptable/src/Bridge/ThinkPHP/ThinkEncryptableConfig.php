@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
  */
 
-namespace Maize\Encryptable\Bridge\ThinkPHP;
+namespace Erikwang2013\Encryptable\Bridge\ThinkPHP;
 
-use Maize\Encryptable\Contracts\EncryptableConfigContract;
-use Maize\Encryptable\Support\PreviousKeysParser;
+use Erikwang2013\Encryptable\Contracts\EncryptableConfigContract;
+use Erikwang2013\Encryptable\Support\PreviousKeysParser;
 use think\facade\Config;
 
 class ThinkEncryptableConfig implements EncryptableConfigContract
@@ -25,7 +27,7 @@ class ThinkEncryptableConfig implements EncryptableConfigContract
 
     public function getCipher(): ?string
     {
-        $cipher = Config::get('encryptable.cipher', 'aes-128-ecb');
+        $cipher = Config::get('encryptable.cipher', 'aes-256-gcm');
 
         if ($cipher === null || $cipher === '') {
             return null;

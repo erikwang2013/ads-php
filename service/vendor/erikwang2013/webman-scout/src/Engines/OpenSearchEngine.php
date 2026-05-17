@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Copyright (c) erik <erik@erik.xyz> (https://erik.xyz). All Rights Reserved.
+ */
+
 namespace Erikwang2013\WebmanScout\Engines;
 
 use Erikwang2013\WebmanScout\Builder;
@@ -505,7 +509,7 @@ class OpenSearchEngine extends Engine
                 $params['body'] = $options;
             } else {
                 // 尝试从配置加载
-                $config = config("plugin.erikwang2013.webman-scout.app.opensearch.indices.{$name}", []);
+                $config = scout_config("opensearch.indices.{$name}", []);
                 if (!empty($config)) {
                     $params['body'] = $config;
                 } else {

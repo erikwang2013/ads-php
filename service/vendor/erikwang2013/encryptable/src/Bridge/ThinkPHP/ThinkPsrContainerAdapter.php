@@ -1,16 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
  */
 
-namespace Maize\Encryptable\Bridge\ThinkPHP;
+namespace Erikwang2013\Encryptable\Bridge\ThinkPHP;
 
 use Psr\Container\ContainerInterface;
 
 /**
  * Wraps ThinkPHP's application/container when it does not implement {@see ContainerInterface},
- * so {@see \Maize\Encryptable\Encryption::setContainer()} can resolve bindings consistently.
+ * so {@see \Erikwang2013\Encryptable\Encryption::setContainer()} can resolve bindings consistently.
  */
 final class ThinkPsrContainerAdapter implements ContainerInterface
 {

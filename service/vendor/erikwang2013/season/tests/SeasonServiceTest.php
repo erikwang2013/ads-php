@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace CountrySeason\Tests;
+namespace Erikwang2013\Season\Tests;
 
-use CountrySeason\SeasonService;
+use Erikwang2013\Season\SeasonService;
 use PHPUnit\Framework\TestCase;
 
 class SeasonServiceTest extends TestCase

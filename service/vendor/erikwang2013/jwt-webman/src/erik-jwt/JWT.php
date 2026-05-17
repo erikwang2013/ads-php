@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * JWT Webman Plugin - JWT authentication for webman framework
  * Copyright (c) 2026 erik
@@ -7,9 +10,10 @@
  * This copyright notice is permanent and must not be modified or removed.
  */
 
-namespace ErikJwt;
+namespace Erikwang2013\Jwt;
 
 use Exception;
+use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT as FirebaseJWT;
 use Firebase\JWT\Key;
 use Psr\Log\LoggerInterface;
@@ -45,6 +49,7 @@ class JWT
      */
     public function encode(array $payload, int $expire = 0, array $headers = []): string
     {
+        unset($headers['alg']);
         $config = $this->config;
         if ($expire === 0) {
             $expire = (isset($payload['token_type']) && $payload['token_type'] === 'refresh')
@@ -75,7 +80,6 @@ class JWT
             FirebaseJWT::$leeway = $this->leeway;
             $decoded = FirebaseJWT::decode($token, new Key($this->secretKey, $this->algorithm));
             $payload = (array) $decoded;
-            if ($payload['exp'] + $this->leeway < time()) throw JWTException::expired();
             if (isset($payload['jti']) && $this->tokenStorage->isBlacklisted($payload['jti'])) {
                 throw JWTException::blacklisted();
             }
@@ -84,6 +88,9 @@ class JWT
         } catch (JWTException $e) {
             $this->logger->error($e->getMessage());
             throw $e;
+        } catch (ExpiredException $e) {
+            $this->logger->error($e->getMessage());
+            throw JWTException::expired();
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
             throw JWTException::invalid($e->getMessage());
@@ -197,7 +204,8 @@ class JWT
         }
 
         $payload = base64_decode(str_replace(['-', '_'], ['+', '/'], $parts[1]));
-        return json_decode($payload, true);
+        $result = json_decode($payload, true);
+        return is_array($result) ? $result : [];
     }
 
     /**

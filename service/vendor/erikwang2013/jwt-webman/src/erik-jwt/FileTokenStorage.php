@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * JWT Webman Plugin - JWT authentication for webman framework
  * Copyright (c) 2026 erik
@@ -7,7 +10,7 @@
  * This copyright notice is permanent and must not be modified or removed.
  */
 
-namespace ErikJwt;
+namespace Erikwang2013\Jwt;
 
 class FileTokenStorage implements TokenStorageInterface
 {
@@ -122,6 +125,9 @@ class FileTokenStorage implements TokenStorageInterface
 
     private function getFilePath(string $jti): string
     {
+        if (!ctype_xdigit($jti)) {
+            throw JWTException::storageError('Invalid JTI format');
+        }
         return $this->storagePath . '/' . $jti . '.json';
     }
 
@@ -137,7 +143,7 @@ class FileTokenStorage implements TokenStorageInterface
      */
     private function unlinkAsync(string $filePath): void
     {
-        if (function_exists('exec') && stripos(PHP_OS, 'WIN') !== 0) {
+        if (is_callable('exec') && stripos(PHP_OS, 'WIN') !== 0) {
             // Linux/Unix 系统使用后台删除
             exec("rm -f " . escapeshellarg($filePath) . " > /dev/null 2>&1 &");
         } else {

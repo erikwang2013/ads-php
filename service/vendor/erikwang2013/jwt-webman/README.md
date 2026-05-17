@@ -72,7 +72,7 @@ composer require erikwang2013/jwt-webman
 **基本用法：**
 
 ```php
-use ErikJwt\JWTFactory;
+use Erikwang2013\Jwt\JWTFactory;
 
 $jwt = JWTFactory::createFromConfig(
     config('plugin.erikwang2013.jwt.jwt'),
@@ -98,7 +98,7 @@ $jwt->blacklist($token);
 ```php
 return [
     '' => [
-        \ErikJwt\Webman\Middleware::class,
+        \Erikwang2013\Jwt\Webman\Middleware::class,
     ],
 ];
 ```
@@ -118,7 +118,7 @@ $userId  = $payload['user_id'];
 
 ```php
 'providers' => [
-    ErikJwt\Laravel\JWTServiceProvider::class,
+    Erikwang2013\Jwt\Laravel\JWTServiceProvider::class,
 ],
 ```
 
@@ -135,7 +135,7 @@ php artisan jwt:install
 **门面方式：**
 
 ```php
-use ErikJwt\Laravel\Facade as JWT;
+use Erikwang2013\Jwt\Laravel\Facade as JWT;
 
 $token   = JWT::encode(['user_id' => 1]);
 $payload = JWT::decode($token);
@@ -151,7 +151,7 @@ $token = jwt()->encode(['user_id' => 1]);
 **依赖注入：**
 
 ```php
-use ErikJwt\JWT;
+use Erikwang2013\Jwt\JWT;
 
 public function __construct(JWT $jwt) {
     $this->jwt = $jwt;
@@ -187,7 +187,7 @@ php artisan vendor:publish --tag=jwt-config
 
 ```php
 return [
-    \ErikJwt\ThinkPHP\JWTService::class,
+    \Erikwang2013\Jwt\ThinkPHP\JWTService::class,
 ];
 ```
 
@@ -202,7 +202,7 @@ php think jwt:install
 **门面方式：**
 
 ```php
-use ErikJwt\ThinkPHP\JWT;
+use Erikwang2013\Jwt\ThinkPHP\JWT;
 
 $token   = JWT::encode(['user_id' => 1]);
 $payload = JWT::decode($token);
@@ -237,7 +237,7 @@ public function index(Request $request) {
 
 ```php
 return [
-    \ErikJwt\Hyperf\ConfigProvider::class,
+    \Erikwang2013\Jwt\Hyperf\ConfigProvider::class,
 ];
 ```
 
@@ -252,7 +252,7 @@ php bin/hyperf.php jwt:install
 **依赖注入：**
 
 ```php
-use ErikJwt\JWT;
+use Erikwang2013\Jwt\JWT;
 use Hyperf\Di\Annotation\Inject;
 
 class UserController {
@@ -271,7 +271,7 @@ class UserController {
 **AOP 注解方式（可选）：**
 
 ```php
-use ErikJwt\Hyperf\JWT as JWTAuth;
+use Erikwang2013\Jwt\Hyperf\JWT as JWTAuth;
 
 class UserController {
     #[JWTAuth]

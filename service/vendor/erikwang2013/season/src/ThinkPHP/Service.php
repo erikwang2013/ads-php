@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace CountrySeason\ThinkPHP;
+namespace Erikwang2013\Season\ThinkPHP;
 
-use CountrySeason\SeasonService;
+use Erikwang2013\Season\SeasonService;
 use think\Service as ThinkService;
 
 /**

@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
  */
 
-namespace Maize\Encryptable\Config;
+namespace Erikwang2013\Encryptable\Config;
 
-use Maize\Encryptable\Contracts\EncryptableConfigContract;
-use Maize\Encryptable\Support\PreviousKeysParser;
+use Erikwang2013\Encryptable\Contracts\EncryptableConfigContract;
+use Erikwang2013\Encryptable\Support\PreviousKeysParser;
 
 class EnvEncryptableConfig implements EncryptableConfigContract
 {
@@ -27,7 +29,7 @@ class EnvEncryptableConfig implements EncryptableConfigContract
         $value = $_ENV['ENCRYPTION_CIPHER'] ?? $_SERVER['ENCRYPTION_CIPHER'] ?? getenv('ENCRYPTION_CIPHER');
 
         if ($value === false || $value === null || $value === '') {
-            return 'aes-128-ecb';
+            return 'aes-256-gcm';
         }
 
         return (string) $value;

@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
  */
 
-namespace Maize\Encryptable\Utils;
+namespace Erikwang2013\Encryptable\Utils;
 
-use Maize\Encryptable\Exceptions\SerializationException;
-use Maize\Encryptable\Exceptions\UnserializationException;
+use Erikwang2013\Encryptable\Exceptions\SerializationException;
+use Erikwang2013\Encryptable\Exceptions\UnserializationException;
 
 class Serializer
 {
@@ -19,7 +21,7 @@ class Serializer
         'NULL',
     ];
 
-    public static function serialize($value): string
+    public static function serialize(mixed $value): string
     {
         $valueType = gettype($value);
 
@@ -48,6 +50,10 @@ class Serializer
 
         if ($valueType === 'NULL') {
             return null;
+        }
+
+        if (! in_array($valueType, self::SUPPORTED_TYPES, true)) {
+            throw new UnserializationException;
         }
 
         if (! settype($value, $valueType)) {

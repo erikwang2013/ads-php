@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Copyright (c) erik <erik@erik.xyz> (https://erik.xyz). All Rights Reserved.
+ */
+
 namespace Erikwang2013\WebmanScout\Command;
 
 use Exception;
@@ -63,7 +67,7 @@ class DeleteIndexCommand extends Command
             return (new $name)->indexableAs();
         }
 
-        $prefix = config('plugin.erikwang2013.webman-scout.app.prefix');
+        $prefix = scout_config('prefix');
 
         return ! Str::startsWith($name, $prefix) ? $prefix . $name : $name;
     }

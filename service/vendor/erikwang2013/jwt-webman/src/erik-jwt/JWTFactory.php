@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * JWT Webman Plugin - JWT authentication for webman framework
  * Copyright (c) 2026 erik
@@ -7,7 +10,7 @@
  * This copyright notice is permanent and must not be modified or removed.
  */
 
-namespace ErikJwt;
+namespace Erikwang2013\Jwt;
 
 use Memcached;
 use PDO;
@@ -129,20 +132,23 @@ class JWTFactory
      */
     private static function setupAutoCleanup(JWT $jwt, array $advancedConfig): void
     {
+        static $registered = false;
+        if ($registered) {
+            return;
+        }
+        $registered = true;
+
         $cleanupInterval = $advancedConfig['cleanup_interval'] ?? 3600;
-        
-        // 注册 shutdown 函数进行清理
+
         register_shutdown_function(function () use ($jwt, $cleanupInterval) {
             static $lastCleanup = 0;
             $now = time();
-            
-            // 检查是否需要清理（避免每次请求都清理）
+
             if ($now - $lastCleanup >= $cleanupInterval) {
                 try {
                     $jwt->cleanup();
                     $lastCleanup = $now;
                 } catch (\Exception $e) {
-                    // 忽略清理错误，不影响主要功能
                     error_log("JWT auto cleanup failed: " . $e->getMessage());
                 }
             }

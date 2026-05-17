@@ -1,21 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
  */
 
-namespace Maize\Encryptable;
+namespace Erikwang2013\Encryptable;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Validation\Rule;
-use Maize\Encryptable\Bridge\Laravel\IlluminateDbDriverDetector;
-use Maize\Encryptable\Bridge\Laravel\IlluminateEncryptableConfig;
-use Maize\Encryptable\Bridge\Webman\WebmanPluginEncryptableConfig;
-use Maize\Encryptable\Contracts\DbDriverDetector;
-use Maize\Encryptable\Contracts\EncryptableConfigContract;
-use Maize\Encryptable\Rules\ExistsEncrypted;
-use Maize\Encryptable\Rules\UniqueEncrypted;
-use Maize\Encryptable\Support\PackagePluginPaths;
+use Erikwang2013\Encryptable\Bridge\Laravel\IlluminateDbDriverDetector;
+use Erikwang2013\Encryptable\Bridge\Laravel\IlluminateEncryptableConfig;
+use Erikwang2013\Encryptable\Bridge\Webman\WebmanPluginEncryptableConfig;
+use Erikwang2013\Encryptable\Contracts\DbDriverDetector;
+use Erikwang2013\Encryptable\Contracts\EncryptableConfigContract;
+use Erikwang2013\Encryptable\Rules\ExistsEncrypted;
+use Erikwang2013\Encryptable\Rules\UniqueEncrypted;
+use Erikwang2013\Encryptable\Support\PackagePluginPaths;
 
 class EncryptableServiceProvider extends ServiceProvider
 {
@@ -64,15 +65,17 @@ class EncryptableServiceProvider extends ServiceProvider
             dirname(__DIR__).'/config/stubs/hyperf-plugin-autoload.php' => config_path("autoload/plugins/{$vendor}/{$package}.php"),
         ], 'encryptable-config');
 
-        Rule::macro(
-            'uniqueEncrypted',
-            fn (string $table, string $column = 'NULL') => new UniqueEncrypted($table, $column)
-        );
+        if (class_exists(\Illuminate\Validation\Rule::class)) {
+            \Illuminate\Validation\Rule::macro(
+                'uniqueEncrypted',
+                fn (string $table, string $column = 'NULL') => new UniqueEncrypted($table, $column)
+            );
 
-        Rule::macro(
-            'existsEncrypted',
-            fn (string $table, string $column = 'NULL') => new ExistsEncrypted($table, $column)
-        );
+            \Illuminate\Validation\Rule::macro(
+                'existsEncrypted',
+                fn (string $table, string $column = 'NULL') => new ExistsEncrypted($table, $column)
+            );
+        }
     }
 
     /**

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace CountrySeason\Tests;
+namespace Erikwang2013\Season\Tests;
 
-use CountrySeason\CountrySeason;
+use Erikwang2013\Season\CountrySeason;
 use PHPUnit\Framework\TestCase;
 
 class CountrySeasonTest extends TestCase
@@ -121,6 +121,12 @@ class CountrySeasonTest extends TestCase
     {
         $this->assertSame('🇨🇳', CountrySeason::getCountryFlagEmoji('cn'));
         $this->assertSame('🇺🇸', CountrySeason::getCountryFlagEmoji('us'));
+    }
+
+    public function testGetCountryFlagEmojiTrimmed(): void
+    {
+        $this->assertSame('🇨🇳', CountrySeason::getCountryFlagEmoji('  cn  '));
+        $this->assertSame('🇺🇸', CountrySeason::getCountryFlagEmoji('  us  '));
     }
 
     // ── getSeasonNameLocalized ──────────────────────────────────

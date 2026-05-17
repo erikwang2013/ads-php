@@ -1,14 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
  */
 
-namespace Maize\Encryptable;
+namespace Erikwang2013\Encryptable;
 
-use Maize\Encryptable\Contracts\DbDriverDetector;
-use Maize\Encryptable\Contracts\EncryptableConfigContract;
-use Maize\Encryptable\Exceptions\EncryptException;
+use Erikwang2013\Encryptable\Contracts\DbDriverDetector;
+use Erikwang2013\Encryptable\Contracts\EncryptableConfigContract;
+use LogicException;
 
 /**
  * SQL decrypt helpers use the **primary** key only. Rotating DB-side ciphertext
@@ -23,28 +25,30 @@ class DBEncrypter extends Encrypter
         parent::__construct($encryptableConfig);
     }
 
-    public function encrypt($value, bool $serialize = true): ?string
+    public function encrypt(mixed $value, bool $serialize = true): ?string
     {
-        throw new EncryptException('Operation not supported.');
+        throw new LogicException('DB-level encryption is not supported. Use PHPEncrypter for application-level encrypt().');
     }
 
-    public function decrypt(?string $payload, bool $unserialize = true): string
+    public function decrypt(?string $payload, bool $unserialize = true): mixed
     {
         if (is_null($payload)) {
             return null;
         }
 
         if ($this->driverDetector->isPostgres()) {
-            $grammar = $this->getPostgresGrammarDecrypt();
-        } else {
-            $grammar = $this->getMysqlGrammarDecrypt();
+            return sprintf(
+                $this->getPostgresGrammarDecrypt(),
+                $payload,
+                $this->escapeSqlString($this->getEncryptionKey()),
+                $this->escapeSqlString($this->getEncryptionCipherAlgorithm())
+            );
         }
 
         return sprintf(
-            $grammar,
+            $this->getMysqlGrammarDecrypt(),
             $payload,
-            $this->escapeSqlString($this->getEncryptionKey()),
-            $this->getEncryptionCipherAlgorithm()
+            $this->escapeSqlString($this->getEncryptionKey())
         );
     }
 

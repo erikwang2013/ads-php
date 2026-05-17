@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace CountrySeason\Laravel;
+namespace Erikwang2013\Season\Laravel;
 
-use CountrySeason\SeasonService;
+use Erikwang2013\Season\SeasonService;
 use Illuminate\Support\ServiceProvider;
 
 /**

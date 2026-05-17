@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Copyright (c) erik <erik@erik.xyz> (https://erik.xyz). All Rights Reserved.
+ */
+
 namespace Erikwang2013\WebmanScout\Engines;
 
 use Exception;
@@ -76,7 +80,7 @@ class TypesenseEngine extends Engine
 
         $collection = $this->getOrCreateCollectionFromModel($models->first());
 
-        if ($this->usesSoftDelete($models->first()) && config('plugin.erikwang2013.webman-scout.app.soft_delete', false)) {
+        if ($this->usesSoftDelete($models->first()) && scout_config('soft_delete', false)) {
             $models->each->pushSoftDeleteMetadata();
         }
 
@@ -116,7 +120,7 @@ class TypesenseEngine extends Engine
      */
     protected function importDocuments(TypesenseCollection $collectionIndex, array $documents, ?string $action = null): Collection
     {
-        $action = $action ?? config('plugin.erikwang2013.webman-scout.app.typesense.import_action', 'upsert');
+        $action = $action ?? scout_config('typesense.import_action', 'upsert');
 
         $importedDocuments = $collectionIndex->getDocuments()->import($documents, ['action' => $action]);
 
@@ -337,7 +341,7 @@ class TypesenseEngine extends Engine
     {
         $parameters = [
             'q' => $builder->query,
-            'query_by' => config('plugin.erikwang2013.webman-scout.app.typesense.model-settings.'.get_class($builder->model).'.search-parameters.query_by') ?? '',
+            'query_by' => scout_config('typesense.model-settings.'.get_class($builder->model).'.search-parameters.query_by') ?? '',
             'filter_by' => $this->filters($builder),
             'per_page' => $perPage,
             'page' => $page,
@@ -350,7 +354,7 @@ class TypesenseEngine extends Engine
             'prioritize_exact_match' => true,
             'enable_overrides' => true,
             'highlight_affix_num_tokens' => 4,
-            'prefix' => config('plugin.erikwang2013.webman-scout.app.typesense.model-settings.'.get_class($builder->model).'.search-parameters.prefix') ?? true,
+            'prefix' => scout_config('typesense.model-settings.'.get_class($builder->model).'.search-parameters.prefix') ?? true,
         ];
 
         if (method_exists($builder->model, 'typesenseSearchParameters')) {
@@ -642,7 +646,7 @@ class TypesenseEngine extends Engine
             //
         }
 
-        $schema = config('plugin.erikwang2013.webman-scout.app.typesense.model-settings.'.get_class($model).'.collection-schema') ?? [];
+        $schema = scout_config('typesense.model-settings.'.get_class($model).'.collection-schema') ?? [];
 
         if (method_exists($model, 'typesenseCollectionSchema')) {
             $schema = $model->typesenseCollectionSchema();

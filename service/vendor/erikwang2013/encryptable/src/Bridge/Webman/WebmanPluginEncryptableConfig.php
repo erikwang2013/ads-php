@@ -1,14 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
  */
 
-namespace Maize\Encryptable\Bridge\Webman;
+namespace Erikwang2013\Encryptable\Bridge\Webman;
 
-use Maize\Encryptable\Contracts\EncryptableConfigContract;
-use Maize\Encryptable\Support\PackagePluginPaths;
-use Maize\Encryptable\Support\PreviousKeysParser;
+use Erikwang2013\Encryptable\Contracts\EncryptableConfigContract;
+use Erikwang2013\Encryptable\Support\PackagePluginPaths;
+use Erikwang2013\Encryptable\Support\PreviousKeysParser;
 
 /**
  * Reads options published under Webman's official plugin config path:
@@ -63,7 +65,7 @@ final class WebmanPluginEncryptableConfig implements EncryptableConfigContract
 
     public function getCipher(): ?string
     {
-        $cipher = config(self::configDotPrefix().'.cipher', 'aes-128-ecb');
+        $cipher = config(self::configDotPrefix().'.cipher', 'aes-256-gcm');
 
         if ($cipher === null || $cipher === '') {
             return null;

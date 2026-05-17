@@ -11,18 +11,18 @@
         }
     ],
     "require": {
-        "php": ">=8.0",
+        "php": ">=8.1",
         "ext-mbstring": "*"
     },
     "suggest": {
         "workerman/webman-framework": "用于在 webman 项目中作为插件使用",
-        "illuminate/support": "Laravel 7–11 使用 CountrySeason\\Laravel\\CountrySeasonServiceProvider 时需要",
-        "topthink/framework": "ThinkPHP 6 / 8 使用 CountrySeason\\ThinkPHP\\Service 时需要",
-        "hyperf/framework": "Hyperf 2 / 3 使用 CountrySeason\\Hyperf\\ConfigProvider 时需要"
+        "illuminate/support": "Laravel 7–11 使用 Erikwang2013\\Season\\Laravel\\CountrySeasonServiceProvider 时需要",
+        "topthink/framework": "ThinkPHP 6 / 8 使用 Erikwang2013\\Season\\ThinkPHP\\Service 时需要",
+        "hyperf/framework": "Hyperf 2 / 3 使用 Erikwang2013\\Season\\Hyperf\\ConfigProvider 时需要"
     },
     "autoload": {
         "psr-4": {
-            "CountrySeason\\": "src/"
+            "Erikwang2013\\Season\\": "src/"
         },
         "files": [
             "src/helpers.php"
@@ -30,7 +30,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "CountrySeason\\Tests\\": "tests/"
+            "Erikwang2013\\Season\\Tests\\": "tests/"
         }
     },
     "extra": {
@@ -39,16 +39,16 @@
         },
         "laravel": {
             "providers": [
-                "CountrySeason\\Laravel\\CountrySeasonServiceProvider"
+                "Erikwang2013\\Season\\Laravel\\CountrySeasonServiceProvider"
             ]
         },
         "think": {
             "services": [
-                "CountrySeason\\ThinkPHP\\Service"
+                "Erikwang2013\\Season\\ThinkPHP\\Service"
             ]
         },
         "hyperf": {
-            "config": "CountrySeason\\Hyperf\\ConfigProvider"
+            "config": "Erikwang2013\\Season\\Hyperf\\ConfigProvider"
         }
     },
     "require-dev": {

@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Copyright (c) erik <erik@erik.xyz> (https://erik.xyz). All Rights Reserved.
+ */
+
 namespace Erikwang2013\WebmanScout\Command;
 
 use Exception;
@@ -63,17 +67,17 @@ class IndexCommand extends Command
             $this->createIndex($engine, $name, $options);
 
             if ($engine instanceof UpdatesIndexSettings) {
-                $driver = config('plugin.erikwang2013.webman-scout.app.driver');
+                $driver = scout_config('driver');
 
                 $class = isset($model) ? get_class($model) : null;
 
-                $settings = config('plugin.erikwang2013.webman-scout.app.' . $driver . '.index-settings.' . $name)
-                    ?? config('plugin.erikwang2013.webman-scout.app.' . $driver . '.index-settings.' . $class)
+                $settings = scout_config($driver.'.index-settings.'.$name)
+                    ?? scout_config($driver.'.index-settings.'.$class)
                     ?? [];
 
                 if (
                     isset($model) &&
-                    config('plugin.erikwang2013.webman-scout.app.soft_delete', false) &&
+                    scout_config('soft_delete', false) &&
                     in_array(SoftDeletes::class, class_uses_recursive($model))
                 ) {
                     $settings = $engine->configureSoftDeleteFilter($settings);
@@ -121,7 +125,7 @@ class IndexCommand extends Command
             return (new $name)->indexableAs();
         }
 
-        $prefix = config('plugin.erikwang2013.webman-scout.app.prefix');
+        $prefix = scout_config('prefix');
 
         return ! Str::startsWith($name, $prefix) ? $prefix . $name : $name;
     }

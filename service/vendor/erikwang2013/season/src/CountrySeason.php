@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace CountrySeason;
+namespace Erikwang2013\Season;
 
 use DateTimeInterface;
 
@@ -22,7 +22,12 @@ class CountrySeason
     public const HEMISPHERE_NORTH = 'north';
     public const HEMISPHERE_SOUTH = 'south';
 
-    /** ISO 3166-1 alpha-2 codes for countries/territories in the southern hemisphere (keyed for O(1) lookup). */
+    /**
+     * ISO 3166-1 alpha-2 codes for countries/territories in the southern hemisphere (keyed for O(1) lookup).
+     *
+     * Codes not listed here (including equator-bordering countries and non-sovereign territories)
+     * default to northern hemisphere season mapping.
+     */
     private const SOUTH_HEMISPHERE_CODES = [
         'AQ' => true, 'AR' => true, 'AU' => true, 'BV' => true, 'BO' => true,
         'BW' => true, 'BR' => true, 'IO' => true, 'BI' => true, 'CL' => true,
@@ -118,9 +123,16 @@ class CountrySeason
     public static function getCountryFlagEmoji(string $countryCode): string
     {
         $code = self::normalizeCountryCode($countryCode);
+        $a = \ord($code[0]) - 65;
+        $b = \ord($code[1]) - 65;
+        if ($a < 0 || $a > 25 || $b < 0 || $b > 25) {
+            throw new \InvalidArgumentException(
+                'Invalid country code for flag emoji: ' . $code
+            );
+        }
         $base = 0x1F1E6;
-        return \mb_chr($base + \ord($code[0]) - 65, 'UTF-8')
-            . \mb_chr($base + \ord($code[1]) - 65, 'UTF-8');
+        return \mb_chr($base + $a, 'UTF-8')
+            . \mb_chr($base + $b, 'UTF-8');
     }
 
     /**
@@ -168,7 +180,7 @@ class CountrySeason
         $code = \strtoupper(\trim($countryCode));
         if ($code === '' || !self::isValidCode($code)) {
             throw new \InvalidArgumentException(
-                'The country code must be in the two letter format of ISO 3166-1 alpha-2, currently passed in：'
+                'The country code must be in the two letter format of ISO 3166-1 alpha-2, currently passed in: '
                 . (\strlen($countryCode) > 20 ? \substr($countryCode, 0, 20) . '...' : $countryCode)
             );
         }
@@ -180,6 +192,9 @@ class CountrySeason
         $map = $hemisphere === self::HEMISPHERE_SOUTH
             ? self::MONTH_TO_SEASON_SOUTH
             : self::MONTH_TO_SEASON_NORTH;
+        if (!isset($map[$month])) {
+            throw new \LogicException("Unexpected month: $month");
+        }
         return $map[$month];
     }
 

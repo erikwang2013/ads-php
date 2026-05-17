@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * JWT Webman Plugin - JWT authentication for webman framework
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
@@ -6,9 +9,7 @@
  * This copyright notice is permanent and must not be modified or removed.
  */
 
-namespace ErikJwt\ThinkPHP;
-
-use think\Facade;
+namespace Erikwang2013\Jwt\ThinkPHP;
 
 /**
  * @method static string encode(array $payload, int $expire = 0, array $headers = [])
@@ -18,7 +19,7 @@ use think\Facade;
  * @method static bool   blacklist(string $token)
  * @method static bool   isBlacklisted(string $token)
  */
-class JWT extends Facade
+class Facade extends \think\Facade
 {
     protected static function getFacadeClass(): string
     {

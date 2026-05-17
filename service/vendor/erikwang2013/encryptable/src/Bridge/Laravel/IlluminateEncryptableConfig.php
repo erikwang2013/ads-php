@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
  */
 
-namespace Maize\Encryptable\Bridge\Laravel;
+namespace Erikwang2013\Encryptable\Bridge\Laravel;
 
-use Maize\Encryptable\Contracts\EncryptableConfigContract;
-use Maize\Encryptable\Support\PreviousKeysParser;
+use Erikwang2013\Encryptable\Contracts\EncryptableConfigContract;
+use Erikwang2013\Encryptable\Support\PreviousKeysParser;
 
 class IlluminateEncryptableConfig implements EncryptableConfigContract
 {
@@ -24,7 +26,7 @@ class IlluminateEncryptableConfig implements EncryptableConfigContract
 
     public function getCipher(): ?string
     {
-        $cipher = config('encryptable.cipher', 'aes-128-ecb');
+        $cipher = config('encryptable.cipher', 'aes-256-gcm');
 
         if ($cipher === null || $cipher === '') {
             return null;

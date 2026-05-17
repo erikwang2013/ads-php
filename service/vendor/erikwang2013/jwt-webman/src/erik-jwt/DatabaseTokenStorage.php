@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * JWT Webman Plugin - JWT authentication for webman framework
  * Copyright (c) 2026 erik
@@ -7,7 +10,7 @@
  * This copyright notice is permanent and must not be modified or removed.
  */
 
-namespace ErikJwt;
+namespace Erikwang2013\Jwt;
 
 use PDO;
 use PDOException;

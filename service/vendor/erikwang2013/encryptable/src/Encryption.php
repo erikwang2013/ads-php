@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
  */
 
-namespace Maize\Encryptable;
+namespace Erikwang2013\Encryptable;
 
-use Maize\Encryptable\Config\EnvEncryptableConfig;
-use Maize\Encryptable\Contracts\EncryptableConfigContract;
+use Erikwang2013\Encryptable\Config\EnvEncryptableConfig;
+use Erikwang2013\Encryptable\Contracts\EncryptableConfigContract;
 use Psr\Container\ContainerInterface;
 use RuntimeException;
 
@@ -20,9 +22,9 @@ class Encryption
     /** @var null|callable(string): object */
     private static $resolver = null;
 
-    private $encrypter;
+    private Encrypter $encrypter;
 
-    public function __construct($encrypter)
+    public function __construct(Encrypter $encrypter)
     {
         $this->encrypter = $encrypter;
     }
@@ -59,13 +61,13 @@ class Encryption
         );
     }
 
-    public static function isEncrypted($value): bool
+    public static function isEncrypted(mixed $value): bool
     {
         return self::php()->encrypter
             ->isEncrypted($value);
     }
 
-    public function encrypt($value, bool $serialize = true): ?string
+    public function encrypt(mixed $value, bool $serialize = true): ?string
     {
         return $this->encrypter
             ->encrypt($value, $serialize);

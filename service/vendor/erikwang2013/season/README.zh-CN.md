@@ -25,7 +25,7 @@ php webman install erikwang2013/season
 
 ## Laravel 7–11
 
-`composer require` 后，若未在 `composer.json` 中关闭该包的 **package discovery**，会自动注册 `CountrySeason\Laravel\CountrySeasonServiceProvider`，并向容器注册 **`SeasonService`**（默认国家码来自合并后的配置）。
+`composer require` 后，若未在 `composer.json` 中关闭该包的 **package discovery**，会自动注册 `Erikwang2013\Season\Laravel\CountrySeasonServiceProvider`，并向容器注册 **`SeasonService`**（默认国家码来自合并后的配置）。
 
 可选：将默认配置发布到应用，便于修改：
 
@@ -33,11 +33,11 @@ php webman install erikwang2013/season
 php artisan vendor:publish --tag=country-season-config
 ```
 
-发布后得到 `config/country_season.php`，其中 `default_country_code` 对应环境变量 **`COUNTRY_SEASON_DEFAULT`**（默认 `CN`）。在控制器或服务中注入 `CountrySeason\SeasonService` 即可。
+发布后得到 `config/country_season.php`，其中 `default_country_code` 对应环境变量 **`COUNTRY_SEASON_DEFAULT`**（默认 `CN`）。在控制器或服务中注入 `Erikwang2013\Season\SeasonService` 即可。
 
 ## ThinkPHP 6 / 8
 
-安装后由 Composer 的 **think 扩展机制** 自动发现 `CountrySeason\ThinkPHP\Service`，注册 **`SeasonService`** 并合并包内 `config/country_season.php` 到配置项 **`country_season`**。在需要处通过容器解析 `CountrySeason\SeasonService` 或依赖注入使用。
+安装后由 Composer 的 **think 扩展机制** 自动发现 `Erikwang2013\Season\ThinkPHP\Service`，注册 **`SeasonService`** 并合并包内 `config/country_season.php` 到配置项 **`country_season`**。在需要处通过容器解析 `Erikwang2013\Season\SeasonService` 或依赖注入使用。
 
 ## Hyperf 2 / 3
 
@@ -56,7 +56,7 @@ php bin/hyperf.php vendor:publish erikwang2013/season
 ### 1. 静态方法（任意 PHP 项目）
 
 ```php
-use CountrySeason\CountrySeason;
+use Erikwang2013\Season\CountrySeason;
 
 // 英文季节键名：spring | summer | autumn | winter
 $season = CountrySeason::getSeason('CN');        // 中国，例如 winter
@@ -130,7 +130,7 @@ country_season_locale('KR', 'ko', $date);  // 可传日期
 webman 需自行注册一次（例如在 `config/bootstrap.php`），再按类名从容器取出：
 
 ```php
-use CountrySeason\SeasonService;
+use Erikwang2013\Season\SeasonService;
 use support\Container;
 
 Container::singleton(SeasonService::class, function () {
@@ -142,7 +142,7 @@ Container::singleton(SeasonService::class, function () {
 
 ```php
 use support\Container;
-use CountrySeason\SeasonService;
+use Erikwang2013\Season\SeasonService;
 
 /** @var SeasonService $seasonService */
 $seasonService = Container::get(SeasonService::class);
@@ -210,7 +210,7 @@ composer test
 
 ## 要求
 
-- PHP >= 8.0
+- PHP >= 8.1
 - 扩展 **mbstring**（旗帜 Emoji 依赖 `mb_chr`）
 - 可选：`workerman/webman-framework`（webman 插件）、`illuminate/support`（Laravel）、`topthink/framework`（ThinkPHP）、`hyperf/framework`（Hyperf）
 

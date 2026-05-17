@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Copyright (c) erik <erik@erik.xyz> (https://erik.xyz). All Rights Reserved.
+ */
+
 namespace Erikwang2013\WebmanScout;
 
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
@@ -34,7 +38,7 @@ class SearchableScope implements Scope
         $builder->macro('searchable', function (EloquentBuilder $builder, $chunk = null) {
             $scoutKeyName = $builder->getModel()->getScoutKeyName();
 
-            $builder->chunkById($chunk ?: config('plugin.erikwang2013.webman-scout.app.chunk.searchable', 500), function ($models) {
+            $builder->chunkById($chunk ?: scout_config('chunk.searchable', 500), function ($models) {
                 $models->filter->shouldBeSearchable()->searchable();
 
                 event(new ModelsImported($models));
@@ -44,29 +48,31 @@ class SearchableScope implements Scope
         $builder->macro('unsearchable', function (EloquentBuilder $builder, $chunk = null) {
             $scoutKeyName = $builder->getModel()->getScoutKeyName();
 
-            $builder->chunkById($chunk ?: config('plugin.erikwang2013.webman-scout.app.chunk.unsearchable', 500), function ($models) {
+            $builder->chunkById($chunk ?: scout_config('chunk.unsearchable', 500), function ($models) {
                 $models->unsearchable();
 
                 event(new ModelsFlushed($models));
             }, $builder->qualifyColumn($scoutKeyName), $scoutKeyName);
         });
 
-        HasManyThrough::macro('searchable', function ($chunk = null) {
-            /** @var HasManyThrough $this */
-            $this->chunkById($chunk ?: config('plugin.erikwang2013.webman-scout.app.chunk.searchable', 500), function ($models) {
-                $models->filter->shouldBeSearchable()->searchable();
+        if (method_exists(HasManyThrough::class, 'chunkById')) {
+            HasManyThrough::macro('searchable', function ($chunk = null) {
+                /** @var HasManyThrough $this */
+                $this->chunkById($chunk ?: scout_config('chunk.searchable', 500), function ($models) {
+                    $models->filter->shouldBeSearchable()->searchable();
 
-                event(new ModelsImported($models));
+                    event(new ModelsImported($models));
+                });
             });
-        });
 
-        HasManyThrough::macro('unsearchable', function ($chunk = null) {
-            /** @var HasManyThrough $this */
-            $this->chunkById($chunk ?: config('plugin.erikwang2013.webman-scout.app.chunk.unsearchable', 500), function ($models) {
-                $models->unsearchable();
+            HasManyThrough::macro('unsearchable', function ($chunk = null) {
+                /** @var HasManyThrough $this */
+                $this->chunkById($chunk ?: scout_config('chunk.unsearchable', 500), function ($models) {
+                    $models->unsearchable();
 
-                event(new ModelsFlushed($models));
+                    event(new ModelsFlushed($models));
+                });
             });
-        });
+        }
     }
 }
