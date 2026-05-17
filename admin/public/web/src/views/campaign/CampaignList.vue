@@ -88,7 +88,9 @@ import { formatFen } from '@/utils/format'
 import { campaignApi } from '@/api/campaign'
 import { platformApi } from '@/api/platform'
 import { accountApi } from '@/api/account'
+import { useConfirmStore } from '@/stores/confirm'
 
+const confirmStore = useConfirmStore()
 const loading = ref(false); const submitting = ref(false); const showCreate = ref(false)
 const list = ref<any[]>([]); const platforms = ref<any[]>([]); const accounts = ref<any[]>([])
 const selectedRows = ref<any[]>([]); const editing = ref<any>(null)
@@ -110,9 +112,18 @@ async function handleToggle(row: any) {
   const enabled = row.status !== 'enabled'; await campaignApi.toggle(row.id, enabled)
   ElMessage.success(enabled ? '已启用' : '已暂停'); fetchList()
 }
-async function batchToggle(enabled: boolean) {
-  for (const row of selectedRows.value) { await campaignApi.toggle(row.id, enabled) }
-  ElMessage.success('批量操作完成'); selectedRows.value = []; fetchList()
+function batchToggle(enabled: boolean) {
+  const actionLabel = enabled ? '批量启用' : '批量暂停'
+  confirmStore.show({
+    title: actionLabel,
+    message: `确定要${actionLabel}选中的 ${selectedRows.value.length} 个广告计划吗？`,
+    confirmWord: enabled ? 'ENABLE' : 'PAUSE',
+    confirmText: actionLabel,
+    onConfirm: async () => {
+      for (const row of selectedRows.value) { await campaignApi.toggle(row.id, enabled) }
+      ElMessage.success('批量操作完成'); selectedRows.value = []; fetchList()
+    },
+  })
 }
 function showEdit(row: any) { editing.value = row; form.name = row.name; form.daily_budget = row.daily_budget / 100; showCreate.value = true }
 async function submitForm() {

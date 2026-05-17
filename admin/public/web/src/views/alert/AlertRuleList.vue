@@ -47,11 +47,7 @@
       <el-table-column label="操作" width="160" align="center" fixed="right">
         <template #default="{ row }">
           <el-button size="small" type="primary" link @click="openEdit(row)">编辑</el-button>
-          <el-popconfirm title="确定删除此规则？" @confirm="handleDelete(row.id)">
-            <template #reference>
-              <el-button size="small" type="danger" link>删除</el-button>
-            </template>
-          </el-popconfirm>
+          <el-button size="small" type="danger" link @click="handleDeleteClick(row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -132,7 +128,9 @@ import { ElMessage } from 'element-plus'
 import { alertApi } from '@/api/alert'
 import { platformApi } from '@/api/platform'
 import { campaignApi } from '@/api/campaign'
+import { useConfirmStore } from '@/stores/confirm'
 
+const confirmStore = useConfirmStore()
 const loading = ref(false)
 const submitting = ref(false)
 const dialogVisible = ref(false)
@@ -233,14 +231,18 @@ async function handleToggle(row: any, val: boolean) {
   }
 }
 
-async function handleDelete(id: number) {
-  try {
-    await alertApi.deleteRule(id)
-    ElMessage.success('删除成功')
-    fetchList()
-  } catch {
-    // error handled by interceptor
-  }
+function handleDeleteClick(row: any) {
+  confirmStore.show({
+    title: '删除告警规则',
+    message: `确定要删除告警规则「${row.name}」吗？此操作不可撤销。`,
+    confirmWord: row.name,
+    confirmText: '确认删除',
+    onConfirm: async () => {
+      await alertApi.deleteRule(row.id)
+      ElMessage.success('删除成功')
+      fetchList()
+    },
+  })
 }
 
 function openCreate() {

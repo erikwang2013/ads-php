@@ -30,20 +30,30 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import PlatformBadge from '@/components/PlatformBadge.vue'
 import { accountApi } from '@/api/account'
+import { useConfirmStore } from '@/stores/confirm'
 
+const confirmStore = useConfirmStore()
 const accounts = ref<any[]>([])
 const loading = ref(false)
 
 async function fetchAccounts() { loading.value = true; const data = await accountApi.list(); accounts.value = data.list; loading.value = false }
 async function handleSync(row: any) { await accountApi.sync(row.id); ElMessage.success('同步已触发') }
-async function handleDelete(row: any) {
-  await ElMessageBox.confirm('确定要解绑该账户吗？', '提示', { type: 'warning' })
-  await accountApi.destroy(row.id)
-  ElMessage.success('已解绑')
-  fetchAccounts()
+function handleDelete(row: any) {
+  const name = row.account_name || row.account_id_on_platform
+  confirmStore.show({
+    title: '解绑账户',
+    message: `确定要解绑账户「${name}」吗？解绑后该平台的广告数据将停止同步。`,
+    confirmWord: name,
+    confirmText: '确认解绑',
+    onConfirm: async () => {
+      await accountApi.destroy(row.id)
+      ElMessage.success('已解绑')
+      fetchAccounts()
+    },
+  })
 }
 onMounted(fetchAccounts)
 </script>

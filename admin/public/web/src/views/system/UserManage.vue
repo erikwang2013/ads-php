@@ -117,9 +117,11 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
-import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from 'element-plus'
+import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { adminApi } from '@/api/admin'
+import { useConfirmStore } from '@/stores/confirm'
 
+const confirmStore = useConfirmStore()
 const list = ref<any[]>([])
 const loading = ref(false)
 const submitting = ref(false)
@@ -199,23 +201,19 @@ function handleEdit(row: any) {
   dialogVisible.value = true
 }
 
-async function handleToggle(row: any) {
+function handleToggle(row: any) {
   const action = row.status === 1 ? '禁用' : '启用'
-  try {
-    await ElMessageBox.confirm(`确定${action}用户「${row.username}」吗？`, '提示', {
-      type: 'warning',
-    })
-  } catch {
-    return
-  }
-
-  try {
-    await adminApi.updateUser(row.id, { status: row.status === 1 ? 0 : 1 })
-    ElMessage.success(`${action}成功`)
-    fetchList()
-  } catch {
-    // handled by interceptor
-  }
+  confirmStore.show({
+    title: `${action}用户`,
+    message: `确定要${action}用户「${row.username}」吗？${action === '禁用' ? '禁用后该用户将无法登录系统。' : ''}`,
+    confirmWord: row.username,
+    confirmText: `确认${action}`,
+    onConfirm: async () => {
+      await adminApi.updateUser(row.id, { status: row.status === 1 ? 0 : 1 })
+      ElMessage.success(`${action}成功`)
+      fetchList()
+    },
+  })
 }
 
 async function submitForm() {
