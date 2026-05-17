@@ -64,14 +64,14 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 ```mermaid
 graph LR
-    Clients["客户端<br/>Flutter · HarmonyOS · Admin"] --> Nginx["Nginx :80"]
-    Nginx -->|"/"| Admin["Admin :8789<br/>webman-admin v2<br/>RBAC · 审计 · SPA"]
-    Nginx -->|"/api/*"| Service["Service :8788<br/>webman v2<br/>29适配器 · 报表 · 告警"]
+    Clients[客户端 Flutter HarmonyOS Admin] --> Nginx[Nginx :80]
+    Nginx -->|"/"| Admin[Admin :8789 webman-admin v2]
+    Nginx -->|"/api/*"| Service[Service :8788 webman v2 业务API]
     Admin -->|ServiceProxy| Service
-    Service --> MySQL["MySQL 8.0<br/>erik_ 14表"]
-    Service --> Redis["Redis 7"]
-    Service --> ES["Elasticsearch"]
-    Service -->|HTTPS| Platforms["29广告平台"]
+    Service --> MySQL[(MySQL 8.0 erik_ 14表)]
+    Service --> Redis[(Redis 7)]
+    Service --> ES[(Elasticsearch)]
+    Service -->|HTTPS| Platforms[29个广告平台]
 ```
 
 > 完整架构图、业务逻辑图、部署图见 [设计文档](docs/superpowers/specs/2026-05-14-ads-platform-design.md)

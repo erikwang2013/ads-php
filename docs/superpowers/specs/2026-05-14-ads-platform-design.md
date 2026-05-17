@@ -35,35 +35,35 @@ admin:8789 (管理后台)          service:8788 (业务API)
 ```mermaid
 graph TB
     subgraph Clients["客户端层"]
-        Flutter["Flutter App — PC Web / Mobile 响应式"]
-        HarmonyOS["HarmonyOS App — ArkTS + ArkUI"]
-        AdminUI["webman-admin v2 — Vue3 + TS + Element Plus"]
+        Flutter["Flutter App, PC Web / Mobile 响应式"]
+        HarmonyOS["HarmonyOS App, ArkTS + ArkUI"]
+        AdminUI["webman-admin v2, Vue3 + TS + Element Plus"]
     end
 
     subgraph Gateway["网关层 :80"]
-        Nginx["Nginx — / -> admin :8789 — /api/* → service :8788"]
+        Nginx["Nginx, / to admin:8789, /api redirect to service:8788"]
     end
 
     subgraph Admin["管理后台 :8789"]
-        AdminPHP["PHP 后端 — RBAC / 审计 / ServiceProxy"]
-        AdminSPA["Vue3 SPA — 仪表盘 / 计划 / 报表 / 告警"]
+        AdminPHP["PHP 后端, RBAC / 审计 / ServiceProxy"]
+        AdminSPA["Vue3 SPA, 仪表盘 / 计划 / 报表 / 告警"]
     end
 
     subgraph Service["业务服务 :8788"]
-        API["ads-api — RESTful 29端点"]
-        Middleware["7层中间件 — CORS->RateLimit→SQLGuard→Valid→Encrypt→JWT→Tenant"]
-        Platform["ads-platform — 29个平台适配器"]
-        Task["ads-task — 定时同步/告警/重试"]
-        Report["ads-report — 报表引擎/导出"]
-        Alert["ads-alert — 告警规则/推送"]
-        Account["ads-account — OAuth/Token管理"]
-        Tenant["ads-tenant — 多租户/DB路由"]
+        API["ads-api, RESTful 29端点"]
+        Middleware["7层中间件, CORS to RateLimit to SQLGuard to Valid to Encrypt to JWT to Tenant"]
+        Platform["ads-platform, 29个平台适配器"]
+        Task["ads-task, 定时同步/告警/重试"]
+        Report["ads-report, 报表引擎/导出"]
+        Alert["ads-alert, 告警规则/推送"]
+        Account["ads-account, OAuth/Token管理"]
+        Tenant["ads-tenant, 多租户/DB路由"]
     end
 
     subgraph Data["数据层"]
-        MySQL["MySQL 8.0 — erik_ 前缀 · 14表"]
-        Redis["Redis 7 — 缓存/限流/队列"]
-        ES["Elasticsearch — webman-scout 索引"]
+        MySQL["MySQL 8.0, erik_ 前缀 14表"]
+        Redis["Redis 7, 缓存/限流/队列"]
+        ES["Elasticsearch, webman-scout 索引"]
     end
 
     subgraph External["外部广告平台"]
@@ -527,14 +527,14 @@ POST /api/v1/captcha/verify    → 验证偏移量（5px 容差，5 分钟有效
 ```mermaid
 sequenceDiagram
     participant Client as 客户端
-    participant CORS as CORS — 跨域处理
-    participant Rate as RateLimit — 滑动窗口限流
-    participant SQL as SQLGuard — 注入检测
-    participant Valid as Validation — 输入过滤
-    participant Encrypt as Encryption — 加解密
-    participant JWT as AuthMiddleware — JWT认证
-    participant Tenant as TenantIdentify — 多租户解析
-    participant Ctrl as Controller — 业务逻辑
+    participant CORS as CORS, 跨域处理
+    participant Rate as RateLimit, 滑动窗口限流
+    participant SQL as SQLGuard, 注入检测
+    participant Valid as Validation, 输入过滤
+    participant Encrypt as Encryption, 加解密
+    participant JWT as AuthMiddleware, JWT认证
+    participant Tenant as TenantIdentify, 多租户解析
+    participant Ctrl as Controller, 业务逻辑
 
     Client->>CORS: HTTP Request
     CORS->>Rate: 添加 CORS 头
@@ -687,8 +687,8 @@ GET    /api/v1/alerts/unread-count
 ```mermaid
 sequenceDiagram
     participant Browser as 浏览器
-    participant Admin as Admin :8789
-    participant Service as Service :8788
+    participant Admin as Admin:8789
+    participant Service as Service:8788
     participant Platform as 广告平台API
 
     Browser->>Admin: POST /api/admin/login
@@ -700,17 +700,17 @@ sequenceDiagram
 
     Note over Browser: Vue SPA 加载完成
 
-    Browser->>Service: GET /api/v1/campaigns — Authorization: Bearer {token}
-    Service->>Service: JWT验证 → 租户解析
+    Browser->>Service: GET /api/v1/campaigns, Auth Bearer token
+    Service->>Service: JWT验证, 租户解析
     Service->>Service: 查询 erik_campaigns
     Service-->>Browser: JSON (hashids ID)
 
     Browser->>Service: POST /api/v1/campaigns
-    Service->>Service: 验证请求 → 适配器路由
+    Service->>Service: 验证请求, 适配器路由
     Service->>Platform: 调用平台 API 创建计划
-    Platform-->>Service: {campaign_id: "xxx"}
+    Platform-->>Service: campaign_id response
     Service->>Service: 写入 erik_campaigns
-    Service-->>Browser: {id: "hashids..."}
+    Service-->>Browser: hashids ID
 ```
 
 ### OAuth 平台授权流程
@@ -719,24 +719,24 @@ sequenceDiagram
 sequenceDiagram
     participant User as 管理员
     participant Admin as Admin Panel
-    participant Service as Service :8788
+    participant Service as Service:8788
     participant Platform as 广告平台
 
-    User->>Admin: 点击"绑定账户" → 选择平台
+    User->>Admin: 点击绑定账户, 选择平台
     Admin->>Service: GET /platforms/{code}/oauth-url
     Service->>Service: 生成 state 并存库
-    Service-->>Admin: {auth_url, state}
+    Service-->>Admin: auth_url and state
     Admin->>Platform: 跳转授权页
     User->>Platform: 登录并授权
-    Platform->>Admin: 回调 ?code=xxx&state=xxx
+    Platform->>Admin: 回调 code and state
     Admin->>Service: POST /platforms/{code}/callback
-    Service->>Service: 验证 state → 用 code 换 token
+    Service->>Service: 验证 state, 用 code 换 token
     Service->>Platform: POST /oauth2/access_token
-    Platform-->>Service: {access_token, refresh_token}
+    Platform-->>Service: access_token and refresh_token
     Service->>Service: 加密存储 token (encryptable)
     Service->>Platform: 拉取账户信息
-    Service-->>Admin: {account_id: "hashids..."}
-    Admin-->>User: "绑定成功"
+    Service-->>Admin: account_id hashids
+    Admin-->>User: 绑定成功
 ```
 
 ### 数据同步 & 告警流程
@@ -745,31 +745,31 @@ sequenceDiagram
 flowchart TD
     Cron["Crontab 定时触发"]
     
-    subgraph Sync["数据同步 (每10分钟)"]
-        S1["遍历活跃账户"] --> S2["PlatformRateLimiter — 平台级 QPS 控制"]
-        S2 --> S3["适配器 fetchCampaigns — Generator 流式分页"]
-        S3 --> S4["FieldMapping 字段转换 — 金额统一为分"]
-        S4 --> S5["upsert erik_campaigns — 同步时间戳"]
-        S3 --> S6["适配器 fetchReports — 近2日数据"]
+    subgraph Sync["数据同步, 每10分钟"]
+        S1["遍历活跃账户"] --> S2["PlatformRateLimiter, 平台级 QPS 控制"]
+        S2 --> S3["适配器 fetchCampaigns, Generator 流式分页"]
+        S3 --> S4["FieldMapping 字段转换, 金额统一为分"]
+        S4 --> S5["upsert erik_campaigns, 同步时间戳"]
+        S3 --> S6["适配器 fetchReports, 近2日数据"]
         S6 --> S4
-        S4 --> S7["upsert erik_report_metrics — 按维度分组"]
-        S7 --> S8["CacheService::flush — 清仪表盘缓存"]
+        S4 --> S7["upsert erik_report_metrics, 按维度分组"]
+        S7 --> S8["CacheService flush, 清仪表盘缓存"]
         S5 --> S8
     end
 
-    subgraph Alert["告警检查 (每5分钟)"]
-        A1["遍历启用规则"] --> A2["AlertEngine::evaluate — 查询 erik_report_metrics"]
+    subgraph Alert["告警检查, 每5分钟"]
+        A1["遍历启用规则"] --> A2["AlertEngine evaluate, 查询 erik_report_metrics"]
         A2 --> A3{"阈值触发?"}
-        A3 -->|是| A4["写入 erik_alert_logs — Redis Pub/Sub"]
+        A3 -->|是| A4["写入 erik_alert_logs, Redis Pub/Sub"]
         A3 -->|否| A1
-        A4 --> A5["NotificationService::send — Web/Email/SMS"]
+        A4 --> A5["NotificationService send, Web/Email/SMS"]
     end
 
-    subgraph Retry["失败重试 (每3分钟)"]
-        R1["扫描 erik_sync_errors — retry_count < 3"] --> R2["重新同步单账户"]
+    subgraph Retry["失败重试, 每3分钟"]
+        R1["扫描 erik_sync_errors, retry_count 小于 3"] --> R2["重新同步单账户"]
         R2 --> R3{"成功?"}
         R3 -->|是| R4["删除错误记录"]
-        R3 -->|否| R5["retry_count+1 — 指数退避 5^n 分钟"]
+        R3 -->|否| R5["retry_count+1, 指数退避 5^n 分钟"]
     end
 
     Cron --> Sync
@@ -783,17 +783,17 @@ flowchart TD
 ```mermaid
 flowchart TB
     subgraph Core["适配器核心"]
-        Interface["PlatformAdapter 接口 — 14 methods"]
-        Registry["AdapterRegistry — register/get/all/has"]
-        Mapping["FieldMapping — 字段映射/状态转换/数值变换"]
+        Interface["PlatformAdapter 接口, 14 methods"]
+        Registry["AdapterRegistry, register/get/all/has"]
+        Mapping["FieldMapping, 字段映射/状态转换/数值变换"]
     end
 
-    subgraph Adapters["平台适配器 (29个)"]
-        Juliang["巨量引擎 — 元转分 · Access-Token"]
-        Baidu["百度营销 — 元转分 · 信封签名"]
-        Taobao["淘宝 — 元转分 · MD5签名"]
-        Google["Google Ads — 微元转分 · GAQL"]
-        Meta["Meta Ads — 分原生 · URL参数"]
+    subgraph Adapters["平台适配器, 29个"]
+        Juliang["巨量引擎, 元转分, Access-Token"]
+        Baidu["百度营销, 元转分, 信封签名"]
+        Taobao["淘宝, 元转分, MD5签名"]
+        Google["Google Ads, 微元转分, GAQL"]
+        Meta["Meta Ads, 分原生, URL参数"]
         More["... 共29个平台"]
     end
 
@@ -838,35 +838,35 @@ graph TB
     end
 
     subgraph Docker["Docker Compose"]
-        Nginx["Nginx :80 — 反向代理"]
+        Nginx["Nginx:80, 反向代理"]
         
-        subgraph AdminSvc["admin-php :8789"]
-            AdminPHP["webman-admin v2 — PHP 后端"]
+        subgraph AdminSvc["admin-php:8789"]
+            AdminPHP["webman-admin v2, PHP 后端"]
         end
         
-        subgraph ServiceSvc["php :8788"]
-            ServicePHP["webman v2 — 业务 API"]
+        subgraph ServiceSvc["php:8788"]
+            ServicePHP["webman v2, 业务 API"]
         end
 
-        MySQL["MySQL 8.0 :3306 — erik_ + admin_ 表"]
-        Redis["Redis 7 :6379 — 缓存 / 限流 / 队列"]
-        ES["Elasticsearch :9200 — 数据索引"]
+        MySQL["MySQL 8.0:3306, erik_ + admin_ 表"]
+        Redis["Redis 7:6379, 缓存 / 限流 / 队列"]
+        ES["Elasticsearch:9200, 数据索引"]
     end
 
     subgraph External["外部服务"]
         AdPlatforms["29 个广告平台 API"]
     end
 
-    Browser -->|":80"| Nginx
-    Nginx -->|"/"| AdminSvc
-    Nginx -->|"/api/*"| ServiceSvc
-    AdminPHP -->|"ServiceProxy — localhost:8788"| ServiceSvc
+    Browser -->|:80| Nginx
+    Nginx -->|/| AdminSvc
+    Nginx -->|/api/*| ServiceSvc
+    AdminPHP -->|ServiceProxy localhost:8788| ServiceSvc
     ServicePHP --> MySQL
     ServicePHP --> Redis
     ServicePHP --> ES
     AdminPHP --> MySQL
     AdminPHP --> Redis
-    ServicePHP -->|"cURL HTTPS"| AdPlatforms
+    ServicePHP -->|cURL HTTPS| AdPlatforms
 ```
 
 ### 生产部署流
@@ -882,8 +882,8 @@ flowchart LR
     PHPUnit --> Deploy
     TS --> Deploy
     Docker --> Deploy
-    Deploy -->|"手动触发"| Staging["Staging 环境"]
-    Deploy -->|"手动触发"| Prod["Production 环境"]
+    Deploy -->|手动触发| Staging["Staging 环境"]
+    Deploy -->|手动触发| Prod["Production 环境"]
     Staging --> Verify["冒烟测试"]
     Verify --> Prod
 ```
