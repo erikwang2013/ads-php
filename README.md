@@ -306,6 +306,14 @@ GitHub Actions 自动管线：**PHP Syntax → PHPUnit → TypeScript → Docker
 | `tdd-workflow` | TDD 验证流程（测试→实现→语法→TypeScript→提交） |
 
 
+## 开源不易，欢迎支持
+
+| 微信 | 支付宝 |
+|:---:|:---:|
+| ![微信](./docs/weixinpay.png "微信") | ![支付宝](./docs/alipay.png "支付宝") |
+
+---
+
 ## 许可证
 
 Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
