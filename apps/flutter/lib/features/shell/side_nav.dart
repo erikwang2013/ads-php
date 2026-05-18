@@ -92,13 +92,14 @@ class _SideNavGroupState extends State<_SideNavGroup> {
 
   bool get _active => widget.item.path == widget.location ||
       (widget.item.hasChildren &&
-          widget.item.children!.any((c) => c.path == widget.location));
+          widget.item.children!.any((c) => widget.location.startsWith(c.path!)));
 
   @override
   void initState() {
     super.initState();
     _expanded = widget.item.hasChildren &&
-        widget.item.children!.any((c) => widget.location.startsWith(c.path!));
+        widget.item.children!
+            .any((c) => widget.location.startsWith(c.path!));
   }
 
   @override

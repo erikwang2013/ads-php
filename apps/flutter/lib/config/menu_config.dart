@@ -20,7 +20,6 @@ const List<MenuItem> menuConfig = [
   MenuItem(label: '仪表盘', path: '/dashboard', icon: Icons.dashboard),
   MenuItem(label: '广告管理', icon: Icons.campaign, children: [
     MenuItem(label: '广告计划', path: '/campaigns/list', icon: Icons.list_alt),
-    MenuItem(label: '创意管理', path: '/campaigns/creative', icon: Icons.palette),
   ]),
   MenuItem(label: '数据报表', path: '/reports', icon: Icons.bar_chart),
   MenuItem(label: '平台账户', path: '/accounts', icon: Icons.person),
@@ -35,6 +34,14 @@ List<MenuItem> buildBreadcrumb(String path) {
     if (item.hasChildren) {
       for (final child in item.children!) {
         if (child.path == path) return [item, child];
+      }
+    }
+  }
+  // Fallback: prefix-match for parameterized routes like /campaigns/:id
+  for (final item in menuConfig) {
+    if (item.hasChildren) {
+      for (final child in item.children!) {
+        if (path.startsWith('${child.path}/')) return [item, child];
       }
     }
   }
