@@ -26,7 +26,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             builder: (_, __) => const DashboardPage(),
           ),
           GoRoute(
-            path: '/campaigns',
+            path: '/campaigns/list',
             builder: (_, __) => const CampaignListPage(),
           ),
           GoRoute(
