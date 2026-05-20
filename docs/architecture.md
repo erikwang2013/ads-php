@@ -1,0 +1,266 @@
+# 架构设计文档
+
+Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+
+---
+
+## 1. 系统概述
+
+多平台广告管理系统，对接 **29 个广告平台**，覆盖投放管理、跨平台报表、告警监控、自动出价、受众定向。支持 SaaS 多租户、代运营、自用三种模式。
+
+---
+
+## 2. 部署架构
+
+```
+                         ┌──────────────────────────┐
+                         │  客户端                   │
+                         │  Vue Admin / Flutter      │
+                         │  HarmonyOS / Browser      │
+                         └──────────┬───────────────┘
+                                    │ HTTP + JWT
+                                    v
+                         ┌──────────────────────────┐
+                         │   Nginx :80               │
+                         │   /          → admin:8789 │
+                         │   /api       → service:8788│
+                         └──────┬──────────┬────────┘
+                                │          │
+                   ┌────────────┘          └────────────┐
+                   v                                    v
+         ┌─────────────────┐                ┌─────────────────┐
+         │  Admin :8789     │  ServiceProxy  │  Service :8788  │
+         │  webman-admin v2 │───────────────→│  webman v2      │
+         │  Vue 3 SPA       │   cURL HTTP    │  7 插件         │
+         └────────┬────────┘                └────────┬────────┘
+                  │                                   │
+                  └──────────────┬────────────────────┘
+                                 │
+              ┌──────────────────┼──────────────────┐
+              v                  v                  v
+        ┌──────────┐      ┌──────────┐      ┌───────────┐
+        │ MySQL 8.0│      │ Redis 7  │      │    ES     │
+        │ 18 张表  │      │ 缓存/队列│      │ 搜索索引  │
+        └──────────┘      └──────────┘      └───────────┘
+```
+
+---
+
+## 3. 请求处理管道
+
+### 3.1 Service 端 (11 层中间件)
+
+```
+Request
+  → CorsMiddleware           (CORS 白名单、OPTIONS 预检)
+  → SecurityHeadersMiddleware (X-Frame-Options, X-Content-Type-Options, HSTS)
+  → AttackGuardMiddleware     (XSS/路径遍历/Header注入/Body限制/Content-Type)
+  → ClientPlatformMiddleware  (X-Client-Platform 来源识别)
+  → VersionMiddleware         (X-API-Version 版本路由 v1/v2)
+  → RateLimitMiddleware       (Redis 滑动窗口 60次/60s)
+  → SqlGuardMiddleware        (SQL 注入模式检测)
+  → ValidationMiddleware      (输入 trim + strip_tags)
+  → ResponseTimeMiddleware    (X-Response-Time 头 + 慢请求日志)
+  → EncryptionMiddleware      (X-Encrypted 请求解密/响应加密)
+  → AuthMiddleware            (JWT Bearer Token 路由级认证)
+  → Controller
+```
+
+### 3.2 Admin 端 (3 层中间件)
+
+```
+Request
+  → AttackGuardMiddleware
+  → ClientPlatformMiddleware
+  → VersionMiddleware
+  → AuthCheck (路由级, session + JWT 双通道)
+  → Controller
+```
+
+---
+
+## 4. 目录结构
+
+```
+ads-php/
+├── service/                               # 业务 API 服务 :8788
+│   ├── config/                            # 全局配置
+│   │   ├── app.php, database.php, redis.php
+│   │   ├── log.php                        # Monolog (JSON/Line 双模式)
+│   │   ├── middleware.php                 # 11 层全局中间件
+│   │   ├── exception.php                  # API 异常处理器
+│   │   └── scout.php                      # ES 配置
+│   ├── support/                           # 共享工具类 (erik\support)
+│   │   ├── ApiResponse.php                # 统一 JSON 响应
+│   │   ├── ControllerTrait.php            # 控制器公共 trait
+│   │   ├── JwtService.php                 # JWT 包装 (erikwang2013/jwt-webman)
+│   │   ├── CacheService.php               # Redis 缓存
+│   │   ├── HashidsService.php             # ID 加解密
+│   │   ├── SnowflakeTrait.php             # Snowflake ID 生成
+│   │   └── ExceptionHandler.php           # JSON 异常渲染
+│   ├── plugin/
+│   │   ├── ads-api/                       # REST API 层
+│   │   │   ├── controller/v1/             # 14 个控制器
+│   │   │   ├── middleware/                # 7 个中间件
+│   │   │   ├── config/route.php           # 45+ 路由
+│   │   │   └── route_helpers.php          # versioned() 版本路由
+│   │   ├── ads-platform/                  # 平台适配器核心
+│   │   │   ├── adapter/                   # 29 个平台适配器
+│   │   │   ├── src/                       # AdapterRegistry, CampaignData
+│   │   │   ├── model/                     # Campaign, BidRule, BidLog, TargetingTemplate
+│   │   │   ├── service/                   # BidEngine
+│   │   │   └── migration/                # SQL DDL + 性能索引
+│   │   ├── ads-account/                   # OAuth 账户 + 平台账户
+│   │   ├── ads-task/                      # 5 个 cron 任务
+│   │   ├── ads-alert/                     # 告警引擎 + 通知
+│   │   ├── ads-report/                    # 报表引擎 (CSV/Excel/PDF)
+│   │   └── ads-tenant/                    # 多租户
+│   ├── tests/                             # PHPUnit
+│   │   ├── Unit/Middleware/               # 中间件测试
+│   │   ├── Unit/Task/                     # 任务测试 (规划)
+│   │   └── Integration/                   # 控制器集成测试
+│   └── start.php                          # 入口
+├── admin/                                 # 管理后台 :8789
+│   ├── app/
+│   │   ├── controller/                    # Auth, AdminUser, AuditLog
+│   │   ├── middleware/                    # AttackGuard, ClientPlatform, Version, AuthCheck
+│   │   ├── service/                       # AuditService, ServiceProxy
+│   │   └── support/                       # HashidsService
+│   ├── public/web/                        # Vue 3 + TS SPA
+│   │   └── src/
+│   │       ├── views/                     # 14 页面 (dashboard/campaign/adgroup/creative/report/alert/notification/bid/system)
+│   │       ├── api/                       # 9 个 API 客户端
+│   │       ├── stores/                    # 4 个 Pinia Store
+│   │       └── components/                # ListPageLayout 等共享组件
+│   └── config/                            # Admin 配置
+├── apps/
+│   ├── flutter/                           # Flutter Desktop App
+│   │   └── lib/
+│   │       ├── features/                  # 12 功能页面 + Shell 布局
+│   │       ├── config/menu_config.dart    # 两级菜单 + 面包屑
+│   │       ├── router.dart                # GoRouter + ShellRoute + 路由守卫
+│   │       ├── stores/auth_provider.dart  # Riverpod Auth
+│   │       └── shared/api/api_client.dart # Dio + JWT + 平台检测
+│   └── harmonyos/                         # HarmonyOS (API Client 就绪)
+├── docker/                                # Nginx 配置 + Dockerfiles
+├── .github/workflows/                     # CI (语法→测试→TS→Docker) + CD (构建推送)
+└── docs/                                  # 设计文档
+```
+
+---
+
+## 5. 数据模型
+
+### 5.1 表分类
+
+| 分类 | 表名 | 主键 | 用途 |
+|------|------|------|------|
+| 基础 | `erik_tenants` | BIGINT Snowflake | 多租户 |
+| 账户 | `erik_platform_accounts`, `erik_auth_tokens` | BIGINT Snowflake | OAuth 平台账户 |
+| 投放层级 | `erik_campaigns`, `erik_ad_groups`, `erik_creatives` | BIGINT Snowflake | 广告投放 |
+| 报表 | `erik_report_metrics`, `erik_report_extras` | BIGINT Snowflake | 统一指标 |
+| 告警 | `erik_alert_rules`, `erik_alert_logs` | BIGINT Snowflake | 监控告警 |
+| 出价 | `erik_bid_rules`, `erik_bid_logs` | BIGINT Snowflake | 自动出价 |
+| 定向 | `erik_targeting_templates` | BIGINT Snowflake | 受众模板 |
+| 通知 | `erik_notifications` | BIGINT Snowflake | 站内通知 |
+| 系统 | `erik_sync_errors` | BIGINT Snowflake | 同步错误 |
+| 管理 | `admin_users`, `admin_roles`, `admin_audit_logs` | BIGINT Snowflake | RBAC + 审计 |
+
+### 5.2 命名规范
+
+- 表前缀: `erik_`
+- 主键: `BIGINT UNSIGNED PRIMARY KEY` (无自增, Snowflake ID)
+- 引擎: InnoDB, 字符集: utf8mb4
+- 时间戳: `created_at`, `updated_at` (DATETIME)
+
+---
+
+## 6. 安全架构
+
+### 6.1 防护层次
+
+| 层 | 机制 | 覆盖范围 |
+|----|------|----------|
+| 传输 | Nginx (SSL 终结) | 全量 |
+| 网络 | CORS 白名单 + HSTS | Service |
+| 输入 | AttackGuard (XSS/路径遍历/Header注入) | Service + Admin |
+| 注入 | SQLGuard (模式检测) | Service |
+| 清洗 | ValidationMiddleware (strip_tags) | Service |
+| 认证 | JWT Bearer + bcrypt + refresh | Service |
+| 认证 | Session + JWT 双通道 | Admin |
+| 授权 | RBAC (角色 + 权限 JSON) | Admin |
+| 加密 | EncryptionMiddleware (传输) + Encryptable (存储) | Service |
+| 频率 | RateLimit (滑动窗口) | Service |
+| 审计 | 操作轨迹 (IP/UA/平台) | Admin |
+
+### 6.2 客户端平台识别
+
+通过 `X-Client-Platform` header:
+
+| 值 | 来源 |
+|----|------|
+| `web` | Vue Admin, Flutter Web |
+| `ios` / `android` | Flutter Mobile |
+| `ipados` / `macos` / `windows` / `linux` | Flutter Desktop |
+| `harmonyos` | HarmonyOS App |
+
+---
+
+## 7. API 版本路由机制
+
+版本号不出现于 URL 路径。版本通过 `X-API-Version` header 传递，`VersionMiddleware` 读取并设置 `$request->apiVersion`。`versioned()` 辅助函数运行时将控制器类中的版本段替换为请求版本。
+
+```
+请求: GET /api/campaigns
+Header: X-API-Version: v1
+
+VersionMiddleware → $request->apiVersion = 'v1'
+versioned(CampaignController::class, 'index')
+  → controller\v1\CampaignController::index()
+```
+
+---
+
+## 8. 定时任务调度
+
+| 任务 | Cron | 功能 |
+|------|------|------|
+| TokenRefreshTask | `55 */1 * * *` | 刷新过期 OAuth Token |
+| DataSyncTask | `*/10 * * * *` | 同步 Campaigns→AdGroups→Creatives→Reports→清缓存 |
+| AlertCheckTask | `*/5 * * * *` | 评估告警规则，触发通知 |
+| BidCheckTask | `*/10 * * * *` | 评估出价规则，执行预算调整/启停 |
+| RetrySyncTask | `*/3 * * * *` | 重试失败同步（最多 3 次，指数退避） |
+
+---
+
+## 9. Erik Stack 包集成
+
+| 包 | 集成位置 | 用途 |
+|----|----------|------|
+| `erikwang2013/snowflake-php` | 10 个 Model (SnowflakeTrait) + admin helpers.php | 主键生成 |
+| `erikwang2013/hashids` | ApiResponse + 2 个 Admin Controller | ID 编码 |
+| `erikwang2013/jwt-webman` | JwtService (encode/decode/refresh) | 认证令牌 |
+| `erikwang2013/encryption` | EncryptionMiddleware | 传输加解密 |
+| `erikwang2013/encryptable` | PlatformAccount + AuthToken Model | DB 字段加密 |
+| `erikwang2013/webman-scout` | Campaign Model (Searchable trait) | ES 搜索 |
+| `erikwang2013/season` | PlatformController (getCountryFlagEmoji) | 国家旗帜 |
+| `erikwang2013/poster-php` | AuthController (CaptchaService) | 滑块验证码 |
+
+---
+
+## 10. 部署与 CI/CD
+
+### Docker 服务
+
+| 服务 | 端口 | 镜像 |
+|------|------|------|
+| mysql | 3306 | mysql:8.0 |
+| redis | 6379 | redis:7-alpine |
+| php (service) | 8788 | Dockerfile |
+| admin-php | 8789 | Dockerfile.admin-php |
+| nginx | 80 | Dockerfile.admin |
+
+### CI/CD
+
+- **CI** (`.github/workflows/ci.yml`): PHP Syntax → PHPUnit → TypeScript → Docker Build
+- **CD** (`.github/workflows/deploy.yml`): Docker Buildx → GHCR Push (service/admin/admin-php) → Deploy

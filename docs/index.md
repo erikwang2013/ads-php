@@ -3,6 +3,8 @@
 ```
 docs/
 ├── index.md                                # 本文件
+├── architecture.md                         # 架构设计文档 (部署/安全/目录/数据模型)
+├── features.md                             # 功能设计文档 (15 模块/API/业务流程)
 ├── skills/                                 # 可复用项目技能
 │   ├── adapter-generator.md                # 生成平台适配器模板
 │   ├── admin-page-generator.md             # 生成 Vue3 管理后台页面
