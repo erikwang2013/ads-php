@@ -137,7 +137,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 ## 安全
 
-**11 层中间件**：CORS（白名单） → SecurityHeaders → AttackGuard（XSS/路径遍历/Header注入/Body限制拦截） → ClientPlatform → Version → RateLimit → SQLGuard（SQL注入） → Validation（输入过滤） → ResponseTime → Encryption → JWT（Bearer Token + refresh）
+**11 层中间件**（service 全量，admin 含 AttackGuard/ClientPlatform/Version）：CORS（白名单） → SecurityHeaders → AttackGuard（XSS 11模式/路径遍历/Header注入/Body 10MiB/Content-Type白名单） → ClientPlatform（8端来源识别） → Version → RateLimit → SQLGuard → Validation → ResponseTime → Encryption → JWT
 
 **认证**：服务端和 admin 统一用 `admin_users` 表 + bcrypt 哈希认证，JWT Token 24h 有效期 + refresh 端点自动轮换
 
