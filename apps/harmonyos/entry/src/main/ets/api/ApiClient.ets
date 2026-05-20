@@ -4,6 +4,7 @@ import http from '@ohos.net.http';
 export class ApiClient {
   private static baseUrl: string = 'http://127.0.0.1:8788/api';
   private static token: string = '';
+  static readonly platform: string = 'harmonyos';
 
   static setToken(t: string) { this.token = t; }
   static setBaseUrl(url: string) { this.baseUrl = url; }
@@ -15,7 +16,7 @@ export class ApiClient {
     let req = http.createHttp();
     let resp = await req.request(this.baseUrl + path, {
       method: http.RequestMethod.GET,
-      header: { 'X-API-Version': 'v1', 'Authorization': `Bearer ${this.token}` }
+      header: { 'X-API-Version': 'v1', 'X-Client-Platform': 'harmonyos', 'Authorization': `Bearer ${this.token}` }
     });
     let data = JSON.parse(resp.result as string);
     return data.data;
@@ -25,7 +26,7 @@ export class ApiClient {
     let req = http.createHttp();
     let resp = await req.request(this.baseUrl + path, {
       method: http.RequestMethod.POST,
-      header: { 'X-API-Version': 'v1', 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.token}` },
+      header: { 'X-API-Version': 'v1', 'X-Client-Platform': 'harmonyos', 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.token}` },
       extraData: JSON.stringify(body)
     });
     let data = JSON.parse(resp.result as string);
@@ -36,7 +37,7 @@ export class ApiClient {
     let req = http.createHttp();
     let resp = await req.request(this.baseUrl + path, {
       method: http.RequestMethod.PUT,
-      header: { 'X-API-Version': 'v1', 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.token}` },
+      header: { 'X-API-Version': 'v1', 'X-Client-Platform': 'harmonyos', 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.token}` },
       extraData: JSON.stringify(body)
     });
     let data = JSON.parse(resp.result as string);
@@ -47,7 +48,7 @@ export class ApiClient {
     let req = http.createHttp();
     let resp = await req.request(this.baseUrl + path, {
       method: http.RequestMethod.DELETE,
-      header: { 'X-API-Version': 'v1', 'Authorization': `Bearer ${this.token}` }
+      header: { 'X-API-Version': 'v1', 'X-Client-Platform': 'harmonyos', 'Authorization': `Bearer ${this.token}` }
     });
     let data = JSON.parse(resp.result as string);
     return data.data;
@@ -57,7 +58,7 @@ export class ApiClient {
     let req = http.createHttp();
     let resp = await req.request(this.baseUrl + '/auth/login', {
       method: http.RequestMethod.POST,
-      header: { 'X-API-Version': 'v1', 'Content-Type': 'application/json' },
+      header: { 'X-API-Version': 'v1', 'X-Client-Platform': 'harmonyos', 'Content-Type': 'application/json' },
       extraData: JSON.stringify({ username: username, password: password })
     });
     let data = JSON.parse(resp.result as string);

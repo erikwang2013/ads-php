@@ -90,7 +90,7 @@ class ApiResponse
         if ($data !== null) {
             $body['data'] = $data;
         }
-        return new \Webman\Http\Response(200, ['Content-Type' => 'application/json'], json_encode($body, JSON_UNESCAPED_UNICODE));
+        return new Response(200, ['Content-Type' => 'application/json'], json_encode($body, JSON_UNESCAPED_UNICODE));
     }
 
     public static function success(mixed $data = null, string $message = 'success', bool $encodeIds = false): \Webman\Http\Response
@@ -104,7 +104,7 @@ class ApiResponse
 
     public static function error(string $message, int $code = 1, int $httpCode = 200): \Webman\Http\Response
     {
-        return new \Webman\Http\Response($httpCode, ['Content-Type' => 'application/json'], json_encode(['code' => $code, 'message' => $message], JSON_UNESCAPED_UNICODE));
+        return new Response($httpCode, ['Content-Type' => 'application/json'], json_encode(['code' => $code, 'message' => $message], JSON_UNESCAPED_UNICODE));
     }
 
     public static function paginated(array $list, int $total, int $page, int $perPage, ?array $summary = null): \Webman\Http\Response

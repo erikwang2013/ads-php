@@ -12,12 +12,19 @@ use Webman\Http\Request;
 use app\support\ApiResponse;
 use Webman\Http\Response;
 use erik\support\CacheService;
+use Erikwang2013\Season\SeasonService;
 
 class PlatformController
 {
-    public function index(): \Webman\Http\Response
+    public function index(): Response
     {
-        $platforms = CacheService::remember('cache:platforms', 3600, fn() => AdapterRegistry::all());
+        $platforms = CacheService::remember('cache:platforms', 3600, function () {
+            $season = new SeasonService();
+            return array_map(function ($p) use ($season) {
+                $p['flag'] = $season->getCountryFlagEmoji($p['country'] ?? 'CN');
+                return $p;
+            }, AdapterRegistry::all());
+        });
         return ApiResponse::success($platforms);
     }
 

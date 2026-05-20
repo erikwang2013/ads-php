@@ -7,6 +7,7 @@ namespace admin\controller;
 use Illuminate\Database\Capsule\Manager as DB;
 use Webman\Http\Request;
 use admin\service\AuditService;
+use admin\support\HashidsService;
 
 class AdminUserController
 {
@@ -58,6 +59,9 @@ class AdminUserController
             ->map(function ($item) {
                 $item->status = (int) $item->status;
                 $item->role_id = (int) $item->role_id;
+                $hs = new HashidsService();
+                $item->id = $hs->encode($item->id);
+                $item->role_id = $hs->encode((int) $item->role_id);
                 return $item;
             });
 

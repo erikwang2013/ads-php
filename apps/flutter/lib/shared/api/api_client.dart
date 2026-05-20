@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -8,6 +9,16 @@ class ApiClient {
     receiveTimeout: const Duration(seconds: 30),
   ));
 
+  static String get clientPlatform {
+    if (Platform.isIOS) return 'ios';
+    if (Platform.isAndroid) return 'android';
+    if (Platform.isMacOS) return 'macos';
+    if (Platform.isWindows) return 'windows';
+    if (Platform.isLinux) return 'linux';
+    if (Platform.isFuchsia) return 'web';
+    return 'web';
+  }
+
   static Future<void> init() async {
     dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
@@ -17,6 +28,7 @@ class ApiClient {
           options.headers['Authorization'] = 'Bearer $token';
         }
         options.headers['X-API-Version'] = 'v1';
+        options.headers['X-Client-Platform'] = clientPlatform;
         handler.next(options);
       },
       onError: (error, handler) {

@@ -6,6 +6,7 @@ namespace admin\controller;
 
 use Illuminate\Database\Capsule\Manager as DB;
 use Webman\Http\Request;
+use admin\support\HashidsService;
 
 class AuditLogController
 {
@@ -45,7 +46,9 @@ class AuditLogController
             ->limit($perPage)
             ->get()
             ->map(function ($item) {
-                $item->user_id = (int) $item->user_id;
+                $hs = new HashidsService();
+                $item->id = $hs->encode($item->id);
+                $item->user_id = $hs->encode((int) $item->user_id);
                 if ($item->detail) {
                     $item->detail = json_decode($item->detail, true);
                 }

@@ -46,7 +46,7 @@ class CorsMiddleware implements MiddlewareInterface
         $allowedOrigin = $this->getAllowedOrigin($request);
         $commonHeaders = [
             'Access-Control-Allow-Methods' => 'GET, POST, PUT, DELETE, OPTIONS',
-            'Access-Control-Allow-Headers' => 'Content-Type, Authorization, X-Tenant-Id, X-Encrypted, X-API-Version',
+            'Access-Control-Allow-Headers' => 'Content-Type, Authorization, X-Tenant-Id, X-Encrypted, X-API-Version, X-Client-Platform',
         ];
 
         if ($request->method() === 'OPTIONS') {

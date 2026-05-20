@@ -17,6 +17,8 @@
 
 return [
     'global' => [
+        admin\middleware\AttackGuardMiddleware::class,
+        admin\middleware\ClientPlatformMiddleware::class,
         admin\middleware\VersionMiddleware::class,
     ],
 ];
