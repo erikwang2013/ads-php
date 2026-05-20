@@ -6,4 +6,5 @@ export const campaignApi = {
   show(id: number) { return api.get(`/campaigns/${id}`) },
   update(id: number, data: Record<string, any>) { return api.put(`/campaigns/${id}`, data) },
   toggle(id: number, enabled: boolean) { return api.post(`/campaigns/${id}/toggle`, { enabled }) },
+  batchToggle(ids: number[], enabled: boolean) { return api.post('/campaigns/batch/toggle', { ids, enabled }) },
 }

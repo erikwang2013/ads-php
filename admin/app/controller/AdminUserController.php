@@ -66,9 +66,12 @@ class AdminUserController
             'message' => 'ok',
             'data' => [
                 'list' => $list,
-                'total' => $total,
-                'page' => $page,
-                'per_page' => $perPage,
+                'pagination' => [
+                    'page' => $page,
+                    'per_page' => $perPage,
+                    'total' => $total,
+                    'total_pages' => (int) ceil($total / $perPage),
+                ],
             ],
         ]);
     }

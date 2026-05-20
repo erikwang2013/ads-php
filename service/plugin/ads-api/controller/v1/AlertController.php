@@ -3,22 +3,27 @@
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
  */
 
-namespace plugin\ads_api\controller;
+namespace plugin\ads_api\controller\v1;
 
 use plugin\ads_alert\model\AlertRule;
 use plugin\ads_alert\model\AlertLog;
 use Webman\Http\Request;
 use app\support\ApiResponse;
+use Webman\Http\Response;
+use erik\support\CacheService;
+use Throwable;
+
+use \erik\support\ControllerTrait;
 
 class AlertController
 {
     /**
-     * GET /api/v1/alerts/rules
+     * GET /api/alerts/rules
      * List alert rules with pagination.
      */
-    public function rules(Request $request): Webman\Http\Response
+    public function rules(Request $request): \Webman\Http\Response
     {
-        $tenantId = $request->tenantId ?? 1;
+        $tenantId = $this->tenantId($request);
         $query = AlertRule::byTenant($tenantId);
 
         if ($platform = $request->get('platform')) {
@@ -31,29 +36,23 @@ class AlertController
             $query->where('metric', $metric);
         }
 
-        $sort = $request->get('sort', 'id');
-        $allowedSorts = ['id', 'name', 'created_at', 'updated_at'];
-        $sort = in_array($sort, $allowedSorts) ? $sort : 'id';
-        $query->orderBy($sort, 'desc');
+        $cacheKey = 'cache:alert_rules:' . $tenantId . ':' . md5(json_encode($request->all()));
 
-        $perPage = min((int) $request->get('per_page', 20), 100);
-        $paginator = $query->paginate($perPage);
+        $result = CacheService::remember($cacheKey, 120, function () use ($query) {
+            $paginator = $query->orderBy('id', 'desc')->paginate(min(100, 20));
+            return [$paginator->items(), $paginator->total(), $paginator->currentPage(), $paginator->perPage()];
+        });
 
-        return ApiResponse::paginated(
-            $paginator->items(),
-            $paginator->total(),
-            $paginator->currentPage(),
-            $paginator->perPage()
-        );
+        return ApiResponse::paginated($result[0], $result[1], $result[2], $result[3]);
     }
 
     /**
-     * POST /api/v1/alerts/rules
+     * POST /api/alerts/rules
      * Create a new alert rule.
      */
-    public function createRule(Request $request): Webman\Http\Response
+    public function createRule(Request $request): \Webman\Http\Response
     {
-        $tenantId = $request->tenantId ?? 1;
+        $tenantId = $this->tenantId($request);
 
         $validated = $this->validateRule($request);
         if ($validated !== true) {
@@ -74,16 +73,17 @@ class AlertController
             'enabled'         => (int) $request->post('enabled', 1),
         ]);
 
+        CacheService::flush('cache:alert_rules:' . $tenantId);
         return ApiResponse::success($rule, '规则创建成功');
     }
 
     /**
-     * PUT /api/v1/alerts/rules/{id}
+     * PUT /api/alerts/rules/{id}
      * Update an existing alert rule.
      */
-    public function updateRule(Request $request, int $id): Webman\Http\Response
+    public function updateRule(Request $request, int $id): \Webman\Http\Response
     {
-        $tenantId = $request->tenantId ?? 1;
+        $tenantId = $this->tenantId($request);
         $rule = AlertRule::byTenant($tenantId)->find($id);
 
         if (!$rule) {
@@ -113,16 +113,17 @@ class AlertController
 
         $rule->update($data);
 
+        CacheService::flush('cache:alert_rules:' . $tenantId);
         return ApiResponse::success($rule, '规则更新成功');
     }
 
     /**
-     * DELETE /api/v1/alerts/rules/{id}
+     * DELETE /api/alerts/rules/{id}
      * Delete an alert rule.
      */
-    public function deleteRule(Request $request, int $id): Webman\Http\Response
+    public function deleteRule(Request $request, int $id): \Webman\Http\Response
     {
-        $tenantId = $request->tenantId ?? 1;
+        $tenantId = $this->tenantId($request);
         $rule = AlertRule::byTenant($tenantId)->find($id);
 
         if (!$rule) {
@@ -131,16 +132,17 @@ class AlertController
 
         $rule->delete();
 
+        CacheService::flush('cache:alert_rules:' . $tenantId);
         return ApiResponse::success(null, '规则已删除');
     }
 
     /**
-     * GET /api/v1/alerts/logs
+     * GET /api/alerts/logs
      * List alert logs with pagination and status filter.
      */
-    public function logs(Request $request): Webman\Http\Response
+    public function logs(Request $request): \Webman\Http\Response
     {
-        $tenantId = $request->tenantId ?? 1;
+        $tenantId = $this->tenantId($request);
         $query = AlertLog::byTenant($tenantId);
 
         if ($status = $request->get('status')) {
@@ -170,12 +172,12 @@ class AlertController
     }
 
     /**
-     * POST /api/v1/alerts/logs/{id}/acknowledge
+     * POST /api/alerts/logs/{id}/acknowledge
      * Acknowledge an alert log.
      */
-    public function acknowledge(Request $request, int $id): Webman\Http\Response
+    public function acknowledge(Request $request, int $id): \Webman\Http\Response
     {
-        $tenantId = $request->tenantId ?? 1;
+        $tenantId = $this->tenantId($request);
         $log = AlertLog::byTenant($tenantId)->find($id);
 
         if (!$log) {
@@ -192,13 +194,13 @@ class AlertController
     }
 
     /**
-     * GET /api/v1/alerts/unread-count
+     * GET /api/alerts/unread-count
      * Get count of triggered (unread) alerts.
      */
-    public function unreadCount(Request $request): Webman\Http\Response
+    public function unreadCount(Request $request): \Webman\Http\Response
     {
-        $tenantId = $request->tenantId ?? 1;
-        $count = AlertLog::byTenant($tenantId)->triggered()->count();
+        $tenantId = $this->tenantId($request);
+        $count = CacheService::remember('cache:alert_unread:' . $tenantId, 30, fn() => AlertLog::byTenant($tenantId)->triggered()->count());
 
         return ApiResponse::success(['count' => $count]);
     }

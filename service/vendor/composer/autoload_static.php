@@ -79,6 +79,7 @@ class ComposerStaticInit74b604ff567f5e4e1d20b34355289ade
         ),
         'T' => 
         array (
+            'Tests\\' => 6,
             'Termwind\\' => 9,
         ),
         'S' => 
@@ -275,6 +276,10 @@ class ComposerStaticInit74b604ff567f5e4e1d20b34355289ade
         'Webman\\' => 
         array (
             0 => __DIR__ . '/..' . '/workerman/webman-framework/src',
+        ),
+        'Tests\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/tests',
         ),
         'Termwind\\' => 
         array (

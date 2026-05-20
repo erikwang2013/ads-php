@@ -26,7 +26,7 @@ class AuthState {
     );
   }
 
-  bool get isAuthenticated => token != null && token.isNotEmpty;
+  bool get isAuthenticated => token != null && token!.isNotEmpty;
 }
 
 class AuthNotifier extends StateNotifier<AuthState> {

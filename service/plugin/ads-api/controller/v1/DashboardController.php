@@ -3,16 +3,21 @@
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
  */
 
-namespace plugin\ads_api\controller;
+namespace plugin\ads_api\controller\v1;
 
 use Webman\Http\Request;
 use app\support\ApiResponse;
+use Webman\Http\Response;
 use erik\support\CacheService;
 use Illuminate\Database\Capsule\Manager as DB;
+use Throwable;
+
+
+use \erik\support\ControllerTrait;
 
 class DashboardController
 {
-    public function summary(Request $request): Webman\Http\Response
+    public function summary(Request $request): \Webman\Http\Response
     {
         $tenantId = $request->tenantId ?? 1;
         $dateStart = $request->get('date_start', date('Y-m-d'));

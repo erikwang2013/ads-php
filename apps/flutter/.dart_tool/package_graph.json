@@ -14,7 +14,8 @@
         "flutter_svg",
         "go_router",
         "intl",
-        "shared_preferences"
+        "shared_preferences",
+        "window_manager"
       ],
       "devDependencies": [
         "flutter_lints",
@@ -44,6 +45,15 @@
         "stream_channel",
         "test_api",
         "vector_math"
+      ]
+    },
+    {
+      "name": "window_manager",
+      "version": "0.3.9",
+      "dependencies": [
+        "flutter",
+        "path",
+        "screen_retriever"
       ]
     },
     {
@@ -221,6 +231,13 @@
         "stream_channel",
         "string_scanner",
         "term_glyph"
+      ]
+    },
+    {
+      "name": "screen_retriever",
+      "version": "0.1.9",
+      "dependencies": [
+        "flutter"
       ]
     },
     {

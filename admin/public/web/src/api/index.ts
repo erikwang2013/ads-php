@@ -22,7 +22,7 @@ interface UnwrappedInstance extends Omit<AxiosInstance, 'request' | 'get' | 'del
 }
 
 const raw = axios.create({
-  baseURL: '/api/v1',
+  baseURL: '/api',
   timeout: 15000,
 })
 
@@ -31,6 +31,7 @@ raw.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }
+  config.headers['X-API-Version'] = 'v1'
   return config
 })
 

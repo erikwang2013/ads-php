@@ -3,22 +3,25 @@
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
  */
 
-namespace plugin\ads_api\controller;
+namespace plugin\ads_api\controller\v1;
 
 use plugin\ads_platform\src\AdapterRegistry;
 use plugin\ads_account\model\AuthToken;
 use plugin\ads_account\service\OAuthService;
 use Webman\Http\Request;
 use app\support\ApiResponse;
+use Webman\Http\Response;
+use erik\support\CacheService;
 
 class PlatformController
 {
-    public function index(): Webman\Http\Response
+    public function index(): \Webman\Http\Response
     {
-        return ApiResponse::success(AdapterRegistry::all());
+        $platforms = CacheService::remember('cache:platforms', 3600, fn() => AdapterRegistry::all());
+        return ApiResponse::success($platforms);
     }
 
-    public function oauthUrl(Request $request, string $code): Webman\Http\Response
+    public function oauthUrl(Request $request, string $code): \Webman\Http\Response
     {
         $redirectUri = $request->get('redirect_uri', '');
         if (!$redirectUri) {
@@ -44,7 +47,7 @@ class PlatformController
         return ApiResponse::success(['auth_url' => $url, 'state' => $state]);
     }
 
-    public function callback(Request $request, string $code): Webman\Http\Response
+    public function callback(Request $request, string $code): \Webman\Http\Response
     {
         $state = $request->post('state', '');
         $authCode = $request->post('code', '');

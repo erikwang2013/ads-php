@@ -5,7 +5,7 @@
 
 namespace plugin\ads_api\middleware;
 
-use Erikwang2013\JwtWebman\Jwt;
+use erik\support\JwtService as Jwt;
 use Webman\Http\Request;
 use Webman\Http\Response;
 use Webman\MiddlewareInterface;

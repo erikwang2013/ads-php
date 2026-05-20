@@ -2,7 +2,7 @@
 import http from '@ohos.net.http';
 
 export class ApiClient {
-  private static baseUrl: string = 'http://127.0.0.1:8788/api/v1';
+  private static baseUrl: string = 'http://127.0.0.1:8788/api';
   private static token: string = '';
 
   static setToken(t: string) { this.token = t; }
@@ -15,7 +15,7 @@ export class ApiClient {
     let req = http.createHttp();
     let resp = await req.request(this.baseUrl + path, {
       method: http.RequestMethod.GET,
-      header: { 'Authorization': `Bearer ${this.token}` }
+      header: { 'X-API-Version': 'v1', 'Authorization': `Bearer ${this.token}` }
     });
     let data = JSON.parse(resp.result as string);
     return data.data;
@@ -25,7 +25,7 @@ export class ApiClient {
     let req = http.createHttp();
     let resp = await req.request(this.baseUrl + path, {
       method: http.RequestMethod.POST,
-      header: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.token}` },
+      header: { 'X-API-Version': 'v1', 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.token}` },
       extraData: JSON.stringify(body)
     });
     let data = JSON.parse(resp.result as string);
@@ -36,7 +36,7 @@ export class ApiClient {
     let req = http.createHttp();
     let resp = await req.request(this.baseUrl + path, {
       method: http.RequestMethod.PUT,
-      header: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.token}` },
+      header: { 'X-API-Version': 'v1', 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.token}` },
       extraData: JSON.stringify(body)
     });
     let data = JSON.parse(resp.result as string);
@@ -47,7 +47,7 @@ export class ApiClient {
     let req = http.createHttp();
     let resp = await req.request(this.baseUrl + path, {
       method: http.RequestMethod.DELETE,
-      header: { 'Authorization': `Bearer ${this.token}` }
+      header: { 'X-API-Version': 'v1', 'Authorization': `Bearer ${this.token}` }
     });
     let data = JSON.parse(resp.result as string);
     return data.data;
@@ -57,7 +57,7 @@ export class ApiClient {
     let req = http.createHttp();
     let resp = await req.request(this.baseUrl + '/auth/login', {
       method: http.RequestMethod.POST,
-      header: { 'Content-Type': 'application/json' },
+      header: { 'X-API-Version': 'v1', 'Content-Type': 'application/json' },
       extraData: JSON.stringify({ username: username, password: password })
     });
     let data = JSON.parse(resp.result as string);

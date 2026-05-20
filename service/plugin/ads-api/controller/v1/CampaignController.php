@@ -3,40 +3,32 @@
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
  */
 
-namespace plugin\ads_api\controller;
+namespace plugin\ads_api\controller\v1;
 
 use plugin\ads_platform\src\AdapterRegistry;
 use plugin\ads_platform\src\CampaignData;
 use plugin\ads_account\model\PlatformAccount;
 use Webman\Http\Request;
 use app\support\ApiResponse;
+use Webman\Http\Response;
 use Illuminate\Database\Capsule\Manager as DB;
 use Throwable;
 
 class CampaignController
 {
-    public function index(Request $request): Webman\Http\Response
+    use \erik\support\ControllerTrait;
+
+    protected array $allowedSorts = ['id', 'name', 'platform', 'daily_budget', 'status', 'created_at', 'updated_at'];
+    public function index(Request $request): \Webman\Http\Response
     {
-        $tenantId = $request->tenantId ?? 1;
+        $tenantId = $this->tenantId($request);
         $query = DB::table('erik_campaigns')->where('tenant_id', $tenantId);
 
-        if ($platform = $request->get('platform')) {
-            $query->where('platform', $platform);
-        }
-        if ($status = $request->get('status')) {
-            $query->where('status', $status);
-        }
-        if ($keyword = $request->get('keyword')) {
-            $query->where('name', 'like', "%{$keyword}%");
-        }
+        if ($platform = $request->get('platform')) $query->where('platform', $platform);
+        if ($status = $request->get('status')) $query->where('status', $status);
+        if ($keyword = $request->get('keyword')) $query->where('name', 'like', "%{$keyword}%");
 
-        $sort = $request->get('sort', 'id');
-        $allowedSorts = ['id', 'name', 'platform', 'daily_budget', 'status', 'created_at', 'updated_at'];
-        $sort = in_array($sort, $allowedSorts) ? $sort : 'id';
-        $query->orderBy($sort, 'desc');
-
-        $perPage = min((int) $request->get('per_page', 20), 100);
-        $paginator = $query->paginate($perPage);
+        [$items, $total, $page, $perPage] = $this->paginate($request, $query);
 
         $summary = (array) DB::table('erik_report_metrics')
             ->where('tenant_id', $tenantId)
@@ -48,16 +40,10 @@ class CampaignController
             ->selectRaw('COALESCE(AVG(cvr), 0) as avg_cvr')
             ->first();
 
-        return ApiResponse::paginated(
-            $paginator->items(),
-            $paginator->total(),
-            $paginator->currentPage(),
-            $paginator->perPage(),
-            $summary
-        );
+        return ApiResponse::paginated($items, $total, $page, $perPage, $summary);
     }
 
-    public function store(Request $request): Webman\Http\Response
+    public function store(Request $request): \Webman\Http\Response
     {
         $platform = $request->post('platform');
         $accountId = (int) $request->post('platform_account_id');
@@ -93,11 +79,11 @@ class CampaignController
 
             return ApiResponse::success(['id' => $id, 'platform_campaign_id' => $platformCampaignId]);
         } catch (Throwable $e) {
-            return ApiResponse::error($e->getMessage());
+            return $this->catchError($e);
         }
     }
 
-    public function show(int $id): Webman\Http\Response
+    public function show(int $id): \Webman\Http\Response
     {
         $campaign = DB::table('erik_campaigns')->find($id);
         if (!$campaign) {
@@ -112,7 +98,7 @@ class CampaignController
         return ApiResponse::success(['campaign' => $campaign, 'today' => $todayMetrics]);
     }
 
-    public function update(Request $request, int $id): Webman\Http\Response
+    public function update(Request $request, int $id): \Webman\Http\Response
     {
         $campaign = DB::table('erik_campaigns')->find($id);
         if (!$campaign) {
@@ -139,11 +125,11 @@ class CampaignController
 
             return ApiResponse::success(null, 'Updated');
         } catch (Throwable $e) {
-            return ApiResponse::error($e->getMessage());
+            return $this->catchError($e);
         }
     }
 
-    public function toggle(Request $request, int $id): Webman\Http\Response
+    public function toggle(Request $request, int $id): \Webman\Http\Response
     {
         $campaign = DB::table('erik_campaigns')->find($id);
         if (!$campaign) {
@@ -169,7 +155,58 @@ class CampaignController
 
             return ApiResponse::success(null, $enabled ? 'Enabled' : 'Paused');
         } catch (Throwable $e) {
-            return ApiResponse::error($e->getMessage());
+            return $this->catchError($e);
         }
+    }
+
+    public function batchToggle(Request $request): \Webman\Http\Response
+    {
+        $ids = $request->post('ids', []);
+        $enabled = (bool) $request->post('enabled', true);
+
+        if (empty($ids) || !is_array($ids)) {
+            return ApiResponse::error('ids must be a non-empty array');
+        }
+
+        $ids = array_map('intval', $ids);
+        $campaigns = DB::table('erik_campaigns')->whereIn('id', $ids)->get();
+        $accountIds = $campaigns->pluck('platform_account_id')->unique()->toArray();
+        $accounts = PlatformAccount::whereIn('id', $accountIds)->get()->keyBy('id');
+
+        $success = 0;
+        $failed = count($ids) - count($campaigns);
+
+        foreach ($campaigns as $campaign) {
+            try {
+                $account = $accounts[$campaign->platform_account_id] ?? null;
+                if ($account) {
+                    $adapter = AdapterRegistry::get($campaign->platform);
+                    if ($adapter) {
+                        $adapter->toggleCampaign(
+                            $account->access_token,
+                            $account->account_id_on_platform,
+                            $campaign->platform_campaign_id,
+                            $enabled
+                        );
+                    }
+                }
+
+                DB::table('erik_campaigns')->where('id', $campaign->id)->update([
+                    'status'     => $enabled ? 'enabled' : 'paused',
+                    'updated_at' => now(),
+                ]);
+
+                $success++;
+            } catch (Throwable $e) {
+                $this->logError($e);
+                $failed++;
+            }
+        }
+
+        return ApiResponse::success([
+            'success' => $success,
+            'failed'  => $failed,
+            'total'   => count($ids),
+        ], $enabled ? 'Batch enabled' : 'Batch paused');
     }
 }

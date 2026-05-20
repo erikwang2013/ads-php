@@ -11,7 +11,7 @@ putenv('HASHIDS_SALT=test-salt');
 putenv('DB_HOST=127.0.0.1');
 putenv('DB_DATABASE=ads_test');
 putenv('DB_USERNAME=root');
-putenv('DB_PASSWORD=');
+putenv('DB_PASSWORD=' . (getenv('DB_PASSWORD') ?: 'root'));
 
 // Initialize database capsule for tests
 $capsule = new \Illuminate\Database\Capsule\Manager;

@@ -21,14 +21,22 @@
         <span>广告管理</span>
       </template>
       <el-menu-item index="/campaigns">广告计划</el-menu-item>
+      <el-menu-item index="/adgroups">广告组</el-menu-item>
+      <el-menu-item index="/creatives">广告创意</el-menu-item>
     </el-sub-menu>
     <el-sub-menu index="reports">
       <template #title>
         <el-icon><DataAnalysis /></el-icon>
         <span>数据报表</span>
       </template>
+      <el-menu-item index="/reports/view">报表分析</el-menu-item>
       <el-menu-item index="/reports/export">报表导出</el-menu-item>
     </el-sub-menu>
+    <el-menu-item index="/notifications">
+      <el-icon><Bell /></el-icon>
+      <span>通知中心</span>
+      <el-badge v-if="notifStore.unreadCount > 0" :value="notifStore.unreadCount" class="nav-badge" />
+    </el-menu-item>
     <el-menu-item index="/accounts">
       <el-icon><User /></el-icon>
       <span>账户管理</span>
@@ -57,12 +65,14 @@
 import { useRoute } from 'vue-router'
 import { DataAnalysis, Promotion, User, Bell, Document, Setting } from '@element-plus/icons-vue'
 import { useAlertStore } from '@/stores/alert'
+import { useNotificationStore } from '@/stores/notification'
 defineProps<{ collapsed: boolean }>()
 const route = useRoute()
 const alertStore = useAlertStore()
+const notifStore = useNotificationStore()
 
 function openDocs() {
-  window.open('/api/v1/docs', '_blank')
+  window.open('/docs', '_blank')
 }
 </script>
 

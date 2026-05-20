@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../config/menu_config.dart';
+import '../../stores/auth_provider.dart';
 
-class SideNav extends StatefulWidget {
+class SideNav extends ConsumerStatefulWidget {
   const SideNav({super.key});
 
   @override
-  State<SideNav> createState() => _SideNavState();
+  ConsumerState<SideNav> createState() => _SideNavState();
 }
 
-class _SideNavState extends State<SideNav> {
+class _SideNavState extends ConsumerState<SideNav> {
   bool _collapsed = false;
 
   void _toggle() => setState(() => _collapsed = !_collapsed);
@@ -17,6 +19,7 @@ class _SideNavState extends State<SideNav> {
   @override
   Widget build(BuildContext context) {
     final location = GoRouterState.of(context).uri.path;
+    final auth = ref.watch(authProvider);
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
@@ -54,6 +57,26 @@ class _SideNavState extends State<SideNav> {
             ),
           ),
           const Divider(height: 1),
+          if (!_collapsed && auth.user != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              child: Row(
+                children: [
+                  const Icon(Icons.person, size: 16, color: Colors.grey),
+                  const SizedBox(width: 8),
+                  Expanded(child: Text(auth.user!['username'] ?? '', style: const TextStyle(fontSize: 12), overflow: TextOverflow.ellipsis)),
+                ],
+              ),
+            ),
+          IconButton(
+            icon: const Icon(Icons.logout, size: 18, color: Colors.grey),
+            onPressed: () {
+              ref.read(authProvider.notifier).logout();
+              context.go('/login');
+            },
+            tooltip: '退出登录',
+            padding: EdgeInsets.zero,
+          ),
           IconButton(
             icon: Icon(_collapsed ? Icons.menu_open : Icons.menu, size: 20),
             onPressed: _toggle,

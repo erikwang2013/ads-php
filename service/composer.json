@@ -37,6 +37,11 @@
             "plugin\\ads_task\\": "plugin/ads-task/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
     "minimum-stability": "stable",
     "prefer-stable": true,
     "config": {

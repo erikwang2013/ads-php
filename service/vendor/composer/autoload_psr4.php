@@ -24,6 +24,7 @@ return array(
     'Workerman\\' => array($vendorDir . '/workerman/workerman/src', $vendorDir . '/workerman/coroutine/src'),
     'Webman\\RedisQueue\\' => array($vendorDir . '/webman/redis-queue/src'),
     'Webman\\' => array($vendorDir . '/workerman/webman-framework/src'),
+    'Tests\\' => array($baseDir . '/tests'),
     'Termwind\\' => array($vendorDir . '/nunomaduro/termwind/src'),
     'Symfony\\Polyfill\\Php85\\' => array($vendorDir . '/symfony/polyfill-php85'),
     'Symfony\\Polyfill\\Php83\\' => array($vendorDir . '/symfony/polyfill-php83'),

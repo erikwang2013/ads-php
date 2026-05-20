@@ -48,6 +48,54 @@ class DataSyncTask
                     );
                 }
 
+                // Sync ad groups
+                $campaigns = DB::table('erik_campaigns')
+                    ->where('platform_account_id', $account->id)
+                    ->get();
+                foreach ($campaigns as $campaign) {
+                    foreach ($adapter->fetchAdGroups($account->access_token, $account->account_id_on_platform, $campaign->platform_campaign_id) as $row) {
+                        DB::table('erik_ad_groups')->updateOrInsert(
+                            [
+                                'campaign_id'         => $campaign->id,
+                                'platform_adgroup_id' => $row['platform_adgroup_id'],
+                            ],
+                            [
+                                'name'       => $row['name'] ?? '',
+                                'status'     => $row['status'] ?? null,
+                                'bid_amount' => $row['bid_amount'] ?? 0,
+                                'bid_type'   => $row['bid_type'] ?? null,
+                                'targeting'  => json_encode($row['targeting'] ?? [], JSON_UNESCAPED_UNICODE),
+                                'extra'      => json_encode($row['extra'] ?? [], JSON_UNESCAPED_UNICODE),
+                                'updated_at' => now(),
+                            ]
+                        );
+                    }
+                }
+
+                // Sync creatives
+                $adGroups = DB::table('erik_ad_groups')
+                    ->whereIn('campaign_id', $campaigns->pluck('id')->toArray())
+                    ->get();
+                foreach ($adGroups as $adGroup) {
+                    foreach ($adapter->fetchCreatives($account->access_token, $account->account_id_on_platform, $adGroup->platform_adgroup_id) as $row) {
+                        DB::table('erik_creatives')->updateOrInsert(
+                            [
+                                'ad_group_id'         => $adGroup->id,
+                                'platform_creative_id' => $row['platform_creative_id'],
+                            ],
+                            [
+                                'title'       => $row['title'] ?? '',
+                                'description' => $row['description'] ?? null,
+                                'media_type'  => $row['media_type'] ?? null,
+                                'media_urls'  => json_encode($row['media_urls'] ?? [], JSON_UNESCAPED_UNICODE),
+                                'landing_url' => $row['landing_url'] ?? null,
+                                'extra'       => json_encode($row['extra'] ?? [], JSON_UNESCAPED_UNICODE),
+                                'updated_at'  => now(),
+                            ]
+                        );
+                    }
+                }
+
                 // Sync reports (last 2 days)
                 $req = new ReportRequest(
                     dateStart: date('Y-m-d', strtotime('-2 days')),
@@ -139,6 +187,54 @@ class DataSyncTask
                     'updated_at'  => now(),
                 ]
             );
+        }
+
+        // Sync ad groups
+        $campaigns = DB::table('erik_campaigns')
+            ->where('platform_account_id', $account->id)
+            ->get();
+        foreach ($campaigns as $campaign) {
+            foreach ($adapter->fetchAdGroups($account->access_token, $account->account_id_on_platform, $campaign->platform_campaign_id) as $row) {
+                DB::table('erik_ad_groups')->updateOrInsert(
+                    [
+                        'campaign_id'         => $campaign->id,
+                        'platform_adgroup_id' => $row['platform_adgroup_id'],
+                    ],
+                    [
+                        'name'       => $row['name'] ?? '',
+                        'status'     => $row['status'] ?? null,
+                        'bid_amount' => $row['bid_amount'] ?? 0,
+                        'bid_type'   => $row['bid_type'] ?? null,
+                        'targeting'  => json_encode($row['targeting'] ?? [], JSON_UNESCAPED_UNICODE),
+                        'extra'      => json_encode($row['extra'] ?? [], JSON_UNESCAPED_UNICODE),
+                        'updated_at' => now(),
+                    ]
+                );
+            }
+        }
+
+        // Sync creatives
+        $adGroups = DB::table('erik_ad_groups')
+            ->whereIn('campaign_id', $campaigns->pluck('id')->toArray())
+            ->get();
+        foreach ($adGroups as $adGroup) {
+            foreach ($adapter->fetchCreatives($account->access_token, $account->account_id_on_platform, $adGroup->platform_adgroup_id) as $row) {
+                DB::table('erik_creatives')->updateOrInsert(
+                    [
+                        'ad_group_id'         => $adGroup->id,
+                        'platform_creative_id' => $row['platform_creative_id'],
+                    ],
+                    [
+                        'title'       => $row['title'] ?? '',
+                        'description' => $row['description'] ?? null,
+                        'media_type'  => $row['media_type'] ?? null,
+                        'media_urls'  => json_encode($row['media_urls'] ?? [], JSON_UNESCAPED_UNICODE),
+                        'landing_url' => $row['landing_url'] ?? null,
+                        'extra'       => json_encode($row['extra'] ?? [], JSON_UNESCAPED_UNICODE),
+                        'updated_at'  => now(),
+                    ]
+                );
+            }
         }
 
         // Sync reports (last 2 days)

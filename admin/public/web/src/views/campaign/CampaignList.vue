@@ -120,8 +120,10 @@ function batchToggle(enabled: boolean) {
     confirmWord: enabled ? 'ENABLE' : 'PAUSE',
     confirmText: actionLabel,
     onConfirm: async () => {
-      for (const row of selectedRows.value) { await campaignApi.toggle(row.id, enabled) }
-      ElMessage.success('批量操作完成'); selectedRows.value = []; fetchList()
+      const ids = selectedRows.value.map((r: any) => r.id)
+      const result = await campaignApi.batchToggle(ids, enabled)
+      ElMessage.success(`${actionLabel}完成：成功 ${result.success}，失败 ${result.failed}`)
+      selectedRows.value = []; fetchList()
     },
   })
 }

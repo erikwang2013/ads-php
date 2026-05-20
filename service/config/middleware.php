@@ -4,10 +4,11 @@
  *
  * 全局中间件配置
  *
- * 请求流：Request → CORS → RateLimit → SQLGuard → Validation → Encryption → Controller
+ * 请求流：Request → CORS → SecurityHeaders → Version → RateLimit → SQLGuard → Validation → ResponseTime → Encryption → Controller
  *
  * 每个中间件职责：
- *   CorsMiddleware       — 跨域请求处理，支持 X-Tenant-Id / X-Encrypted 自定义头
+ *   CorsMiddleware          — 跨域请求处理，支持 X-Tenant-Id / X-Encrypted 自定义头
+ *   SecurityHeadersMiddleware — 安全响应头（X-Frame-Options, X-Content-Type-Options, HSTS 等）
  *   RateLimitMiddleware   — Redis 滑动窗口限流，默认 60次/60秒
  *   SqlGuardMiddleware    — SQL 注入模式检测（UNION/DROP/ALTER/注释符）
  *   ValidationMiddleware  — 输入裁剪 + HTML 标签过滤
@@ -21,9 +22,12 @@
 return [
     'global' => [
         plugin\ads_api\middleware\CorsMiddleware::class,
+        plugin\ads_api\middleware\SecurityHeadersMiddleware::class,
+        plugin\ads_api\middleware\VersionMiddleware::class,
         plugin\ads_api\middleware\RateLimitMiddleware::class,
         plugin\ads_api\middleware\SqlGuardMiddleware::class,
         plugin\ads_api\middleware\ValidationMiddleware::class,
+        plugin\ads_api\middleware\ResponseTimeMiddleware::class,
         plugin\ads_api\middleware\EncryptionMiddleware::class,
     ],
 ];

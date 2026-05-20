@@ -1,7 +1,8 @@
 import axios from 'axios'
+import { api } from './index'
 
 const raw = axios.create({
-  baseURL: '/api/v1',
+  baseURL: '/api',
   timeout: 30000,
   responseType: 'blob',
 })
@@ -11,23 +12,19 @@ raw.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }
+  config.headers['X-API-Version'] = 'v1'
   return config
 })
 
 export const exportApi = {
-  /**
-   * Download report export file.
-   * @param params - query params: format, date_start, date_end, dimensions, metrics, platform
-   */
   exportReport(params: Record<string, any>) {
     return raw.get('/reports/export', { params })
   },
-
-  /**
-   * Download dashboard PDF report.
-   * @param params - query params: date_start, date_end, format
-   */
   exportDashboard(params: Record<string, any>) {
     return raw.get('/reports/export-dashboard', { params })
   },
+}
+
+export const reportApi = {
+  custom(params?: Record<string, any>) { return api.get('/reports/custom', { params }) },
 }

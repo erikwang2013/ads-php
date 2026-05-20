@@ -9,10 +9,25 @@ import 'features/report/report_page.dart';
 import 'features/account/account_page.dart';
 import 'features/alert/alert_page.dart';
 import 'features/shell/app_shell.dart';
+import 'features/adgroup/adgroup_list_page.dart';
+import 'features/creative/creative_list_page.dart';
+import 'features/notification/notification_list_page.dart';
+import 'features/report/report_view_page.dart';
+import 'features/bid/bid_rule_list_page.dart';
+import 'stores/auth_provider.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
+  final auth = ref.watch(authProvider);
+
   return GoRouter(
     initialLocation: '/dashboard',
+    redirect: (context, state) {
+      final loggedIn = auth.isAuthenticated;
+      final isLoginRoute = state.matchedLocation == '/login';
+      if (!loggedIn && !isLoginRoute) return '/login';
+      if (loggedIn && isLoginRoute) return '/dashboard';
+      return null;
+    },
     routes: [
       GoRoute(
         path: '/login',
@@ -35,6 +50,14 @@ final routerProvider = Provider<GoRouter>((ref) {
                 CampaignDetailPage(id: state.pathParameters['id']!),
           ),
           GoRoute(
+            path: '/adgroups',
+            builder: (_, __) => const AdGroupListPage(),
+          ),
+          GoRoute(
+            path: '/creatives',
+            builder: (_, __) => const CreativeListPage(),
+          ),
+          GoRoute(
             path: '/accounts',
             builder: (_, __) => const AccountPage(),
           ),
@@ -43,8 +66,20 @@ final routerProvider = Provider<GoRouter>((ref) {
             builder: (_, __) => const ReportPage(),
           ),
           GoRoute(
+            path: '/reports/view',
+            builder: (_, __) => const ReportViewPage(),
+          ),
+          GoRoute(
             path: '/alerts',
             builder: (_, __) => const AlertPage(),
+          ),
+          GoRoute(
+            path: '/bid-rules',
+            builder: (_, __) => const BidRuleListPage(),
+          ),
+          GoRoute(
+            path: '/notifications',
+            builder: (_, __) => const NotificationListPage(),
           ),
         ],
       ),

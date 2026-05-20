@@ -17,8 +17,6 @@
 
 return [
     'global' => [
-        // 在此添加全局中间件类名，例如：
-        // admin\middleware\CorsMiddleware::class,
-        // admin\middleware\RateLimitMiddleware::class,
+        admin\middleware\VersionMiddleware::class,
     ],
 ];

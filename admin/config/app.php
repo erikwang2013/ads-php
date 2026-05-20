@@ -21,7 +21,7 @@ return [
     // 业务服务 API 地址
     // admin 中所有的广告数据查询（计划、报表、账户、告警等）均通过
     // ServiceProxy（cURL HTTP 代理）转发到此地址，不在 admin 内直接操作业务表。
-    'service_api_url' => env('SERVICE_API_URL', 'http://127.0.0.1:8788/api/v1'),
+    'service_api_url' => env('SERVICE_API_URL', 'http://127.0.0.1:8788/api'),
 
     // JWT 认证配置（erikwang2013/jwt-webman）
     'jwt' => [

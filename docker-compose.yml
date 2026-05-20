@@ -36,7 +36,7 @@ services:
       DB_USERNAME: root
       DB_PASSWORD: ${DB_PASSWORD:-root}
       REDIS_HOST: redis
-      SERVICE_API_URL: http://php:8788/api/v1
+      SERVICE_API_URL: http://php:8788/api
     restart: unless-stopped
 
   php:

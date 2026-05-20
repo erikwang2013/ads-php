@@ -3,7 +3,7 @@
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
  */
 
-namespace plugin\ads_api\controller;
+namespace plugin\ads_api\controller\v1;
 
 use plugin\ads_report\service\ReportExporter;
 use plugin\ads_report\service\PdfExporter;
@@ -11,6 +11,9 @@ use Webman\Http\Request;
 use Webman\Http\Response;
 use app\support\ApiResponse;
 use Throwable;
+
+
+use \erik\support\ControllerTrait;
 
 class ExportController
 {

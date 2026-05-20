@@ -248,6 +248,12 @@
       "languageVersion": "2.17"
     },
     {
+      "name": "screen_retriever",
+      "rootUri": "file:///home/erik/.pub-cache/hosted/pub.dev/screen_retriever-0.1.9",
+      "packageUri": "lib/",
+      "languageVersion": "2.18"
+    },
+    {
       "name": "shared_preferences",
       "rootUri": "file:///home/erik/.pub-cache/hosted/pub.dev/shared_preferences-2.5.5",
       "packageUri": "lib/",
@@ -378,6 +384,12 @@
       "rootUri": "file:///home/erik/.pub-cache/hosted/pub.dev/web-1.1.1",
       "packageUri": "lib/",
       "languageVersion": "3.4"
+    },
+    {
+      "name": "window_manager",
+      "rootUri": "file:///home/erik/.pub-cache/hosted/pub.dev/window_manager-0.3.9",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
     },
     {
       "name": "xdg_directories",
