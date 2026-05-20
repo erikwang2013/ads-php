@@ -4,7 +4,10 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 ## 概述
 
-对接 **29 个广告平台**，统一管理广告投放与跨平台数据报表，支持告警监控、报表导出、多端访问。
+对接 **29 个广告平台**，统一管理广告投放与跨平台数据报表，支持告警监控、自动出价、多端访问。
+
+> 完整架构设计 → [docs/architecture.md](docs/architecture.md)  
+> 功能模块文档 → [docs/features.md](docs/features.md)
 
 ### 支持的平台
 
@@ -101,7 +104,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
                     └──────────────────┘
 ```
 
-> 完整架构图、业务逻辑图、部署图见 [设计文档](docs/superpowers/specs/2026-05-14-ads-platform-design.md)
+> 完整架构图、业务逻辑图、部署图见 [架构设计文档](docs/architecture.md) | 历史设计规范见 [design.md](docs/superpowers/specs/design.md)
 
 ## 架构说明
 
