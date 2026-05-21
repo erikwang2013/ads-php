@@ -140,15 +140,47 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 ## 安全
 
-**11 层中间件**（service 全量，admin 含 AttackGuard/ClientPlatform/Version）：CORS（白名单） → SecurityHeaders → AttackGuard（XSS 11模式/路径遍历/Header注入/Body 10MiB/Content-Type白名单） → ClientPlatform（8端来源识别） → Version → RateLimit → SQLGuard → Validation → ResponseTime → Encryption → JWT
+### Service 端 (15 层中间件)
 
-**认证**：服务端和 admin 统一用 `admin_users` 表 + bcrypt 哈希认证，JWT Token 24h 有效期 + refresh 端点自动轮换
+CORS → OriginGuard → SecurityHeaders → AttackGuard → ClientPlatform → ReplayGuard → Version → RateLimit → LoginThrottle → SessionLimit → SQLGuard → Validation → ResponseTime → Encryption → AuthMiddleware
 
-**CORS**：生产环境白名单模式（`CORS_ALLOWED_ORIGINS`），开发环境允许全部来源
+### Admin 端 (6 层中间件)
 
-**操作来源识别**：所有客户端通过 `X-Client-Platform` 头标识来源端（web/ios/android/ipados/macos/windows/linux/harmonyos），审计日志自动记录
+AttackGuard → LoginThrottle → ClientPlatform → Csrf → Version → AuthCheck
 
-**数据加密**：`access_token`/`refresh_token` 由 encryptable 自动 DB 加解密，API 敏感传输由 encryption 中间件处理
+### 防护能力总览 (22 项)
+
+| 分类 | 防护项 | 说明 |
+|------|--------|------|
+| 输入检测 | XSS (11模式) | script/iframe/event handler/javascript:/data: |
+| | 路径遍历 (7模式) | ../ / null byte / /etc/passwd / .env / .git |
+| | Header 注入 | CRLF 检测 |
+| | Body 大小限制 | 10 MiB |
+| | Content-Type 白名单 | JSON/Form/Multipart/Plain |
+| | SQL 注入 | UNION/DROP/ALTER 模式检测 |
+| 认证 | JWT Token 绑定 | IP + User-Agent hash 验证 |
+| | Token 刷新 + 黑名单 | 旧 Token 自动失效 |
+| | 登录节流 | 5 次失败 → 15 分钟锁定 (Redis) |
+| | 并发会话限制 | 每用户最大 3 个活跃 Token |
+| | 验证码 | 滑块验证码 (5分钟有效, 5px 容差) |
+| 请求校验 | CORS 白名单 | 生产环境域名白名单 |
+| | Origin/Referer 校验 | 跨域来源验证 |
+| | CSRF Token | Admin 端 session token 验证 |
+| | 防重放攻击 | Nonce + Timestamp ±5min (非浏览器端) |
+| | 接口限流 | 滑动窗口 60次/60s |
+| | SSRF 防护 | OAuth redirect_uri 白名单 |
+| 响应头 | CSP | Content-Security-Policy (SPA) |
+| | X-Frame-Options / HSTS | 防点击劫持 + HTTPS 强制 |
+| | X-Content-Type-Options | nosniff |
+| 数据保护 | 传输加密 | EncryptionMiddleware (X-Encrypted) |
+| | 存储加密 | Encryptable (DB 字段级) |
+| | 日志脱敏 | password/token/secret → \*\*\* |
+
+**认证**：服务端和 admin 统一用 `admin_users` 表 + bcrypt 哈希，JWT 24h + refresh 轮换
+
+**审计**：所有操作记录 IP / User-Agent / Client-Platform / 操作详情
+
+**二次确认**：删除/解绑/批量操作采用"输入确认词"模式
 
 **验证码**：登录等敏感操作需通过滑块验证码（erikwang2013/poster-php），token 有效期 5 分钟、偏移容差 5px
 

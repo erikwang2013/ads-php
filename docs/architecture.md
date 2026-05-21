@@ -48,32 +48,38 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 ## 3. 请求处理管道
 
-### 3.1 Service 端 (11 层中间件)
+### 3.1 Service 端 (15 层中间件)
 
 ```
 Request
-  → CorsMiddleware           (CORS 白名单、OPTIONS 预检)
-  → SecurityHeadersMiddleware (X-Frame-Options, X-Content-Type-Options, HSTS)
-  → AttackGuardMiddleware     (XSS/路径遍历/Header注入/Body限制/Content-Type)
-  → ClientPlatformMiddleware  (X-Client-Platform 来源识别)
-  → VersionMiddleware         (X-API-Version 版本路由 v1/v2)
+  → CorsMiddleware            (CORS 白名单、OPTIONS 预检)
+  → OriginGuardMiddleware     (Origin/Referer 校验 + 拦截 TRACE/DEBUG/CONNECT)
+  → SecurityHeadersMiddleware (CSP/X-Frame-Options/X-Content-Type-Options/HSTS)
+  → AttackGuardMiddleware     (XSS/路径遍历/Header注入/Body 10MiB/Content-Type白名单)
+  → ClientPlatformMiddleware  (X-Client-Platform 8端来源识别)
+  → ReplayGuardMiddleware     (Nonce+Timestamp 防重放, 非浏览器端强校验)
+  → VersionMiddleware         (X-API-Version 版本路由)
   → RateLimitMiddleware       (Redis 滑动窗口 60次/60s)
+  → LoginThrottleMiddleware   (登录节流 5次失败→15分钟锁定)
+  → SessionLimitMiddleware    (并发会话限制 最大3个活跃Token)
   → SqlGuardMiddleware        (SQL 注入模式检测)
   → ValidationMiddleware      (输入 trim + strip_tags)
   → ResponseTimeMiddleware    (X-Response-Time 头 + 慢请求日志)
   → EncryptionMiddleware      (X-Encrypted 请求解密/响应加密)
-  → AuthMiddleware            (JWT Bearer Token 路由级认证)
+  → AuthMiddleware            (JWT Bearer Token + IP/UA 绑定)
   → Controller
 ```
 
-### 3.2 Admin 端 (3 层中间件)
+### 3.2 Admin 端 (6 层中间件)
 
 ```
 Request
-  → AttackGuardMiddleware
-  → ClientPlatformMiddleware
-  → VersionMiddleware
-  → AuthCheck (路由级, session + JWT 双通道)
+  → AttackGuardMiddleware     (XSS/路径遍历/Header注入/Body限制/Content-Type)
+  → LoginThrottleMiddleware   (登录节流 5次失败→15分钟)
+  → ClientPlatformMiddleware  (X-Client-Platform 来源识别)
+  → CsrfMiddleware            (CSRF Token 验证)
+  → VersionMiddleware         (API 版本)
+  → AuthCheck                 (Session + JWT 双通道)
   → Controller
 ```
 
@@ -123,7 +129,7 @@ ads-php/
 ├── admin/                                 # 管理后台 :8789
 │   ├── app/
 │   │   ├── controller/                    # Auth, AdminUser, AuditLog
-│   │   ├── middleware/                    # AttackGuard, ClientPlatform, Version, AuthCheck
+│   │   ├── middleware/                    # AttackGuard, LoginThrottle, ClientPlatform, Csrf, Version, AuthCheck
 │   │   ├── service/                       # AuditService, ServiceProxy
 │   │   └── support/                       # HashidsService
 │   ├── public/web/                        # Vue 3 + TS SPA
@@ -182,16 +188,19 @@ ads-php/
 | 层 | 机制 | 覆盖范围 |
 |----|------|----------|
 | 传输 | Nginx (SSL 终结) | 全量 |
-| 网络 | CORS 白名单 + HSTS | Service |
-| 输入 | AttackGuard (XSS/路径遍历/Header注入) | Service + Admin |
-| 注入 | SQLGuard (模式检测) | Service |
+| 网络 | CORS 白名单 + Origin 校验 + HSTS | Service |
+| 输入 | AttackGuard (XSS 11模式/路径遍历 7模式/Header注入) | Service + Admin |
+| 注入 | SQLGuard (SQL 注入模式检测) | Service |
 | 清洗 | ValidationMiddleware (strip_tags) | Service |
-| 认证 | JWT Bearer + bcrypt + refresh | Service |
-| 认证 | Session + JWT 双通道 | Admin |
+| 认证 | JWT Bearer + bcrypt + IP/UA 绑定 + refresh 轮换 | Service |
+| 认证 | Session + JWT 双通道 + CSRF Token | Admin |
 | 授权 | RBAC (角色 + 权限 JSON) | Admin |
+| 节流 | RateLimit (滑动窗口) + LoginThrottle (5次→15分钟) | Service + Admin |
+| 会话 | SessionLimit (最大3个活跃Token) + 黑名单 | Service |
 | 加密 | EncryptionMiddleware (传输) + Encryptable (存储) | Service |
-| 频率 | RateLimit (滑动窗口) | Service |
+| 重放 | ReplayGuard (Nonce+Timestamp ±5min, 非浏览器端) | Service + 客户端 |
 | 审计 | 操作轨迹 (IP/UA/平台) | Admin |
+| 脱敏 | 日志敏感字段遮蔽 (password/token/secret → ***) | Service |
 
 ### 6.2 客户端平台识别
 
