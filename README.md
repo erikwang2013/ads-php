@@ -180,11 +180,22 @@ AttackGuard → LoginThrottle → ClientPlatform → Csrf → Version → AuthCh
 
 **审计**：所有操作记录 IP / User-Agent / Client-Platform / 操作详情
 
-**二次确认**：删除/解绑/批量操作采用"输入确认词"模式
+**二次确认**：删除/解绑/批量操作采用"输入确认词"模式（`GlobalConfirm` + `useConfirmStore`）
 
-**验证码**：登录等敏感操作需通过滑块验证码（erikwang2013/poster-php），token 有效期 5 分钟、偏移容差 5px
+---
 
-**二次确认**：删除/解绑/批量操作等敏感操作采用"输入以确认"模式（`GlobalConfirm` + `useConfirmStore`），需输入目标名称或确认词方可执行
+## 高并发
+
+| 优化 | 方案 | 文件 |
+|------|------|------|
+| 数据库读写分离 | 主库 `shared` + 只读副本 `read_replica`，SELECT 自动路由到副本 | `config/database.php` |
+| DB 连接池 | `PDO::ATTR_PERSISTENT` 持久连接 + 时区初始化预热 | `config/database.php` |
+| Redis 连接池 | `persistent` 持久连接 + 读写分离 `readonly` 配置 | `config/redis.php` |
+| 三级缓存 | L1 进程内存 → L2 APCu 共享内存 → L3 Redis | `support/CacheService.php` |
+| 消息队列异步 | Redis List 4 通道 (sync/report/export/notification) | `support/AsyncJobService.php` |
+| Nginx 分级限流 | 30r/s + burst 20 + 20 并发连接 + keepalive 32 | `docker/nginx/admin.conf` |
+| 水平扩展 | upstream 多实例 + 故障转移 + sticky session | `docker/nginx/admin.conf` |
+| CDN 加速 | 静态资源 `expires 30d` + `immutable` + `gzip_static` | `docker/nginx/admin.conf` |
 
 ---
 

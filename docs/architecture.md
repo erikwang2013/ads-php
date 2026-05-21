@@ -257,7 +257,70 @@ versioned(CampaignController::class, 'index')
 
 ---
 
-## 10. 部署与 CI/CD
+## 10. 高并发架构
+
+### 10.1 数据库层
+
+| 优化 | 说明 |
+|------|------|
+| 读写分离 | 主库 `shared`（写）+ 只读副本 `read_replica`（报表/分析查询） |
+| 持久连接 | `PDO::ATTR_PERSISTENT` + `mysqli max_persistent` 避免频繁 TCP 握手 |
+| 连接预热 | worker 启动时执行 `SELECT 1`，连接池就绪后再接收请求 |
+
+### 10.2 缓存层
+
+```
+L1: 进程内存数组 (< 1µs, 最大快但也最局部)
+L2: APCu 共享内存 (< 100µs, 进程间共享)
+L3: Redis (< 1ms, 跨服务器共享, 持久化)
+```
+
+### 10.3 消息队列
+
+```
+HTTP Request → Controller → AsyncJobService::dispatch()
+  → Redis List (queue:async:sync)
+  → Queue Worker (BidCheckTask / DataSyncTask)
+  → 异步处理 (无需阻塞 HTTP 响应)
+```
+
+4 个通道: `sync` | `report` | `export` | `notification`
+
+### 10.4 水平扩展
+
+```
+                    ┌──────────────────┐
+                    │   Nginx :80      │
+                    │ upstream service │
+                    └────────┬─────────┘
+                             │
+              ┌──────────────┼──────────────┐
+              v              v              v
+        ┌──────────┐  ┌──────────┐  ┌──────────┐
+        │ php:8788 │  │ php2:8788│  │ php3:8788│
+        │ worker 1 │  │ worker 2 │  │ worker 3 │
+        └──────────┘  └──────────┘  └──────────┘
+              │              │              │
+              └──────────────┼──────────────┘
+                             v
+                    ┌──────────────────┐
+                    │   MySQL + Redis  │
+                    └──────────────────┘
+```
+
+- **keepalive**: 32 长连接复用
+- **failover**: `proxy_next_upstream` 自动故障转移，2 次重试
+- **限流**: `limit_req_zone` 30r/s + burst 20 + `limit_conn` 20
+
+### 10.5 静态资源 CDN
+
+- `expires 30d` + `Cache-Control: public, immutable`
+- `gzip_static on` — 预压缩 js/css 文件
+- 生产环境接入 CDN (CloudFront/Aliyun CDN)
+
+---
+
+## 11. 部署与 CI/CD
 
 ### Docker 服务
 

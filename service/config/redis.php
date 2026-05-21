@@ -9,16 +9,21 @@
 
 return [
     'default' => [
-        // Redis 服务器地址
         'host'     => env('REDIS_HOST', '127.0.0.1'),
-
-        // Redis 端口
         'port'     => env('REDIS_PORT', '6379'),
-
-        // 认证密码（留空表示无密码）
         'password' => env('REDIS_PASSWORD', ''),
-
-        // Redis 数据库编号（0-15），不同业务可隔离到不同编号
         'database' => 0,
+        'persistent' => true,
+        'read_write_timeout' => 3,
+        'connection_timeout' => 3,
+        'retry_interval' => 100,
+    ],
+    // 读写分离（哨兵模式下启用）
+    'readonly' => [
+        'host'     => env('REDIS_READ_HOST', env('REDIS_HOST', '127.0.0.1')),
+        'port'     => env('REDIS_READ_PORT', env('REDIS_PORT', '6379')),
+        'password' => env('REDIS_READ_PASSWORD', env('REDIS_PASSWORD', '')),
+        'database' => env('REDIS_READ_DB', 0),
+        'persistent' => true,
     ],
 ];
