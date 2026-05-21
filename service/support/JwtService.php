@@ -49,6 +49,11 @@ class JwtService
 
     public static function encode(array $payload, int $expire = 0): string
     {
+        $req = request();
+        if ($req) {
+            $payload['_ip'] = $req->getRealIp();
+            $payload['_ua'] = md5($req->header('User-Agent', ''));
+        }
         return self::getInstance()->encode($payload, $expire);
     }
 

@@ -26,11 +26,15 @@
 return [
     'global' => [
         plugin\ads_api\middleware\CorsMiddleware::class,
+        plugin\ads_api\middleware\OriginGuardMiddleware::class,
         plugin\ads_api\middleware\SecurityHeadersMiddleware::class,
         plugin\ads_api\middleware\AttackGuardMiddleware::class,
         plugin\ads_api\middleware\ClientPlatformMiddleware::class,
+        plugin\ads_api\middleware\ReplayGuardMiddleware::class,
         plugin\ads_api\middleware\VersionMiddleware::class,
         plugin\ads_api\middleware\RateLimitMiddleware::class,
+        plugin\ads_api\middleware\LoginThrottleMiddleware::class,
+        plugin\ads_api\middleware\SessionLimitMiddleware::class,
         plugin\ads_api\middleware\SqlGuardMiddleware::class,
         plugin\ads_api\middleware\ValidationMiddleware::class,
         plugin\ads_api\middleware\ResponseTimeMiddleware::class,

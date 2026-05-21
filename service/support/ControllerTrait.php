@@ -42,13 +42,23 @@ trait ControllerTrait
         return [$paginator->items(), $paginator->total(), $paginator->currentPage(), $paginator->perPage()];
     }
 
+    protected static array $sensitiveKeys = ['password', 'token', 'secret', 'access_token', 'refresh_token', 'authorization', 'key', 'salt'];
+
     protected function logError(Throwable $e): void
     {
-        \support\Log::channel('default')->error($e->getMessage(), [
-            'exception' => get_class($e),
-            'file'      => $e->getFile(),
-            'line'      => $e->getLine(),
-        ]);
+        $req = request();
+        $context = ['exception' => get_class($e), 'file' => $e->getFile(), 'line' => $e->getLine()];
+        if ($req) {
+            $inputs = array_merge($req->get() ?: [], $req->post() ?: []);
+            foreach (self::$sensitiveKeys as $key) {
+                foreach ($inputs as $k => $v) {
+                    if (stripos((string) $k, $key) !== false) $inputs[$k] = '***';
+                }
+            }
+            $context['inputs'] = $inputs;
+            $context['path'] = $req->path();
+        }
+        \support\Log::channel('default')->error($e->getMessage(), $context);
     }
 
     protected function catchError(Throwable $e): Response

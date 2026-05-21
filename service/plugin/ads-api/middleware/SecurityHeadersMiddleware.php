@@ -22,6 +22,11 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
             'X-Permitted-Cross-Domain-Policies' => 'none',
         ];
 
+        // CSP for SPA (applies to HTML responses only — API responses ignore it)
+        if ($request->path() === '/' || !str_starts_with($request->path(), '/api/')) {
+            $headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'";
+        }
+
         $proto = $request->header('X-Forwarded-Proto', '');
         if ($proto === 'https' || env('FORCE_HSTS', false)) {
             $headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains; preload';

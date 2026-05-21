@@ -29,6 +29,8 @@ class ApiClient {
         }
         options.headers['X-API-Version'] = 'v1';
         options.headers['X-Client-Platform'] = clientPlatform;
+        options.headers['X-Nonce'] = DateTime.now().microsecondsSinceEpoch.toRadixString(36);
+        options.headers['X-Timestamp'] = DateTime.now().millisecondsSinceEpoch ~/ 1000;
         handler.next(options);
       },
       onError: (error, handler) {

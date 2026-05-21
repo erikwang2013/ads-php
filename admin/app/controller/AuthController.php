@@ -87,6 +87,7 @@ class AuthController
                     'role_name'=> $role->name ?? '',
                     'permissions' => $permissions,
                 ],
+                'csrf_token' => session('csrf_token', bin2hex(random_bytes(32))),
             ],
         ]);
     }

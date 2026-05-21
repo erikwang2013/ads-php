@@ -25,6 +25,15 @@ class AuthMiddleware implements MiddlewareInterface
             $payload = Jwt::verify($token);
             $request->userId = $payload['uid'];
             $request->tenantId = $payload['tid'] ?? 1;
+
+            // Token binding: verify IP + User-Agent
+            if (!empty($payload['_ip']) && $payload['_ip'] !== $request->getRealIp()) {
+                return new Response(401, ['Content-Type' => 'application/json'], json_encode(['code' => 401, 'message' => 'Token IP mismatch'], JSON_UNESCAPED_UNICODE));
+            }
+            $uaHash = md5($request->header('User-Agent', ''));
+            if (!empty($payload['_ua']) && !hash_equals($payload['_ua'], $uaHash)) {
+                return new Response(401, ['Content-Type' => 'application/json'], json_encode(['code' => 401, 'message' => 'Token UA mismatch'], JSON_UNESCAPED_UNICODE));
+            }
         } catch (Throwable $e) {
             return new Response(401, ['Content-Type' => 'application/json'], json_encode(['code' => 401, 'message' => 'Token invalid or expired'], JSON_UNESCAPED_UNICODE));
         }

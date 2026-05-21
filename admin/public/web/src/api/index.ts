@@ -33,6 +33,10 @@ raw.interceptors.request.use((config) => {
   }
   config.headers['X-API-Version'] = 'v1'
   config.headers['X-Client-Platform'] = 'web'
+  const csrf = localStorage.getItem('csrf_token')
+  if (csrf && ['post', 'put', 'delete', 'patch'].includes(config.method?.toLowerCase() || '')) {
+    config.headers['X-CSRF-Token'] = csrf
+  }
   return config
 })
 

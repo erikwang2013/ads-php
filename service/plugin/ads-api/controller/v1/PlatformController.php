@@ -34,6 +34,9 @@ class PlatformController
         if (!$redirectUri) {
             return ApiResponse::error('redirect_uri is required');
         }
+        if (!$this->isAllowedRedirect($redirectUri)) {
+            return ApiResponse::error('redirect_uri is not allowed');
+        }
 
         $adapter = AdapterRegistry::get($code);
         if (!$adapter) {
@@ -71,5 +74,16 @@ class PlatformController
         } catch (Throwable $e) {
             return ApiResponse::error($e->getMessage());
         }
+    }
+
+    protected function isAllowedRedirect(string $uri): bool
+    {
+        $allowed = env('OAUTH_ALLOWED_REDIRECTS', '');
+        if ($allowed === '') return true; // not configured, allow all
+        $patterns = array_map('trim', explode(',', $allowed));
+        foreach ($patterns as $pattern) {
+            if (fnmatch($pattern, $uri)) return true;
+        }
+        return false;
     }
 }

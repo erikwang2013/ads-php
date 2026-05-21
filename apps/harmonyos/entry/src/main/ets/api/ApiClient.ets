@@ -12,11 +12,15 @@ export class ApiClient {
   static getToken(): string { return this.token; }
   static getBaseUrl(): string { return this.baseUrl; }
 
+  private static replayHeaders(): Record<string, string|number> {
+    return { 'X-Nonce': Date.now().toString(36) + Math.random().toString(36).slice(2,8), 'X-Timestamp': Math.floor(Date.now() / 1000) };
+  }
+
   static async get(path: string): Promise<Object> {
     let req = http.createHttp();
     let resp = await req.request(this.baseUrl + path, {
       method: http.RequestMethod.GET,
-      header: { 'X-API-Version': 'v1', 'X-Client-Platform': 'harmonyos', 'Authorization': `Bearer ${this.token}` }
+      header: { ...this.replayHeaders(), ...this.replayHeaders(), 'X-API-Version': 'v1', 'X-Client-Platform': 'harmonyos', 'Authorization': `Bearer ${this.token}` }
     });
     let data = JSON.parse(resp.result as string);
     return data.data;
@@ -26,7 +30,7 @@ export class ApiClient {
     let req = http.createHttp();
     let resp = await req.request(this.baseUrl + path, {
       method: http.RequestMethod.POST,
-      header: { 'X-API-Version': 'v1', 'X-Client-Platform': 'harmonyos', 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.token}` },
+      header: { ...this.replayHeaders(), 'X-API-Version': 'v1', 'X-Client-Platform': 'harmonyos', 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.token}` },
       extraData: JSON.stringify(body)
     });
     let data = JSON.parse(resp.result as string);
@@ -37,7 +41,7 @@ export class ApiClient {
     let req = http.createHttp();
     let resp = await req.request(this.baseUrl + path, {
       method: http.RequestMethod.PUT,
-      header: { 'X-API-Version': 'v1', 'X-Client-Platform': 'harmonyos', 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.token}` },
+      header: { ...this.replayHeaders(), 'X-API-Version': 'v1', 'X-Client-Platform': 'harmonyos', 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.token}` },
       extraData: JSON.stringify(body)
     });
     let data = JSON.parse(resp.result as string);
@@ -48,7 +52,7 @@ export class ApiClient {
     let req = http.createHttp();
     let resp = await req.request(this.baseUrl + path, {
       method: http.RequestMethod.DELETE,
-      header: { 'X-API-Version': 'v1', 'X-Client-Platform': 'harmonyos', 'Authorization': `Bearer ${this.token}` }
+      header: { ...this.replayHeaders(), 'X-API-Version': 'v1', 'X-Client-Platform': 'harmonyos', 'Authorization': `Bearer ${this.token}` }
     });
     let data = JSON.parse(resp.result as string);
     return data.data;
@@ -58,7 +62,7 @@ export class ApiClient {
     let req = http.createHttp();
     let resp = await req.request(this.baseUrl + '/auth/login', {
       method: http.RequestMethod.POST,
-      header: { 'X-API-Version': 'v1', 'X-Client-Platform': 'harmonyos', 'Content-Type': 'application/json' },
+      header: { ...this.replayHeaders(), 'X-API-Version': 'v1', 'X-Client-Platform': 'harmonyos', 'Content-Type': 'application/json' },
       extraData: JSON.stringify({ username: username, password: password })
     });
     let data = JSON.parse(resp.result as string);
