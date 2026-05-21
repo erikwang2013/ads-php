@@ -12,6 +12,7 @@ use plugin\ads_api\controller\v1\AccountController;
 use plugin\ads_api\controller\v1\CampaignController;
 use plugin\ads_api\controller\v1\AdGroupController;
 use plugin\ads_api\controller\v1\CreativeController;
+use plugin\ads_api\controller\v1\AssetController;
 use plugin\ads_api\controller\v1\BidRuleController;
 use plugin\ads_api\controller\v1\TargetingTemplateController;
 use plugin\ads_api\controller\v1\DashboardController;
@@ -98,4 +99,15 @@ Webman\Route::group('/api', function () {
     Webman\Route::get('/notifications/unread-count', versioned(NotificationController::class, 'unreadCount'));
     Webman\Route::post('/notifications/{id:\d+}/read', versioned(NotificationController::class, 'markRead'));
     Webman\Route::post('/notifications/read-all', versioned(NotificationController::class, 'markAllRead'));
+
+    Webman\Route::get('/assets', versioned(AssetController::class, 'index'));
+    Webman\Route::post('/assets/upload', versioned(AssetController::class, 'upload'));
+    Webman\Route::get('/assets/{id}', versioned(AssetController::class, 'show'));
+    Webman\Route::delete('/assets/{id}', versioned(AssetController::class, 'destroy'));
+
+    Webman\Route::get('/reports/attribution', versioned(DashboardController::class, 'attribution'));
+    Webman\Route::get('/reports/attribution/models', versioned(DashboardController::class, 'attributionModels'));
+
+    Webman\Route::get('/reports/calendar', versioned(DashboardController::class, 'calendar'));
+    Webman\Route::get('/reports/budget-alerts', versioned(DashboardController::class, 'budgetAlerts'));
 })->middleware([AuthMiddleware::class]);

@@ -168,7 +168,9 @@ ads-php/
 | 告警 | `erik_alert_rules`, `erik_alert_logs` | BIGINT Snowflake | 监控告警 |
 | 出价 | `erik_bid_rules`, `erik_bid_logs` | BIGINT Snowflake | 自动出价 |
 | 定向 | `erik_targeting_templates` | BIGINT Snowflake | 受众模板 |
+| 素材 | `erik_assets` | BIGINT Snowflake | 创意素材库 |
 | 通知 | `erik_notifications` | BIGINT Snowflake | 站内通知 |
+| 归因 | `erik_conversions`, `erik_attribution_results` | BIGINT Snowflake | 转化追踪 + 归因 |
 | 系统 | `erik_sync_errors` | BIGINT Snowflake | 同步错误 |
 | 管理 | `admin_users`, `admin_roles`, `admin_audit_logs` | BIGINT Snowflake | RBAC + 审计 |
 

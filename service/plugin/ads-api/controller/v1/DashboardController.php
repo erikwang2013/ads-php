@@ -69,4 +69,44 @@ class DashboardController
 
         return ApiResponse::success($data);
     }
+
+    public function calendar(Request $request): Response
+    {
+        $service = new \plugin\ads_report\service\CalendarService();
+        $events = $service->getEvents(
+            $request->get('date_start', date('Y-m-01')),
+            $request->get('date_end', date('Y-m-t')),
+            $request->tenantId ?? 1,
+            $request->get('platform'),
+        );
+        return ApiResponse::success($events);
+    }
+
+    public function budgetAlerts(Request $request): Response
+    {
+        $service = new \plugin\ads_alert\service\BudgetAlertService();
+        $alerts = $service->checkAll();
+        return ApiResponse::success($alerts);
+    }
+
+    public function attribution(Request $request): Response
+    {
+        $engine = new \plugin\ads_report\service\AttributionEngine();
+        $result = $engine->compute(
+            $request->tenantId ?? 1,
+            $request->get('date_start', date('Y-m-01')),
+            $request->get('date_end', date('Y-m-d')),
+            $request->get('model', 'last_touch'),
+        );
+        return ApiResponse::success($result);
+    }
+
+    public function attributionModels(): Response
+    {
+        $models = [];
+        foreach (\plugin\ads_report\service\AttributionEngine::MODELS as $code => $desc) {
+            $models[] = ['code' => $code, 'name' => explode(' ', $desc)[0], 'description' => $desc];
+        }
+        return ApiResponse::success($models);
+    }
 }

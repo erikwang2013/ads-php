@@ -6,7 +6,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 ## 模块总览
 
-| # | 模块 | 控制器 | API 路由数 | Vue 页面 |
+| # | 模块 | 控制器/服务 | API 路由数 | Vue 页面 |
 |---|------|--------|-----------|----------|
 | 1 | 认证授权 | AuthController | 3 | LoginPage |
 | 2 | 平台管理 | PlatformController | 3 | — |
@@ -14,17 +14,22 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 4 | 广告计划 | CampaignController | 6 | CampaignList |
 | 5 | 广告组 | AdGroupController | 5 | AdGroupList |
 | 6 | 广告创意 | CreativeController | 2 | CreativeList |
-| 7 | 数据报表 | DashboardController, ReportController, ExportController | 4 | DashboardPage, ReportView, ReportExport |
+| 7 | 数据报表 | DashboardController, ReportController, ExportController | 8 | DashboardPage, ReportView, ReportExport, CampaignCalendar, AttributionReport |
 | 8 | 告警监控 | AlertController | 7 | AlertRuleList, AlertLogList |
 | 9 | 通知中心 | NotificationController | 4 | NotificationList |
 | 10 | 自动出价 | BidRuleController | 5 | BidRuleList |
 | 11 | 定向模板 | TargetingTemplateController | 5 | — |
 | 12 | 系统管理 | AdminUserController, AuditLogController | 5 | UserManage, AuditLog |
-| 13 | 健康检查 | HealthController | 2 | — |
-| 14 | 验证码 | CaptchaController | 2 | — |
-| 15 | API 文档 | DocController | 1 | — |
+| 13 | 数据同步 | DataSyncTask, TokenRefreshTask, RetrySyncTask | — | — |
+| 14 | 素材库 | AssetController | 4 | AssetGallery |
+| 15 | 预算预警 | BudgetAlertService + BudgetCheckTask | 1 | — |
+| 16 | 投放日历 | CalendarService | 1 | CampaignCalendar |
+| 17 | 跨平台归因 | AttributionEngine | 2 | AttributionReport |
+| 18 | 健康检查 | HealthController | 2 | — |
+| 19 | 验证码 | CaptchaController | 2 | — |
+| 20 | API 文档 | DocController | 1 | — |
 
-**合计**: 15 模块, 14 控制器, 59 路由, 15 Vue 页面
+**合计**: 20 模块, 65+ 路由, 18 Vue 页面
 
 ---
 
@@ -366,6 +371,91 @@ GET /api/admin/audit-logs       # 列表 (筛选 user_id/action/date, ID hashids
 ```json
 { "code": 403, "message": "Forbidden: XSS pattern detected in: q" }
 ```
+
+---
+
+## 模块 14: 广告素材库
+
+```
+POST  /api/assets/upload       # multipart 上传 (图片/视频)
+GET   /api/assets              # 素材列表 (按 type 筛选)
+GET   /api/assets/:id          # 素材详情
+DELETE /api/assets/:id         # 删除素材
+```
+
+- 支持类型: image/jpeg, image/png, image/gif, image/webp, video/mp4
+- 文件存储: `public/uploads/assets/`
+- 前端: 网格画廊 + 拖拽上传 + 图片预览 + 视频播放 + 复制 URL
+
+---
+
+## 模块 15: 预算预警
+
+```
+GET /api/reports/budget-alerts
+Response: [{ campaign_id, campaign_name, platform, spent, budget, pct, level }]
+```
+
+- 三段告警: yellow (≥50%), orange (≥80%), red (≥100%)
+- BudgetCheckTask 每 15 分钟执行
+- 去重: 同一计划同一级别一天只通知一次
+- 写入 `erik_notifications` 表
+
+---
+
+## 模块 16: 投放日历
+
+```
+GET /api/reports/calendar?date_start=...&date_end=...&platform=...
+Response: [{ id, name, platform, status, start_date, end_date, budget }]
+```
+
+- 按日期聚合 campaign 排期
+- 前端 Gantt 图: x 轴日期, y 轴计划, 按平台颜色区分
+- 支持月/周视图切换
+
+---
+
+## 模块 17: 跨平台归因
+
+### 15.1 归因模型
+
+```
+GET /api/reports/attribution/models
+Response: [{ code, name, description }]
+```
+
+5 种模型:
+
+| 模型 | 算法 |
+|------|------|
+| first_touch | 首个触点 100% |
+| last_touch | 末个触点 100% |
+| linear | 所有触点均分 (1/N) |
+| time_decay | e^(-λ×Δt), 7天半衰期 |
+| position_based | 首40% + 末40% + 中间20% |
+
+### 15.2 归因计算
+
+```
+GET /api/reports/attribution?model=last_touch&date_start=...&date_end=...
+Response: { total_conversions, total_value, by_campaign: [...] }
+```
+
+- 回溯窗口: 30 天
+- 触点来源: `erik_report_metrics` (点击 > 0)
+- 结果写入 `erik_attribution_results`
+
+### 15.3 前端
+
+AttributionReport.vue: 模型切换 + 统计卡片 + ECharts 柱状图 + 明细表格
+
+### 15.4 数据表
+
+| 表 | 字段 |
+|----|------|
+| `erik_conversions` | id, tenant_id, platform, campaign_id, order_id, conversion_time, value, currency, channel |
+| `erik_attribution_results` | id, tenant_id, conversion_id, model, campaign_id, credit |
 
 ### 健康检查
 ```json

@@ -54,12 +54,12 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 | 层 | 技术 | 说明 |
 |----|------|------|
-| 服务端 | webman v2 + PHP 8.2+ | 7 个插件，45+ API 端点 |
-| 数据库 | MySQL 8.0 | 18 张表，erik_ 前缀，Snowflake BIGINT 主键 |
-| 缓存 | Redis 7 | API 响应缓存、仪表盘缓存、限流计数、Pub/Sub |
+| 服务端 | webman v2 + PHP 8.2+ | 7 个插件，65+ API 端点 |
+| 数据库 | MySQL 8.0 | 22 张表，erik_ 前缀，Snowflake BIGINT 主键 |
+| 缓存 | Redis 7 | 三级缓存 (L1内存/L2 APCu/L3 Redis)、限流计数、Pub/Sub、消息队列 |
 | 搜索 | Elasticsearch | webman-scout 自动索引同步（已配置） |
-| 管理后台 | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP 后端(端口 8789)，ServiceProxy 调用业务 API(端口 8788)，15+ 页面，ECharts 可视化 |
-| Flutter | Dart 3 + Riverpod + GoRouter + fl_chart | PC/Mobile 响应式，Desktop Shell 布局，12+ 页面 |
+| 管理后台 | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP 后端(端口 8789)，ServiceProxy 调用业务 API(端口 8788)，18 页面，ECharts 可视化 |
+| Flutter | Dart 3 + Riverpod + GoRouter + fl_chart | PC/Mobile 响应式，Desktop Shell 布局，12 页面 |
 | HarmonyOS | ArkTS + ArkUI | HTTP 客户端已就绪，UI 规划中 |
 | 部署 | Docker + Nginx + GHCR | Docker Compose 一键启动，GitHub Actions 自动构建推送 |
 
@@ -184,6 +184,17 @@ AttackGuard → LoginThrottle → ClientPlatform → Csrf → Version → AuthCh
 
 ---
 
+## 高级功能
+
+| 功能 | 说明 | 技术 |
+|------|------|------|
+| 素材库 | 图片/视频上传管理、画廊预览、复制 URL | AssetController + Vue 画廊 |
+| 预算预警 | 日预算消耗实时追踪、三段告警 (50/80/100%) | BudgetAlertService + 15min Cron |
+| 投放日历 | 跨平台 Gantt 图、月/周视图、按平台着色 | CalendarService + Vue Gantt |
+| 跨平台归因 | 5 模型归因 (first/last/linear/time_decay/position_based)、30 天回溯 | AttributionEngine + ECharts |
+
+---
+
 ## 高并发
 
 | 优化 | 方案 | 文件 |
@@ -254,9 +265,9 @@ ads-php/
 │   │   │   ├── service/               # BidEngine, ReportBuilder
 │   │   │   └── migration/             # SQL 迁移 + 性能索引
 │   │   ├── ads-account/               # OAuth 账户管理
-│   │   ├── ads-task/                  # 定时任务调度 (5 cron)
-│   │   ├── ads-alert/                 # 告警监控引擎
-│   │   ├── ads-report/                # 报表引擎 (导出 CSV/Excel/PDF)
+│   │   ├── ads-task/                  # 定时任务调度 (6 cron)
+│   │   ├── ads-alert/                 # 告警监控引擎 + 预算预警
+│   │   ├── ads-report/                # 报表引擎 (CSV/Excel/PDF) + 归因引擎 + 投放日历
 │   │   └── ads-tenant/                # 多租户管理
 │   ├── support/                       # Erik Stack 工具类
 │   │   ├── ControllerTrait.php        # 控制器公共 trait
@@ -437,7 +448,9 @@ ads-php/
 | 告警 | `erik_alert_rules`, `erik_alert_logs` | 告警监控 |
 | 出价 | `erik_bid_rules`, `erik_bid_logs` | 自动出价规则 + 历史 |
 | 定向 | `erik_targeting_templates` | 受众定向模板 |
+| 素材 | `erik_assets` | 创意素材库 |
 | 通知 | `erik_notifications` | 站内通知 |
+| 归因 | `erik_conversions`, `erik_attribution_results` | 转化追踪 + 归因结果 |
 | 系统 | `erik_sync_errors`, `admin_users`, `admin_roles`, `admin_audit_logs` | 同步错误、RBAC、审计 |
 
 ---
@@ -450,6 +463,7 @@ ads-php/
 | DataSyncTask | 每 10 分钟 | 拉取各平台计划+广告组+创意+报表，写入统一表，清除缓存 |
 | AlertCheckTask | 每 5 分钟 | 遍历启用告警规则，评估阈值，触发推送 |
 | BidCheckTask | 每 10 分钟 | 遍历自动出价规则，查询指标，执行预算调整/启停 |
+| BudgetCheckTask | 每 15 分钟 | 遍历投放中计划，日预算消耗追踪、三段预警 (50/80/100%) |
 | RetrySyncTask | 每 3 分钟 | 重试失败的同步任务（最多3次，指数退避） |
 
 ---

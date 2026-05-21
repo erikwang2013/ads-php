@@ -29,4 +29,9 @@ return [
         'handler' => [plugin\ads_task\task\BidCheckTask::class, 'execute'],
         'rule'    => '*/10 * * * *',
     ],
+    [
+        'name'    => 'BudgetCheck',
+        'handler' => [plugin\ads_task\task\BudgetCheckTask::class, 'execute'],
+        'rule'    => '*/15 * * * *',
+    ],
 ];

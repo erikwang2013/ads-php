@@ -68,6 +68,24 @@ const routes: RouteRecordRaw[] = [
         meta: { title: '报表导出' },
       },
       {
+        path: 'reports/calendar',
+        name: 'CampaignCalendar',
+        component: () => import('@/views/report/CampaignCalendar.vue'),
+        meta: { title: '投放日历' },
+      },
+      {
+        path: 'reports/attribution',
+        name: 'AttributionReport',
+        component: () => import('@/views/report/AttributionReport.vue'),
+        meta: { title: '归因分析' },
+      },
+      {
+        path: 'assets',
+        name: 'Assets',
+        component: () => import('@/views/asset/AssetGallery.vue'),
+        meta: { title: '素材库' },
+      },
+      {
         path: 'reports/view',
         name: 'ReportView',
         component: () => import('@/views/report/ReportView.vue'),
