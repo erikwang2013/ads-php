@@ -8,7 +8,8 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 > 完整架构设计 → [docs/architecture.md](docs/architecture.md)  
 > 功能模块文档 → [docs/features.md](docs/features.md)  
-> API 接口文档 → [docs/api.md](docs/api.md)
+> API 接口文档 → [docs/api.md](docs/api.md)  
+> 版本对比 → [docs/versions.md](docs/versions.md)（Lite 开源 / Standard & Full 联系 erik@erik.xyz）
 
 ### 支持的平台
 
