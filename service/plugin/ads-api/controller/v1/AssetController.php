@@ -24,6 +24,12 @@ class AssetController
         if (!is_dir($this->uploadDir)) mkdir($this->uploadDir, 0755, true);
     }
 
+        /**
+     * @Title("上传素材")
+     * @Group("素材库")
+     * @Url("/api/assets/upload")
+     * @Method("POST")
+     */
     public function upload(Request $request): Response
     {
         $file = $request->file('file');
@@ -65,6 +71,12 @@ class AssetController
         return ApiResponse::success(['id' => $id, 'url' => $url, 'type' => $mediaType]);
     }
 
+        /**
+     * @Title("素材列表")
+     * @Group("素材库")
+     * @Url("/api/assets")
+     * @Method("GET")
+     */
     public function index(Request $request): Response
     {
         $tenantId = $this->tenantId($request);
@@ -77,6 +89,12 @@ class AssetController
         return ApiResponse::paginated($items, $total, $page, $perPage);
     }
 
+        /**
+     * @Title("素材详情")
+     * @Group("素材库")
+     * @Url("/api/assets/{id}")
+     * @Method("GET")
+     */
     public function show(int $id): Response
     {
         $asset = DB::table('erik_assets')->find($id);
@@ -84,6 +102,12 @@ class AssetController
         return ApiResponse::success($asset);
     }
 
+        /**
+     * @Title("删除素材")
+     * @Group("素材库")
+     * @Url("/api/assets/{id}")
+     * @Method("DELETE")
+     */
     public function destroy(int $id): Response
     {
         $asset = DB::table('erik_assets')->find($id);

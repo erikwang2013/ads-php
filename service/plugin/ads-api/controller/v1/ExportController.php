@@ -17,6 +17,12 @@ use \erik\support\ControllerTrait;
 
 class ExportController
 {
+        /**
+     * @Title("导出报表")
+     * @Group("报表")
+     * @Url("/api/reports/export")
+     * @Method("GET")
+     */
     public function export(Request $request): Response
     {
         $format   = $request->get('format', 'csv'); // csv, excel
@@ -39,6 +45,12 @@ class ExportController
         }
     }
 
+        /**
+     * @Title("导出仪表盘")
+     * @Group("报表")
+     * @Url("/api/reports/export-dashboard")
+     * @Method("GET")
+     */
     public function exportDashboard(Request $request): Response
     {
         $tenantId = $request->tenantId ?? 1;

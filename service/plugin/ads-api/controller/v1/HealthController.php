@@ -9,6 +9,12 @@ use Webman\Http\Response;
 
 class HealthController
 {
+        /**
+     * @Title("健康检查")
+     * @Group("系统")
+     * @Url("/health")
+     * @Method("GET")
+     */
     public function health(): Response
     {
         // Database check
@@ -45,6 +51,12 @@ class HealthController
         ], JSON_UNESCAPED_UNICODE));
     }
 
+        /**
+     * @Title("探活")
+     * @Group("系统")
+     * @Url("/ping")
+     * @Method("GET")
+     */
     public function ping(): Response
     {
         return new Response(200, ['Content-Type' => 'application/json'], json_encode(['pong' => true]));

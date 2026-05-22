@@ -13,6 +13,12 @@ use Illuminate\Database\Capsule\Manager as DB;
 
 class AuthController
 {
+        /**
+     * @Title("登录")
+     * @Group("认证")
+     * @Url("/api/auth/login")
+     * @Method("POST")
+     */
     public function login(Request $request): \Webman\Http\Response
     {
         $captchaToken  = $request->post('captcha_token', '');
@@ -61,6 +67,12 @@ class AuthController
         ]);
     }
 
+        /**
+     * @Title("当前用户")
+     * @Group("认证")
+     * @Url("/api/auth/me")
+     * @Method("GET")
+     */
     public function me(Request $request): \Webman\Http\Response
     {
         $uid = $request->userId ?? 0;
@@ -83,6 +95,12 @@ class AuthController
         ]);
     }
 
+        /**
+     * @Title("刷新Token")
+     * @Group("认证")
+     * @Url("/api/auth/refresh")
+     * @Method("POST")
+     */
     public function refreshToken(Request $request): \Webman\Http\Response
     {
         $header = $request->header('Authorization', '');

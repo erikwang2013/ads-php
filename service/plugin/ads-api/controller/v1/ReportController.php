@@ -12,6 +12,12 @@ use Webman\Http\Response;
 
 class ReportController
 {
+        /**
+     * @Title("自定义报表")
+     * @Group("报表")
+     * @Url("/api/reports/custom")
+     * @Method("GET")
+     */
     public function custom(Request $request): \Webman\Http\Response
     {
         $builder = new ReportBuilder();

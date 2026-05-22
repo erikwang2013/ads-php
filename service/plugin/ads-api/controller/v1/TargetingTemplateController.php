@@ -13,6 +13,12 @@ class TargetingTemplateController
 {
     use \erik\support\ControllerTrait;
 
+        /**
+     * @Title("模板列表")
+     * @Group("定向模板")
+     * @Url("/api/targeting-templates")
+     * @Method("GET")
+     */
     public function index(Request $request): \Webman\Http\Response
     {
         $tenantId = $this->tenantId($request);
@@ -25,6 +31,12 @@ class TargetingTemplateController
         return ApiResponse::paginated($items, $total, $page, $perPage);
     }
 
+        /**
+     * @Title("模板详情")
+     * @Group("定向模板")
+     * @Url("/api/targeting-templates/{id}")
+     * @Method("GET")
+     */
     public function show(int $id): \Webman\Http\Response
     {
         $template = TargetingTemplate::find($id);
@@ -32,6 +44,12 @@ class TargetingTemplateController
         return ApiResponse::success($template);
     }
 
+        /**
+     * @Title("创建模板")
+     * @Group("定向模板")
+     * @Url("/api/targeting-templates")
+     * @Method("POST")
+     */
     public function store(Request $request): \Webman\Http\Response
     {
         $template = TargetingTemplate::create([
@@ -45,6 +63,12 @@ class TargetingTemplateController
         return ApiResponse::success($template, '模板创建成功');
     }
 
+        /**
+     * @Title("更新模板")
+     * @Group("定向模板")
+     * @Url("/api/targeting-templates/{id}")
+     * @Method("PUT")
+     */
     public function update(Request $request, int $id): \Webman\Http\Response
     {
         $template = TargetingTemplate::find($id);
@@ -59,6 +83,12 @@ class TargetingTemplateController
         return ApiResponse::success($template, '模板更新成功');
     }
 
+        /**
+     * @Title("删除模板")
+     * @Group("定向模板")
+     * @Url("/api/targeting-templates/{id}")
+     * @Method("DELETE")
+     */
     public function destroy(int $id): \Webman\Http\Response
     {
         $template = TargetingTemplate::find($id);

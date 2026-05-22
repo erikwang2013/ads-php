@@ -59,6 +59,10 @@ class ComposerStaticInit74b604ff567f5e4e1d20b34355289ade
             'plugin\\ads_alert\\' => 17,
             'plugin\\ads_account\\' => 19,
         ),
+        'h' => 
+        array (
+            'hg\\apidoc\\' => 10,
+        ),
         'e' => 
         array (
             'erik\\support\\' => 13,
@@ -126,6 +130,7 @@ class ComposerStaticInit74b604ff567f5e4e1d20b34355289ade
             'Psr\\EventDispatcher\\' => 20,
             'Psr\\Container\\' => 14,
             'Psr\\Clock\\' => 10,
+            'Psr\\Cache\\' => 10,
             'PhpParser\\' => 10,
             'PhpOption\\' => 10,
         ),
@@ -189,6 +194,8 @@ class ComposerStaticInit74b604ff567f5e4e1d20b34355289ade
         array (
             'Dotenv\\' => 7,
             'Doctrine\\Inflector\\' => 19,
+            'Doctrine\\Common\\Lexer\\' => 22,
+            'Doctrine\\Common\\Annotations\\' => 28,
             'DeepCopy\\' => 9,
         ),
         'C' => 
@@ -239,6 +246,10 @@ class ComposerStaticInit74b604ff567f5e4e1d20b34355289ade
         'plugin\\ads_account\\' => 
         array (
             0 => __DIR__ . '/../..' . '/plugin/ads-account',
+        ),
+        'hg\\apidoc\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/hg/apidoc/src',
         ),
         'erik\\support\\' => 
         array (
@@ -430,6 +441,10 @@ class ComposerStaticInit74b604ff567f5e4e1d20b34355289ade
         array (
             0 => __DIR__ . '/..' . '/psr/clock/src',
         ),
+        'Psr\\Cache\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/cache/src',
+        ),
         'PhpParser\\' => 
         array (
             0 => __DIR__ . '/..' . '/nikic/php-parser/lib/PhpParser',
@@ -588,6 +603,14 @@ class ComposerStaticInit74b604ff567f5e4e1d20b34355289ade
         'Doctrine\\Inflector\\' => 
         array (
             0 => __DIR__ . '/..' . '/doctrine/inflector/src',
+        ),
+        'Doctrine\\Common\\Lexer\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/doctrine/lexer/src',
+        ),
+        'Doctrine\\Common\\Annotations\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/doctrine/annotations/lib/Doctrine/Common/Annotations',
         ),
         'DeepCopy\\' => 
         array (

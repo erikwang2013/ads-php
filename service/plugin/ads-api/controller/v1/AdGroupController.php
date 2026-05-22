@@ -19,6 +19,12 @@ use \erik\support\ControllerTrait;
 
 class AdGroupController
 {
+        /**
+     * @Title("广告组列表")
+     * @Group("广告组")
+     * @Url("/api/ad-groups")
+     * @Method("GET")
+     */
     public function index(Request $request): \Webman\Http\Response
     {
         $tenantId = $this->tenantId($request);
@@ -44,6 +50,12 @@ class AdGroupController
         return ApiResponse::paginated($items, $total, $page, $perPage);
     }
 
+        /**
+     * @Title("广告组详情")
+     * @Group("广告组")
+     * @Url("/api/ad-groups/{id}")
+     * @Method("GET")
+     */
     public function show(int $id): \Webman\Http\Response
     {
         $adGroup = DB::table('erik_ad_groups')
@@ -64,6 +76,12 @@ class AdGroupController
         return ApiResponse::success(['ad_group' => $adGroup, 'today' => $todayMetrics]);
     }
 
+        /**
+     * @Title("创建广告组")
+     * @Group("广告组")
+     * @Url("/api/ad-groups")
+     * @Method("POST")
+     */
     public function store(Request $request): \Webman\Http\Response
     {
         $campaignId = (int) $request->post('campaign_id');
@@ -113,6 +131,12 @@ class AdGroupController
         }
     }
 
+        /**
+     * @Title("更新广告组")
+     * @Group("广告组")
+     * @Url("/api/ad-groups/{id}")
+     * @Method("PUT")
+     */
     public function update(Request $request, int $id): \Webman\Http\Response
     {
         $adGroup = DB::table('erik_ad_groups')->find($id);
@@ -155,6 +179,12 @@ class AdGroupController
         }
     }
 
+        /**
+     * @Title("启停广告组")
+     * @Group("广告组")
+     * @Url("/api/ad-groups/{id}/toggle")
+     * @Method("POST")
+     */
     public function toggle(Request $request, int $id): \Webman\Http\Response
     {
         $adGroup = DB::table('erik_ad_groups')->find($id);

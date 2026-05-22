@@ -13,6 +13,12 @@ class AuditLogController
     /**
      * List audit logs with pagination and filters.
      */
+        /**
+     * @Title("审计日志")
+     * @Group("管理后台-审计")
+     * @Url("/api/admin/audit-logs")
+     * @Method("GET")
+     */
     public function index(Request $request): \Webman\Http\Response
     {
         $page = (int) $request->input('page', 1);

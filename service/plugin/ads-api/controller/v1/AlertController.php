@@ -21,6 +21,12 @@ class AlertController
      * GET /api/alerts/rules
      * List alert rules with pagination.
      */
+        /**
+     * @Title("告警规则列表")
+     * @Group("告警")
+     * @Url("/api/alerts/rules")
+     * @Method("GET")
+     */
     public function rules(Request $request): \Webman\Http\Response
     {
         $tenantId = $this->tenantId($request);
@@ -49,6 +55,12 @@ class AlertController
     /**
      * POST /api/alerts/rules
      * Create a new alert rule.
+     */
+        /**
+     * @Title("创建告警规则")
+     * @Group("告警")
+     * @Url("/api/alerts/rules")
+     * @Method("POST")
      */
     public function createRule(Request $request): \Webman\Http\Response
     {
@@ -80,6 +92,12 @@ class AlertController
     /**
      * PUT /api/alerts/rules/{id}
      * Update an existing alert rule.
+     */
+        /**
+     * @Title("更新告警规则")
+     * @Group("告警")
+     * @Url("/api/alerts/rules/{id}")
+     * @Method("PUT")
      */
     public function updateRule(Request $request, int $id): \Webman\Http\Response
     {
@@ -121,6 +139,12 @@ class AlertController
      * DELETE /api/alerts/rules/{id}
      * Delete an alert rule.
      */
+        /**
+     * @Title("删除告警规则")
+     * @Group("告警")
+     * @Url("/api/alerts/rules/{id}")
+     * @Method("DELETE")
+     */
     public function deleteRule(Request $request, int $id): \Webman\Http\Response
     {
         $tenantId = $this->tenantId($request);
@@ -139,6 +163,12 @@ class AlertController
     /**
      * GET /api/alerts/logs
      * List alert logs with pagination and status filter.
+     */
+        /**
+     * @Title("告警记录")
+     * @Group("告警")
+     * @Url("/api/alerts/logs")
+     * @Method("GET")
      */
     public function logs(Request $request): \Webman\Http\Response
     {
@@ -175,6 +205,12 @@ class AlertController
      * POST /api/alerts/logs/{id}/acknowledge
      * Acknowledge an alert log.
      */
+        /**
+     * @Title("确认告警")
+     * @Group("告警")
+     * @Url("/api/alerts/logs/{id}/acknowledge")
+     * @Method("POST")
+     */
     public function acknowledge(Request $request, int $id): \Webman\Http\Response
     {
         $tenantId = $this->tenantId($request);
@@ -196,6 +232,12 @@ class AlertController
     /**
      * GET /api/alerts/unread-count
      * Get count of triggered (unread) alerts.
+     */
+        /**
+     * @Title("未读告警数")
+     * @Group("告警")
+     * @Url("/api/alerts/unread-count")
+     * @Method("GET")
      */
     public function unreadCount(Request $request): \Webman\Http\Response
     {

@@ -13,6 +13,12 @@ class AuthController
     /**
      * Admin login — validate credentials and return JWT token.
      */
+        /**
+     * @Title("管理员登录")
+     * @Group("管理后台-认证")
+     * @Url("/api/admin/login")
+     * @Method("POST")
+     */
     public function login(Request $request): \Webman\Http\Response
     {
         // 验证码检查
@@ -95,6 +101,12 @@ class AuthController
     /**
      * Get current user info with roles and permissions.
      */
+        /**
+     * @Title("当前管理员")
+     * @Group("管理后台-认证")
+     * @Url("/api/admin/me")
+     * @Method("GET")
+     */
     public function me(Request $request): \Webman\Http\Response
     {
         $adminId = $request->adminId ?? 0;
@@ -133,6 +145,12 @@ class AuthController
     /**
      * Logout — clear session.
      */
+        /**
+     * @Title("退出登录")
+     * @Group("管理后台-认证")
+     * @Url("/api/admin/logout")
+     * @Method("POST")
+     */
     public function logout(Request $request): \Webman\Http\Response
     {
         $adminId = $request->adminId ?? 0;
@@ -153,6 +171,12 @@ class AuthController
 
     /**
      * List available roles (public endpoint for login page).
+     */
+        /**
+     * @Title("角色列表")
+     * @Group("管理后台-认证")
+     * @Url("/api/admin/roles")
+     * @Method("GET")
      */
     public function roles(): \Webman\Http\Response
     {

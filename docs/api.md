@@ -2,6 +2,9 @@
 
 Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
+> **hg/apidoc 在线文档**: 启动服务后访问 `http://127.0.0.1:8788/apidoc`（Service + Admin 双应用切换）  
+> 配置文件: `service/config/plugin/hg/apidoc/app.php`
+
 ---
 
 ## 通用规范

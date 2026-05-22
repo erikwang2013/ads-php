@@ -6,9 +6,9 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 对接 **29 个广告平台**，统一管理广告投放与跨平台数据报表，支持告警监控、自动出价、多端访问。
 
-> 完整架构设计 → [docs/architecture.md](docs/architecture.md)  
-> 功能模块文档 → [docs/features.md](docs/features.md)  
-> API 接口文档 → [docs/api.md](docs/api.md)  
+> 架构设计 → [docs/architecture.md](docs/architecture.md)  
+> 功能模块 → [docs/features.md](docs/features.md)  
+> API 文档 → [docs/api.md](docs/api.md) | hg/apidoc: `http://127.0.0.1:8788/apidoc`  
 > 版本对比 → [docs/versions.md](docs/versions.md)（Lite 开源 / Standard & Full 联系 erik@erik.xyz）
 
 ### 支持的平台
@@ -128,6 +128,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | `erikwang2013/webman-scout` | Elasticsearch 数据同步 |
 | `erikwang2013/season` | 国家旗帜标识 |
 | `erikwang2013/poster-php` | 滑块验证码（登录保护） |
+| `hg/apidoc` | API 文档自动生成（注解 + Web UI） |
 
 ## 国际化
 

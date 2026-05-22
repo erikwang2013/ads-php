@@ -14,6 +14,12 @@ class AdminUserController
     /**
      * List users with pagination.
      */
+        /**
+     * @Title("用户列表")
+     * @Group("管理后台-用户")
+     * @Url("/api/admin/users")
+     * @Method("GET")
+     */
     public function index(Request $request): \Webman\Http\Response
     {
         $page = (int) $request->input('page', 1);
@@ -83,6 +89,12 @@ class AdminUserController
     /**
      * Create a new admin user.
      */
+        /**
+     * @Title("创建用户")
+     * @Group("管理后台-用户")
+     * @Url("/api/admin/users")
+     * @Method("POST")
+     */
     public function store(Request $request): \Webman\Http\Response
     {
         $username = trim($request->input('username', ''));
@@ -129,6 +141,12 @@ class AdminUserController
 
     /**
      * Update an admin user.
+     */
+        /**
+     * @Title("更新用户")
+     * @Group("管理后台-用户")
+     * @Url("/api/admin/users/{id}")
+     * @Method("PUT")
      */
     public function update(Request $request, int $id): \Webman\Http\Response
     {
@@ -182,6 +200,12 @@ class AdminUserController
 
     /**
      * Soft-delete (disable) an admin user.
+     */
+        /**
+     * @Title("禁用用户")
+     * @Group("管理后台-用户")
+     * @Url("/api/admin/users/{id}")
+     * @Method("DELETE")
      */
     public function destroy(Request $request, int $id): \Webman\Http\Response
     {

@@ -14,6 +14,12 @@ class BidRuleController
 {
     use \erik\support\ControllerTrait;
 
+        /**
+     * @Title("出价规则列表")
+     * @Group("自动出价")
+     * @Url("/api/bid-rules")
+     * @Method("GET")
+     */
     public function index(Request $request): \Webman\Http\Response
     {
         $tenantId = $this->tenantId($request);
@@ -28,6 +34,12 @@ class BidRuleController
         return ApiResponse::paginated($items, $total, $page, $perPage);
     }
 
+        /**
+     * @Title("创建出价规则")
+     * @Group("自动出价")
+     * @Url("/api/bid-rules")
+     * @Method("POST")
+     */
     public function store(Request $request): \Webman\Http\Response
     {
         $rule = BidRule::create([
@@ -50,6 +62,12 @@ class BidRuleController
         return ApiResponse::success($rule, '规则创建成功');
     }
 
+        /**
+     * @Title("更新出价规则")
+     * @Group("自动出价")
+     * @Url("/api/bid-rules/{id}")
+     * @Method("PUT")
+     */
     public function update(Request $request, int $id): \Webman\Http\Response
     {
         $rule = BidRule::find($id);
@@ -70,6 +88,12 @@ class BidRuleController
         return ApiResponse::success($rule, '规则更新成功');
     }
 
+        /**
+     * @Title("删除出价规则")
+     * @Group("自动出价")
+     * @Url("/api/bid-rules/{id}")
+     * @Method("DELETE")
+     */
     public function destroy(int $id): \Webman\Http\Response
     {
         $rule = BidRule::find($id);
@@ -78,6 +102,12 @@ class BidRuleController
         return ApiResponse::success(null, '规则已删除');
     }
 
+        /**
+     * @Title("出价历史")
+     * @Group("自动出价")
+     * @Url("/api/bid-rules/logs")
+     * @Method("GET")
+     */
     public function logs(Request $request): \Webman\Http\Response
     {
         $query = BidLog::where('tenant_id', $request->tenantId ?? 1);

@@ -256,6 +256,7 @@ versioned(CampaignController::class, 'index')
 | `erikwang2013/webman-scout` | Campaign Model (Searchable trait) | ES 搜索 |
 | `erikwang2013/season` | PlatformController (getCountryFlagEmoji) | 国家旗帜 |
 | `erikwang2013/poster-php` | AuthController (CaptchaService) | 滑块验证码 |
+| `hg/apidoc` | 注解 → 文档生成 (Web UI: :8788/apidoc) | API 文档 |
 
 ---
 

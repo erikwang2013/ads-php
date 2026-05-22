@@ -16,6 +16,12 @@ use \erik\support\ControllerTrait;
 
 class CreativeController
 {
+        /**
+     * @Title("创意列表")
+     * @Group("创意")
+     * @Url("/api/creatives")
+     * @Method("GET")
+     */
     public function index(Request $request): \Webman\Http\Response
     {
         $tenantId = $this->tenantId($request);
@@ -53,6 +59,12 @@ class CreativeController
         );
     }
 
+        /**
+     * @Title("创意详情")
+     * @Group("创意")
+     * @Url("/api/creatives/{id}")
+     * @Method("GET")
+     */
     public function show(int $id): \Webman\Http\Response
     {
         $creative = DB::table('erik_creatives')

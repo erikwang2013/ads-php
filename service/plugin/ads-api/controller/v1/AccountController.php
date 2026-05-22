@@ -16,6 +16,12 @@ use \erik\support\ControllerTrait;
 
 class AccountController
 {
+        /**
+     * @Title("账户列表")
+     * @Group("账户")
+     * @Url("/api/accounts")
+     * @Method("GET")
+     */
     public function index(Request $request): \Webman\Http\Response
     {
         $tenantId = $request->tenantId ?? 1;
@@ -32,12 +38,24 @@ class AccountController
         return ApiResponse::paginated($result[0], $result[1], $result[2], $result[3]);
     }
 
+        /**
+     * @Title("账户详情")
+     * @Group("账户")
+     * @Url("/api/accounts/{id}")
+     * @Method("GET")
+     */
     public function show(int $id): \Webman\Http\Response
     {
         $account = CacheService::remember('cache:accounts:show:' . $id, 300, fn() => PlatformAccount::findOrFail($id));
         return ApiResponse::success($account);
     }
 
+        /**
+     * @Title("解绑账户")
+     * @Group("账户")
+     * @Url("/api/accounts/{id}")
+     * @Method("DELETE")
+     */
     public function destroy(int $id): \Webman\Http\Response
     {
         $account = PlatformAccount::findOrFail($id);
@@ -46,6 +64,12 @@ class AccountController
         return ApiResponse::success(null, 'Account disabled');
     }
 
+        /**
+     * @Title("手动同步")
+     * @Group("账户")
+     * @Url("/api/accounts/{id}/sync")
+     * @Method("POST")
+     */
     public function sync(Request $request, int $id): \Webman\Http\Response
     {
         $account = PlatformAccount::findOrFail($id);

@@ -17,6 +17,12 @@ use \erik\support\ControllerTrait;
 
 class DashboardController
 {
+        /**
+     * @Title("仪表盘汇总")
+     * @Group("报表")
+     * @Url("/api/reports/summary")
+     * @Method("GET")
+     */
     public function summary(Request $request): \Webman\Http\Response
     {
         $tenantId = $request->tenantId ?? 1;

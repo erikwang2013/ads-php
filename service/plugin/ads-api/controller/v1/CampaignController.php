@@ -19,6 +19,12 @@ class CampaignController
     use \erik\support\ControllerTrait;
 
     protected array $allowedSorts = ['id', 'name', 'platform', 'daily_budget', 'status', 'created_at', 'updated_at'];
+        /**
+     * @Title("计划列表")
+     * @Group("广告计划")
+     * @Url("/api/campaigns")
+     * @Method("GET")
+     */
     public function index(Request $request): \Webman\Http\Response
     {
         $tenantId = $this->tenantId($request);
@@ -43,6 +49,12 @@ class CampaignController
         return ApiResponse::paginated($items, $total, $page, $perPage, $summary);
     }
 
+        /**
+     * @Title("创建计划")
+     * @Group("广告计划")
+     * @Url("/api/campaigns")
+     * @Method("POST")
+     */
     public function store(Request $request): \Webman\Http\Response
     {
         $platform = $request->post('platform');
@@ -83,6 +95,12 @@ class CampaignController
         }
     }
 
+        /**
+     * @Title("计划详情")
+     * @Group("广告计划")
+     * @Url("/api/campaigns/{id}")
+     * @Method("GET")
+     */
     public function show(int $id): \Webman\Http\Response
     {
         $campaign = DB::table('erik_campaigns')->find($id);
@@ -98,6 +116,12 @@ class CampaignController
         return ApiResponse::success(['campaign' => $campaign, 'today' => $todayMetrics]);
     }
 
+        /**
+     * @Title("更新计划")
+     * @Group("广告计划")
+     * @Url("/api/campaigns/{id}")
+     * @Method("PUT")
+     */
     public function update(Request $request, int $id): \Webman\Http\Response
     {
         $campaign = DB::table('erik_campaigns')->find($id);
@@ -129,6 +153,12 @@ class CampaignController
         }
     }
 
+        /**
+     * @Title("启停计划")
+     * @Group("广告计划")
+     * @Url("/api/campaigns/{id}/toggle")
+     * @Method("POST")
+     */
     public function toggle(Request $request, int $id): \Webman\Http\Response
     {
         $campaign = DB::table('erik_campaigns')->find($id);
@@ -159,6 +189,12 @@ class CampaignController
         }
     }
 
+        /**
+     * @Title("批量启停")
+     * @Group("广告计划")
+     * @Url("/api/campaigns/batch/toggle")
+     * @Method("POST")
+     */
     public function batchToggle(Request $request): \Webman\Http\Response
     {
         $ids = $request->post('ids', []);

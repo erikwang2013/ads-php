@@ -16,6 +16,12 @@ use Throwable;
 
 class CaptchaController
 {
+        /**
+     * @Title("生成验证码")
+     * @Group("系统")
+     * @Url("/api/captcha/generate")
+     * @Method("GET")
+     */
     public function generate(): \Webman\Http\Response
     {
         try {
@@ -26,6 +32,12 @@ class CaptchaController
         }
     }
 
+        /**
+     * @Title("验证验证码")
+     * @Group("系统")
+     * @Url("/api/captcha/verify")
+     * @Method("POST")
+     */
     public function verify(Request $request): \Webman\Http\Response
     {
         $token   = $request->post('token', '');

@@ -16,6 +16,12 @@ use Erikwang2013\Season\SeasonService;
 
 class PlatformController
 {
+        /**
+     * @Title("平台列表")
+     * @Group("平台")
+     * @Url("/api/platforms")
+     * @Method("GET")
+     */
     public function index(): Response
     {
         $platforms = CacheService::remember('cache:platforms', 3600, function () {
@@ -28,6 +34,12 @@ class PlatformController
         return ApiResponse::success($platforms);
     }
 
+        /**
+     * @Title("OAuth授权URL")
+     * @Group("平台")
+     * @Url("/api/platforms/{code}/oauth-url")
+     * @Method("GET")
+     */
     public function oauthUrl(Request $request, string $code): \Webman\Http\Response
     {
         $redirectUri = $request->get('redirect_uri', '');
@@ -57,6 +69,12 @@ class PlatformController
         return ApiResponse::success(['auth_url' => $url, 'state' => $state]);
     }
 
+        /**
+     * @Title("OAuth回调")
+     * @Group("平台")
+     * @Url("/api/platforms/{code}/callback")
+     * @Method("POST")
+     */
     public function callback(Request $request, string $code): \Webman\Http\Response
     {
         $state = $request->post('state', '');
