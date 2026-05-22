@@ -6,6 +6,7 @@ docs/
 ├── architecture.md                         # 架构设计文档 (部署/安全/目录/数据模型)
 ├── features.md                             # 功能设计文档 (20 模块/API/业务流程)
 ├── api.md                                  # API 接口文档 (完整请求响应示例/错误码/安全拦截)
+├── versions.md                             # 三版本对比 (Lite开源/Standard/Full商业授权)
 ├── skills/                                 # 可复用项目技能
 │   ├── adapter-generator.md                # 生成平台适配器模板
 │   ├── admin-page-generator.md             # 生成 Vue3 管理后台页面
