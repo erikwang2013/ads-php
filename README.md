@@ -7,7 +7,8 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 对接 **29 个广告平台**，统一管理广告投放与跨平台数据报表，支持告警监控、自动出价、多端访问。
 
 > 完整架构设计 → [docs/architecture.md](docs/architecture.md)  
-> 功能模块文档 → [docs/features.md](docs/features.md)
+> 功能模块文档 → [docs/features.md](docs/features.md)  
+> API 接口文档 → [docs/api.md](docs/api.md)
 
 ### 支持的平台
 
