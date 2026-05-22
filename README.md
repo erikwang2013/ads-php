@@ -499,16 +499,21 @@ cd apps/flutter && dart analyze   # 零错误
 
 ## Skills
 
-`docs/skills/` — 6 个可复用项目技能：
+`docs/skills/` — 11 个可复用项目技能：
 
 | Skill | 说明 |
 |------|------|
 | `adapter-generator` | 生成新的广告平台适配器（14 方法模板） |
 | `migration-generator` | 生成 SQL 迁移文件（erik_ 前缀 + BIGINT PK） |
-| `erik-stack` | Erik Stack 7 包集成使用指南 |
+| `erik-stack` | Erik Stack 8 包集成使用指南 |
 | `admin-page-generator` | 生成 Vue3 管理后台页面 |
 | `api-endpoint` | 添加 RESTful API 端点 |
 | `tdd-workflow` | TDD 验证流程（测试→实现→语法→TypeScript→提交） |
+| `security-middleware` | 添加安全中间件层（接口规范 + 注册 + 现有链参考） |
+| `version-split` | Lite/Standard/Full 三版本拆分（操作步骤 + 配置更新） |
+| `cache-strategy` | 三级缓存策略（L1内存/L2 APCu/L3 Redis + TTL建议） |
+| `attribution-setup` | 跨平台归因引擎（5模型 + API调用 + 数据准备） |
+| `high-concurrency` | 高并发 8 项优化（读写分离/连接池/消息队列/水平扩展/CDN） |
 
 
 ## 开源不易，欢迎支持

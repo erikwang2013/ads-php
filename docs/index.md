@@ -7,13 +7,18 @@ docs/
 ├── features.md                             # 功能设计文档 (20 模块/API/业务流程)
 ├── api.md                                  # API 接口文档 (完整请求响应示例/错误码/安全拦截)
 ├── versions.md                             # 三版本对比 (Lite开源/Standard/Full商业授权)
-├── skills/                                 # 可复用项目技能
+├── skills/                                 # 可复用项目技能 (11 个)
 │   ├── adapter-generator.md                # 生成平台适配器模板
 │   ├── admin-page-generator.md             # 生成 Vue3 管理后台页面
 │   ├── api-endpoint.md                     # 添加 RESTful API 端点
-│   ├── erik-stack.md                       # Erik Stack 7 包使用指南
+│   ├── erik-stack.md                       # Erik Stack 8 包使用指南
 │   ├── migration-generator.md              # SQL 迁移文件生成
-│   └── tdd-workflow.md                     # TDD 验证流程
+│   ├── tdd-workflow.md                     # TDD 验证流程
+│   ├── security-middleware.md              # 安全中间件开发
+│   ├── version-split.md                    # 三版本拆分管理
+│   ├── cache-strategy.md                   # 三级缓存策略
+│   ├── attribution-setup.md                # 跨平台归因引擎
+│   └── high-concurrency.md                 # 高并发 8 项优化
 ├── superpowers/
 │   ├── specs/                              # 设计规范
 │   │   ├── design.md                       # 完整系统架构（74KB）
