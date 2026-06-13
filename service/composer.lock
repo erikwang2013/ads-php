@@ -514,16 +514,16 @@
         },
         {
             "name": "erikwang2013/poster-php",
-            "version": "v1.0.1",
+            "version": "v1.0.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/erikwang2013/poster-php.git",
-                "reference": "91fe98fee782f22a467e190d56dd698df66fae8d"
+                "reference": "3b3718c2994b2f26b6872ce0d20efd69fe80d39f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/erikwang2013/poster-php/zipball/91fe98fee782f22a467e190d56dd698df66fae8d",
-                "reference": "91fe98fee782f22a467e190d56dd698df66fae8d",
+                "url": "https://api.github.com/repos/erikwang2013/poster-php/zipball/3b3718c2994b2f26b6872ce0d20efd69fe80d39f",
+                "reference": "3b3718c2994b2f26b6872ce0d20efd69fe80d39f",
                 "shasum": ""
             },
             "require": {
@@ -585,9 +585,9 @@
             ],
             "support": {
                 "issues": "https://github.com/erikwang2013/poster-php/issues",
-                "source": "https://github.com/erikwang2013/poster-php/tree/v1.0.1"
+                "source": "https://github.com/erikwang2013/poster-php/tree/v1.0.8"
             },
-            "time": "2026-05-17T08:50:24+00:00"
+            "time": "2026-06-13T01:53:20+00:00"
         },
         {
             "name": "erikwang2013/season",
@@ -8217,5 +8217,5 @@
         "php": ">=8.2"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }
