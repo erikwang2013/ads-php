@@ -227,16 +227,16 @@
         },
         {
             "name": "erikwang2013/encryptable",
-            "version": "v2.0.0",
+            "version": "v2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/erikwang2013/encryptable.git",
-                "reference": "a258193b2ba0eef4a5053a8dedceb7f3a5f22064"
+                "reference": "92f4b4e1591b002141817477d5ad0939f6d83fd0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/erikwang2013/encryptable/zipball/a258193b2ba0eef4a5053a8dedceb7f3a5f22064",
-                "reference": "a258193b2ba0eef4a5053a8dedceb7f3a5f22064",
+                "url": "https://api.github.com/repos/erikwang2013/encryptable/zipball/92f4b4e1591b002141817477d5ad0939f6d83fd0",
+                "reference": "92f4b4e1591b002141817477d5ad0939f6d83fd0",
                 "shasum": ""
             },
             "require": {
@@ -309,9 +309,9 @@
             ],
             "support": {
                 "issues": "https://github.com/erikwang2013/encryptable/issues",
-                "source": "https://github.com/erikwang2013/encryptable/tree/v2.0.0"
+                "source": "https://github.com/erikwang2013/encryptable/tree/v2.0.1"
             },
-            "time": "2026-05-17T11:22:27+00:00"
+            "time": "2026-06-10T08:57:09+00:00"
         },
         {
             "name": "erikwang2013/encryption",
@@ -8217,5 +8217,5 @@
         "php": ">=8.2"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }
