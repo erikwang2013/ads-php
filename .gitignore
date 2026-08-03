@@ -16,3 +16,14 @@
 /service/.phpunit.result.cache
 /admin/composer.lock
 /.github
+.claude
+.claude-flow
+.swarm
+.mcp.json
+ruvector.db
+.superpowers/state/target
+.agents
+skills-lock.json
+.php-cs-fixer.cache
+*.backup
+*.bak
