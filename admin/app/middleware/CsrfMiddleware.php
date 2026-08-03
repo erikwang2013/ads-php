@@ -15,7 +15,7 @@ use Webman\MiddlewareInterface;
 
 class CsrfMiddleware implements MiddlewareInterface
 {
-    protected array $skipPaths = ['/api/admin/login'];
+    protected array $skipPaths = ['/api/admin/login', '/api/install/check', '/api/install/run', '/api/install/status'];
 
     public function process(Request $request, callable $handler): Response
     {

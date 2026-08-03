@@ -16,6 +16,23 @@ use admin\middleware\AuthCheck;
 use admin\controller\AdminUserController;
 use admin\controller\AuditLogController;
 use admin\controller\AuthController;
+use admin\controller\InstallController;
+
+// ============================================================================
+// 安装向导路由 — 无需任何中间件
+// ============================================================================
+
+// GET /install — 安装向导页面
+Webman\Route::get('/install', [InstallController::class, 'index']);
+
+// POST /api/install/check — 测试数据库连接
+Webman\Route::post('/api/install/check', [InstallController::class, 'checkDb']);
+
+// POST /api/install/run — 执行安装
+Webman\Route::post('/api/install/run', [InstallController::class, 'run']);
+
+// GET /api/install/status — 检查是否已安装
+Webman\Route::get('/api/install/status', [InstallController::class, 'status']);
 
 // ============================================================================
 // 公开路由 — 无需认证

@@ -1,5 +1,7 @@
 # Ads Platform — 多平台广告管理系统
 
+[English](README.en.md) | 中文
+
 Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 ## 概述
@@ -57,7 +59,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 层 | 技术 | 说明 |
 |----|------|------|
 | 服务端 | webman v2 + PHP 8.2+ | 7 个插件，65+ API 端点 |
-| 数据库 | MySQL 8.0 | 22 张表，erik_ 前缀，Snowflake BIGINT 主键 |
+| 数据库 | MySQL 8.0 | 28 张表，erik_ 前缀，Snowflake BIGINT 主键 |
 | 缓存 | Redis 7 | 三级缓存 (L1内存/L2 APCu/L3 Redis)、限流计数、Pub/Sub、消息队列 |
 | 搜索 | Elasticsearch | webman-scout 自动索引同步（已配置） |
 | 管理后台 | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP 后端(端口 8789)，ServiceProxy 调用业务 API(端口 8788)，18 页面，ECharts 可视化 |
@@ -215,7 +217,27 @@ AttackGuard → LoginThrottle → ClientPlatform → Csrf → Version → AuthCh
 
 ## 快速启动
 
-### Docker (推荐)
+### 一键 Web 安装（推荐）
+
+启动服务后浏览器访问 `/install` 进入安装向导：
+
+```bash
+# 启动管理后台 (端口 8789)
+cd admin && composer install && php start.php start
+
+# 打开浏览器访问 http://localhost:8789/install
+# 在安装向导中填写数据库信息、管理员账户，点击「开始安装」
+```
+
+安装向导将在网页上引导你完成：
+1. **数据库连接** — 填写 MySQL 主机、端口、数据库名、用户名密码，支持连接测试
+2. **Redis 配置** — 填写 Redis 连接信息（可选）
+3. **管理员账户** — 设置后台登录用户名、密码、显示名称
+4. **一键安装** — 自动建库、执行 `install.sql` 创建 28 张表并写入种子数据、更新管理员密码
+
+安装完成后访问 `/` 进入管理后台，使用设置的用户名和密码登录。
+
+### Docker (推荐生产环境)
 
 ```bash
 # 启动全部服务 (MySQL + Redis + PHP + Nginx)
@@ -226,6 +248,7 @@ make db-init
 
 # 访问
 # 管理后台: http://localhost
+# 安装向导: http://localhost/install
 # API: http://localhost/api（Header: X-API-Version: v1）
 ```
 
@@ -427,6 +450,10 @@ ads-php/
 
 | 方法 | 路径 | 说明 |
 |------|------|------|
+| GET | /install | 一键安装向导页面（无需认证） |
+| POST | /api/install/check | 测试数据库连接 |
+| POST | /api/install/run | 执行安装（建库/建表/种子数据/管理员） |
+| GET | /api/install/status | 检查是否已安装 |
 | POST | /api/admin/login | 管理员登录 |
 | GET | /api/admin/me | 当前管理员信息（含角色权限） |
 | GET | /api/admin/users | 用户管理列表 |
@@ -448,12 +475,12 @@ ads-php/
 | 账户 | `erik_platform_accounts`, `erik_auth_tokens` | OAuth 平台账户 |
 | 投放 | `erik_campaigns`, `erik_ad_groups`, `erik_creatives` | 广告投放层级 |
 | 报表 | `erik_report_metrics`, `erik_report_extras` | 统一报表指标 |
-| 告警 | `erik_alert_rules`, `erik_alert_logs` | 告警监控 |
-| 出价 | `erik_bid_rules`, `erik_bid_logs` | 自动出价规则 + 历史 |
-| 定向 | `erik_targeting_templates` | 受众定向模板 |
 | 素材 | `erik_assets` | 创意素材库 |
-| 通知 | `erik_notifications` | 站内通知 |
+| 定向 | `erik_targeting_templates` | 受众定向模板 |
 | 归因 | `erik_conversions`, `erik_attribution_results` | 转化追踪 + 归因结果 |
+| 出价 | `erik_bid_rules`, `erik_bid_logs` | 自动出价规则 + 历史 |
+| 告警 | `erik_alert_rules`, `erik_alert_logs` | 告警监控 |
+| 通知 | `erik_notifications` | 站内通知 |
 | 系统 | `erik_sync_errors`, `admin_users`, `admin_roles`, `admin_audit_logs` | 同步错误、RBAC、审计 |
 
 ---

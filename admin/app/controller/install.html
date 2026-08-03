@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ads-PHP 安装向导</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans SC", sans-serif;
+  background: #f0f2f5;
+  color: #333;
+  line-height: 1.6;
+}
+.container { max-width: 640px; margin: 40px auto; padding: 0 16px; }
+.header { text-align: center; margin-bottom: 32px; }
+.header h1 { font-size: 24px; color: #1a1a2e; }
+.header p { color: #999; font-size: 14px; margin-top: 4px; }
+.card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+.card-header {
+  padding: 16px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card-header .icon { font-size: 18px; }
+.card-body { padding: 24px; }
+.form-row { display: flex; gap: 12px; margin-bottom: 16px; }
+.form-row:last-child { margin-bottom: 0; }
+.form-group { flex: 1; }
+.form-group label { display: block; font-size: 13px; color: #666; margin-bottom: 6px; font-weight: 500; }
+.form-group input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+  font-family: inherit;
+}
+.form-group input:focus { border-color: #2d8cf0; box-shadow: 0 0 0 2px rgba(45,140,240,0.15); }
+.form-group input::placeholder { color: #bbb; }
+.form-hint { font-size: 12px; color: #999; margin-top: 4px; }
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 28px;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+.btn-primary { background: #2d8cf0; color: #fff; }
+.btn-primary:hover { background: #267de0; }
+.btn-primary:disabled { background: #a0cfff; cursor: not-allowed; }
+.btn-outline { background: #fff; color: #2d8cf0; border: 1px solid #2d8cf0; }
+.btn-outline:hover { background: #f0f7ff; }
+.btn-block { width: 100%; }
+.actions { text-align: center; margin-top: 24px; }
+
+.alert {
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  margin-bottom: 16px;
+  display: none;
+}
+.alert-info    { display: block; background: #ecf5ff; color: #2d8cf0; border: 1px solid #d0e8ff; }
+.alert-success { display: block; background: #f0f9eb; color: #52c41a; border: 1px solid #d4f0c0; }
+.alert-error   { display: block; background: #fef0f0; color: #f56c6c; border: 1px solid #fdd; }
+
+.steps { display: flex; margin-bottom: 16px; }
+.step {
+  flex: 1;
+  text-align: center;
+  font-size: 12px;
+  color: #ccc;
+  padding: 8px;
+  position: relative;
+  transition: color 0.3s;
+}
+.step::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 3px;
+  background: #eee;
+  border-radius: 2px;
+  transition: background 0.3s;
+}
+.step.active { color: #2d8cf0; }
+.step.active::after { background: #2d8cf0; }
+.step.done { color: #52c41a; }
+.step.done::after { background: #52c41a; }
+.step.error { color: #f56c6c; }
+.step.error::after { background: #f56c6c; }
+
+.spinner {
+  display: none;
+  width: 16px; height: 16px;
+  border: 2px solid #fff;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.footer { text-align: center; color: #bbb; font-size: 12px; margin-top: 32px; padding-bottom: 40px; }
+
+.loading-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(255,255,255,0.8);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 16px;
+}
+.loading-overlay.show { display: flex; }
+.loading-text { font-size: 14px; color: #666; }
+.loading-dots { display: flex; gap: 6px; justify-content: center; }
+.loading-dots span {
+  width: 8px; height: 8px;
+  background: #2d8cf0;
+  border-radius: 50%;
+  animation: bounce 0.5s infinite alternate;
+}
+.loading-dots span:nth-child(2) { animation-delay: 0.15s; }
+.loading-dots span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes bounce { to { transform: translateY(-8px); opacity: 0.5; } }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>Ads-PHP 安装向导</h1>
+    <p>多平台广告投放管理系统 — 一键安装</p>
+  </div>
+
+  <div id="alert" class="alert"></div>
+
+  <div id="formSection">
+    <!-- Database Config -->
+    <div class="card">
+      <div class="card-header">
+        <span class="icon">🗄</span> 数据库配置
+      </div>
+      <div class="card-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>主机地址 *</label>
+            <input type="text" id="db_host" value="127.0.0.1" placeholder="127.0.0.1">
+          </div>
+          <div class="form-group" style="max-width:120px">
+            <label>端口</label>
+            <input type="text" id="db_port" value="3306" placeholder="3306">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>数据库名 *</label>
+            <input type="text" id="db_database" value="ads" placeholder="ads">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>用户名 *</label>
+            <input type="text" id="db_username" value="root" placeholder="root">
+          </div>
+          <div class="form-group">
+            <label>密码</label>
+            <input type="password" id="db_password" placeholder="留空=无密码">
+          </div>
+        </div>
+        <button class="btn btn-outline" id="testDbBtn" onclick="testDb()">🔍 测试数据库连接</button>
+      </div>
+    </div>
+
+    <!-- Redis Config -->
+    <div class="card">
+      <div class="card-header">
+        <span class="icon">⚡</span> Redis 配置
+      </div>
+      <div class="card-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>主机地址</label>
+            <input type="text" id="redis_host" value="127.0.0.1" placeholder="127.0.0.1">
+          </div>
+          <div class="form-group" style="max-width:120px">
+            <label>端口</label>
+            <input type="text" id="redis_port" value="6379" placeholder="6379">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>密码</label>
+            <input type="password" id="redis_password" placeholder="留空=无密码">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Service API -->
+    <div class="card">
+      <div class="card-header">
+        <span class="icon">🔗</span> 业务服务 API
+      </div>
+      <div class="card-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Service API 地址</label>
+            <input type="text" id="service_api_url" value="http://127.0.0.1:8788/api/v1" placeholder="http://127.0.0.1:8788/api/v1">
+            <div class="form-hint">业务数据（计划、报表、账户）通过此地址获取</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Account -->
+    <div class="card">
+      <div class="card-header">
+        <span class="icon">👤</span> 后台管理员
+      </div>
+      <div class="card-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>用户名 *</label>
+            <input type="text" id="admin_username" value="admin" placeholder="admin">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>显示名称</label>
+            <input type="text" id="admin_name" value="超级管理员" placeholder="超级管理员">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>密码 *</label>
+            <input type="password" id="admin_password" placeholder="至少6位">
+          </div>
+          <div class="form-group">
+            <label>确认密码 *</label>
+            <input type="password" id="admin_password_confirm" placeholder="再次输入密码">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Steps indicator -->
+    <div class="steps">
+      <div class="step active" id="step_env">写入配置</div>
+      <div class="step" id="step_db">建库建表</div>
+      <div class="step" id="step_admin">管理员账户</div>
+      <div class="step" id="step_done">完成</div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary btn-block" id="installBtn" onclick="install()">
+        <span class="spinner" id="spinner"></span>
+        开始安装
+      </button>
+    </div>
+  </div>
+
+  <!-- Success Screen -->
+  <div id="successSection" style="display:none">
+    <div class="card" style="text-align:center; padding: 48px 24px;">
+      <h2 style="margin-bottom:8px">✅ 安装完成！</h2>
+      <p style="color:#999;margin-bottom:24px;">所有数据表已创建，管理员账户已就绪</p>
+
+      <div style="text-align:left;background:#f5f7fa;border-radius:6px;padding:16px 24px;margin-bottom:24px;">
+        <p style="margin-bottom:6px;"><strong>后台地址：</strong><code id="adminUrl">http://localhost:8789/</code></p>
+        <p style="margin-bottom:6px;"><strong>用户名：</strong><code>admin</code></p>
+        <p style="margin-bottom:6px;"><strong>JWT Secret：</strong><code id="jwtSecret" style="font-size:11px;word-break:break-all;"></code></p>
+      </div>
+
+      <div style="background:#fff7e6;border:1px solid #ffd591;border-radius:6px;padding:12px 16px;margin-bottom:24px;font-size:13px;text-align:left;color:#d46b08;">
+        <strong>注意：</strong>配置已写入 .env 文件，需重启服务生效：<br>
+        <code style="background:#fef0e6;padding:2px 6px;border-radius:3px;">php start.php restart</code>
+      </div>
+
+      <a href="/" class="btn btn-primary" style="text-decoration:none;">进入管理后台</a>
+    </div>
+  </div>
+
+  <div class="footer">Ads-PHP &copy; 2026 erik — Multi-Platform Ad Management</div>
+</div>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-dots"><span></span><span></span><span></span></div>
+  <div class="loading-text" id="loadingText">正在安装...</div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+
+function alert(msg, type) {
+  const el = $('alert');
+  el.textContent = msg;
+  el.className = 'alert alert-' + type;
+}
+
+function hideAlert() { $('alert').className = 'alert'; }
+
+async function testDb() {
+  hideAlert();
+  const btn = $('testDbBtn');
+  btn.textContent = '⏳ 连接中...';
+  btn.disabled = true;
+
+  try {
+    const r = await fetch('/api/install/check', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        db_host: $('db_host').value.trim(),
+        db_port: $('db_port').value.trim(),
+        db_database: $('db_database').value.trim(),
+        db_username: $('db_username').value.trim(),
+        db_password: $('db_password').value,
+      })
+    });
+    const j = await r.json();
+    if (j.code === 0) {
+      alert('✅ ' + j.message, 'success');
+    } else {
+      alert('❌ ' + j.message, 'error');
+    }
+  } catch (e) {
+    alert('❌ 网络请求失败：' + e.message, 'error');
+  } finally {
+    btn.textContent = '🔍 测试数据库连接';
+    btn.disabled = false;
+  }
+}
+
+async function install() {
+  hideAlert();
+
+  const dbHost     = $('db_host').value.trim();
+  const dbPort     = $('db_port').value.trim();
+  const dbDatabase = $('db_database').value.trim();
+  const dbUsername = $('db_username').value.trim();
+  const dbPassword = $('db_password').value;
+
+  const adminUsername = $('admin_username').value.trim();
+  const adminPassword = $('admin_password').value;
+  const adminConfirm  = $('admin_password_confirm').value;
+
+  if (!dbDatabase || !dbUsername) {
+    return alert('请填写数据库名和用户名', 'error');
+  }
+  if (!adminUsername || !adminPassword) {
+    return alert('请填写管理员用户名和密码', 'error');
+  }
+  if (adminPassword.length < 6) {
+    return alert('管理员密码至少需要6位', 'error');
+  }
+  if (adminPassword !== adminConfirm) {
+    return alert('两次输入的密码不一致', 'error');
+  }
+
+  const btn = $('installBtn');
+  btn.disabled = true;
+  $('spinner').style.display = 'inline-block';
+  btn.childNodes[btn.childNodes.length - 1].textContent = ' 安装中...';
+  $('loadingOverlay').classList.add('show');
+
+  function setStep(stepId, cls) {
+    const el = $(stepId);
+    el.classList.remove('active', 'done', 'error');
+    if (cls) el.classList.add(cls);
+  }
+  setStep('step_env', 'active');
+  $('loadingText').textContent = '正在校验配置...';
+
+  try {
+    const r = await fetch('/api/install/run', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        db_host: dbHost,
+        db_port: dbPort,
+        db_database: dbDatabase,
+        db_username: dbUsername,
+        db_password: dbPassword,
+        redis_host: $('redis_host').value.trim(),
+        redis_port: $('redis_port').value.trim(),
+        redis_password: $('redis_password').value,
+        service_api_url: $('service_api_url').value.trim(),
+        admin_username: adminUsername,
+        admin_password: adminPassword,
+        admin_name: $('admin_name').value.trim(),
+      })
+    });
+
+    if (!r.ok) {
+      setStep('step_env', 'error');
+      throw new Error('HTTP ' + r.status);
+    }
+
+    const j = await r.json();
+    if (j.code === 1) { setStep('step_db', 'error'); throw new Error(j.message); }
+    if (j.code === 2) { setStep('step_env', 'error'); throw new Error(j.message); }
+    if (j.code === 3 || j.code === 4) { setStep('step_db', 'error'); throw new Error(j.message); }
+    if (j.code === 5) { setStep('step_admin', 'error'); throw new Error(j.message); }
+
+    if (j.code !== 0) {
+      throw new Error(j.message || '安装失败');
+    }
+
+    setStep('step_done', 'done');
+    $('loadingText').textContent = '安装完成！';
+    $('jwtSecret').textContent = j.data.jwt_secret || '';
+    $('adminUrl').textContent = window.location.origin + '/';
+
+    setTimeout(() => {
+      $('formSection').style.display = 'none';
+      $('successSection').style.display = 'block';
+      $('loadingOverlay').classList.remove('show');
+    }, 800);
+
+  } catch (e) {
+    alert('❌ ' + e.message, 'error');
+    btn.disabled = false;
+    $('spinner').style.display = 'none';
+    btn.childNodes[btn.childNodes.length - 1].textContent = ' 开始安装';
+    $('loadingOverlay').classList.remove('show');
+  }
+}
+</script>
+</body>
+</html>
