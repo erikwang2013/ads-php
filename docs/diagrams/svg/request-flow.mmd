@@ -1,0 +1,14 @@
+flowchart TD
+    Start(["HTTP Request → :8788"]) --> CORS["1.CORS → 2.OriginGuard → 3.SecurityHeaders"]
+    CORS --> Attack["4.AttackGuard<br/>XSS 11模式 · 路径遍历 7模式<br/>Header注入 · Body 10MiB限制"]
+    Attack --> Mid["5.ClientPlatform → 6.ReplayGuard<br/>7.Version → 8.RateLimit(60次/60s)"]
+    Mid --> LoginT{"9.LoginThrottle<br/>登录?"}
+    LoginT -->|是| Throttle["5次失败→15分钟锁定"]
+    LoginT -->|否| Mid2["10.SessionLimit(最大3Token)<br/>11.SQLGuard → 12.Validation"]
+    Throttle --> Mid2
+    Mid2 --> Encrypt{"14.Encryption<br/>X-Encrypted?"}
+    Encrypt -->|是| AES["AES加解密"]
+    Encrypt -->|否| Auth15["15.AuthMiddleware<br/>JWT · IP/UA绑定 · 黑名单"]
+    AES --> Auth15
+    Auth15 -->|通过| Ctrl["Controller → JSON Response"]
+    Auth15 -->|失败| Err401(["401 Unauthorized"])

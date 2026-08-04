@@ -1,0 +1,31 @@
+graph TB
+    subgraph Clients["客户端层"]
+        Vue["Vue 3 Admin SPA<br/>TypeScript + Element Plus"]
+        Flutter["Flutter Desktop<br/>Dart 3 + Riverpod"]
+        Harmony["HarmonyOS App<br/>ArkTS + ArkUI"]
+        Browser["浏览器"]
+    end
+    subgraph Gateway["网关层"]
+        Nginx["Nginx :80<br/>SSL终结 · 限流 · 反向代理"]
+    end
+    subgraph AppLayer["应用层"]
+        Admin["Admin :8789<br/>webman-admin v2<br/>RBAC · 审计"]
+        Service["Service :8788<br/>webman v2 API<br/>7插件 · 29适配器"]
+        ServiceProxy["ServiceProxy<br/>cURL HTTP + JWT"]
+    end
+    subgraph DataLayer["数据层"]
+        MySQL[("MySQL 8.0<br/>28表 · Snowflake PK")]
+        Redis[("Redis 7<br/>三级缓存 · 队列")]
+        ES[("Elasticsearch<br/>全文搜索")]
+    end
+    subgraph External["外部平台"]
+        Domestic["国内 16平台<br/>巨量·百度·腾讯·快手"]
+        International["国际 13平台<br/>Google·Meta·TikTok"]
+    end
+    Clients --> Nginx
+    Nginx -->|"/"| Admin
+    Nginx -->|"/api/"| Service
+    Admin -->|ServiceProxy| Service
+    Service --> MySQL & Redis & ES
+    Service --> Domestic & International
+    Admin --> MySQL

@@ -69,121 +69,19 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 ## 架构图
 
-```mermaid
-graph TB
-    subgraph Clients["客户端层"]
-        Vue["Vue 3 Admin SPA<br/>TypeScript + Element Plus"]
-        Flutter["Flutter Desktop<br/>Dart 3 + Riverpod"]
-        Harmony["HarmonyOS App<br/>ArkTS + ArkUI"]
-        Browser["浏览器"]
-    end
-    subgraph Gateway["网关层"]
-        Nginx["Nginx :80<br/>SSL终结 · 限流 · 反向代理"]
-    end
-    subgraph AppLayer["应用层"]
-        Admin["Admin :8789<br/>webman-admin v2<br/>RBAC · 审计"]
-        Service["Service :8788<br/>webman v2 API<br/>7插件 · 29适配器"]
-        ServiceProxy["ServiceProxy<br/>cURL HTTP + JWT"]
-    end
-    subgraph DataLayer["数据层"]
-        MySQL[("MySQL 8.0<br/>28表 · Snowflake PK")]
-        Redis[("Redis 7<br/>三级缓存 · 队列")]
-        ES[("Elasticsearch<br/>全文搜索")]
-    end
-    subgraph External["外部平台"]
-        Domestic["国内 16平台<br/>巨量·百度·腾讯·快手"]
-        International["国际 13平台<br/>Google·Meta·TikTok"]
-    end
-    Clients --> Nginx
-    Nginx -->|"/"| Admin
-    Nginx -->|"/api/"| Service
-    Admin -->|ServiceProxy| Service
-    Service --> MySQL & Redis & ES
-    Service --> Domestic & International
-    Admin --> MySQL
-```
+![系统架构图](docs/diagrams/svg/architecture.svg)
 
 ### 请求流程图
 
-```mermaid
-flowchart TD
-    Start(["HTTP Request → :8788"]) --> CORS["1.CORS → 2.OriginGuard → 3.SecurityHeaders"]
-    CORS --> Attack["4.AttackGuard<br/>XSS 11模式 · 路径遍历 7模式<br/>Header注入 · Body 10MiB限制"]
-    Attack --> Mid["5.ClientPlatform → 6.ReplayGuard<br/>7.Version → 8.RateLimit(60次/60s)"]
-    Mid --> LoginT{"9.LoginThrottle<br/>登录?"}
-    LoginT -->|是| Throttle["5次失败→15分钟锁定"]
-    LoginT -->|否| Mid2["10.SessionLimit(最大3Token)<br/>11.SQLGuard → 12.Validation"]
-    Throttle --> Mid2
-    Mid2 --> Encrypt{"14.Encryption<br/>X-Encrypted?"}
-    Encrypt -->|是| AES["AES加解密"]
-    Encrypt -->|否| Auth15["15.AuthMiddleware<br/>JWT · IP/UA绑定 · 黑名单"]
-    AES --> Auth15
-    Auth15 -->|通过| Ctrl["Controller → JSON Response"]
-    Auth15 -->|失败| Err401(["401 Unauthorized"])
-```
+![请求流程图](docs/diagrams/svg/request-flow.svg)
 
 ### 功能模块图
 
-```mermaid
-graph LR
-    subgraph Entry["入口"]
-        A1["认证<br/>JWT·bcrypt·验证码"]
-    end
-    subgraph Core["核心业务"]
-        B1["平台管理<br/>29平台·OAuth"]
-        B2["账户绑定<br/>Token存储"]
-        B3["投放层级<br/>Campaign→AdGroup→Creative"]
-        B4["素材库<br/>上传·画廊"]
-        B5["定向模板<br/>受众JSON"]
-    end
-    subgraph Engine["引擎层"]
-        C1["数据同步<br/>6 Cron任务"]
-        C2["报表引擎<br/>CSV·Excel·PDF"]
-        C3["告警引擎<br/>阈值评估"]
-        C4["出价引擎<br/>预算调整·启停"]
-        C5["归因引擎<br/>5模型·30天回溯"]
-    end
-    subgraph Endpoint["消费端"]
-        D1["Vue Admin<br/>18页·ECharts"]
-        D2["Flutter<br/>12页·fl_chart"]
-        D3["通知中心<br/>Web·Email·SMS"]
-    end
-    A1 --> B1 --> B2 --> C1
-    C1 --> B3 --> B4
-    B5 --> B3
-    C1 --> C2 & C3 & C4 & C5
-    C2 & C3 & C4 & C5 --> D1 & D2
-    C3 --> D3
-```
+![功能模块图](docs/diagrams/svg/functional-modules.svg)
 
 ### 数据生命周期图
 
-```mermaid
-flowchart LR
-    subgraph S1["1.接入授权"]
-        A1["OAuth跳转"] --> A2["回调换Token"] --> A3["加密存储"]
-    end
-    subgraph S2["2.定时同步"]
-        B1["TokenRefresh 55min"] --> B2["DataSync 10min<br/>拉取计划·组·创意·报表"]
-        B3["RetrySync 3min<br/>失败重试·指数退避"] -.-> B2
-    end
-    subgraph S3["3.存储缓存"]
-        C1[("MySQL 28表")] 
-        C2[("Redis L1/L2/L3")]
-        C3[("ES 搜索索引")]
-    end
-    subgraph S4["4.业务处理"]
-        D1["报表聚合·导出"]
-        D2["告警评估 5min"]
-        D3["出价评估 10min"]
-        D4["预算预警 15min<br/>50/80/100%三段"]
-    end
-    subgraph S5["5.展示"]
-        E1["仪表盘 ECharts"]
-        E2["Flutter fl_chart"]
-    end
-    S1 --> S2 --> S3 --> S4 --> S5
-```
+![数据生命周期图](docs/diagrams/svg/data-lifecycle.svg)
 
 > 完整版含所有细节标注、Admin 端管道、定时任务甘特图、缓存状态机 → [docs/diagrams/](docs/diagrams/) |
 
@@ -262,53 +160,7 @@ CORS → SecurityHeaders → AttackGuard → ClientPlatform → Version → Rate
 
 ### 安全架构图
 
-```mermaid
-graph TB
-    subgraph Perimeter["外层防御 — Nginx"]
-        SSL["SSL 终结"]
-        NginxRL["分级限流 30r/s + burst 20"]
-        ConnLimit["并发连接限制 20"]
-    end
-    subgraph Gate["入口守卫 — Service :8788"]
-        direction TB
-        CORS["CORS<br/>域名白名单"] --> OG["OriginGuard<br/>Origin/Referer校验<br/>拦截危险方法"]
-        OG --> SH["SecurityHeaders<br/>CSP·HSTS·XFO·XCTO"]
-        SH --> AG["AttackGuard<br/>XSS 11模式 | 路径遍历 7<br/>Header注入 | 10MiB限制<br/>Content-Type白名单"]
-    end
-    subgraph AuthN["身份认证"]
-        JWT["JWT Bearer<br/>IP+UA 绑定"]
-        BC["bcrypt 密码哈希"]
-        CAP["滑块验证码<br/>5px容差·5min有效"]
-        LT["登录节流<br/>5次失败→15min锁定<br/>Redis计数"]
-        SL["会话限制<br/>最多3活跃Token"]
-        TB["Token黑名单<br/>刷新后旧Token作废"]
-        RP["防重放<br/>Nonce+Timestamp±5min"]
-    end
-    subgraph Validation["输入校验"]
-        SQL["SQLGuard<br/>UNION/DROP/ALTER<br/>SLEEP 模式检测"]
-        Val["Validation<br/>trim + strip_tags"]
-        CSRF["CSRF Token<br/>Admin端Session验证"]
-        SSRF["SSRF防护<br/>OAuth redirect_uri白名单"]
-    end
-    subgraph RateLimit["频率控制"]
-        RL["滑动窗口限流<br/>60次/60s<br/>Redis实现"]
-    end
-    subgraph Encryption["数据加密"]
-        TransEnc["传输加密<br/>X-Encrypted AES<br/>EncryptionMiddleware"]
-        StoreEnc["存储加密<br/>DB字段级<br/>Encryptable"]
-        LogMask["日志脱敏<br/>password/token<br/>→ ***"]
-    end
-    subgraph Audit["审计追溯"]
-        AuditLog["操作审计<br/>IP·UA·ClientPlatform<br/>操作详情记录"]
-        Confirm["二次确认<br/>删除/解绑/批量<br/>输入确认词"]
-    end
-    Perimeter --> Gate
-    Gate --> AuthN
-    AuthN --> Validation
-    Validation --> RateLimit
-    RateLimit --> Encryption
-    Encryption --> Audit
-```
+![安全架构图](docs/diagrams/svg/security.svg)
 
 **防御纵深**：外层（Nginx）→ 入口守卫（5层中间件）→ 身份认证（7项）→ 输入校验（4项）→ 频率控制 → 数据加密 → 审计追溯
 

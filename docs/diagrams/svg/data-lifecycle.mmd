@@ -1,0 +1,24 @@
+flowchart LR
+    subgraph S1["1.接入授权"]
+        A1["OAuth跳转"] --> A2["回调换Token"] --> A3["加密存储"]
+    end
+    subgraph S2["2.定时同步"]
+        B1["TokenRefresh 55min"] --> B2["DataSync 10min<br/>拉取计划·组·创意·报表"]
+        B3["RetrySync 3min<br/>失败重试·指数退避"] -.-> B2
+    end
+    subgraph S3["3.存储缓存"]
+        C1[("MySQL 28表")]
+        C2[("Redis L1/L2/L3")]
+        C3[("ES 搜索索引")]
+    end
+    subgraph S4["4.业务处理"]
+        D1["报表聚合·导出"]
+        D2["告警评估 5min"]
+        D3["出价评估 10min"]
+        D4["预算预警 15min<br/>50/80/100%三段"]
+    end
+    subgraph S5["5.展示"]
+        E1["仪表盘 ECharts"]
+        E2["Flutter fl_chart"]
+    end
+    S1 --> S2 --> S3 --> S4 --> S5

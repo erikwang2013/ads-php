@@ -1,0 +1,29 @@
+graph LR
+    subgraph Entry["入口"]
+        A1["认证<br/>JWT·bcrypt·验证码"]
+    end
+    subgraph Core["核心业务"]
+        B1["平台管理<br/>29平台·OAuth"]
+        B2["账户绑定<br/>Token存储"]
+        B3["投放层级<br/>Campaign→AdGroup→Creative"]
+        B4["素材库<br/>上传·画廊"]
+        B5["定向模板<br/>受众JSON"]
+    end
+    subgraph Engine["引擎层"]
+        C1["数据同步<br/>6 Cron任务"]
+        C2["报表引擎<br/>CSV·Excel·PDF"]
+        C3["告警引擎<br/>阈值评估"]
+        C4["出价引擎<br/>预算调整·启停"]
+        C5["归因引擎<br/>5模型·30天回溯"]
+    end
+    subgraph Endpoint["消费端"]
+        D1["Vue Admin<br/>18页·ECharts"]
+        D2["Flutter<br/>12页·fl_chart"]
+        D3["通知中心<br/>Web·Email·SMS"]
+    end
+    A1 --> B1 --> B2 --> C1
+    C1 --> B3 --> B4
+    B5 --> B3
+    C1 --> C2 & C3 & C4 & C5
+    C2 & C3 & C4 & C5 --> D1 & D2
+    C3 --> D3
