@@ -69,46 +69,123 @@ Unified ad management across **29 advertising platforms**, with cross-platform r
 
 ## Architecture Diagram
 
-```text
-                        ┌──────────────────────┐
-                        │  Flutter / HarmonyOS │
-                        │  Admin / Browser     │
-                        └──────────┬───────────┘
-                                   │
-                                   v
-                        ┌──────────────────────┐
-                        │     Nginx :80        │
-                        │  / -> admin :8789    │
-                        │  /api -> svc :8788   │
-                        └──────┬───────┬───────┘
-                               │       │
-                  ┌────────────┘       └────────────┐
-                  v                                 v
-        ┌─────────────────┐               ┌─────────────────┐
-        │  Admin :8789     │  ServiceProxy │  Service :8788  │
-        │  webman-admin v2 │──────────────>│  webman v2 API  │
-        │  RBAC / Audit    │   HTTP call   │  29 Adapters    │
-        └────────┬────────┘               └────────┬────────┘
-                 │                                 │
-                 └─────────────┬───────────────────┘
-                               │
-              ┌────────────────┼────────────────┐
-              │                │                │
-              v                v                v
-        ┌──────────┐   ┌──────────┐    ┌───────────┐
-        │ MySQL 8.0│   │ Redis 7  │    │    ES     │
-        │ 28 tables│   │Cache/Queue│   │  Search   │
-        └──────────┘   └──────────┘    └───────────┘
-                               │
-                               v
-                    ┌──────────────────┐
-                    │  29 Ad Platforms  │
-                    │ Juliang/Baidu/GA │
-                    │ Meta / TikTok ...│
-                    └──────────────────┘
+```mermaid
+graph TB
+    subgraph Clients["Clients"]
+        Vue["Vue 3 Admin SPA<br/>TypeScript + Element Plus"]
+        Flutter["Flutter Desktop<br/>Dart 3 + Riverpod"]
+        Harmony["HarmonyOS App<br/>ArkTS + ArkUI"]
+        Browser["Browser"]
+    end
+    subgraph Gateway["Gateway"]
+        Nginx["Nginx :80<br/>SSL · Rate Limit · Reverse Proxy"]
+    end
+    subgraph AppLayer["Application Layer"]
+        Admin["Admin :8789<br/>webman-admin v2<br/>RBAC · Audit"]
+        Service["Service :8788<br/>webman v2 API<br/>7 Plugins · 29 Adapters"]
+        ServiceProxy["ServiceProxy<br/>cURL HTTP + JWT"]
+    end
+    subgraph DataLayer["Data Layer"]
+        MySQL[("MySQL 8.0<br/>28 Tables · Snowflake PK")]
+        Redis[("Redis 7<br/>3-Tier Cache · Queue")]
+        ES[("Elasticsearch<br/>Full-Text Search")]
+    end
+    subgraph External["External Platforms"]
+        Domestic["China 16 Platforms<br/>Juliang·Baidu·Tencent·Kuaishou"]
+        International["Global 13 Platforms<br/>Google·Meta·TikTok"]
+    end
+    Clients --> Nginx
+    Nginx -->|"/"| Admin
+    Nginx -->|"/api/"| Service
+    Admin -->|ServiceProxy| Service
+    Service --> MySQL & Redis & ES
+    Service --> Domestic & International
+    Admin --> MySQL
 ```
 
-> Full architecture, business logic, and deployment diagrams: [Architecture Docs](docs/architecture.md) | Historical design spec: [design.md](docs/superpowers/specs/design.md)
+### Request Flow
+
+```mermaid
+flowchart TD
+    Start(["HTTP Request → :8788"]) --> CORS["1.CORS → 2.OriginGuard → 3.SecurityHeaders"]
+    CORS --> Attack["4.AttackGuard<br/>XSS 11 patterns · Path traversal 7<br/>Header injection · Body 10MiB limit"]
+    Attack --> Mid["5.ClientPlatform → 6.ReplayGuard<br/>7.Version → 8.RateLimit(60req/60s)"]
+    Mid --> LoginT{"9.LoginThrottle<br/>Login?"}
+    LoginT -->|Yes| Throttle["5 failures→15min lockout"]
+    LoginT -->|No| Mid2["10.SessionLimit(max 3 tokens)<br/>11.SQLGuard → 12.Validation"]
+    Throttle --> Mid2
+    Mid2 --> Encrypt{"14.Encryption<br/>X-Encrypted?"}
+    Encrypt -->|Yes| AES["AES encrypt/decrypt"]
+    Encrypt -->|No| Auth15["15.AuthMiddleware<br/>JWT · IP/UA binding · Blacklist"]
+    AES --> Auth15
+    Auth15 -->|Pass| Ctrl["Controller → JSON Response"]
+    Auth15 -->|Fail| Err401(["401 Unauthorized"])
+```
+
+### Functional Modules
+
+```mermaid
+graph LR
+    subgraph Entry["Entry"]
+        A1["Auth<br/>JWT·bcrypt·CAPTCHA"]
+    end
+    subgraph Core["Core Business"]
+        B1["Platforms<br/>29·OAuth"]
+        B2["Accounts<br/>Token Store"]
+        B3["Delivery<br/>Campaign→AdGroup→Creative"]
+        B4["Assets<br/>Upload·Gallery"]
+        B5["Targeting<br/>Audience JSON"]
+    end
+    subgraph Engine["Engines"]
+        C1["Data Sync<br/>6 Cron Jobs"]
+        C2["Reports<br/>CSV·Excel·PDF"]
+        C3["Alerts<br/>Threshold Eval"]
+        C4["Bidding<br/>Budget·Toggle"]
+        C5["Attribution<br/>5 Models·30d"]
+    end
+    subgraph Endpoint["Consumers"]
+        D1["Vue Admin<br/>18 Pages·ECharts"]
+        D2["Flutter<br/>12 Pages·fl_chart"]
+        D3["Notifications<br/>Web·Email·SMS"]
+    end
+    A1 --> B1 --> B2 --> C1
+    C1 --> B3 --> B4
+    B5 --> B3
+    C1 --> C2 & C3 & C4 & C5
+    C2 & C3 & C4 & C5 --> D1 & D2
+    C3 --> D3
+```
+
+### Data Lifecycle
+
+```mermaid
+flowchart LR
+    subgraph S1["1.Auth"]
+        A1["OAuth Redirect"] --> A2["Token Exchange"] --> A3["Encrypted Store"]
+    end
+    subgraph S2["2.Sync"]
+        B1["TokenRefresh 55min"] --> B2["DataSync 10min<br/>Pull campaigns·groups·creatives·reports"]
+        B3["RetrySync 3min<br/>Retry·Exponential backoff"] -.-> B2
+    end
+    subgraph S3["3.Store"]
+        C1[("MySQL 28 tables")] 
+        C2[("Redis L1/L2/L3")]
+        C3[("ES Search Index")]
+    end
+    subgraph S4["4.Process"]
+        D1["Reports·Export"]
+        D2["Alert Eval 5min"]
+        D3["Bid Eval 10min"]
+        D4["Budget Alerts 15min<br/>50/80/100% tiers"]
+    end
+    subgraph S5["5.Display"]
+        E1["Dashboard ECharts"]
+        E2["Flutter fl_chart"]
+    end
+    S1 --> S2 --> S3 --> S4 --> S5
+```
+
+> Full versions with all annotations, Admin pipeline, cron Gantt chart, cache state machine → [docs/diagrams/](docs/diagrams/)
 
 ## Architecture Notes
 

@@ -8,6 +8,11 @@ docs/
 ├── api.md                                  # API 接口文档
 ├── versions.md                             # 三版本对比
 ├── apidoc-header.md                        # hg/apidoc 通用规范头部
+├── diagrams/                               # Mermaid 可视化图表 (4 个)
+│   ├── architecture.md                     #   系统架构图 (C4 容器级拓扑)
+│   ├── request-flow.md                     #   请求流程图 (15+10 层中间件管道)
+│   ├── functional-modules.md               #   功能模块图 (20 模块依赖+数据流)
+│   └── data-lifecycle.md                   #   数据生命周期图 (6 阶段+甘特图+缓存状态机)
 ├── skills/                                 # 可复用项目技能 (11 个)
 │   ├── adapter-generator.md                # 生成平台适配器模板
 │   ├── admin-page-generator.md             # 生成 Vue3 管理后台页面
