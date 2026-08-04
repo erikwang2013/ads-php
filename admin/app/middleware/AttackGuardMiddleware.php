@@ -23,6 +23,7 @@ class AttackGuardMiddleware implements MiddlewareInterface
     ];
 
     protected int $maxBodySize = 10485760;
+    protected int $maxStrLen = 8192;
 
     protected array $allowedContentTypes = [
         'application/json', 'application/x-www-form-urlencoded',
@@ -57,6 +58,7 @@ class AttackGuardMiddleware implements MiddlewareInterface
 
     protected function detectXss(string $value): bool
     {
+        if (strlen($value) > $this->maxStrLen) return true;
         foreach (self::XSS_PATTERNS as $p) { if (preg_match($p, $value)) return true; }
         return false;
     }

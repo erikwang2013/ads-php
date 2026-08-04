@@ -145,13 +145,13 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 ## 安全
 
-### Service 端 (15 层中间件)
+### Service 端 (14 层全局 + AuthMiddleware)
 
-CORS → OriginGuard → SecurityHeaders → AttackGuard → ClientPlatform → ReplayGuard → Version → RateLimit → LoginThrottle → SessionLimit → SQLGuard → Validation → ResponseTime → Encryption → AuthMiddleware
+CORS → OriginGuard → SecurityHeaders → AttackGuard → ClientPlatform → ReplayGuard → Version → RateLimit → LoginThrottle → SessionLimit → SQLGuard → Validation → ResponseTime → Encryption → AuthMiddleware（路由层）
 
-### Admin 端 (6 层中间件)
+### Admin 端 (10 层全局 + AuthCheck)
 
-AttackGuard → LoginThrottle → ClientPlatform → Csrf → Version → AuthCheck
+CORS → SecurityHeaders → AttackGuard → ClientPlatform → Version → RateLimit → LoginThrottle → SQLGuard → Validation → CSRF → AuthCheck（路由层）
 
 ### 防护能力总览 (22 项)
 

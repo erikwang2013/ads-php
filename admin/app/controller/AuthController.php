@@ -56,6 +56,8 @@ class AuthController
         }
 
         $token = \Erikwang2013\JwtWebman\Jwt::sign([
+            '_ip'  => $request->getRealIp(),
+            '_ua'  => md5($request->header('User-Agent', '')),
             'uid'  => $user->id,
             'role' => $role->slug ?? '',
             'exp'  => time() + 86400,

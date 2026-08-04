@@ -145,13 +145,13 @@ All interfaces support **Chinese (zh-CN)** / **English (en)** bilingual switchin
 
 ## Security
 
-### Service (15 middleware layers)
+### Service (14 global + AuthMiddleware)
 
-CORS → OriginGuard → SecurityHeaders → AttackGuard → ClientPlatform → ReplayGuard → Version → RateLimit → LoginThrottle → SessionLimit → SQLGuard → Validation → ResponseTime → Encryption → AuthMiddleware
+CORS → OriginGuard → SecurityHeaders → AttackGuard → ClientPlatform → ReplayGuard → Version → RateLimit → LoginThrottle → SessionLimit → SQLGuard → Validation → ResponseTime → Encryption → AuthMiddleware (route-level)
 
-### Admin (6 middleware layers)
+### Admin (10 global + AuthCheck)
 
-AttackGuard → LoginThrottle → ClientPlatform → Csrf → Version → AuthCheck
+CORS → SecurityHeaders → AttackGuard → ClientPlatform → Version → RateLimit → LoginThrottle → SQLGuard → Validation → CSRF → AuthCheck (route-level)
 
 ### Defense Summary (22 items)
 

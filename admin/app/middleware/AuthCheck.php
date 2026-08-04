@@ -14,7 +14,6 @@ class AuthCheck implements MiddlewareInterface
     {
         $token = str_replace('Bearer ', '', $request->header('Authorization', ''));
         if (!$token) {
-            // Try session for webman-admin's built-in auth
             $adminId = session('admin.id');
             if (!$adminId) {
                 return redirect('/login');
@@ -24,6 +23,16 @@ class AuthCheck implements MiddlewareInterface
 
         try {
             $payload = \Erikwang2013\JwtWebman\Jwt::verify($token);
+
+            // Token binding: verify IP + User-Agent
+            if (!empty($payload['_ip']) && $payload['_ip'] !== $request->getRealIp()) {
+                return redirect('/login');
+            }
+            $uaHash = md5($request->header('User-Agent', ''));
+            if (!empty($payload['_ua']) && !hash_equals($payload['_ua'], $uaHash)) {
+                return redirect('/login');
+            }
+
             $request->adminId = $payload['uid'] ?? 0;
             $request->role = $payload['role'] ?? '';
         } catch (\Throwable $e) {

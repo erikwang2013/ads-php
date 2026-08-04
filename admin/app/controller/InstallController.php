@@ -101,7 +101,6 @@ HTML;
      */
     public function run(Request $request): Response
     {
-        // Guard: prevent re-installation
         if (file_exists(base_path() . '/.installed')) {
             return json(['code' => 1, 'message' => '系统已安装，如需重新安装请删除 .installed 文件']);
         }
@@ -218,23 +217,44 @@ HTML;
     //  helpers
     // ------------------------------------------------------------------
 
+    /**
+     * Escape a value for safe inclusion in a .env file.
+     * Wraps in double quotes if the value contains special characters.
+     */
+    private function envQuote(string $value): string
+    {
+        if ($value === '') {
+            return '';
+        }
+        // If value contains characters that need quoting, wrap and escape
+        if (preg_match('/[\s\$\#\"\'\\\\]/', $value)) {
+            $escaped = str_replace(['\\', '"', '$'], ['\\\\', '\"', '\$'], $value);
+            return '"' . $escaped . '"';
+        }
+        return $value;
+    }
+
     private function buildEnv(string $dbHost, string $dbPort, string $dbDatabase, string $dbUsername, string $dbPassword, string $redisHost, string $redisPort, string $redisPassword, string $jwtSecret, string $serviceApiUrl): string
     {
+        $dbPasswordQuoted     = $this->envQuote($dbPassword);
+        $redisPasswordQuoted  = $this->envQuote($redisPassword);
+        $serviceApiUrlQuoted  = $this->envQuote($serviceApiUrl);
+
         return <<<EOF
 APP_DEBUG=false
 APP_URL=http://0.0.0.0:8789
 
-SERVICE_API_URL={$serviceApiUrl}
+SERVICE_API_URL={$serviceApiUrlQuoted}
 
 DB_HOST={$dbHost}
 DB_PORT={$dbPort}
 DB_DATABASE={$dbDatabase}
 DB_USERNAME={$dbUsername}
-DB_PASSWORD={$dbPassword}
+DB_PASSWORD={$dbPasswordQuoted}
 
 REDIS_HOST={$redisHost}
 REDIS_PORT={$redisPort}
-REDIS_PASSWORD={$redisPassword}
+REDIS_PASSWORD={$redisPasswordQuoted}
 
 JWT_SECRET={$jwtSecret}
 JWT_TTL=86400
