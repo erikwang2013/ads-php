@@ -258,6 +258,58 @@ CORS → SecurityHeaders → AttackGuard → ClientPlatform → Version → Rate
 | | Storage Encryption | Encryptable (DB field-level) |
 | | Log Redaction | password/token/secret → `***` |
 
+### Security Architecture
+
+```mermaid
+graph TB
+    subgraph Perimeter["Outer Defense — Nginx"]
+        SSL["SSL Termination"]
+        NginxRL["Tiered Rate Limit 30r/s + burst 20"]
+        ConnLimit["Concurrent Connection Limit 20"]
+    end
+    subgraph Gate["Entry Guard — Service :8788"]
+        direction TB
+        CORS["CORS<br/>Domain Whitelist"] --> OG["OriginGuard<br/>Origin/Referer Check<br/>Block Dangerous Methods"]
+        OG --> SH["SecurityHeaders<br/>CSP·HSTS·XFO·XCTO"]
+        SH --> AG["AttackGuard<br/>XSS 11 | Path Traversal 7<br/>Header Injection | 10MiB Limit<br/>Content-Type Whitelist"]
+    end
+    subgraph AuthN["Authentication"]
+        JWT["JWT Bearer<br/>IP+UA Binding"]
+        BC["bcrypt Password Hash"]
+        CAP["Slider CAPTCHA<br/>5px Tolerance·5min Valid"]
+        LT["Login Throttle<br/>5 Failures→15min Lockout<br/>Redis Counter"]
+        SL["Session Limit<br/>Max 3 Active Tokens"]
+        TB["Token Blacklist<br/>Old Token Invalidated on Refresh"]
+        RP["Anti-Replay<br/>Nonce+Timestamp±5min"]
+    end
+    subgraph Validation["Input Validation"]
+        SQL["SQLGuard<br/>UNION/DROP/ALTER<br/>SLEEP Pattern Detection"]
+        Val["Validation<br/>trim + strip_tags"]
+        CSRF["CSRF Token<br/>Admin Session Verify"]
+        SSRF["SSRF Protection<br/>OAuth redirect_uri Whitelist"]
+    end
+    subgraph RateLimit["Rate Control"]
+        RL["Sliding Window<br/>60req/60s<br/>Redis Backed"]
+    end
+    subgraph Encryption["Data Encryption"]
+        TransEnc["Transport<br/>X-Encrypted AES<br/>EncryptionMiddleware"]
+        StoreEnc["Storage<br/>DB Field-Level<br/>Encryptable"]
+        LogMask["Log Redaction<br/>password/token<br/>→ ***"]
+    end
+    subgraph Audit["Audit Trail"]
+        AuditLog["Operation Audit<br/>IP·UA·ClientPlatform<br/>Action Details"]
+        Confirm["Confirmation<br/>Delete/Unbind/Batch<br/>Type-to-Confirm"]
+    end
+    Perimeter --> Gate
+    Gate --> AuthN
+    AuthN --> Validation
+    Validation --> RateLimit
+    RateLimit --> Encryption
+    Encryption --> Audit
+```
+
+**Defense in Depth**: Perimeter (Nginx) → Entry Guard (5 middleware) → Authentication (7 items) → Input Validation (4 items) → Rate Control → Encryption → Audit Trail
+
 **Authentication**: Unified `admin_users` table + bcrypt hashing across service and admin, JWT 24h + refresh rotation.
 
 **Auditing**: All operations logged with IP / User-Agent / Client-Platform / action details.
