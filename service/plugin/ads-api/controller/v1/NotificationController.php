@@ -12,10 +12,9 @@ use Illuminate\Database\Capsule\Manager as DB;
 use Throwable;
 
 
-use \erik\support\ControllerTrait;
-
 class NotificationController
 {
+    use \erik\support\ControllerTrait;
         /**
      * @Title("通知列表")
      * @Group("通知")

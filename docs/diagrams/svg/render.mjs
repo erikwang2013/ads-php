@@ -14,7 +14,9 @@ for (const name of files) {
   const html = `<!DOCTYPE html><html><body>
 <script src="/tmp/node_modules/mermaid/dist/mermaid.min.js"></script>
 <script>
-mermaid.initialize({startOnLoad:false,theme:'default',securityLevel:'loose'});
+mermaid.initialize({startOnLoad:false,theme:'default',securityLevel:'loose',
+  flowchart:{htmlLabels:true, padding:20},
+  themeVariables:{nodePadding:20, nodeMargin:16}});
 (async()=>{
   const {svg} = await mermaid.render('diagram',\`${mmd.replace(/`/g,'\\`').replace(/\$/g,'\\$')}\`);
   document.body.innerHTML = svg;

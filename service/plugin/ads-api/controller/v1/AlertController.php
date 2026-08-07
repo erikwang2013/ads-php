@@ -13,10 +13,9 @@ use Webman\Http\Response;
 use erik\support\CacheService;
 use Throwable;
 
-use \erik\support\ControllerTrait;
-
 class AlertController
 {
+    use \erik\support\ControllerTrait;
     /**
      * GET /api/alerts/rules
      * List alert rules with pagination.
@@ -42,14 +41,18 @@ class AlertController
             $query->where('metric', $metric);
         }
 
-        $cacheKey = 'cache:alert_rules:' . $tenantId . ':' . md5(json_encode($request->all()));
+        $filters = array_intersect_key($request->all(), array_flip(['platform', 'enabled', 'metric']));
+        $cacheKey = 'cache:alert_rules:' . $tenantId . ':' . md5(json_encode($filters));
 
-        $result = CacheService::remember($cacheKey, 120, function () use ($query) {
-            $paginator = $query->orderBy('id', 'desc')->paginate(min(100, 20));
-            return [$paginator->items(), $paginator->total(), $paginator->currentPage(), $paginator->perPage()];
+        $items = CacheService::remember($cacheKey, 120, function () use ($query) {
+            return $query->orderBy('id', 'desc')->get()->toArray();
         });
 
-        return ApiResponse::paginated($result[0], $result[1], $result[2], $result[3]);
+        $perPage = min((int) $request->get('per_page', 20), 100);
+        $page = max((int) $request->get('page', 1), 1);
+        $slice = array_slice($items, ($page - 1) * $perPage, $perPage);
+
+        return ApiResponse::paginated($slice, count($items), $page, $perPage);
     }
 
     /**

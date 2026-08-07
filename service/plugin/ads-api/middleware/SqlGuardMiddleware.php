@@ -15,7 +15,7 @@ class SqlGuardMiddleware implements MiddlewareInterface
         '/(\bDROP\b.*\bTABLE\b)/i',
         '/(\bALTER\b.*\bTABLE\b)/i',
         '/(\bEXEC\b.*\bxp_\b)/i',
-        '/(--|\#|\/\*)/',
+        '/(\bINTO\s+OUTFILE\b)/i',
     ];
 
     public function process(Request $request, callable $handler): Response

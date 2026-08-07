@@ -8,7 +8,5 @@
  */
 
 return [
-    '' => [
-        '' => erik\support\ExceptionHandler::class,
-    ],
+    '' => erik\support\ExceptionHandler::class,
 ];

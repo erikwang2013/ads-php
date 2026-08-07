@@ -12,7 +12,7 @@ use Erikwang2013\Encryptable\Encryptable;
 class PlatformAccount extends Model
 {
     use SnowflakeTrait;
-    use Encryptable;
+    
 
     protected array $encryptable = ['access_token', 'refresh_token'];
 
@@ -22,6 +22,8 @@ class PlatformAccount extends Model
         'sync_enabled' => 'boolean',
         'last_sync_at' => 'datetime',
         'token_expires_at' => 'datetime',
+        'access_token' => Encryptable::class,
+        'refresh_token' => Encryptable::class,
     ];
 
     public function tenant()

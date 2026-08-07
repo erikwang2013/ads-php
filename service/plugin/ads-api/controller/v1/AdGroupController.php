@@ -15,10 +15,9 @@ use Illuminate\Database\Capsule\Manager as DB;
 use Throwable;
 
 
-use \erik\support\ControllerTrait;
-
 class AdGroupController
 {
+    use \erik\support\ControllerTrait;
         /**
      * @Title("广告组列表")
      * @Group("广告组")

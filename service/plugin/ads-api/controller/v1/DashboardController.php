@@ -13,10 +13,9 @@ use Illuminate\Database\Capsule\Manager as DB;
 use Throwable;
 
 
-use \erik\support\ControllerTrait;
-
 class DashboardController
 {
+    use \erik\support\ControllerTrait;
         /**
      * @Title("仪表盘汇总")
      * @Group("报表")
@@ -31,7 +30,7 @@ class DashboardController
 
         $cacheKey = CacheService::dashboardKey($tenantId, $dateStart, $dateEnd);
 
-        $data = CacheService::remember($cacheKey, function () use ($tenantId, $dateStart, $dateEnd) {
+        $data = CacheService::remember($cacheKey, 300, function () use ($tenantId, $dateStart, $dateEnd) {
             $overview = (array) DB::table('erik_report_metrics')
                 ->where('tenant_id', $tenantId)
                 ->whereBetween('date', [$dateStart, $dateEnd])

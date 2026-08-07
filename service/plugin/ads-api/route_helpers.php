@@ -47,7 +47,7 @@ function versioned(string $baseClass, string $method): Closure
                 json_encode(['code' => 400, 'message' => "API version '$version' not available for this endpoint"], JSON_UNESCAPED_UNICODE));
         }
 
-        $controller = \container()->get($class);
+        $controller = \support\Container::instance()->get($class);
         $args = [];
         if ($needsRequest) {
             $args[] = $request;

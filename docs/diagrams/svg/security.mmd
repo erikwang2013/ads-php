@@ -20,7 +20,7 @@ graph TB
         RP["防重放<br/>Nonce+Timestamp±5min"]
     end
     subgraph Validation["输入校验"]
-        SQL["SQLGuard<br/>UNION/DROP/ALTER<br/>SLEEP 模式检测"]
+        SQL["SQLGuard<br/>UNION/DROP/ALTER/EXEC<br/>INTO OUTFILE 检测"]
         Val["Validation<br/>trim + strip_tags"]
         CSRF["CSRF Token<br/>Admin端Session验证"]
         SSRF["SSRF防护<br/>OAuth redirect_uri白名单"]

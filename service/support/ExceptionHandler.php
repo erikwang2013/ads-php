@@ -12,13 +12,18 @@ namespace erik\support;
 use Webman\Exception\ExceptionHandler as BaseHandler;
 use Webman\Http\Request;
 use Webman\Http\Response;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Throwable;
 
 class ExceptionHandler extends BaseHandler
 {
     public function render(Request $request, Throwable $e): Response
     {
-        $code = $e->getCode();
+        if ($e instanceof ModelNotFoundException) {
+            return $this->json(404, 'Resource not found');
+        }
+
+        $code = (int) $e->getCode();
         if ($code < 400 || $code >= 600) {
             $code = 500;
         }
@@ -38,5 +43,11 @@ class ExceptionHandler extends BaseHandler
 
         return new Response($code, ['Content-Type' => 'application/json'],
             json_encode($body, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+    }
+
+    protected function json(int $code, string $message): Response
+    {
+        return new Response($code, ['Content-Type' => 'application/json'],
+            json_encode(['code' => $code, 'message' => $message], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
     }
 }

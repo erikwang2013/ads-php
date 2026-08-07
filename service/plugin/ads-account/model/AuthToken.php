@@ -12,7 +12,7 @@ use Erikwang2013\Encryptable\Encryptable;
 class AuthToken extends Model
 {
     use SnowflakeTrait;
-    use Encryptable;
+    
 
     protected array $encryptable = ['redirect_uri'];
 
@@ -20,6 +20,7 @@ class AuthToken extends Model
     protected $guarded = ['id'];
     protected $casts = [
         'expires_at' => 'datetime',
+        'redirect_uri' => Encryptable::class,
     ];
 
     public function isExpired(): bool

@@ -12,10 +12,9 @@ use Illuminate\Database\Capsule\Manager as DB;
 use Throwable;
 
 
-use \erik\support\ControllerTrait;
-
 class CreativeController
 {
+    use \erik\support\ControllerTrait;
         /**
      * @Title("创意列表")
      * @Group("创意")

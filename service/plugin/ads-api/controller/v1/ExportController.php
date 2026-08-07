@@ -13,10 +13,9 @@ use app\support\ApiResponse;
 use Throwable;
 
 
-use \erik\support\ControllerTrait;
-
 class ExportController
 {
+    use \erik\support\ControllerTrait;
         /**
      * @Title("导出报表")
      * @Group("报表")

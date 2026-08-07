@@ -29,6 +29,12 @@ skills-lock.json
 *.bak
 .installed
 
+# 前端构建产物与依赖（走 CI 构建，不提交）
+node_modules/
+/admin/public/web/node_modules/
+/admin/public/web/dist/
+/apps/flutter/build/
+
 
 apps/flutter/# Miscellaneous
 apps/flutter/*.class

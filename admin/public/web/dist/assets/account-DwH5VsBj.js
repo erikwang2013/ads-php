@@ -1,1 +1,0 @@
-import{b as c}from"./index-kJ0dteo1.js";const n={list(t){return c.get("/accounts",{params:t})},show(t){return c.get(`/accounts/${t}`)},destroy(t){return c.delete(`/accounts/${t}`)},sync(t){return c.post(`/accounts/${t}/sync`)}};export{n as a};

@@ -18,7 +18,6 @@ class CampaignController
 {
     use \erik\support\ControllerTrait;
 
-    protected array $allowedSorts = ['id', 'name', 'platform', 'daily_budget', 'status', 'created_at', 'updated_at'];
         /**
      * @Title("计划列表")
      * @Group("广告计划")
@@ -27,12 +26,16 @@ class CampaignController
      */
     public function index(Request $request): \Webman\Http\Response
     {
+        $this->allowedSorts = ['id', 'name', 'platform', 'daily_budget', 'status', 'created_at', 'updated_at'];
         $tenantId = $this->tenantId($request);
         $query = DB::table('erik_campaigns')->where('tenant_id', $tenantId);
 
         if ($platform = $request->get('platform')) $query->where('platform', $platform);
         if ($status = $request->get('status')) $query->where('status', $status);
-        if ($keyword = $request->get('keyword')) $query->where('name', 'like', "%{$keyword}%");
+        if ($keyword = $request->get('keyword')) {
+            $keyword = addcslashes((string) $keyword, '%_\\');
+            $query->where('name', 'like', "%{$keyword}%");
+        }
 
         [$items, $total, $page, $perPage] = $this->paginate($request, $query);
 

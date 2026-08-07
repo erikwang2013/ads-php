@@ -12,10 +12,9 @@ use Webman\Http\Response;
 use erik\support\CacheService;
 use Throwable;
 
-use \erik\support\ControllerTrait;
-
 class AccountController
 {
+    use \erik\support\ControllerTrait;
         /**
      * @Title("账户列表")
      * @Group("账户")
@@ -25,17 +24,20 @@ class AccountController
     public function index(Request $request): \Webman\Http\Response
     {
         $tenantId = $request->tenantId ?? 1;
-        $cacheKey = 'cache:accounts:' . $tenantId . ':' . md5(json_encode($request->all()));
+        $filters = array_intersect_key($request->all(), array_flip(['platform', 'status']));
+        $cacheKey = 'cache:accounts:' . $tenantId . ':' . md5(json_encode($filters));
 
-        $result = CacheService::remember($cacheKey, 300, function () use ($request, $tenantId) {
+        $items = CacheService::remember($cacheKey, 300, function () use ($request, $tenantId) {
             $query = PlatformAccount::query()->where('tenant_id', $tenantId);
             if ($platform = $request->get('platform')) $query->byPlatform($platform);
-            $perPage = min((int) $request->get('per_page', 20), 100);
-            $paginator = $query->paginate($perPage);
-            return [$paginator->items(), $paginator->total(), $paginator->currentPage(), $paginator->perPage()];
+            return $query->get()->toArray();
         });
 
-        return ApiResponse::paginated($result[0], $result[1], $result[2], $result[3]);
+        $perPage = min((int) $request->get('per_page', 20), 100);
+        $page = max((int) $request->get('page', 1), 1);
+        $slice = array_slice($items, ($page - 1) * $perPage, $perPage);
+
+        return ApiResponse::paginated($slice, count($items), $page, $perPage);
     }
 
         /**
