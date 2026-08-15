@@ -42,6 +42,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import axios from 'axios'
 import { platformApi } from '@/api/platform'
 
 const serviceOk = ref<boolean | null>(null)
@@ -56,10 +57,13 @@ onMounted(async () => {
     serviceOk.value = false
   }
 
+  // 数据库连通性探测：service 的 GET /health 返回 { status, timestamp, checks: { database, redis } }，
+  // 不是统一 envelope（{code,message,data}），且其路由不带 /api 前缀。
+  // 因此用原生 axios 直连（绕过 index.ts 响应拦截器的 envelope 解包与 baseURL），
+  // 由 vite 代理将 /health 转发到 :8788（见 vite.config.ts）。
   try {
-    const { api } = await import('@/api/index')
-    await api.get('/system/info')
-    dbOk.value = true
+    const res = await axios.get('/health', { timeout: 5000 })
+    dbOk.value = res.data?.checks?.database === 'ok'
   } catch {
     dbOk.value = false
   }

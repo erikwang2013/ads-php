@@ -8,7 +8,7 @@
  *   - 提供 Vue 3 SPA 的静态文件服务（public/web/）
  *   - 处理管理员认证（JWT + Session 双通道）
  *   - 提供管理员专用 API（用户管理 / RBAC / 审计日志）
- *   - 通过 ServiceProxy 将业务查询转发到 service API（:8788）
+ *   - 广告数据查询由 SPA 直连 service API（:8788），ServiceProxy 为预留基础设施（暂未接线）
  */
 
 return [
@@ -19,8 +19,9 @@ return [
     'default_timezone' => 'Asia/Shanghai',
 
     // 业务服务 API 地址
-    // admin 中所有的广告数据查询（计划、报表、账户、告警等）均通过
-    // ServiceProxy（cURL HTTP 代理）转发到此地址，不在 admin 内直接操作业务表。
+    // 当前架构：admin 的广告数据查询（计划、报表、账户、告警等）由 Vue SPA
+    // 经 axios（baseURL /api，Nginx 分流到 :8788）直连 service；
+    // ServiceProxy（cURL HTTP 代理）为预留基础设施，当前无活跃调用方。
     'service_api_url' => env('SERVICE_API_URL', 'http://127.0.0.1:8788/api'),
 
     // JWT 认证配置（erikwang2013/jwt-webman）

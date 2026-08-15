@@ -2,10 +2,11 @@
 /**
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
  *
- * CacheService — two-level cache: L1 (APCu memory) + L2 (Redis).
+ * CacheService — three-level cache: L1 (process memory) + L2 (APCu) + L3 (Redis).
  *
- * L1 (APCu): per-process memory, sub-millisecond access. Best for hot keys.
- * L2 (Redis): shared across workers, persistent. Falls through on miss.
+ * L1 ($l1Cache static array): per-process memory, fastest. Best for hot keys.
+ * L2 (APCu): shared across workers, sub-millisecond access, short TTL (min 60s).
+ * L3 (Redis): shared across processes, persistent. Falls through on miss.
  */
 
 namespace erik\support;

@@ -16,7 +16,7 @@
 - Modify: `apps/flutter/pubspec.yaml`
 - Generate: `apps/flutter/macos/`, `apps/flutter/windows/`, `apps/flutter/linux/`
 
-- [ ] **Step 1: Add window_manager to pubspec.yaml**
+- [x] **Step 1: Add window_manager to pubspec.yaml**
 
 In `apps/flutter/pubspec.yaml`, add `window_manager: ^0.3.0` under dependencies:
 
@@ -34,7 +34,7 @@ dependencies:
   window_manager: ^0.3.0
 ```
 
-- [ ] **Step 2: Run flutter pub get**
+- [x] **Step 2: Run flutter pub get**
 
 ```bash
 cd /home/wwwroot/ads-php/apps/flutter && flutter pub get
@@ -42,7 +42,7 @@ cd /home/wwwroot/ads-php/apps/flutter && flutter pub get
 
 Expected: Resolves without errors.
 
-- [ ] **Step 3: Generate desktop platform directories**
+- [x] **Step 3: Generate desktop platform directories**
 
 ```bash
 cd /home/wwwroot/ads-php/apps/flutter && flutter create --platforms=macos,windows,linux .
@@ -50,7 +50,7 @@ cd /home/wwwroot/ads-php/apps/flutter && flutter create --platforms=macos,window
 
 Expected: `macos/`, `windows/`, `linux/` directories created. The command uses `.` to target the existing project (no overwrite of lib/).
 
-- [ ] **Step 4: Verify platform directories exist**
+- [x] **Step 4: Verify platform directories exist**
 
 ```bash
 ls -d /home/wwwroot/ads-php/apps/flutter/macos /home/wwwroot/ads-php/apps/flutter/windows /home/wwwroot/ads-php/apps/flutter/linux
@@ -58,7 +58,7 @@ ls -d /home/wwwroot/ads-php/apps/flutter/macos /home/wwwroot/ads-php/apps/flutte
 
 Expected: Three directory paths printed.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /home/wwwroot/ads-php/apps/flutter && git add pubspec.yaml pubspec.lock macos/ windows/ linux/ && git commit -m "chore: add window_manager dep and generate desktop platform dirs"
@@ -71,13 +71,13 @@ cd /home/wwwroot/ads-php/apps/flutter && git add pubspec.yaml pubspec.lock macos
 **Files:**
 - Create: `apps/flutter/lib/config/menu_config.dart`
 
-- [ ] **Step 1: Create the config directory**
+- [x] **Step 1: Create the config directory**
 
 ```bash
 mkdir -p /home/wwwroot/ads-php/apps/flutter/lib/config
 ```
 
-- [ ] **Step 2: Write menu_config.dart**
+- [x] **Step 2: Write menu_config.dart**
 
 ```dart
 import 'package:flutter/material.dart';
@@ -137,7 +137,7 @@ String routeLabel(String path) {
 }
 ```
 
-- [ ] **Step 3: Verify the file compiles by checking syntax**
+- [x] **Step 3: Verify the file compiles by checking syntax**
 
 ```bash
 cd /home/wwwroot/ads-php/apps/flutter && dart analyze lib/config/menu_config.dart
@@ -145,7 +145,7 @@ cd /home/wwwroot/ads-php/apps/flutter && dart analyze lib/config/menu_config.dar
 
 Expected: No issues found.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 cd /home/wwwroot/ads-php/apps/flutter && git add lib/config/ && git commit -m "feat: add shared menu config with two-level structure"
@@ -158,7 +158,7 @@ cd /home/wwwroot/ads-php/apps/flutter && git add lib/config/ && git commit -m "f
 **Files:**
 - Create: `apps/flutter/lib/features/shell/title_bar.dart`
 
-- [ ] **Step 1: Write title_bar.dart**
+- [x] **Step 1: Write title_bar.dart**
 
 ```dart
 import 'package:flutter/material.dart';
@@ -236,7 +236,7 @@ class _WindowButton extends StatelessWidget {
 }
 ```
 
-- [ ] **Step 2: Verify compilation**
+- [x] **Step 2: Verify compilation**
 
 ```bash
 cd /home/wwwroot/ads-php/apps/flutter && dart analyze lib/features/shell/title_bar.dart
@@ -244,7 +244,7 @@ cd /home/wwwroot/ads-php/apps/flutter && dart analyze lib/features/shell/title_b
 
 Expected: No issues found.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 cd /home/wwwroot/ads-php/apps/flutter && git add lib/features/shell/title_bar.dart && git commit -m "feat: add custom TitleBar with window controls"
@@ -257,7 +257,7 @@ cd /home/wwwroot/ads-php/apps/flutter && git add lib/features/shell/title_bar.da
 **Files:**
 - Create: `apps/flutter/lib/features/shell/breadcrumb.dart`
 
-- [ ] **Step 1: Write breadcrumb.dart**
+- [x] **Step 1: Write breadcrumb.dart**
 
 ```dart
 import 'package:flutter/material.dart';
@@ -309,7 +309,7 @@ class BreadcrumbBar extends StatelessWidget {
 }
 ```
 
-- [ ] **Step 2: Verify compilation**
+- [x] **Step 2: Verify compilation**
 
 ```bash
 cd /home/wwwroot/ads-php/apps/flutter && dart analyze lib/features/shell/breadcrumb.dart
@@ -317,7 +317,7 @@ cd /home/wwwroot/ads-php/apps/flutter && dart analyze lib/features/shell/breadcr
 
 Expected: No issues found.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 cd /home/wwwroot/ads-php/apps/flutter && git add lib/features/shell/breadcrumb.dart && git commit -m "feat: add BreadcrumbBar driven by menu config"
@@ -330,7 +330,7 @@ cd /home/wwwroot/ads-php/apps/flutter && git add lib/features/shell/breadcrumb.d
 **Files:**
 - Rewrite: `apps/flutter/lib/features/shell/side_nav.dart`
 
-- [ ] **Step 1: Write the new side_nav.dart**
+- [x] **Step 1: Write the new side_nav.dart**
 
 ```dart
 import 'package:flutter/material.dart';
@@ -542,7 +542,7 @@ class _NavTile extends StatelessWidget {
 }
 ```
 
-- [ ] **Step 2: Verify compilation**
+- [x] **Step 2: Verify compilation**
 
 ```bash
 cd /home/wwwroot/ads-php/apps/flutter && dart analyze lib/features/shell/side_nav.dart
@@ -550,7 +550,7 @@ cd /home/wwwroot/ads-php/apps/flutter && dart analyze lib/features/shell/side_na
 
 Expected: No issues found.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 cd /home/wwwroot/ads-php/apps/flutter && git add lib/features/shell/side_nav.dart && git commit -m "feat: rewrite SideNav with two-level menu and collapse"
@@ -563,7 +563,7 @@ cd /home/wwwroot/ads-php/apps/flutter && git add lib/features/shell/side_nav.dar
 **Files:**
 - Rewrite: `apps/flutter/lib/features/shell/app_shell.dart`
 
-- [ ] **Step 1: Write the new app_shell.dart (DesktopShell)**
+- [x] **Step 1: Write the new app_shell.dart (DesktopShell)**
 
 ```dart
 import 'package:flutter/material.dart';
@@ -608,7 +608,7 @@ class AppShell extends StatelessWidget {
 
 Note: Class name stays `AppShell` to avoid changing the import in `router.dart`. The implementation is now a desktop layout.
 
-- [ ] **Step 2: Verify compilation**
+- [x] **Step 2: Verify compilation**
 
 ```bash
 cd /home/wwwroot/ads-php/apps/flutter && dart analyze lib/features/shell/app_shell.dart
@@ -616,7 +616,7 @@ cd /home/wwwroot/ads-php/apps/flutter && dart analyze lib/features/shell/app_she
 
 Expected: No issues found.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 cd /home/wwwroot/ads-php/apps/flutter && git add lib/features/shell/app_shell.dart && git commit -m "feat: rewrite AppShell as DesktopShell with TitleBar + SideNav + BreadcrumbBar"
@@ -629,7 +629,7 @@ cd /home/wwwroot/ads-php/apps/flutter && git add lib/features/shell/app_shell.da
 **Files:**
 - Modify: `apps/flutter/lib/router.dart`
 
-- [ ] **Step 1: Rewrite router.dart**
+- [x] **Step 1: Rewrite router.dart**
 
 ```dart
 import 'package:flutter/material.dart';
@@ -689,7 +689,7 @@ final routerProvider = Provider<GoRouter>((ref) {
 
 Key change: `/campaigns` → `/campaigns/list` to match the two-level menu config.
 
-- [ ] **Step 2: Verify the whole project compiles**
+- [x] **Step 2: Verify the whole project compiles**
 
 ```bash
 cd /home/wwwroot/ads-php/apps/flutter && dart analyze lib/
@@ -697,7 +697,7 @@ cd /home/wwwroot/ads-php/apps/flutter && dart analyze lib/
 
 Expected: No issues found.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 cd /home/wwwroot/ads-php/apps/flutter && git add lib/router.dart && git commit -m "feat: update router for two-level menu structure"
@@ -710,7 +710,7 @@ cd /home/wwwroot/ads-php/apps/flutter && git add lib/router.dart && git commit -
 **Files:**
 - Modify: `apps/flutter/lib/main.dart`
 
-- [ ] **Step 1: Rewrite main.dart**
+- [x] **Step 1: Rewrite main.dart**
 
 ```dart
 import 'package:flutter/material.dart';
@@ -730,7 +730,7 @@ void main() async {
 }
 ```
 
-- [ ] **Step 2: Verify compilation**
+- [x] **Step 2: Verify compilation**
 
 ```bash
 cd /home/wwwroot/ads-php/apps/flutter && dart analyze lib/main.dart
@@ -738,7 +738,7 @@ cd /home/wwwroot/ads-php/apps/flutter && dart analyze lib/main.dart
 
 Expected: No issues found.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 cd /home/wwwroot/ads-php/apps/flutter && git add lib/main.dart && git commit -m "feat: init window_manager with min size and centered startup"
@@ -751,7 +751,7 @@ cd /home/wwwroot/ads-php/apps/flutter && git add lib/main.dart && git commit -m 
 **Files:**
 - Modify: `apps/flutter/lib/theme.dart`
 
-- [ ] **Step 1: Update theme.dart**
+- [x] **Step 1: Update theme.dart**
 
 ```dart
 import 'package:flutter/material.dart';
@@ -776,7 +776,7 @@ class AppTheme {
 }
 ```
 
-- [ ] **Step 2: Verify compilation**
+- [x] **Step 2: Verify compilation**
 
 ```bash
 cd /home/wwwroot/ads-php/apps/flutter && dart analyze lib/theme.dart
@@ -784,7 +784,7 @@ cd /home/wwwroot/ads-php/apps/flutter && dart analyze lib/theme.dart
 
 Expected: No issues found.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 cd /home/wwwroot/ads-php/apps/flutter && git add lib/theme.dart && git commit -m "feat: tune theme for desktop (scaffold bg, divider config)"
@@ -797,13 +797,13 @@ cd /home/wwwroot/ads-php/apps/flutter && git add lib/theme.dart && git commit -m
 **Files:**
 - Delete: `apps/flutter/lib/features/shell/top_bar.dart`
 
-- [ ] **Step 1: Delete top_bar.dart**
+- [x] **Step 1: Delete top_bar.dart**
 
 ```bash
 rm /home/wwwroot/ads-php/apps/flutter/lib/features/shell/top_bar.dart
 ```
 
-- [ ] **Step 2: Verify nothing references the deleted file**
+- [x] **Step 2: Verify nothing references the deleted file**
 
 ```bash
 cd /home/wwwroot/ads-php/apps/flutter && dart analyze lib/
@@ -811,7 +811,7 @@ cd /home/wwwroot/ads-php/apps/flutter && dart analyze lib/
 
 Expected: No issues found (no broken imports).
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 cd /home/wwwroot/ads-php/apps/flutter && git add lib/features/shell/top_bar.dart && git commit -m "chore: remove old TopBar (replaced by TitleBar)"
@@ -826,7 +826,7 @@ cd /home/wwwroot/ads-php/apps/flutter && git add lib/features/shell/top_bar.dart
 - Modify: `apps/flutter/windows/runner/main.cpp`
 - Modify: `apps/flutter/linux/my_application.cc`
 
-- [ ] **Step 1: Read the macOS Runner file to find the right edit point**
+- [x] **Step 1: Read the macOS Runner file to find the right edit point**
 
 ```bash
 cat /home/wwwroot/ads-php/apps/flutter/macos/Runner/MainFlutterWindow.swift
@@ -834,7 +834,7 @@ cat /home/wwwroot/ads-php/apps/flutter/macos/Runner/MainFlutterWindow.swift
 
 Expected: Contains `import Cocoa` and a `MainFlutterWindow` class with `awakeFromNib`.
 
-- [ ] **Step 2: Configure macOS for hidden title bar**
+- [x] **Step 2: Configure macOS for hidden title bar**
 
 Add after `super.awakeFromNib()` in `MainFlutterWindow.swift`:
 
@@ -856,7 +856,7 @@ override func awakeFromNib() {
 }
 ```
 
-- [ ] **Step 3: Configure Windows for hidden title bar**
+- [x] **Step 3: Configure Windows for hidden title bar**
 
 Read the file first:
 ```bash
@@ -887,7 +887,7 @@ HWND hwnd = CreateWindow(
 
 This removes the native title bar and borders. `window_manager` will then manage window frames.
 
-- [ ] **Step 4: Configure Linux for hidden title bar**
+- [x] **Step 4: Configure Linux for hidden title bar**
 
 Read the file first:
 ```bash
@@ -900,7 +900,7 @@ In the `my_application_activate` function, before `gtk_window_present`, add:
 gtk_window_set_decorated(GTK_WINDOW(window), FALSE);
 ```
 
-- [ ] **Step 5: Verify all three files are syntactically intact (read back)**
+- [x] **Step 5: Verify all three files are syntactically intact (read back)**
 
 ```bash
 cd /home/wwwroot/ads-php/apps/flutter && head -30 macos/Runner/MainFlutterWindow.swift && echo "---" && grep -A5 'WS_POPUP' windows/runner/win32_window.cpp && echo "---" && grep 'gtk_window_set_decorated' linux/my_application.cc
@@ -908,7 +908,7 @@ cd /home/wwwroot/ads-php/apps/flutter && head -30 macos/Runner/MainFlutterWindow
 
 Expected: Each section shows the expected modifications.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /home/wwwroot/ads-php/apps/flutter && git add macos/ windows/ linux/ && git commit -m "feat: hide native title bars on macOS/Windows/Linux for custom TitleBar"
@@ -918,7 +918,7 @@ cd /home/wwwroot/ads-php/apps/flutter && git add macos/ windows/ linux/ && git c
 
 ### Task 12: End-to-end verification
 
-- [ ] **Step 1: Full static analysis**
+- [x] **Step 1: Full static analysis**
 
 ```bash
 cd /home/wwwroot/ads-php/apps/flutter && dart analyze lib/
@@ -926,7 +926,7 @@ cd /home/wwwroot/ads-php/apps/flutter && dart analyze lib/
 
 Expected: No issues found.
 
-- [ ] **Step 2: Verify web build compiles**
+- [x] **Step 2: Verify web build compiles**
 
 ```bash
 cd /home/wwwroot/ads-php/apps/flutter && flutter build web --no-pub
@@ -934,13 +934,13 @@ cd /home/wwwroot/ads-php/apps/flutter && flutter build web --no-pub
 
 Expected: Build successful.
 
-- [ ] **Step 3: Check macOS build (if on macOS — skip if not)**
+- [x] **Step 3: Check macOS build (if on macOS — skip if not)**
 
 ```bash
 cd /home/wwwroot/ads-php/apps/flutter && flutter build macos --no-pub 2>&1 || echo "Skipped: not on macOS or build env not configured"
 ```
 
-- [ ] **Step 4: Check file list matches spec**
+- [x] **Step 4: Check file list matches spec**
 
 ```bash
 cd /home/wwwroot/ads-php/apps/flutter && echo "=== Files created/modified ===" && ls -la lib/config/menu_config.dart lib/features/shell/title_bar.dart lib/features/shell/breadcrumb.dart lib/features/shell/side_nav.dart lib/features/shell/app_shell.dart lib/router.dart lib/main.dart lib/theme.dart && echo "=== Old file removed ===" && ls lib/features/shell/top_bar.dart 2>&1
@@ -948,7 +948,7 @@ cd /home/wwwroot/ads-php/apps/flutter && echo "=== Files created/modified ===" &
 
 Expected: All new files exist, top_bar.dart "No such file".
 
-- [ ] **Step 5: Commit final state if any changes remain**
+- [x] **Step 5: Commit final state if any changes remain**
 
 ```bash
 cd /home/wwwroot/ads-php/apps/flutter && git status

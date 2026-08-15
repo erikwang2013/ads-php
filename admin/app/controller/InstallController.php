@@ -115,7 +115,7 @@ HTML;
         $redisPort     = trim($request->input('redis_port', '6379'));
         $redisPassword = $request->input('redis_password', '');
 
-        $serviceApiUrl = trim($request->input('service_api_url', 'http://127.0.0.1:8788/api/v1'));
+        $serviceApiUrl = trim($request->input('service_api_url', 'http://127.0.0.1:8788/api'));
 
         $adminUsername = trim($request->input('admin_username', ''));
         $adminPassword = $request->input('admin_password', '');

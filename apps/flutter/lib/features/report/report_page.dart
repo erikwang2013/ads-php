@@ -50,15 +50,19 @@ class _ReportPageState extends ConsumerState<ReportPage> {
     try {
       final start = DateFormat('yyyy-MM-dd').format(_dateRange!.start);
       final end = DateFormat('yyyy-MM-dd').format(_dateRange!.end);
-      final response =
-          await ApiClient.dio.get('/reports', queryParameters: {
-        'start_date': start,
-        'end_date': end,
-      });
+      final response = await ApiClient.dio.get('/reports/custom',
+          queryParameters: {
+            'date_start': start,
+            'date_end': end,
+            'dimensions[]': ['date'],
+            'metrics[]': ['cost', 'impressions', 'clicks', 'conversions'],
+            'per_page': 100,
+          });
       if (mounted) {
         setState(() {
-          _reportData =
-              List<Map<String, dynamic>>.from(response.data['data'] ?? []);
+          // ReportBuilder::buildCustom → data: {list: [...], pagination: {...}}
+          final data = response.data?['data'] as Map<String, dynamic>? ?? const {};
+          _reportData = List<Map<String, dynamic>>.from(data['list'] ?? const []);
           _loading = false;
         });
       }
@@ -163,7 +167,7 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                     spots: _reportData.asMap().entries.map((e) {
                       return FlSpot(
                         e.key.toDouble(),
-                        (e.value['spend'] ?? 0).toDouble(),
+                        _toDouble(e.value['cost']),
                       );
                     }).toList(),
                     isCurved: true,
@@ -193,7 +197,7 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                 rows: _reportData.map((r) {
                   return DataRow(cells: [
                     DataCell(Text('${r['date'] ?? '-'}')),
-                    DataCell(Text('¥${r['spend'] ?? 0}')),
+                    DataCell(Text('¥${r['cost'] ?? 0}')),
                     DataCell(Text('${r['impressions'] ?? 0}')),
                     DataCell(Text('${r['clicks'] ?? 0}')),
                     DataCell(Text('${r['conversions'] ?? 0}')),
@@ -206,4 +210,10 @@ class _ReportPageState extends ConsumerState<ReportPage> {
       ),
     );
   }
+}
+
+/// 兼容后端返回的数值类型（int/double/数字字符串，如 SQL SUM 返回 "123.45"）
+double _toDouble(dynamic value) {
+  if (value is num) return value.toDouble();
+  return double.tryParse(value?.toString() ?? '') ?? 0;
 }

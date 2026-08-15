@@ -24,11 +24,12 @@ class _AlertPageState extends ConsumerState<AlertPage> {
 
   Future<void> _fetchAlerts() async {
     try {
-      final response = await ApiClient.dio.get('/alerts');
+      final response = await ApiClient.dio.get('/alerts/logs');
       if (mounted) {
         setState(() {
-          _alerts =
-              List<Map<String, dynamic>>.from(response.data['data'] ?? []);
+          // ApiResponse::paginated → data: {list: [...], pagination: {...}}
+          final data = response.data?['data'] as Map<String, dynamic>? ?? const {};
+          _alerts = List<Map<String, dynamic>>.from(data['list'] ?? const []);
           _loading = false;
         });
       }
@@ -123,9 +124,9 @@ class _AlertPageState extends ConsumerState<AlertPage> {
           rows: _alerts.map((a) {
             return DataRow(cells: [
               DataCell(Text('${a['id'] ?? '-'}')),
-              DataCell(_buildLevelBadge(a['level'])),
-              DataCell(Text('${a['title'] ?? '-'}')),
-              DataCell(Text('${a['content'] ?? '-'}', maxLines: 1, overflow: TextOverflow.ellipsis)),
+              DataCell(_buildLevelBadge(a['metric'])),
+              DataCell(Text('${a['rule_name'] ?? '-'}')),
+              DataCell(Text(_formatContent(a), maxLines: 1, overflow: TextOverflow.ellipsis)),
               DataCell(Text(_formatTime(a['created_at']))),
               DataCell(_buildStatusChip(a['status'])),
               DataCell(
@@ -149,12 +150,12 @@ class _AlertPageState extends ConsumerState<AlertPage> {
         return Card(
           margin: const EdgeInsets.only(bottom: 8),
           child: ListTile(
-            leading: _buildLevelIcon(a['level']),
-            title: Text('${a['title'] ?? '-'}'),
+            leading: _buildLevelIcon(a['metric']),
+            title: Text('${a['rule_name'] ?? '-'}'),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('${a['content'] ?? '-'}', maxLines: 2, overflow: TextOverflow.ellipsis),
+                Text(_formatContent(a), maxLines: 2, overflow: TextOverflow.ellipsis),
                 const SizedBox(height: 4),
                 Text(_formatTime(a['created_at']),
                     style: const TextStyle(fontSize: 11, color: Colors.grey)),
@@ -203,9 +204,9 @@ class _AlertPageState extends ConsumerState<AlertPage> {
 
   Widget _buildStatusChip(dynamic status) {
     final s = status?.toString() ?? '';
-    final color = s == 'unread'
+    final color = s == 'triggered'
         ? Colors.red
-        : s == 'read'
+        : s == 'acknowledged'
             ? Colors.blue
             : Colors.grey;
     return Chip(
@@ -213,6 +214,13 @@ class _AlertPageState extends ConsumerState<AlertPage> {
       backgroundColor: color.withOpacity(0.1),
       side: BorderSide(color: color),
     );
+  }
+
+  /// AlertLog 无 title/content 字段，内容由 metric/current_value/condition/threshold 拼装
+  String _formatContent(Map<String, dynamic> a) {
+    const symbols = {'gt': '>', 'gte': '≥', 'lt': '<', 'lte': '≤'};
+    final cond = symbols[a['condition']?.toString()] ?? '';
+    return '${a['metric'] ?? '-'} ${a['current_value'] ?? '-'} $cond ${a['threshold'] ?? '-'}';
   }
 
   String _formatTime(dynamic time) {

@@ -3,13 +3,14 @@
  */
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { api } from '@/api/index'
+import axios from 'axios'
 
 export const useAdminStore = defineStore('admin', () => {
   const systemInfo = ref<any>(null)
 
+  // service 的 GET /health 返回 { status, timestamp, checks: { database, redis } }
   async function fetchSystemInfo() {
-    try { systemInfo.value = await api.get('/system/info') } catch {}
+    try { systemInfo.value = (await axios.get('/health', { timeout: 5000 })).data } catch {}
   }
 
   return { systemInfo, fetchSystemInfo }

@@ -62,9 +62,9 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 数据库 | MySQL 8.0 | 28 张表，erik_ 前缀，Snowflake BIGINT 主键 |
 | 缓存 | Redis 7 | 三级缓存 (L1内存/L2 APCu/L3 Redis)、限流计数、Pub/Sub、消息队列 |
 | 搜索 | Elasticsearch | webman-scout 自动索引同步（已配置） |
-| 管理后台 | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP 后端(端口 8789)，ServiceProxy 调用业务 API(端口 8788)，18 页面，ECharts 可视化 |
+| 管理后台 | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP 后端(端口 8789)，SPA 直连业务 API(端口 8788)，19 页面，ECharts 可视化 |
 | Flutter | Dart 3 + Riverpod + GoRouter + fl_chart | PC/Mobile 响应式，Desktop Shell 布局，12 页面 |
-| HarmonyOS | ArkTS + ArkUI | HTTP 客户端已就绪，UI 规划中 |
+| HarmonyOS | ArkTS + ArkUI | 6 个页面已实现，HTTP 客户端已就绪 |
 | 部署 | Docker + Nginx + GHCR | Docker Compose 一键启动，GitHub Actions 自动构建推送 |
 
 ## 架构图
@@ -91,7 +91,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 - **`service/`** — webman v2 用户端业务 API 服务，监听端口 **8788**。处理广告平台对接、OAuth 授权、数据同步、报表引擎、告警监控等业务逻辑。
 - **`admin/`** — webman-admin v2 独立管理后台，监听端口 **8789**。包含 PHP 后端（认证鉴权、用户管理、系统配置）和 Vue 3 SPA 前端。
-- **管理后台与业务服务的通信** — Admin 通过 `ServiceProxy`（基于 cURL 的 HTTP 代理）调用 service API，转发管理员请求并携带 JWT Token。
+- **管理后台与业务服务的通信** — Vue SPA 通过 axios（baseURL `/api`）直连 service API；admin 专属路由（`/api/admin/*`）由 admin PHP 后端（8789）提供服务，Nginx 按路径分流。
 - **开发模式** — Vite dev server (端口 5173) 将 `/api` 代理至 service:8788；admin PHP 后端在 8789 提供 session 认证和 SPA 静态服务。
 - **生产模式** — Nginx 将 `/` 路由至 admin:8789（管理后台 SPA），将 `/api/` 路由至 service:8788（业务 API）。
 
@@ -262,9 +262,9 @@ cd admin/public/web && npx vue-tsc --noEmit   # 零错误
 ads-php/
 ├── service/                           # 用户端业务服务 (webman v2 :8788)
 │   ├── plugin/
-│   │   ├── ads-api/                   # REST API (45+ 端点，版本路由)
-│   │   │   ├── controller/v1/         # 14 个控制器
-│   │   │   ├── middleware/            # 7 个中间件
+│   │   ├── ads-api/                   # REST API (61 端点，版本路由)
+│   │   │   ├── controller/v1/         # 17 个控制器
+│   │   │   ├── middleware/            # 15 个中间件
 │   │   │   ├── config/route.php       # 路由定义
 │   │   │   └── route_helpers.php      # versioned() 辅助函数
 │   │   ├── ads-platform/              # 平台适配器核心

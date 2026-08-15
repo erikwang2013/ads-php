@@ -62,9 +62,9 @@ Unified ad management across **29 advertising platforms**, with cross-platform r
 | Database | MySQL 8.0 | 28 tables, `erik_` prefix, Snowflake BIGINT PK |
 | Cache | Redis 7 | 3-tier cache (L1 memory / L2 APCu / L3 Redis), rate limiting, Pub/Sub, message queue |
 | Search | Elasticsearch | webman-scout auto index sync (configured) |
-| Admin Panel | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP backend (port 8789), ServiceProxy calls business API (port 8788), 18 pages, ECharts |
+| Admin Panel | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP backend (port 8789), SPA calls business API directly (port 8788), 19 pages, ECharts |
 | Flutter | Dart 3 + Riverpod + GoRouter + fl_chart | PC/Mobile responsive, Desktop Shell layout, 12 pages |
-| HarmonyOS | ArkTS + ArkUI | HTTP client ready, UI planned |
+| HarmonyOS | ArkTS + ArkUI | 6 pages implemented, HTTP client ready |
 | Deployment | Docker + Nginx + GHCR | Docker Compose one-command start, GitHub Actions CI/CD |
 
 ## Architecture Diagram
@@ -89,7 +89,7 @@ Unified ad management across **29 advertising platforms**, with cross-platform r
 
 - **`service/`** — webman v2 user-facing business API, port **8788**. Handles ad platform integration, OAuth, data sync, reporting engine, alert monitoring.
 - **`admin/`** — webman-admin v2 standalone admin panel, port **8789**. PHP backend (auth, user management, system config) + Vue 3 SPA frontend.
-- **Admin-to-Service Communication** — Admin uses `ServiceProxy` (cURL-based HTTP proxy) to call service API, forwarding requests with JWT tokens.
+- **Admin-to-Service Communication** — The Vue SPA calls the business API directly (axios, baseURL `/api`, proxied to service:8788); admin-only routes (`/api/admin/*`) are served by the admin PHP backend on 8789 via Nginx location splitting.
 - **Dev Mode** — Vite dev server (port 5173) proxies `/api` to service:8788; admin PHP backend on 8789 provides session auth and SPA static serving.
 - **Production** — Nginx routes `/` to admin:8789 (admin SPA), `/api/` to service:8788 (business API).
 

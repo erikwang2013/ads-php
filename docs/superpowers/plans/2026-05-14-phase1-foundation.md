@@ -80,7 +80,7 @@ admin/
 - Create: `service/support/Response.php`
 - Create: `service/start.php`
 
-- [ ] **Step 1: 创建 composer.json 并安装依赖**
+- [x] **Step 1: 创建 composer.json 并安装依赖**
 
 ```json
 {
@@ -108,7 +108,7 @@ admin/
 
 Run: `cd service && composer install`
 
-- [ ] **Step 2: 创建 .env 环境配置**
+- [x] **Step 2: 创建 .env 环境配置**
 
 ```env
 APP_DEBUG=true
@@ -128,7 +128,7 @@ JWT_SECRET=your-secret-key-change-me
 JWT_TTL=86400
 ```
 
-- [ ] **Step 3: 创建 config/app.php**
+- [x] **Step 3: 创建 config/app.php**
 
 ```php
 <?php
@@ -142,7 +142,7 @@ return [
 ];
 ```
 
-- [ ] **Step 4: 创建 config/database.php 支持动态数据源**
+- [x] **Step 4: 创建 config/database.php 支持动态数据源**
 
 ```php
 <?php
@@ -164,7 +164,7 @@ return [
 ];
 ```
 
-- [ ] **Step 5: 创建 config/redis.php**
+- [x] **Step 5: 创建 config/redis.php**
 
 ```php
 <?php
@@ -178,7 +178,7 @@ return [
 ];
 ```
 
-- [ ] **Step 6: 创建 config/middleware.php**
+- [x] **Step 6: 创建 config/middleware.php**
 
 ```php
 <?php
@@ -189,7 +189,7 @@ return [
 ];
 ```
 
-- [ ] **Step 7: 创建 support/Response.php 统一响应**
+- [x] **Step 7: 创建 support/Response.php 统一响应**
 
 ```php
 <?php
@@ -235,19 +235,19 @@ class Response
 }
 ```
 
-- [ ] **Step 8: 创建 service/start.php**
+- [x] **Step 8: 创建 service/start.php**
 
 ```php
 <?php
 require_once __DIR__ . '/vendor/autoload.php';
 ```
 
-- [ ] **Step 9: 验证项目启动**
+- [x] **Step 9: 验证项目启动**
 
 Run: `cd service && php start.php start`
 Expected: webman v2 启动成功，监听 8787 端口
 
-- [ ] **Step 10: 提交**
+- [x] **Step 10: 提交**
 
 ```bash
 cd /home/wwwroot/ads-php
@@ -266,7 +266,7 @@ git commit -m "feat: initialize webman v2 service project with config"
 - Create: `service/plugin/ads-tenant/middleware/TenantIdentify.php`
 - Create: `service/plugin/ads-tenant/migration/create_tenants.sql`
 
-- [ ] **Step 1: 创建 plugin.php**
+- [x] **Step 1: 创建 plugin.php**
 
 ```php
 <?php
@@ -277,7 +277,7 @@ return [
 ];
 ```
 
-- [ ] **Step 2: 创建 database.php 数据源路由**
+- [x] **Step 2: 创建 database.php 数据源路由**
 
 ```php
 <?php
@@ -311,7 +311,7 @@ class Database
 }
 ```
 
-- [ ] **Step 3: 创建 Tenant 模型**
+- [x] **Step 3: 创建 Tenant 模型**
 
 ```php
 <?php
@@ -339,7 +339,7 @@ class Tenant extends Model
 }
 ```
 
-- [ ] **Step 4: 创建 TenantIdentify 中间件**
+- [x] **Step 4: 创建 TenantIdentify 中间件**
 
 ```php
 <?php
@@ -373,7 +373,7 @@ class TenantIdentify implements MiddlewareInterface
 }
 ```
 
-- [ ] **Step 5: 创建迁移 SQL**
+- [x] **Step 5: 创建迁移 SQL**
 
 ```sql
 CREATE TABLE IF NOT EXISTS `tenants` (
@@ -392,7 +392,7 @@ INSERT INTO `tenants` (`id`, `name`, `plan`) VALUES (1, '默认租户', 'enterpr
 ON DUPLICATE KEY UPDATE `name` = VALUES(`name`);
 ```
 
-- [ ] **Step 6: 提交**
+- [x] **Step 6: 提交**
 
 ```bash
 cd /home/wwwroot/ads-php
@@ -413,7 +413,7 @@ git commit -m "feat: add ads-tenant plugin with multi-tenant support"
 - Create: `service/plugin/ads-platform/src/ReportRequest.php`
 - Create: `service/plugin/ads-platform/adapter/Juliang.php`
 
-- [ ] **Step 1: 创建 PlatformAdapter 接口**
+- [x] **Step 1: 创建 PlatformAdapter 接口**
 
 ```php
 <?php
@@ -446,7 +446,7 @@ interface PlatformAdapter
 }
 ```
 
-- [ ] **Step 2: 创建 CampaignData**
+- [x] **Step 2: 创建 CampaignData**
 
 ```php
 <?php
@@ -479,7 +479,7 @@ class CampaignData
 }
 ```
 
-- [ ] **Step 3: 创建 ReportRequest**
+- [x] **Step 3: 创建 ReportRequest**
 
 ```php
 <?php
@@ -499,7 +499,7 @@ class ReportRequest
 }
 ```
 
-- [ ] **Step 4: 创建 FieldMapping 字段映射引擎**
+- [x] **Step 4: 创建 FieldMapping 字段映射引擎**
 
 ```php
 <?php
@@ -540,7 +540,7 @@ class FieldMapping
 }
 ```
 
-- [ ] **Step 5: 创建 AdapterRegistry**
+- [x] **Step 5: 创建 AdapterRegistry**
 
 ```php
 <?php
@@ -580,7 +580,7 @@ class AdapterRegistry
 }
 ```
 
-- [ ] **Step 6: 创建巨量引擎适配器（字段映射 + 接口骨架）**
+- [x] **Step 6: 创建巨量引擎适配器（字段映射 + 接口骨架）**
 
 ```php
 <?php
@@ -868,7 +868,7 @@ class Juliang implements PlatformAdapter
 }
 ```
 
-- [ ] **Step 7: 创建 plugin.php**
+- [x] **Step 7: 创建 plugin.php**
 
 ```php
 <?php
@@ -879,7 +879,7 @@ return [
 ];
 ```
 
-- [ ] **Step 8: 创建迁移 SQL（campaigns, ad_groups, creatives, report_metrics, report_extras）**
+- [x] **Step 8: 创建迁移 SQL（campaigns, ad_groups, creatives, report_metrics, report_extras）**
 
 ```sql
 CREATE TABLE IF NOT EXISTS `campaigns` (
@@ -965,7 +965,7 @@ CREATE TABLE IF NOT EXISTS `report_extras` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ```
 
-- [ ] **Step 9: 注册巨量引擎适配器到 AdapterRegistry**
+- [x] **Step 9: 注册巨量引擎适配器到 AdapterRegistry**
 
 Create `service/plugin/ads-platform/config/bootstrap.php`:
 
@@ -977,7 +977,7 @@ use plugin\ads_platform\adapter\Juliang;
 AdapterRegistry::register(new Juliang());
 ```
 
-- [ ] **Step 10: 提交**
+- [x] **Step 10: 提交**
 
 ```bash
 cd /home/wwwroot/ads-php
@@ -996,7 +996,7 @@ git commit -m "feat: add ads-platform plugin with adapter interface and Juliang 
 - Create: `service/plugin/ads-account/service/OAuthService.php`
 - Create: `service/plugin/ads-account/migration/create_platform_accounts.sql`
 
-- [ ] **Step 1: 创建 plugin.php**
+- [x] **Step 1: 创建 plugin.php**
 
 ```php
 <?php
@@ -1007,7 +1007,7 @@ return [
 ];
 ```
 
-- [ ] **Step 2: 创建 PlatformAccount 模型**
+- [x] **Step 2: 创建 PlatformAccount 模型**
 
 ```php
 <?php
@@ -1048,7 +1048,7 @@ class PlatformAccount extends Model
 }
 ```
 
-- [ ] **Step 3: 创建 AuthToken 模型（用于 OAuth 流程中的 state 存储）**
+- [x] **Step 3: 创建 AuthToken 模型（用于 OAuth 流程中的 state 存储）**
 
 ```php
 <?php
@@ -1071,7 +1071,7 @@ class AuthToken extends Model
 }
 ```
 
-- [ ] **Step 4: 创建 OAuthService**
+- [x] **Step 4: 创建 OAuthService**
 
 ```php
 <?php
@@ -1182,7 +1182,7 @@ class OAuthService
 }
 ```
 
-- [ ] **Step 5: 创建迁移 SQL**
+- [x] **Step 5: 创建迁移 SQL**
 
 ```sql
 CREATE TABLE IF NOT EXISTS `platform_accounts` (
@@ -1215,7 +1215,7 @@ CREATE TABLE IF NOT EXISTS `auth_tokens` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ```
 
-- [ ] **Step 6: 提交**
+- [x] **Step 6: 提交**
 
 ```bash
 cd /home/wwwroot/ads-php
@@ -1237,7 +1237,7 @@ git commit -m "feat: add ads-account plugin with OAuth flow and platform account
 - Create: `service/plugin/ads-api/controller/CampaignController.php`
 - Create: `service/plugin/ads-api/controller/DashboardController.php`
 
-- [ ] **Step 1: 创建 plugin.php**
+- [x] **Step 1: 创建 plugin.php**
 
 ```php
 <?php
@@ -1248,7 +1248,7 @@ return [
 ];
 ```
 
-- [ ] **Step 2: 创建 JWT AuthMiddleware**
+- [x] **Step 2: 创建 JWT AuthMiddleware**
 
 ```php
 <?php
@@ -1284,7 +1284,7 @@ class AuthMiddleware implements MiddlewareInterface
 }
 ```
 
-- [ ] **Step 3: 创建 AuthController**
+- [x] **Step 3: 创建 AuthController**
 
 ```php
 <?php
@@ -1345,7 +1345,7 @@ class AuthController
 }
 ```
 
-- [ ] **Step 4: 创建 PlatformController**
+- [x] **Step 4: 创建 PlatformController**
 
 ```php
 <?php
@@ -1419,7 +1419,7 @@ class PlatformController
 }
 ```
 
-- [ ] **Step 5: 创建 AccountController**
+- [x] **Step 5: 创建 AccountController**
 
 ```php
 <?php
@@ -1485,7 +1485,7 @@ class AccountController
 }
 ```
 
-- [ ] **Step 6: 创建 CampaignController**
+- [x] **Step 6: 创建 CampaignController**
 
 ```php
 <?php
@@ -1679,7 +1679,7 @@ class CampaignController
 }
 ```
 
-- [ ] **Step 7: 创建 DashboardController**
+- [x] **Step 7: 创建 DashboardController**
 
 ```php
 <?php
@@ -1745,7 +1745,7 @@ class DashboardController
 }
 ```
 
-- [ ] **Step 8: 创建路由配置 route.php**
+- [x] **Step 8: 创建路由配置 route.php**
 
 ```php
 <?php
@@ -1785,7 +1785,7 @@ use plugin\ads_api\controller\{
 })->middleware([AuthMiddleware::class]);
 ```
 
-- [ ] **Step 9: 提交**
+- [x] **Step 9: 提交**
 
 ```bash
 cd /home/wwwroot/ads-php
@@ -1807,7 +1807,7 @@ git commit -m "feat: add ads-api plugin with auth, account, campaign, and dashbo
 - Create: `admin/src/router/index.ts`
 - Create: `admin/src/api/index.ts`
 
-- [ ] **Step 1: 创建 package.json**
+- [x] **Step 1: 创建 package.json**
 
 ```json
 {
@@ -1841,7 +1841,7 @@ git commit -m "feat: add ads-api plugin with auth, account, campaign, and dashbo
 }
 ```
 
-- [ ] **Step 2: 创建 vite.config.ts**
+- [x] **Step 2: 创建 vite.config.ts**
 
 ```typescript
 import { defineConfig } from 'vite'
@@ -1867,7 +1867,7 @@ export default defineConfig({
 })
 ```
 
-- [ ] **Step 3: 创建 tsconfig.json**
+- [x] **Step 3: 创建 tsconfig.json**
 
 ```json
 {
@@ -1892,7 +1892,7 @@ export default defineConfig({
 }
 ```
 
-- [ ] **Step 4: 创建 index.html**
+- [x] **Step 4: 创建 index.html**
 
 ```html
 <!DOCTYPE html>
@@ -1910,7 +1910,7 @@ export default defineConfig({
 </html>
 ```
 
-- [ ] **Step 5: 创建 src/main.ts**
+- [x] **Step 5: 创建 src/main.ts**
 
 ```typescript
 import { createApp } from 'vue'
@@ -1928,7 +1928,7 @@ app.use(ElementPlus, { locale: zhCn })
 app.mount('#app')
 ```
 
-- [ ] **Step 6: 创建 src/App.vue**
+- [x] **Step 6: 创建 src/App.vue**
 
 ```vue
 <template>
@@ -1936,7 +1936,7 @@ app.mount('#app')
 </template>
 ```
 
-- [ ] **Step 7: 创建 src/router/index.ts**
+- [x] **Step 7: 创建 src/router/index.ts**
 
 ```typescript
 import { createRouter, createWebHistory } from 'vue-router'
@@ -1990,7 +1990,7 @@ const router = createRouter({
 export default router
 ```
 
-- [ ] **Step 8: 创建 src/api/index.ts（Axios 封装）**
+- [x] **Step 8: 创建 src/api/index.ts（Axios 封装）**
 
 ```typescript
 import axios from 'axios'
@@ -2033,12 +2033,12 @@ export default api
 export { api }
 ```
 
-- [ ] **Step 9: 安装依赖并验证**
+- [x] **Step 9: 安装依赖并验证**
 
 Run: `cd admin && npm install && npm run dev`
 Expected: Vite 开发服务器启动在 5173 端口
 
-- [ ] **Step 10: 提交**
+- [x] **Step 10: 提交**
 
 ```bash
 cd /home/wwwroot/ads-php
@@ -2058,7 +2058,7 @@ git commit -m "feat: initialize webman-admin v2 project with Vue3+TS+Element Plu
 - Create: `admin/src/stores/auth.ts`
 - Create: `admin/src/api/auth.ts`
 
-- [ ] **Step 1: 创建 auth store**
+- [x] **Step 1: 创建 auth store**
 
 ```typescript
 // src/stores/auth.ts
@@ -2092,7 +2092,7 @@ export const useAuthStore = defineStore('auth', () => {
 })
 ```
 
-- [ ] **Step 2: 创建 auth API**
+- [x] **Step 2: 创建 auth API**
 
 ```typescript
 // src/api/auth.ts
@@ -2108,7 +2108,7 @@ export const authApi = {
 }
 ```
 
-- [ ] **Step 3: 创建 LoginPage.vue**
+- [x] **Step 3: 创建 LoginPage.vue**
 
 ```vue
 <template>
@@ -2179,7 +2179,7 @@ async function handleLogin() {
 </style>
 ```
 
-- [ ] **Step 4: 创建 SideNav.vue**
+- [x] **Step 4: 创建 SideNav.vue**
 
 ```vue
 <template>
@@ -2226,7 +2226,7 @@ const route = useRoute()
 </script>
 ```
 
-- [ ] **Step 5: 创建 TopBar.vue**
+- [x] **Step 5: 创建 TopBar.vue**
 
 ```vue
 <template>
@@ -2274,7 +2274,7 @@ const title = computed(() => route.meta.title as string || '')
 </style>
 ```
 
-- [ ] **Step 6: 创建 AppLayout.vue**
+- [x] **Step 6: 创建 AppLayout.vue**
 
 ```vue
 <template>
@@ -2322,7 +2322,7 @@ const collapsed = ref(false)
 </style>
 ```
 
-- [ ] **Step 7: 提交**
+- [x] **Step 7: 提交**
 
 ```bash
 cd /home/wwwroot/ads-php
@@ -2346,7 +2346,7 @@ git commit -m "feat: add login page and admin layout with sidebar navigation"
 - Create: `admin/src/api/campaign.ts`
 - Create: `admin/src/utils/format.ts`
 
-- [ ] **Step 1: 创建工具函数 format.ts**
+- [x] **Step 1: 创建工具函数 format.ts**
 
 ```typescript
 // src/utils/format.ts
@@ -2369,7 +2369,7 @@ export function formatPercent(n: number): string {
 }
 ```
 
-- [ ] **Step 2: 创建 MetricCard.vue**
+- [x] **Step 2: 创建 MetricCard.vue**
 
 ```vue
 <template>
@@ -2418,7 +2418,7 @@ const formatted = computed(() => {
 </style>
 ```
 
-- [ ] **Step 3: 创建 PlatformBadge.vue**
+- [x] **Step 3: 创建 PlatformBadge.vue**
 
 ```vue
 <template>
@@ -2455,7 +2455,7 @@ const color = computed(() => info.value.color)
 </style>
 ```
 
-- [ ] **Step 4: 创建 DashboardPage.vue**
+- [x] **Step 4: 创建 DashboardPage.vue**
 
 ```vue
 <template>
@@ -2585,7 +2585,7 @@ onMounted(async () => {
 </style>
 ```
 
-- [ ] **Step 5: 创建 AccountList.vue**
+- [x] **Step 5: 创建 AccountList.vue**
 
 ```vue
 <template>
@@ -2663,7 +2663,7 @@ onMounted(fetchAccounts)
 </style>
 ```
 
-- [ ] **Step 6: 创建 AccountBind.vue**
+- [x] **Step 6: 创建 AccountBind.vue**
 
 ```vue
 <template>
@@ -2791,7 +2791,7 @@ onMounted(async () => {
 </style>
 ```
 
-- [ ] **Step 7: 创建 CampaignList.vue**
+- [x] **Step 7: 创建 CampaignList.vue**
 
 ```vue
 <template>
@@ -3010,7 +3010,7 @@ onMounted(async () => {
 </style>
 ```
 
-- [ ] **Step 8: 创建 API 封装文件**
+- [x] **Step 8: 创建 API 封装文件**
 
 ```typescript
 // src/api/dashboard.ts
@@ -3083,13 +3083,13 @@ export const platformApi = {
 }
 ```
 
-- [ ] **Step 9: 验证管理后台功能**
+- [x] **Step 9: 验证管理后台功能**
 
 Run: `cd admin && npm run dev`
 Config: 确保 vite proxy 指向 webman 服务端 8787 端口
 Check: 登录 → 仪表盘 → 账户管理 → 创建计划 → 启停计划
 
-- [ ] **Step 10: 提交**
+- [x] **Step 10: 提交**
 
 ```bash
 cd /home/wwwroot/ads-php
@@ -3105,7 +3105,7 @@ git commit -m "feat: add dashboard, account management, and campaign pages to ad
 - Create: `service/start.php` (如果有则修改)
 - Create: `README.md`
 
-- [ ] **Step 1: 在 service/start.php 中添加插件加载和数据库初始化**
+- [x] **Step 1: 在 service/start.php 中添加插件加载和数据库初始化**
 
 ```php
 <?php
@@ -3135,7 +3135,7 @@ $redisConfig = require __DIR__ . '/config/redis.php';
 AdapterRegistry::register(new Juliang());
 ```
 
-- [ ] **Step 2: 运行数据库迁移**
+- [x] **Step 2: 运行数据库迁移**
 
 Run:
 ```bash
@@ -3145,7 +3145,7 @@ mysql -u root ads < service/plugin/ads-platform/migration/create_campaign_tables
 mysql -u root ads < service/plugin/ads-account/migration/create_platform_accounts.sql
 ```
 
-- [ ] **Step 3: 启动服务端并验证 API**
+- [x] **Step 3: 启动服务端并验证 API**
 
 Run: `cd service && php start.php start -d`
 
@@ -3163,7 +3163,7 @@ curl http://127.0.0.1:8787/api/v1/platforms
 ```
 Expected: `{"code":0,"data":[{"code":"juliang","name":"巨量引擎","capabilities":["report","campaign","creative","oauth"]}]}`
 
-- [ ] **Step 4: 启动管理后台并验证联调**
+- [x] **Step 4: 启动管理后台并验证联调**
 
 Run: `cd admin && npm run dev`
 
@@ -3174,7 +3174,7 @@ Test flow:
 4. 进入账户管理 → 绑定账户（需巨量引擎正式 AppId）
 5. 创建测试广告计划
 
-- [ ] **Step 5: 提交最终状态**
+- [x] **Step 5: 提交最终状态**
 
 ```bash
 cd /home/wwwroot/ads-php
