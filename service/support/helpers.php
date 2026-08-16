@@ -31,3 +31,19 @@ if (!function_exists('redis')) {
         return $client;
     }
 }
+
+if (!function_exists('now')) {
+    /**
+     * Get the current time (Laravel-compatible global helper).
+     *
+     * 项目多处（控制器/定时任务/引擎）调用全局 now()，但 vendor 中不存在
+     * 该全局函数（illuminate 内仅有类方法），导致这些写入路径运行时抛出
+     * "Call to undefined function now()" 并被 catch 吞掉（静默失败）。
+     * 此处补定义以恢复全部 45 处调用：返回 Carbon 实例，Eloquent 写入时
+     * 自动格式化为 'Y-m-d H:i:s'，字符串上下文亦可隐式转换。
+     */
+    function now(): \Carbon\CarbonInterface
+    {
+        return \Carbon\Carbon::now();
+    }
+}

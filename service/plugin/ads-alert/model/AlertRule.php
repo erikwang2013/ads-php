@@ -13,11 +13,14 @@ class AlertRule extends Model
     use SnowflakeTrait;
 
     protected $table = 'erik_alert_rules';
+    // 除 id 外全部字段可批量赋值（含 channels / webhook_url）
     protected $guarded = ['id'];
     protected $casts = [
-        'channels' => 'array',
-        'enabled'  => 'boolean',
-        'threshold' => 'float',
+        'channels'    => 'array',
+        'enabled'     => 'boolean',
+        'threshold'   => 'float',
+        // Webhook 回调地址（webhook 渠道目标），新增列见 migration/create_alert_webhook_url.sql
+        'webhook_url' => 'string',
     ];
 
     public function isEnabled(): bool

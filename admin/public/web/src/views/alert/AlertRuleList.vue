@@ -108,7 +108,12 @@
             <el-checkbox label="web" :disabled="true">站内通知</el-checkbox>
             <el-checkbox label="email">邮件</el-checkbox>
             <el-checkbox label="sms">短信</el-checkbox>
+            <el-checkbox label="webhook">Webhook</el-checkbox>
           </el-checkbox-group>
+        </el-form-item>
+        <el-form-item label="Webhook URL" prop="webhook_url" v-if="form.channels.includes('webhook')">
+          <el-input v-model="form.webhook_url" placeholder="https://example.com/hooks/alert" clearable />
+          <span style="margin-left:8px;color:#909399">触发告警时 POST JSON 到此地址</span>
         </el-form-item>
         <el-form-item label="启用">
           <el-switch v-model="form.enabled" />
@@ -153,6 +158,7 @@ const form = reactive({
   campaign_id: null as number | null,
   check_interval: 5,
   channels: ['web'],
+  webhook_url: '',
   enabled: true,
 })
 
@@ -262,6 +268,7 @@ function openEdit(row: any) {
   form.campaign_id = row.campaign_id ?? null
   form.check_interval = row.check_interval ?? 5
   form.channels = Array.isArray(row.channels) ? [...row.channels] : ['web']
+  form.webhook_url = row.webhook_url ?? ''
   form.enabled = row.enabled === 1 || row.enabled === true
   dialogVisible.value = true
 }
@@ -276,6 +283,7 @@ function resetForm() {
   form.campaign_id = null
   form.check_interval = 5
   form.channels = ['web']
+  form.webhook_url = ''
   form.enabled = true
   formRef.value?.resetFields()
 }
@@ -298,6 +306,7 @@ async function submitForm() {
     }
     if (form.scope === 'platform') payload.platform = form.platform
     if (form.scope === 'campaign') payload.campaign_id = form.campaign_id
+    if (form.channels.includes('webhook')) payload.webhook_url = form.webhook_url
 
     if (editing.value) {
       await alertApi.updateRule(editing.value.id, payload)

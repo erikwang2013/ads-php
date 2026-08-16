@@ -7,6 +7,8 @@ namespace plugin\ads_alert\service;
 
 use plugin\ads_alert\model\AlertLog;
 use plugin\ads_alert\model\AlertRule;
+use plugin\ads_alert\service\channel\EmailChannel;
+use plugin\ads_alert\service\channel\WebhookChannel;
 use Illuminate\Database\Capsule\Manager as DB;
 use Throwable;
 
@@ -21,10 +23,11 @@ class NotificationService
 
         foreach ($channels as $channel) {
             match ($channel) {
-                'web'   => $this->sendWeb($log, $rule),
-                'email' => $this->sendEmail($log, $rule),
-                'sms'   => $this->sendSms($log, $rule),
-                default => null,
+                'web'     => $this->sendWeb($log, $rule),
+                'email'   => $this->sendEmail($log, $rule),
+                'sms'     => $this->sendSms($log, $rule),
+                'webhook' => $this->sendWebhook($log, $rule),
+                default   => null,
             };
         }
 
@@ -46,8 +49,8 @@ class NotificationService
                 'ref_type'   => 'alert_log',
                 'ref_id'     => $log->id,
                 'is_read'    => 0,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s'),
             ]);
         } catch (Throwable $e) {
             // notifications table may not exist yet — silently skip
@@ -56,21 +59,36 @@ class NotificationService
     }
 
     /**
-     * Email channel (stub — to be implemented with mailer integration).
+     * Email channel: send via EmailChannel (SMTP + mail() fallback).
      */
     protected function sendEmail(AlertLog $log, AlertRule $rule): void
     {
-        // Stub: integrate with mail service in a future phase
-        echo "[email stub] Alert '{$rule->name}' triggered: {$log->metric} = {$log->current_value}\n";
+        (new EmailChannel())->send($log, $rule);
     }
 
     /**
-     * SMS channel (stub — to be implemented with SMS provider integration).
+     * Webhook channel: POST JSON payload to $rule->webhook_url.
+     */
+    protected function sendWebhook(AlertLog $log, AlertRule $rule): void
+    {
+        (new WebhookChannel())->send($log, $rule);
+    }
+
+    /**
+     * SMS channel (placeholder).
+     *
+     * 接入步骤（后续阶段）：
+     *   1. 在 config/ 新增 sms.php，配置短信网关（阿里云 dysmsapi / 腾讯云 sms）：
+     *      access_key_id / access_key_secret（AK/SK）、sign_name（签名）、template_code（模板）。
+     *   2. 新建 service/channel/SmsChannel.php，实现 send(AlertLog, AlertRule)：
+     *      调用网关 API（如阿里云 SendSms），将 rule.name / metric / current_value 填入模板变量。
+     *   3. 在本方法中替换为 (new SmsChannel())->send($log, $rule)。
+     *
+     * 注意：短信网关为付费服务且需 AK/SK，本阶段仅保留占位并明确记录"未配置"。
      */
     protected function sendSms(AlertLog $log, AlertRule $rule): void
     {
-        // Stub: integrate with SMS provider in a future phase
-        echo "[sms stub] Alert '{$rule->name}' triggered: {$log->metric} = {$log->current_value}\n";
+        error_log("[alert sms] 短信网关未配置（需阿里云/腾讯云 AK/SK），跳过：Alert '{$rule->name}' triggered: {$log->metric} = {$log->current_value}");
     }
 
     /**
@@ -90,7 +108,7 @@ class NotificationService
                 'threshold'    => $log->threshold,
                 'condition'    => $log->condition,
                 'tenant_id'    => $log->tenant_id,
-                'timestamp'    => now()->toDateTimeString(),
+                'timestamp'    => date('Y-m-d H:i:s'),
             ], JSON_UNESCAPED_UNICODE);
             $redis->publish('alert:new', $payload);
         } catch (Throwable $e) {

@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS `erik_alert_rules` (
     `campaign_id` BIGINT UNSIGNED NULL,
     `check_interval` INT DEFAULT 5,
     `channels` JSON NULL,
+    `webhook_url` VARCHAR(512) NULL COMMENT 'Webhook 回调地址（webhook 渠道用）',
     `enabled` TINYINT DEFAULT 1,
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

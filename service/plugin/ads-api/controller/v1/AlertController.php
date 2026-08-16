@@ -85,6 +85,7 @@ class AlertController
             'campaign_id'     => $request->post('campaign_id'),
             'check_interval'  => (int) $request->post('check_interval', 5),
             'channels'        => $request->post('channels', ['web']),
+            'webhook_url'     => $request->post('webhook_url'),
             'enabled'         => (int) $request->post('enabled', 1),
         ]);
 
@@ -117,7 +118,7 @@ class AlertController
         }
 
         $data = [];
-        foreach (['name', 'metric', 'condition', 'scope', 'platform', 'campaign_id', 'channels'] as $field) {
+        foreach (['name', 'metric', 'condition', 'scope', 'platform', 'campaign_id', 'channels', 'webhook_url'] as $field) {
             if ($request->post($field) !== null) {
                 $data[$field] = $request->post($field);
             }
@@ -295,6 +296,17 @@ class AlertController
 
         if ($scope === 'campaign' && empty($request->post('campaign_id'))) {
             return '计划范围须指定 campaign_id';
+        }
+
+        // webhook_url 可选；提供时校验协议与长度（创建与更新均生效）
+        $webhookUrl = $request->post('webhook_url');
+        if ($webhookUrl !== null && $webhookUrl !== '') {
+            if (mb_strlen($webhookUrl) > 512) {
+                return 'webhook_url 不能超过512个字符';
+            }
+            if (!preg_match('#^https?://#i', $webhookUrl)) {
+                return 'webhook_url 仅支持 http/https 协议';
+            }
         }
 
         $threshold = (float) $request->post('threshold');
