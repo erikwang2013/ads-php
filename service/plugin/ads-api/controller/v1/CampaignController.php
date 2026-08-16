@@ -60,6 +60,14 @@ class CampaignController
      */
     public function store(Request $request): \Webman\Http\Response
     {
+        // 多租户配额拦截（Phase 10 Task 4）：创建计划前校验 campaign_limit。
+        // 拦截点决策：计划创建是纯 API 创建入口（可直接返回 ApiResponse），
+        // 且计划数是配额核心维度之一，故选此处作为两个拦截点之一。
+        $quota = (new \plugin\ads_tenant\service\QuotaService())->exceeded('campaigns', $request->tenantId ?? 1);
+        if ($quota !== null) {
+            return ApiResponse::error($quota['message'], 429);
+        }
+
         $platform = $request->post('platform');
         $accountId = (int) $request->post('platform_account_id');
 

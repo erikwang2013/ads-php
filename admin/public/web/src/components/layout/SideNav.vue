@@ -55,6 +55,7 @@
         <el-icon><Setting /></el-icon>
         <span>系统管理</span>
       </template>
+      <el-menu-item index="/sync">同步状态</el-menu-item>
       <el-menu-item index="/system/users">用户管理</el-menu-item>
       <el-menu-item index="/system/audit">审计日志</el-menu-item>
     </el-sub-menu>

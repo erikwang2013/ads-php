@@ -98,6 +98,12 @@ const routes: RouteRecordRaw[] = [
         meta: { title: '通知中心' },
       },
       {
+        path: 'sync',
+        name: 'SyncStatus',
+        component: () => import('@/views/sync/SyncStatus.vue'),
+        meta: { title: '同步状态' },
+      },
+      {
         path: 'system/users',
         name: 'UserManage',
         component: () => import('@/views/system/UserManage.vue'),

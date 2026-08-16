@@ -3,7 +3,7 @@
  */
 export default {
   app: { title: '广告管理系统', copyright: 'Copyright (c) 2026 erik' },
-  nav: { dashboard: '仪表盘', campaigns: '广告计划', accounts: '账户管理', reports: '数据报表', alerts: '告警管理', alertRules: '告警规则', alertLogs: '告警记录', reportExport: '报表导出', system: '系统管理', userManage: '用户管理', auditLog: '审计日志', apiDocs: 'API 文档' },
+  nav: { dashboard: '仪表盘', campaigns: '广告计划', accounts: '账户管理', reports: '数据报表', alerts: '告警管理', alertRules: '告警规则', alertLogs: '告警记录', reportExport: '报表导出', system: '系统管理', userManage: '用户管理', auditLog: '审计日志', apiDocs: 'API 文档', syncStatus: '同步状态' },
   login: { title: '广告管理系统', username: '用户名', password: '密码', login: '登 录', usernameRequired: '请输入用户名', passwordRequired: '请输入密码' },
   dashboard: { title: '仪表盘', todayCost: '今日花费', impressions: '展示量', clicks: '点击量', ctr: '点击率', cvr: '转化率', avgCpa: '平均CPA', platformCost: '平台花费占比', topCampaigns: 'TOP10 广告计划', trend: '花费趋势', exportPdf: '导出PDF', exportExcel: '导出Excel', last7days: '最近7天', last30days: '最近30天', today: '今天', yesterday: '昨天', vsYesterday: '较昨日' },
   campaign: { title: '广告计划', create: '创建计划', edit: '编辑计划', name: '计划名称', platform: '投放平台', account: '平台账户', dailyBudget: '日预算', status: '状态', enabled: '投放中', paused: '已暂停', deleted: '已删除', todayCost: '今日花费', actions: '操作', toggleOn: '启用', toggleOff: '暂停', batchToggle: '批量启停', batchEnabled: '批量启用', batchDisabled: '批量暂停', selected: '已选 {count} 项', search: '搜索计划名称', allPlatforms: '全部平台', allStatus: '全部状态', cancel: '取消', confirm: '确定', createSuccess: '创建成功', updateSuccess: '更新成功', toggleSuccess: '已{action}' },

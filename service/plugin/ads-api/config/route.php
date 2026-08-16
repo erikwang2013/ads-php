@@ -21,6 +21,9 @@ use plugin\ads_api\controller\v1\AlertController;
 use plugin\ads_api\controller\v1\NotificationController;
 use plugin\ads_api\controller\v1\ExportController;
 use plugin\ads_api\controller\v1\DocController;
+use plugin\ads_api\controller\v1\SyncController;
+use plugin\ads_api\controller\v1\ConversionController;
+use plugin\ads_api\controller\v1\TenantController;
 
 require_once __DIR__ . '/../route_helpers.php';
 
@@ -110,4 +113,15 @@ Webman\Route::group('/api', function () {
 
     Webman\Route::get('/reports/calendar', versioned(DashboardController::class, 'calendar'));
     Webman\Route::get('/reports/budget-alerts', versioned(DashboardController::class, 'budgetAlerts'));
+
+    // 同步状态可视化 (Phase 10 Task 1)
+    Webman\Route::get('/sync/status', versioned(SyncController::class, 'status'));
+    Webman\Route::get('/sync/errors', versioned(SyncController::class, 'errors'));
+
+    // 转化数据采集 (Phase 10 Task 2)
+    Webman\Route::post('/conversions', versioned(ConversionController::class, 'store'));
+    Webman\Route::get('/conversions', versioned(ConversionController::class, 'index'));
+
+    // 多租户配额 (Phase 10 Task 4)
+    Webman\Route::get('/tenant/quota', versioned(TenantController::class, 'quota'));
 })->middleware([AuthMiddleware::class]);

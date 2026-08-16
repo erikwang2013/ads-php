@@ -60,6 +60,30 @@ jobs:
       - name: Type check
         run: cd admin/public/web && npx vue-tsc --noEmit
 
+  # 移动端 CI 打包（Phase 10 Task 3）
+  # 构建目标选择（依据 apps/flutter/pubspec.yaml 与源码现状）：
+  # - pubspec sdk: '>=3.2.0 <4.0.0'，subosito/flutter-action channel: stable 满足约束
+  # - 项目仅脚手架了 linux/macos/windows 平台目录（无 web/），lib/main.dart 直接 import 'dart:io'
+  #   并依赖 window_manager 桌面插件 → flutter build web 无法通过，放弃 web 构建
+  # - 仓库当前无测试（无 test/ 目录与 *_test.dart）→ flutter test 无内容可跑
+  # - 故以 flutter analyze 作为 CI 构建验证（依赖解析 + 静态分析通过即视为构建校验通过）
+  # - HarmonyOS 跳过原因：无标准 Linux CI 工具链，hvigor 构建依赖 DevEco Studio/SDK
+  #   （无官方 Linux 发行版），本期不做 HarmonyOS 打包 job，仅在此标注
+  flutter-build:
+    name: Flutter Build (Analyze)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: Install dependencies
+        working-directory: apps/flutter
+        run: flutter pub get
+      - name: Analyze (build verification)
+        working-directory: apps/flutter
+        run: flutter analyze
+
   docker-build:
     name: Docker Build
     runs-on: ubuntu-latest
