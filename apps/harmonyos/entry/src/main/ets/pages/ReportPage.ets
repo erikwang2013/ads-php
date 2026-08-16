@@ -1,14 +1,17 @@
 // Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 import router from '@ohos.router';
 import { ReportMetric } from '../model/ReportMetric';
-import { formatFen, formatNumber } from '../utils/FormatUtil';
+import { ApiClient } from '../api/ApiClient';
+import { formatFen, formatNumber, todayStr, shiftDateStr, strVal, numVal } from '../utils/FormatUtil';
 
 @Entry
 @Component
 struct ReportPage {
   @State reports: ReportMetric[] = [];
   @State isLoading: boolean = false;
-  @State selectedDate: string = this.getTodayStr();
+  @State errorMessage: string = '';
+  // 近 7 天窗口：selectedDate 为窗口结束日（默认今天），date_start = selectedDate - 6
+  @State selectedDate: string = todayStr();
 
   aboutToAppear() {
     this.loadReports();
@@ -37,26 +40,29 @@ struct ReportPage {
       .padding({ left: 20, right: 20, top: 16, bottom: 16 })
       .backgroundColor('#ffffff')
 
-      // Date selector
+      // Date selector（近 7 天窗口，中间显示日期范围）
       Row() {
         Text('← Prev')
           .fontSize(14)
           .fontColor('#1677ff')
           .onClick(() => {
-            this.shiftDate(-1);
+            this.selectedDate = shiftDateStr(this.selectedDate, -7);
+            this.loadReports();
           })
 
-        Text(this.selectedDate)
-          .fontSize(16)
+        Text(this.getRangeLabel())
+          .fontSize(14)
           .fontWeight(FontWeight.Medium)
           .fontColor('#1a1a1a')
-          .margin({ left: 16, right: 16 })
+          .margin({ left: 12, right: 12 })
+          .maxLines(1)
 
         Text('Next →')
           .fontSize(14)
           .fontColor('#1677ff')
           .onClick(() => {
-            this.shiftDate(1);
+            this.selectedDate = shiftDateStr(this.selectedDate, 7);
+            this.loadReports();
           })
       }
       .width('100%')
@@ -77,12 +83,47 @@ struct ReportPage {
       }
 
       // Report list
-      if (this.reports.length === 0) {
+      if (this.isLoading && this.reports.length === 0) {
         Column() {
-          Text('No report data for this date')
+          Text('Loading...')
             .fontSize(16)
             .fontColor('#999999')
-          Text('Select a different date to view reports')
+        }
+        .width('100%')
+        .layoutWeight(1)
+        .justifyContent(FlexAlign.Center)
+        .alignItems(HorizontalAlign.Center)
+      } else if (this.errorMessage !== '' && this.reports.length === 0) {
+        Column() {
+          Text('Failed to load report data')
+            .fontSize(16)
+            .fontColor('#f5222d')
+          Text(this.errorMessage)
+            .fontSize(12)
+            .fontColor('#999999')
+            .margin({ top: 4 })
+            .maxLines(2)
+          Button('Retry')
+            .fontSize(14)
+            .fontColor('#1677ff')
+            .backgroundColor('#ffffff')
+            .border({ width: 1, color: '#1677ff' })
+            .borderRadius(8)
+            .margin({ top: 12 })
+            .onClick(() => {
+              this.loadReports();
+            })
+        }
+        .width('100%')
+        .layoutWeight(1)
+        .justifyContent(FlexAlign.Center)
+        .alignItems(HorizontalAlign.Center)
+      } else if (this.reports.length === 0) {
+        Column() {
+          Text('No report data in this range')
+            .fontSize(16)
+            .fontColor('#999999')
+          Text('Select a different date range to view reports')
             .fontSize(13)
             .fontColor('#cccccc')
             .margin({ top: 8 })
@@ -102,7 +143,7 @@ struct ReportPage {
             ListItem() {
               this.ReportRow(item)
             }
-          }, (item: ReportMetric) => item.campaignId + item.date)
+          }, (item: ReportMetric) => item.date !== '' ? item.date : item.campaignId)
         }
         .width('100%')
         .layoutWeight(1)
@@ -143,7 +184,7 @@ struct ReportPage {
   @Builder
   TableHeaderRow() {
     Row() {
-      Text('Campaign')
+      Text('Date')
         .fontSize(12)
         .fontWeight(FontWeight.Medium)
         .fontColor('#888888')
@@ -172,7 +213,8 @@ struct ReportPage {
   @Builder
   ReportRow(metric: ReportMetric) {
     Row() {
-      Text(metric.campaignName)
+      // 按日期维度聚合时显示日期；兼容旧 campaignName 展示
+      Text(metric.date !== '' ? metric.date : metric.campaignName)
         .fontSize(13)
         .fontColor('#333333')
         .maxLines(1)
@@ -223,32 +265,44 @@ struct ReportPage {
     return total;
   }
 
-  private getTodayStr(): string {
-    let d = new Date();
-    return `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')}`;
+  private getRangeLabel(): string {
+    return `${shiftDateStr(this.selectedDate, -6)} ~ ${this.selectedDate}`;
   }
 
-  private shiftDate(days: number) {
-    let parts = this.selectedDate.split('-');
-    let d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-    d.setDate(d.getDate() + days);
-    this.selectedDate = `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')}`;
-    this.loadReports();
-  }
-
-  private loadReports() {
+  /**
+   * GET /reports/custom（近 7 天，按日期维度聚合）→ data.list → ReportMetric[]。
+   * 查询参数与 Flutter report_page.dart 一致：dimensions[]=date & metrics[]=cost,impressions,clicks,conversions。
+   */
+  private async loadReports() {
     this.isLoading = true;
-
-    // Simulate data loading — replace with ApiClient.get('/reports?date=' + this.selectedDate)
-    setTimeout(() => {
-      this.reports = [
-        { campaignId: '1', campaignName: 'Summer Sale 2026', date: this.selectedDate, cost: 125000, impressions: 45000, clicks: 1200 },
-        { campaignId: '2', campaignName: 'App Install Drive', date: this.selectedDate, cost: 89000, impressions: 32000, clicks: 890 },
-        { campaignId: '3', campaignName: 'Brand Awareness Q2', date: this.selectedDate, cost: 0, impressions: 0, clicks: 0 },
-        { campaignId: '4', campaignName: 'Retargeting Campaign', date: this.selectedDate, cost: 45000, impressions: 18000, clicks: 520 },
-        { campaignId: '5', campaignName: 'Holiday Promo', date: this.selectedDate, cost: 0, impressions: 0, clicks: 0 }
-      ];
+    this.errorMessage = '';
+    try {
+      let start = shiftDateStr(this.selectedDate, -6);
+      let end = this.selectedDate;
+      let path = `/reports/custom?date_start=${start}&date_end=${end}` +
+        '&dimensions%5B%5D=date' +
+        '&metrics%5B%5D=cost&metrics%5B%5D=impressions&metrics%5B%5D=clicks&metrics%5B%5D=conversions' +
+        '&per_page=100';
+      let res = await ApiClient.get(path) as Record<string, Object>;
+      let list = res['list'] as Object[];
+      let items: ReportMetric[] = [];
+      if (list !== undefined) {
+        for (let item of list) {
+          let m = item as Record<string, Object>;
+          let r = new ReportMetric();
+          r.date = strVal(m['date']);
+          r.cost = numVal(m['cost']);
+          r.impressions = numVal(m['impressions']);
+          r.clicks = numVal(m['clicks']);
+          r.conversions = numVal(m['conversions']);
+          items.push(r);
+        }
+      }
+      this.reports = items;
       this.isLoading = false;
-    }, 600);
+    } catch (e) {
+      this.errorMessage = (e as Error).message;
+      this.isLoading = false;
+    }
   }
 }

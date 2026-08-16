@@ -7,4 +7,9 @@ export class AlertRule {
   threshold: number = 0;
   status: string = '';
   campaignName: string = '';
+  // AlertLog 字段（/api/alerts/logs）：无 level/title/content，
+  // 内容由 metric/current_value/condition/threshold 拼装
+  currentValue: number = 0;
+  condition: string = '';
+  createdAt: string = '';
 }

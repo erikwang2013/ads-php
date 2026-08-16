@@ -1,6 +1,40 @@
 // Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 /**
+ * Get today's date string in 'YYYY-MM-DD' format.
+ */
+export function todayStr(): string {
+  let d = new Date();
+  return `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')}`;
+}
+
+/**
+ * Shift a 'YYYY-MM-DD' date string by the given number of days and return the new date string.
+ * e.g. shiftDateStr('2026-08-16', -6) -> '2026-08-10'
+ */
+export function shiftDateStr(dateStr: string, days: number): string {
+  let parts = dateStr.split('-');
+  let d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+  d.setDate(d.getDate() + days);
+  return `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')}`;
+}
+
+/**
+ * Coerce an optional JSON value (number/string/boolean) to string with a fallback.
+ * Service 端 SUM() 等聚合可能返回数字字符串，统一转 string 展示。
+ */
+export function strVal(v: Object | undefined, fallback: string = ''): string {
+  return v === undefined || v === null ? fallback : String(v);
+}
+
+/**
+ * Coerce an optional JSON value (number/string/boolean) to number with a fallback.
+ */
+export function numVal(v: Object | undefined, fallback: number = 0): number {
+  return v === undefined || v === null ? fallback : Number(v);
+}
+
+/**
  * Convert fen (1/100 yuan) to yuan string with 2 decimal places.
  * e.g. 12500 -> '125.00'
  */

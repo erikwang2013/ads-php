@@ -1,14 +1,21 @@
 // Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 import router from '@ohos.router';
-import { formatFen, formatNumber } from '../utils/FormatUtil';
+import { ApiClient } from '../api/ApiClient';
+import { formatFen, formatNumber, todayStr, numVal } from '../utils/FormatUtil';
 
 @Entry
 @Component
 struct DashboardPage {
-  @State totalCost: number = 1250000;      // in fen
-  @State impressions: number = 458200;
-  @State clicks: number = 12340;
-  @State ctr: number = 2.69;
+  @State totalCost: number = 0;      // in fen
+  @State impressions: number = 0;
+  @State clicks: number = 0;
+  @State ctr: number = 0;
+  @State isLoading: boolean = true;
+  @State errorMessage: string = '';
+
+  aboutToAppear() {
+    this.loadSummary();
+  }
 
   build() {
     Column() {
@@ -70,25 +77,62 @@ struct DashboardPage {
             .width('100%')
             .padding({ left: 20, top: 20, bottom: 12 })
 
-          Grid() {
-            GridItem() {
-              this.MetricCard('Total Cost', `¥${formatFen(this.totalCost)}`)
+          if (this.isLoading) {
+            Column() {
+              Text('Loading...')
+                .fontSize(14)
+                .fontColor('#999999')
             }
-            GridItem() {
-              this.MetricCard('Impressions', formatNumber(this.impressions))
+            .width('100%')
+            .height(120)
+            .justifyContent(FlexAlign.Center)
+            .alignItems(HorizontalAlign.Center)
+          } else if (this.errorMessage !== '') {
+            Column() {
+              Text('Failed to load dashboard data')
+                .fontSize(14)
+                .fontColor('#f5222d')
+              Text(this.errorMessage)
+                .fontSize(12)
+                .fontColor('#999999')
+                .margin({ top: 4 })
+                .maxLines(2)
+              Button('Retry')
+                .fontSize(14)
+                .fontColor('#1677ff')
+                .backgroundColor('#ffffff')
+                .border({ width: 1, color: '#1677ff' })
+                .borderRadius(8)
+                .margin({ top: 12 })
+                .onClick(() => {
+                  this.loadSummary();
+                })
             }
-            GridItem() {
-              this.MetricCard('Clicks', formatNumber(this.clicks))
+            .width('100%')
+            .height(160)
+            .justifyContent(FlexAlign.Center)
+            .alignItems(HorizontalAlign.Center)
+          } else {
+            Grid() {
+              GridItem() {
+                this.MetricCard('Total Cost', `¥${formatFen(this.totalCost)}`)
+              }
+              GridItem() {
+                this.MetricCard('Impressions', formatNumber(this.impressions))
+              }
+              GridItem() {
+                this.MetricCard('Clicks', formatNumber(this.clicks))
+              }
+              GridItem() {
+                this.MetricCard('CTR', `${this.ctr.toFixed(2)}%`)
+              }
             }
-            GridItem() {
-              this.MetricCard('CTR', `${this.ctr.toFixed(2)}%`)
-            }
+            .columnsTemplate('1fr 1fr')
+            .rowsGap(12)
+            .columnsGap(12)
+            .padding({ left: 20, right: 20 })
+            .width('100%')
           }
-          .columnsTemplate('1fr 1fr')
-          .rowsGap(12)
-          .columnsGap(12)
-          .padding({ left: 20, right: 20 })
-          .width('100%')
 
           // Chart placeholder section
           Text('Performance Trend')
@@ -196,5 +240,29 @@ struct DashboardPage {
     .borderRadius(8)
     .border({ width: 1, color: color })
     .onClick(onClick)
+  }
+
+  /**
+   * GET /reports/summary（今日区间）→ data.overview。
+   * overview 字段：total_cost(分)/total_impressions/total_clicks/total_conversions/avg_ctr(%)。
+   */
+  private async loadSummary() {
+    this.isLoading = true;
+    this.errorMessage = '';
+    try {
+      let today = todayStr();
+      let res = await ApiClient.get(`/reports/summary?date_start=${today}&date_end=${today}`) as Record<string, Object>;
+      let overview = res['overview'] as Record<string, Object>;
+      if (overview !== undefined) {
+        this.totalCost = numVal(overview['total_cost']);
+        this.impressions = numVal(overview['total_impressions']);
+        this.clicks = numVal(overview['total_clicks']);
+        this.ctr = numVal(overview['avg_ctr']);
+      }
+      this.isLoading = false;
+    } catch (e) {
+      this.errorMessage = (e as Error).message;
+      this.isLoading = false;
+    }
   }
 }

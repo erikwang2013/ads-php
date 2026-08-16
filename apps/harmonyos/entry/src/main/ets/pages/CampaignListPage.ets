@@ -1,7 +1,8 @@
 // Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 import router from '@ohos.router';
 import { Campaign } from '../model/Campaign';
-import { formatFen } from '../utils/FormatUtil';
+import { ApiClient } from '../api/ApiClient';
+import { formatFen, strVal, numVal } from '../utils/FormatUtil';
 
 @Entry
 @Component
@@ -9,6 +10,7 @@ struct CampaignListPage {
   @State campaigns: Campaign[] = [];
   @State isLoading: boolean = false;
   @State isRefreshing: boolean = false;
+  @State errorMessage: string = '';
   private scroller: Scroller = new Scroller();
 
   aboutToAppear() {
@@ -39,7 +41,42 @@ struct CampaignListPage {
       .backgroundColor('#ffffff')
 
       // Campaign list
-      if (this.campaigns.length === 0) {
+      if (this.isLoading && this.campaigns.length === 0) {
+        Column() {
+          Text('Loading...')
+            .fontSize(16)
+            .fontColor('#999999')
+        }
+        .width('100%')
+        .layoutWeight(1)
+        .justifyContent(FlexAlign.Center)
+        .alignItems(HorizontalAlign.Center)
+      } else if (this.errorMessage !== '' && this.campaigns.length === 0) {
+        Column() {
+          Text('Failed to load campaigns')
+            .fontSize(16)
+            .fontColor('#f5222d')
+          Text(this.errorMessage)
+            .fontSize(12)
+            .fontColor('#999999')
+            .margin({ top: 4 })
+            .maxLines(2)
+          Button('Retry')
+            .fontSize(14)
+            .fontColor('#1677ff')
+            .backgroundColor('#ffffff')
+            .border({ width: 1, color: '#1677ff' })
+            .borderRadius(8)
+            .margin({ top: 12 })
+            .onClick(() => {
+              this.loadCampaigns();
+            })
+        }
+        .width('100%')
+        .layoutWeight(1)
+        .justifyContent(FlexAlign.Center)
+        .alignItems(HorizontalAlign.Center)
+      } else if (this.campaigns.length === 0) {
         Column() {
           Text('No campaigns found')
             .fontSize(16)
@@ -164,6 +201,7 @@ struct CampaignListPage {
   private getStatusColor(status: string): string {
     const colors: Record<string, string> = {
       'active': '#52c41a',
+      'enabled': '#52c41a',
       'paused': '#faad14',
       'archived': '#999999',
       'pending': '#1890ff'
@@ -174,6 +212,7 @@ struct CampaignListPage {
   private getStatusBgColor(status: string): string {
     const colors: Record<string, string> = {
       'active': '#f6ffed',
+      'enabled': '#f6ffed',
       'paused': '#fffbe6',
       'archived': '#f5f5f5',
       'pending': '#e6f7ff'
@@ -181,20 +220,36 @@ struct CampaignListPage {
     return colors[status.toLowerCase()] || '#f5f5f5';
   }
 
-  private loadCampaigns() {
+  /**
+   * GET /campaigns → data.list（分页）→ Campaign[]。
+   * service 字段：id/name/platform/status/daily_budget（分为单位）。
+   */
+  private async loadCampaigns() {
     this.isLoading = true;
-
-    // Simulate data loading — replace with ApiClient.get('/campaigns')
-    setTimeout(() => {
-      this.campaigns = [
-        { id: '1', name: 'Summer Sale 2026', platform: 'Facebook', status: 'active', dailyBudget: 50000 },
-        { id: '2', name: 'App Install Drive', platform: 'Google', status: 'active', dailyBudget: 120000 },
-        { id: '3', name: 'Brand Awareness Q2', platform: 'TikTok', status: 'paused', dailyBudget: 80000 },
-        { id: '4', name: 'Retargeting Campaign', platform: 'Facebook', status: 'active', dailyBudget: 35000 },
-        { id: '5', name: 'Holiday Promo', platform: 'Google', status: 'pending', dailyBudget: 200000 }
-      ];
+    this.errorMessage = '';
+    try {
+      let res = await ApiClient.get('/campaigns') as Record<string, Object>;
+      let list = res['list'] as Object[];
+      let items: Campaign[] = [];
+      if (list !== undefined) {
+        for (let item of list) {
+          let m = item as Record<string, Object>;
+          let c = new Campaign();
+          c.id = String(m['id']);
+          c.name = strVal(m['name']);
+          c.platform = strVal(m['platform']);
+          c.status = strVal(m['status']);
+          c.dailyBudget = numVal(m['daily_budget']);
+          items.push(c);
+        }
+      }
+      this.campaigns = items;
       this.isLoading = false;
       this.isRefreshing = false;
-    }, 800);
+    } catch (e) {
+      this.errorMessage = (e as Error).message;
+      this.isLoading = false;
+      this.isRefreshing = false;
+    }
   }
 }

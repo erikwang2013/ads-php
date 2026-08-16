@@ -1,12 +1,15 @@
 // Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 import router from '@ohos.router';
 import { PlatformAccount } from '../model/PlatformAccount';
+import { ApiClient } from '../api/ApiClient';
+import { strVal, numVal } from '../utils/FormatUtil';
 
 @Entry
 @Component
 struct AccountPage {
   @State accounts: PlatformAccount[] = [];
   @State isLoading: boolean = false;
+  @State errorMessage: string = '';
 
   aboutToAppear() {
     this.loadAccounts();
@@ -36,7 +39,42 @@ struct AccountPage {
       .backgroundColor('#ffffff')
 
       // Account list
-      if (this.accounts.length === 0) {
+      if (this.isLoading && this.accounts.length === 0) {
+        Column() {
+          Text('Loading...')
+            .fontSize(16)
+            .fontColor('#999999')
+        }
+        .width('100%')
+        .layoutWeight(1)
+        .justifyContent(FlexAlign.Center)
+        .alignItems(HorizontalAlign.Center)
+      } else if (this.errorMessage !== '' && this.accounts.length === 0) {
+        Column() {
+          Text('Failed to load accounts')
+            .fontSize(16)
+            .fontColor('#f5222d')
+          Text(this.errorMessage)
+            .fontSize(12)
+            .fontColor('#999999')
+            .margin({ top: 4 })
+            .maxLines(2)
+          Button('Retry')
+            .fontSize(14)
+            .fontColor('#1677ff')
+            .backgroundColor('#ffffff')
+            .border({ width: 1, color: '#1677ff' })
+            .borderRadius(8)
+            .margin({ top: 12 })
+            .onClick(() => {
+              this.loadAccounts();
+            })
+        }
+        .width('100%')
+        .layoutWeight(1)
+        .justifyContent(FlexAlign.Center)
+        .alignItems(HorizontalAlign.Center)
+      } else if (this.accounts.length === 0) {
         Column() {
           Text('No accounts connected')
             .fontSize(16)
@@ -125,24 +163,42 @@ struct AccountPage {
 
   private getPlatformColor(platform: string): string {
     const colors: Record<string, string> = {
-      'Facebook': '#1877f2',
-      'Google Ads': '#ea4335',
-      'TikTok': '#000000'
+      'facebook': '#1877f2',
+      'google': '#ea4335',
+      'google ads': '#ea4335',
+      'tiktok': '#000000'
     };
-    return colors[platform] || '#1677ff';
+    return colors[platform.toLowerCase()] || '#1677ff';
   }
 
-  private loadAccounts() {
+  /**
+   * GET /accounts → data.list（分页）→ PlatformAccount[]。
+   * service 字段：id/platform/account_name/status（TINYINT：1=active，0=disabled）。
+   */
+  private async loadAccounts() {
     this.isLoading = true;
-
-    // Simulate data loading — replace with ApiClient.get('/accounts')
-    setTimeout(() => {
-      this.accounts = [
-        { id: '1', platform: 'Facebook', name: 'Main FB Ads Account', status: 'active' },
-        { id: '2', platform: 'Google Ads', name: 'Erik Google Ads', status: 'active' },
-        { id: '3', platform: 'TikTok', name: 'TikTok For Business', status: 'error' }
-      ];
+    this.errorMessage = '';
+    try {
+      let res = await ApiClient.get('/accounts') as Record<string, Object>;
+      let list = res['list'] as Object[];
+      let items: PlatformAccount[] = [];
+      if (list !== undefined) {
+        for (let item of list) {
+          let m = item as Record<string, Object>;
+          let a = new PlatformAccount();
+          a.id = String(m['id']);
+          a.platform = strVal(m['platform']);
+          a.name = strVal(m['account_name']);
+          let st = m['status'];
+          a.status = st === undefined ? 'active' : (numVal(st) === 1 ? 'active' : 'disabled');
+          items.push(a);
+        }
+      }
+      this.accounts = items;
       this.isLoading = false;
-    }, 600);
+    } catch (e) {
+      this.errorMessage = (e as Error).message;
+      this.isLoading = false;
+    }
   }
 }

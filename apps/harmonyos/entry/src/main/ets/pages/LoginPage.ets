@@ -1,6 +1,7 @@
 // Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 import router from '@ohos.router';
 import promptAction from '@ohos.promptAction';
+import { ApiClient } from '../api/ApiClient';
 
 @Entry
 @Component
@@ -81,18 +82,26 @@ struct LoginPage {
     .backgroundColor('#ffffff')
   }
 
-  handleLogin() {
+  async handleLogin() {
     if (this.username.trim() === '' || this.password.trim() === '') {
       promptAction.showToast({ message: 'Please enter username and password', duration: 2000 });
       return;
     }
 
     this.isLoading = true;
-
-    // Simulate login — replace with actual API call via ApiClient
-    setTimeout(() => {
+    try {
+      // 真实登录：POST /api/auth/login，成功时 ApiClient 内部已写入 access_token
+      await ApiClient.login(this.username.trim(), this.password);
       this.isLoading = false;
       router.pushUrl({ url: 'pages/DashboardPage' });
-    }, 1000);
+    } catch (e) {
+      this.isLoading = false;
+      // 优先展示 service 返回的 message（envelope 内），无则用通用文案
+      let msg = (e as Error).message;
+      promptAction.showToast({
+        message: msg !== '' ? msg : 'Login failed, please try again',
+        duration: 2500
+      });
+    }
   }
 }

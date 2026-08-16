@@ -1,12 +1,15 @@
 // Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 import router from '@ohos.router';
 import { AlertRule } from '../model/AlertRule';
+import { ApiClient } from '../api/ApiClient';
+import { strVal, numVal } from '../utils/FormatUtil';
 
 @Entry
 @Component
 struct AlertPage {
   @State alerts: AlertRule[] = [];
   @State isLoading: boolean = false;
+  @State errorMessage: string = '';
 
   aboutToAppear() {
     this.loadAlerts();
@@ -41,12 +44,47 @@ struct AlertPage {
       .backgroundColor('#ffffff')
 
       // Alert list
-      if (this.alerts.length === 0) {
+      if (this.isLoading && this.alerts.length === 0) {
         Column() {
-          Text('No alert rules configured')
+          Text('Loading...')
             .fontSize(16)
             .fontColor('#999999')
-          Text('Create alerts to monitor your campaign performance')
+        }
+        .width('100%')
+        .layoutWeight(1)
+        .justifyContent(FlexAlign.Center)
+        .alignItems(HorizontalAlign.Center)
+      } else if (this.errorMessage !== '' && this.alerts.length === 0) {
+        Column() {
+          Text('Failed to load alerts')
+            .fontSize(16)
+            .fontColor('#f5222d')
+          Text(this.errorMessage)
+            .fontSize(12)
+            .fontColor('#999999')
+            .margin({ top: 4 })
+            .maxLines(2)
+          Button('Retry')
+            .fontSize(14)
+            .fontColor('#1677ff')
+            .backgroundColor('#ffffff')
+            .border({ width: 1, color: '#1677ff' })
+            .borderRadius(8)
+            .margin({ top: 12 })
+            .onClick(() => {
+              this.loadAlerts();
+            })
+        }
+        .width('100%')
+        .layoutWeight(1)
+        .justifyContent(FlexAlign.Center)
+        .alignItems(HorizontalAlign.Center)
+      } else if (this.alerts.length === 0) {
+        Column() {
+          Text('No alert logs yet')
+            .fontSize(16)
+            .fontColor('#999999')
+          Text('Alerts will appear here when campaign metrics cross thresholds')
             .fontSize(13)
             .fontColor('#cccccc')
             .margin({ top: 8 })
@@ -96,18 +134,23 @@ struct AlertPage {
           .margin({ left: 10 })
           .layoutWeight(1)
 
-        Toggle({ type: ToggleType.Switch, isOn: alert.status === 'enabled' })
-          .selectedColor('#1677ff')
+        Text(alert.status)
+          .fontSize(12)
+          .fontColor(this.getStatusColor(alert.status))
+          .padding({ left: 8, right: 8, top: 2, bottom: 2 })
+          .backgroundColor(this.getStatusBgColor(alert.status))
+          .borderRadius(10)
       }
       .width('100%')
 
+      // AlertLog 无 title/content：内容由 metric/current_value/condition/threshold 拼装（同 Flutter alert_page.dart）
       Row() {
         Text(`Metric: ${alert.metric}`)
           .fontSize(13)
           .fontColor('#666666')
           .margin({ right: 16 })
 
-        Text(`Threshold: ${alert.operator} ${alert.threshold}`)
+        Text(`Value: ${alert.currentValue} ${this.getConditionSymbol(alert.condition)} ${alert.threshold}`)
           .fontSize(13)
           .fontColor('#666666')
       }
@@ -115,7 +158,7 @@ struct AlertPage {
       .margin({ top: 8 })
 
       Row() {
-        Text(`Campaign: ${alert.campaignName}`)
+        Text(alert.createdAt.length > 16 ? alert.createdAt.substring(0, 16) : alert.createdAt)
           .fontSize(12)
           .fontColor('#999999')
           .margin({ top: 6 })
@@ -128,29 +171,63 @@ struct AlertPage {
     .borderRadius(8)
     .border({
       width: { left: 3 },
-      color: this.getStatusLeftBorderColor(alert.status)
+      color: this.getStatusColor(alert.status)
     })
   }
 
+  private getConditionSymbol(condition: string): string {
+    const symbols: Record<string, string> = {
+      'gt': '>',
+      'gte': '≥',
+      'lt': '<',
+      'lte': '≤'
+    };
+    return symbols[condition] || '';
+  }
+
   private getStatusColor(status: string): string {
-    return status === 'enabled' ? '#52c41a' : '#d9d9d9';
+    if (status === 'triggered') return '#f5222d';
+    if (status === 'acknowledged') return '#1890ff';
+    return '#999999'; // resolved
   }
 
-  private getStatusLeftBorderColor(status: string): string {
-    return status === 'enabled' ? '#52c41a' : '#d9d9d9';
+  private getStatusBgColor(status: string): string {
+    if (status === 'triggered') return '#fff1f0';
+    if (status === 'acknowledged') return '#e6f7ff';
+    return '#f5f5f5'; // resolved
   }
 
-  private loadAlerts() {
+  /**
+   * GET /alerts/logs → data.list（分页）→ AlertRule[]（承载 AlertLog 字段）。
+   * service 字段：rule_name/metric/current_value/condition/threshold/status/created_at。
+   */
+  private async loadAlerts() {
     this.isLoading = true;
-
-    // Simulate data loading — replace with ApiClient.get('/alerts')
-    setTimeout(() => {
-      this.alerts = [
-        { id: '1', name: 'High CPA on Summer Sale', metric: 'cpa', operator: '>', threshold: 50, status: 'enabled', campaignName: 'Summer Sale 2026' },
-        { id: '2', name: 'Low CTR Warning', metric: 'ctr', operator: '<', threshold: 1.5, status: 'enabled', campaignName: 'All Campaigns' },
-        { id: '3', name: 'Daily Budget Alert', metric: 'spend', operator: '>', threshold: 1000, status: 'disabled', campaignName: 'App Install Drive' }
-      ];
+    this.errorMessage = '';
+    try {
+      let res = await ApiClient.get('/alerts/logs') as Record<string, Object>;
+      let list = res['list'] as Object[];
+      let items: AlertRule[] = [];
+      if (list !== undefined) {
+        for (let item of list) {
+          let m = item as Record<string, Object>;
+          let a = new AlertRule();
+          a.id = String(m['id']);
+          a.name = strVal(m['rule_name']);
+          a.metric = strVal(m['metric']);
+          a.currentValue = numVal(m['current_value']);
+          a.threshold = numVal(m['threshold']);
+          a.condition = strVal(m['condition']);
+          a.status = strVal(m['status'], 'triggered');
+          a.createdAt = strVal(m['created_at']);
+          items.push(a);
+        }
+      }
+      this.alerts = items;
       this.isLoading = false;
-    }, 600);
+    } catch (e) {
+      this.errorMessage = (e as Error).message;
+      this.isLoading = false;
+    }
   }
 }
