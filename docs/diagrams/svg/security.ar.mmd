@@ -1,0 +1,45 @@
+graph TB
+    subgraph Perimeter["الدفاع الخارجي — Nginx"]
+        SSL["إنهاء SSL"]
+        NginxRL["تحديد متدرج 30r/s + burst 20"]
+        ConnLimit["حد الاتصالات المتزامنة 20"]
+    end
+    subgraph Gate["حارس المدخل — Service :8788"]
+        direction TB
+        CORS["CORS<br/>قائمة النطاقات البيضاء"] --> OG["OriginGuard<br/>التحقق من Origin/Referer<br/>حظر الطرق الخطرة"]
+        OG --> SH["SecurityHeaders<br/>CSP·HSTS·XFO·XCTO"]
+        SH --> AG["AttackGuard<br/>XSS 11 نمطاً | اجتياز المسار 7<br/>حقن Header | حد 10MiB<br/>قائمة Content-Type البيضاء"]
+    end
+    subgraph AuthN["المصادقة"]
+        JWT["JWT Bearer<br/>ربط IP+UA"]
+        BC["تجزئة كلمة المرور bcrypt"]
+        CAP["CAPTCHA منزلق<br/>تسامح 5px·صالح 5د"]
+        LT["تقييد الدخول<br/>5 محاولات فاشلة → قفل 15دقيقة<br/>عداد Redis"]
+        SL["حد الجلسات<br/>الحد الأقصى 3 رموز نشطة"]
+        TB["القائمة السوداء للرموز<br/>الرموز القديمة ملغاة بعد التحديث"]
+        RP["منع إعادة الإرسال<br/>Nonce+Timestamp±5د"]
+    end
+    subgraph Validation["التحقق من المدخلات"]
+        SQL["SQLGuard<br/>UNION/DROP/ALTER/EXEC<br/>كشف INTO OUTFILE"]
+        Val["Validation<br/>trim + strip_tags"]
+        CSRF["CSRF Token<br/>التحقق من الجلسة في Admin"]
+        SSRF["حماية SSRF<br/>قائمة redirect_uri البيضاء لـ OAuth"]
+    end
+    subgraph RateLimit["التحكم بالمعدل"]
+        RL["نافذة منزلقة<br/>60/60ث<br/>تنفيذ Redis"]
+    end
+    subgraph Encryption["تشفير البيانات"]
+        TransEnc["تشفير النقل<br/>X-Encrypted AES<br/>EncryptionMiddleware"]
+        StoreEnc["تشفير التخزين<br/>مستوى حقل قاعدة البيانات<br/>Encryptable"]
+        LogMask["إخفاء السجلات<br/>password/token<br/>→ ***"]
+    end
+    subgraph Audit["مسار التدقيق"]
+        AuditLog["تدقيق العمليات<br/>IP·UA·ClientPlatform<br/>تفاصيل الإجراءات"]
+        Confirm["تأكيد مزدوج<br/>حذف/فك ربط/دفعة<br/>أدخل كلمة التأكيد"]
+    end
+    Perimeter --> Gate
+    Gate --> AuthN
+    AuthN --> Validation
+    Validation --> RateLimit
+    RateLimit --> Encryption
+    Encryption --> Audit

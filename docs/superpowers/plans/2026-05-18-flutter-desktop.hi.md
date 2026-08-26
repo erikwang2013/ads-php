@@ -1,0 +1,975 @@
+# Flutter Desktop क्रॉस-प्लेटफ़ॉर्म समर्थन — Implementation Plan
+
+[中文](docs/superpowers/plans/2026-05-18-flutter-desktop.md) | [English](docs/superpowers/plans/2026-05-18-flutter-desktop.en.md) | [한국어](docs/superpowers/plans/2026-05-18-flutter-desktop.ko.md) | [Русский](docs/superpowers/plans/2026-05-18-flutter-desktop.ru.md) | [Deutsch](docs/superpowers/plans/2026-05-18-flutter-desktop.de.md) | [Français](docs/superpowers/plans/2026-05-18-flutter-desktop.fr.md) | [Español](docs/superpowers/plans/2026-05-18-flutter-desktop.es.md) | [Português](docs/superpowers/plans/2026-05-18-flutter-desktop.pt.md) | [हिन्दी](docs/superpowers/plans/2026-05-18-flutter-desktop.hi.md) | [العربية](docs/superpowers/plans/2026-05-18-flutter-desktop.ar.md) | [বাংলা](docs/superpowers/plans/2026-05-18-flutter-desktop.bn.md) | [Bahasa Indonesia](docs/superpowers/plans/2026-05-18-flutter-desktop.id.md) | [日本語](docs/superpowers/plans/2026-05-18-flutter-desktop.ja.md)
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**लक्ष्य:** Flutter ऐप को iPadOS, macOS, Windows, Linux तक विस्तारित करें, क्लासिक डेस्कटॉप एडमिन-पैनल UI (दो-स्तरीय साइडबार, कस्टम टाइटल बार, ब्रेडक्रंब) के साथ।
+
+**Architecture:** शेल परत को साझा मेनू कॉन्फ़िग के चारों ओर फिर से लिखें (AppShell → DesktopShell, SideNav, TitleBar, BreadcrumbBar)। बिज़नेस फ़ीचर पेज (dashboard, campaigns, reports, accounts, alerts) अछूते रहते हैं। GoRouter ShellRoute सभी रूट्स को DesktopShell में लपेटता है। एक एकल `menu_config.dart` डेटा फ़ाइल नेविगेशन रेंडरिंग और ब्रेडक्रंब जनरेशन दोनों को चलाती है।
+
+**Tech Stack:** Flutter 3.2+, Dart, Riverpod, GoRouter, Dio, fl_chart, window_manager ^0.3.0
+
+---
+
+### Task 1: window_manager निर्भरता जोड़ें और डेस्कटॉप प्लेटफ़ॉर्म डायरेक्टरी बनाएँ
+
+**फ़ाइलें:**
+- Modify: `apps/flutter/pubspec.yaml`
+- Generate: `apps/flutter/macos/`, `apps/flutter/windows/`, `apps/flutter/linux/`
+
+- [x] **Step 1: pubspec.yaml में window_manager जोड़ें**
+
+`apps/flutter/pubspec.yaml` में dependencies के अंतर्गत `window_manager: ^0.3.0` जोड़ें:
+
+```yaml
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^2.4.0
+  go_router: ^13.0.0
+  dio: ^5.4.0
+  fl_chart: ^0.66.0
+  intl: ^0.19.0
+  shared_preferences: ^2.2.0
+  flutter_svg: ^2.0.0
+  window_manager: ^0.3.0
+```
+
+- [x] **Step 2: flutter pub get चलाएँ**
+
+```bash
+cd /home/wwwroot/ads-php/apps/flutter && flutter pub get
+```
+
+अपेक्षा: बिना त्रुटि के रिज़ॉल्व हो।
+
+- [x] **Step 3: डेस्कटॉप प्लेटफ़ॉर्म डायरेक्टरी बनाएँ**
+
+```bash
+cd /home/wwwroot/ads-php/apps/flutter && flutter create --platforms=macos,windows,linux .
+```
+
+अपेक्षा: `macos/`, `windows/`, `linux/` डायरेक्टरी बन गईं। कमांड `.` के साथ मौजूदा प्रोजेक्ट को लक्षित करता है (lib/ ओवरराइट नहीं होता)।
+
+- [x] **Step 4: प्लेटफ़ॉर्म डायरेक्टरी मौजूद हैं यह सत्यापित करें**
+
+```bash
+ls -d /home/wwwroot/ads-php/apps/flutter/macos /home/wwwroot/ads-php/apps/flutter/windows /home/wwwroot/ads-php/apps/flutter/linux
+```
+
+अपेक्षा: तीन डायरेक्टरी पाथ प्रिंट हों।
+
+- [x] **Step 5: कमिट करें**
+
+```bash
+cd /home/wwwroot/ads-php/apps/flutter && git add pubspec.yaml pubspec.lock macos/ windows/ linux/ && git commit -m "chore: add window_manager dep and generate desktop platform dirs"
+```
+
+---
+
+### Task 2: साझा मेनू कॉन्फ़िगरेशन बनाएँ
+
+**फ़ाइलें:**
+- Create: `apps/flutter/lib/config/menu_config.dart`
+
+- [x] **Step 1: config डायरेक्टरी बनाएँ**
+
+```bash
+mkdir -p /home/wwwroot/ads-php/apps/flutter/lib/config
+```
+
+- [x] **Step 2: menu_config.dart लिखें**
+
+```dart
+import 'package:flutter/material.dart';
+
+class MenuItem {
+  final String label;
+  final String? path;
+  final IconData icon;
+  final List<MenuItem>? children;
+
+  const MenuItem({
+    required this.label,
+    this.path,
+    required this.icon,
+    this.children,
+  });
+
+  bool get hasChildren => children != null && children!.isNotEmpty;
+}
+
+const List<MenuItem> menuConfig = [
+  MenuItem(label: '仪表盘', path: '/dashboard', icon: Icons.dashboard),
+  MenuItem(label: '广告管理', icon: Icons.campaign, children: [
+    MenuItem(label: '广告计划', path: '/campaigns/list', icon: Icons.list_alt),
+    MenuItem(label: '创意管理', path: '/campaigns/creative', icon: Icons.palette),
+  ]),
+  MenuItem(label: '数据报表', path: '/reports', icon: Icons.bar_chart),
+  MenuItem(label: '平台账户', path: '/accounts', icon: Icons.person),
+  MenuItem(label: '告警管理', path: '/alerts', icon: Icons.notifications),
+];
+
+/// Build breadcrumb trail for a given route path.
+/// Returns the chain of MenuItems from root to the matched item.
+List<MenuItem> buildBreadcrumb(String path) {
+  for (final item in menuConfig) {
+    if (item.path == path) return [item];
+    if (item.hasChildren) {
+      for (final child in item.children!) {
+        if (child.path == path) return [item, child];
+      }
+    }
+  }
+  return [];
+}
+
+/// Find the label for a given route path. Returns empty string if not found.
+String routeLabel(String path) {
+  for (final item in menuConfig) {
+    if (item.path == path) return item.label;
+    if (item.hasChildren) {
+      for (final child in item.children!) {
+        if (child.path == path) return child.label;
+      }
+    }
+  }
+  return '';
+}
+```
+
+- [x] **Step 3: सिंटैक्स जाँच करके फ़ाइल के कंपाइल होने का सत्यापन करें**
+
+```bash
+cd /home/wwwroot/ads-php/apps/flutter && dart analyze lib/config/menu_config.dart
+```
+
+अपेक्षा: कोई समस्या नहीं।
+
+- [x] **Step 4: कमिट करें**
+
+```bash
+cd /home/wwwroot/ads-php/apps/flutter && git add lib/config/ && git commit -m "feat: add shared menu config with two-level structure"
+```
+
+---
+
+### Task 3: TitleBar विजेट लिखें
+
+**फ़ाइलें:**
+- Create: `apps/flutter/lib/features/shell/title_bar.dart`
+
+- [x] **Step 1: title_bar.dart लिखें**
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:window_manager/window_manager.dart';
+
+class TitleBar extends StatelessWidget {
+  const TitleBar({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onPanStart: (_) => windowManager.startDragging(),
+      child: SizedBox(
+        height: 40,
+        child: ColoredBox(
+          color: Theme.of(context).colorScheme.surface,
+          child: Row(
+            children: [
+              const SizedBox(width: 16),
+              Icon(Icons.ads_click, size: 18,
+                  color: Theme.of(context).colorScheme.primary),
+              const SizedBox(width: 8),
+              const Text('广告管理系统', style: TextStyle(fontSize: 13)),
+              const Spacer(),
+              _WindowButton(
+                icon: Icons.minimize,
+                onTap: () => windowManager.minimize(),
+              ),
+              _WindowButton(
+                icon: Icons.crop_square,
+                onTap: () => windowManager.maximize(),
+              ),
+              _WindowButton(
+                icon: Icons.close,
+                onTap: () => windowManager.close(),
+                isClose: true,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _WindowButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+  final bool isClose;
+
+  const _WindowButton({
+    required this.icon,
+    required this.onTap,
+    this.isClose = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: SizedBox(
+        width: 46,
+        height: 40,
+        child: Icon(
+          icon,
+          size: 18,
+          color: isClose
+              ? Theme.of(context).colorScheme.error
+              : Theme.of(context).colorScheme.onSurface,
+        ),
+      ),
+    );
+  }
+}
+```
+
+- [x] **Step 2: कंपाइलेशन सत्यापित करें**
+
+```bash
+cd /home/wwwroot/ads-php/apps/flutter && dart analyze lib/features/shell/title_bar.dart
+```
+
+अपेक्षा: कोई समस्या नहीं।
+
+- [x] **Step 3: कमिट करें**
+
+```bash
+cd /home/wwwroot/ads-php/apps/flutter && git add lib/features/shell/title_bar.dart && git commit -m "feat: add custom TitleBar with window controls"
+```
+
+---
+
+### Task 4: BreadcrumbBar विजेट लिखें
+
+**फ़ाइलें:**
+- Create: `apps/flutter/lib/features/shell/breadcrumb.dart`
+
+- [x] **Step 1: breadcrumb.dart लिखें**
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../../config/menu_config.dart';
+
+class BreadcrumbBar extends StatelessWidget {
+  const BreadcrumbBar({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final location = GoRouterState.of(context).uri.path;
+    final trail = buildBreadcrumb(location);
+
+    return SizedBox(
+      height: 36,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Row(
+          children: [
+            for (int i = 0; i < trail.length; i++) ...[
+              if (i > 0)
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 4),
+                  child: Icon(Icons.chevron_right, size: 16, color: Colors.grey),
+                ),
+              if (i == trail.length - 1)
+                Text(trail[i].label,
+                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500))
+              else
+                GestureDetector(
+                  onTap: () {
+                    if (trail[i].path != null) context.go(trail[i].path!);
+                  },
+                  child: Text(
+                    trail[i].label,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+```
+
+- [x] **Step 2: कंपाइलेशन सत्यापित करें**
+
+```bash
+cd /home/wwwroot/ads-php/apps/flutter && dart analyze lib/features/shell/breadcrumb.dart
+```
+
+अपेक्षा: कोई समस्या नहीं।
+
+- [x] **Step 3: कमिट करें**
+
+```bash
+cd /home/wwwroot/ads-php/apps/flutter && git add lib/features/shell/breadcrumb.dart && git commit -m "feat: add BreadcrumbBar driven by menu config"
+```
+
+---
+
+### Task 5: SideNav को दो-स्तरीय मेनू और संकुचन के साथ फिर से लिखें
+
+**फ़ाइलें:**
+- Rewrite: `apps/flutter/lib/features/shell/side_nav.dart`
+
+- [x] **Step 1: नया side_nav.dart लिखें**
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../../config/menu_config.dart';
+
+class SideNav extends StatefulWidget {
+  const SideNav({super.key});
+
+  @override
+  State<SideNav> createState() => _SideNavState();
+}
+
+class _SideNavState extends State<SideNav> {
+  bool _collapsed = false;
+
+  void _toggle() => setState(() => _collapsed = !_collapsed);
+
+  @override
+  Widget build(BuildContext context) {
+    final location = GoRouterState.of(context).uri.path;
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      width: _collapsed ? 64 : 240,
+      child: Column(
+        children: [
+          SizedBox(
+            height: 48,
+            child: _collapsed
+                ? const Icon(Icons.ads_click, size: 22, color: Colors.blue)
+                : const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      children: [
+                        Icon(Icons.ads_click, size: 20, color: Colors.blue),
+                        SizedBox(width: 8),
+                        Text('广告管理系统',
+                            style: TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                  ),
+          ),
+          const Divider(height: 1),
+          Expanded(
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: menuConfig
+                  .map((item) => _SideNavGroup(
+                        item: item,
+                        location: location,
+                        collapsed: _collapsed,
+                      ))
+                  .toList(),
+            ),
+          ),
+          const Divider(height: 1),
+          IconButton(
+            icon: Icon(_collapsed ? Icons.menu_open : Icons.menu, size: 20),
+            onPressed: _toggle,
+            tooltip: _collapsed ? '展开菜单' : '收起菜单',
+            padding: const EdgeInsets.symmetric(vertical: 12),
+          ),
+          if (!_collapsed)
+            const Padding(
+              padding: EdgeInsets.fromLTRB(0, 0, 0, 12),
+              child: Text('Copyright (c) 2026 erik',
+                  style: TextStyle(fontSize: 10, color: Colors.grey)),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SideNavGroup extends StatefulWidget {
+  final MenuItem item;
+  final String location;
+  final bool collapsed;
+
+  const _SideNavGroup({
+    required this.item,
+    required this.location,
+    required this.collapsed,
+  });
+
+  @override
+  State<_SideNavGroup> createState() => _SideNavGroupState();
+}
+
+class _SideNavGroupState extends State<_SideNavGroup> {
+  bool _expanded = false;
+
+  bool get _active => widget.item.path == widget.location ||
+      (widget.item.hasChildren &&
+          widget.item.children!.any((c) => c.path == widget.location));
+
+  @override
+  void initState() {
+    super.initState();
+    _expanded = widget.item.hasChildren &&
+        widget.item.children!.any((c) => widget.location.startsWith(c.path!));
+  }
+
+  @override
+  void didUpdateWidget(covariant _SideNavGroup old) {
+    super.didUpdateWidget(old);
+    if (old.location != widget.location) {
+      _expanded = widget.item.hasChildren &&
+          widget.item.children!
+              .any((c) => widget.location.startsWith(c.path!));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final item = widget.item;
+
+    if (item.hasChildren) {
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _NavTile(
+            icon: item.icon,
+            label: item.label,
+            active: _active,
+            collapsed: widget.collapsed,
+            trailing: widget.collapsed
+                ? null
+                : Icon(
+                    _expanded ? Icons.expand_less : Icons.expand_more,
+                    size: 18,
+                  ),
+            onTap: () => setState(() => _expanded = !_expanded),
+          ),
+          if (_expanded && !widget.collapsed)
+            ...item.children!.map((child) => _NavTile(
+                  icon: child.icon,
+                  label: child.label,
+                  active: child.path == widget.location,
+                  collapsed: false,
+                  indent: true,
+                  onTap: () => context.go(child.path!),
+                )),
+        ],
+      );
+    }
+
+    return _NavTile(
+      icon: item.icon,
+      label: item.label,
+      active: _active,
+      collapsed: widget.collapsed,
+      onTap: () => context.go(item.path!),
+    );
+  }
+}
+
+class _NavTile extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final bool active;
+  final bool collapsed;
+  final bool indent;
+  final Widget? trailing;
+  final VoidCallback onTap;
+
+  const _NavTile({
+    required this.icon,
+    required this.label,
+    required this.active,
+    required this.collapsed,
+    required this.onTap,
+    this.indent = false,
+    this.trailing,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    const textStyle = TextStyle(fontSize: 13);
+    final color = active
+        ? Theme.of(context).colorScheme.primary
+        : Theme.of(context).colorScheme.onSurface;
+
+    return ListTile(
+      contentPadding: EdgeInsets.only(
+        left: collapsed ? 20 : (indent ? 48 : 16),
+        right: 8,
+      ),
+      dense: true,
+      visualDensity: VisualDensity.compact,
+      leading: Icon(icon, size: 20, color: color),
+      title: collapsed
+          ? null
+          : Text(label,
+              style: TextStyle(
+                fontSize: 13,
+                color: color,
+                fontWeight: active ? FontWeight.w600 : FontWeight.normal,
+              )),
+      trailing: trailing,
+      selected: active,
+      selectedTileColor:
+          Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+      onTap: onTap,
+    );
+  }
+}
+```
+
+- [x] **Step 2: कंपाइलेशन सत्यापित करें**
+
+```bash
+cd /home/wwwroot/ads-php/apps/flutter && dart analyze lib/features/shell/side_nav.dart
+```
+
+अपेक्षा: कोई समस्या नहीं।
+
+- [x] **Step 3: कमिट करें**
+
+```bash
+cd /home/wwwroot/ads-php/apps/flutter && git add lib/features/shell/side_nav.dart && git commit -m "feat: rewrite SideNav with two-level menu and collapse"
+```
+
+---
+
+### Task 6: AppShell को DesktopShell के रूप में फिर से लिखें
+
+**फ़ाइलें:**
+- Rewrite: `apps/flutter/lib/features/shell/app_shell.dart`
+
+- [x] **Step 1: नया app_shell.dart (DesktopShell) लिखें**
+
+```dart
+import 'package:flutter/material.dart';
+import 'side_nav.dart';
+import 'title_bar.dart';
+import 'breadcrumb.dart';
+
+class AppShell extends StatelessWidget {
+  final Widget child;
+  const AppShell({super.key, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Column(
+        children: [
+          const TitleBar(),
+          const Divider(height: 1),
+          Expanded(
+            child: Row(
+              children: [
+                const SideNav(),
+                const VerticalDivider(width: 1),
+                Expanded(
+                  child: Column(
+                    children: [
+                      const BreadcrumbBar(),
+                      const Divider(height: 1),
+                      Expanded(child: child),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+```
+
+नोट: क्लास का नाम `AppShell` ही रहता है ताकि `router.dart` में import न बदले। कार्यान्वयन अब डेस्कटॉप लेआउट है।
+
+- [x] **Step 2: कंपाइलेशन सत्यापित करें**
+
+```bash
+cd /home/wwwroot/ads-php/apps/flutter && dart analyze lib/features/shell/app_shell.dart
+```
+
+अपेक्षा: कोई समस्या नहीं।
+
+- [x] **Step 3: कमिट करें**
+
+```bash
+cd /home/wwwroot/ads-php/apps/flutter && git add lib/features/shell/app_shell.dart && git commit -m "feat: rewrite AppShell as DesktopShell with TitleBar + SideNav + BreadcrumbBar"
+```
+
+---
+
+### Task 7: रूटर को दो-स्तरीय रूट्स के साथ अपडेट करें
+
+**फ़ाइलें:**
+- Modify: `apps/flutter/lib/router.dart`
+
+- [x] **Step 1: router.dart फिर से लिखें**
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'features/auth/login_page.dart';
+import 'features/dashboard/dashboard_page.dart';
+import 'features/campaign/campaign_list_page.dart';
+import 'features/campaign/campaign_detail_page.dart';
+import 'features/report/report_page.dart';
+import 'features/account/account_page.dart';
+import 'features/alert/alert_page.dart';
+import 'features/shell/app_shell.dart';
+
+final routerProvider = Provider<GoRouter>((ref) {
+  return GoRouter(
+    initialLocation: '/dashboard',
+    routes: [
+      GoRoute(
+        path: '/login',
+        builder: (_, __) => const LoginPage(),
+      ),
+      ShellRoute(
+        builder: (_, __, child) => AppShell(child: child),
+        routes: [
+          GoRoute(
+            path: '/dashboard',
+            builder: (_, __) => const DashboardPage(),
+          ),
+          GoRoute(
+            path: '/campaigns/list',
+            builder: (_, __) => const CampaignListPage(),
+          ),
+          GoRoute(
+            path: '/campaigns/:id',
+            builder: (_, state) =>
+                CampaignDetailPage(id: state.pathParameters['id']!),
+          ),
+          GoRoute(
+            path: '/accounts',
+            builder: (_, __) => const AccountPage(),
+          ),
+          GoRoute(
+            path: '/reports',
+            builder: (_, __) => const ReportPage(),
+          ),
+          GoRoute(
+            path: '/alerts',
+            builder: (_, __) => const AlertPage(),
+          ),
+        ],
+      ),
+    ],
+  );
+});
+```
+
+मुख्य बदलाव: `/campaigns` → `/campaigns/list` ताकि दो-स्तरीय मेनू कॉन्फ़िग से मेल खाए।
+
+- [x] **Step 2: पूरे प्रोजेक्ट के कंपाइल होने का सत्यापन करें**
+
+```bash
+cd /home/wwwroot/ads-php/apps/flutter && dart analyze lib/
+```
+
+अपेक्षा: कोई समस्या नहीं।
+
+- [x] **Step 3: कमिट करें**
+
+```bash
+cd /home/wwwroot/ads-php/apps/flutter && git add lib/router.dart && git commit -m "feat: update router for two-level menu structure"
+```
+
+---
+
+### Task 8: main.dart में window_manager इनिशियलाइज़ करें
+
+**फ़ाइलें:**
+- Modify: `apps/flutter/lib/main.dart`
+
+- [x] **Step 1: main.dart फिर से लिखें**
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:window_manager/window_manager.dart';
+import 'app.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await windowManager.ensureInitialized();
+  await windowManager.setMinimumSize(const Size(680, 480));
+  await windowManager.setSize(const Size(1280, 800));
+  await windowManager.center();
+
+  runApp(const ProviderScope(child: AdsApp()));
+}
+```
+
+- [x] **Step 2: कंपाइलेशन सत्यापित करें**
+
+```bash
+cd /home/wwwroot/ads-php/apps/flutter && dart analyze lib/main.dart
+```
+
+अपेक्षा: कोई समस्या नहीं।
+
+- [x] **Step 3: कमिट करें**
+
+```bash
+cd /home/wwwroot/ads-php/apps/flutter && git add lib/main.dart && git commit -m "feat: init window_manager with min size and centered startup"
+```
+
+---
+
+### Task 9: डेस्कटॉप दिखावट के लिए थीम समायोजित करें
+
+**फ़ाइलें:**
+- Modify: `apps/flutter/lib/theme.dart`
+
+- [x] **Step 1: theme.dart अपडेट करें**
+
+```dart
+import 'package:flutter/material.dart';
+
+class AppTheme {
+  static final lightTheme = ThemeData(
+    useMaterial3: true,
+    colorSchemeSeed: Colors.blue,
+    brightness: Brightness.light,
+    fontFamily: 'Roboto',
+    scaffoldBackgroundColor: const Color(0xFFF5F5F5),
+    dividerTheme: const DividerThemeData(
+      space: 0,
+      thickness: 1,
+      color: Color(0xFFE0E0E0),
+    ),
+    navigationBarTheme: NavigationBarThemeData(
+      height: 40,
+      labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
+    ),
+  );
+}
+```
+
+- [x] **Step 2: कंपाइलेशन सत्यापित करें**
+
+```bash
+cd /home/wwwroot/ads-php/apps/flutter && dart analyze lib/theme.dart
+```
+
+अपेक्षा: कोई समस्या नहीं।
+
+- [x] **Step 3: कमिट करें**
+
+```bash
+cd /home/wwwroot/ads-php/apps/flutter && git add lib/theme.dart && git commit -m "feat: tune theme for desktop (scaffold bg, divider config)"
+```
+
+---
+
+### Task 10: पुराना TopBar हटाएँ
+
+**फ़ाइलें:**
+- Delete: `apps/flutter/lib/features/shell/top_bar.dart`
+
+- [x] **Step 1: top_bar.dart हटाएँ**
+
+```bash
+rm /home/wwwroot/ads-php/apps/flutter/lib/features/shell/top_bar.dart
+```
+
+- [x] **Step 2: सत्यापित करें कि कोई चीज़ हटाई गई फ़ाइल को संदर्भित नहीं करती**
+
+```bash
+cd /home/wwwroot/ads-php/apps/flutter && dart analyze lib/
+```
+
+अपेक्षा: कोई समस्या नहीं (कोई टूटा हुआ import नहीं)।
+
+- [x] **Step 3: कमिट करें**
+
+```bash
+cd /home/wwwroot/ads-php/apps/flutter && git add lib/features/shell/top_bar.dart && git commit -m "chore: remove old TopBar (replaced by TitleBar)"
+```
+
+---
+
+### Task 11: नेटिव प्लेटफ़ॉर्म विंडो कॉन्फ़िगर करें (नेटिव टाइटल बार छिपाएँ)
+
+**फ़ाइलें:**
+- Modify: `apps/flutter/macos/Runner/MainFlutterWindow.swift`
+- Modify: `apps/flutter/windows/runner/main.cpp`
+- Modify: `apps/flutter/linux/my_application.cc`
+
+- [x] **Step 1: सही संपादन बिंदु खोजने के लिए macOS Runner फ़ाइल पढ़ें**
+
+```bash
+cat /home/wwwroot/ads-php/apps/flutter/macos/Runner/MainFlutterWindow.swift
+```
+
+अपेक्षा: `import Cocoa` और `awakeFromNib` वाली `MainFlutterWindow` क्लास हो।
+
+- [x] **Step 2: छिपे हुए टाइटल बार के लिए macOS कॉन्फ़िगर करें**
+
+`MainFlutterWindow.swift` में `super.awakeFromNib()` के बाद जोड़ें:
+
+```swift
+self.titleVisibility = .hidden
+self.titlebarAppearsTransparent = true
+self.styleMask.insert(.fullSizeContentView)
+```
+
+ऐसा करने के लिए `apps/flutter/macos/Runner/MainFlutterWindow.swift` में `awakeFromNib` विधि को संपादित करें:
+
+```swift
+override func awakeFromNib() {
+  super.awakeFromNib()
+  self.titleVisibility = .hidden
+  self.titlebarAppearsTransparent = true
+  self.styleMask.insert(.fullSizeContentView)
+  // existing code below (if any)
+}
+```
+
+- [x] **Step 3: छिपे हुए टाइटल बार के लिए Windows कॉन्फ़िगर करें**
+
+पहले फ़ाइल पढ़ें:
+```bash
+cat /home/wwwroot/ads-php/apps/flutter/windows/runner/main.cpp
+```
+
+फिर `CreateWindow` कॉल खोजें और `dwStyle` पैरामीटर संशोधित करें। `WS_OVERLAPPEDWINDOW` को बॉर्डरलेस स्टाइल में बदलें, या `SW_HIDE` तर्क जोड़ें। चूँकि `window_manager` इसे रनटाइम पर संभालता है, प्रारंभिक विंडो के लिए हमें `windows/runner/win32_window.cpp` में `Win32Window::Create` संशोधित करना होगा:
+
+```bash
+cat /home/wwwroot/ads-php/apps/flutter/windows/runner/win32_window.cpp
+```
+
+`CreateWindow` कॉल खोजें और बदलें:
+```cpp
+HWND hwnd = CreateWindow(
+    window_class, title.c_str(),
+    WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+    ...
+```
+
+इस रूप में:
+```cpp
+HWND hwnd = CreateWindow(
+    window_class, title.c_str(),
+    WS_POPUP | WS_VISIBLE,
+    ...
+```
+
+यह नेटिव टाइटल बार और बॉर्डर हटाता है। `window_manager` फिर विंडो फ्रेम प्रबंधित करेगा।
+
+- [x] **Step 4: छिपे हुए टाइटल बार के लिए Linux कॉन्फ़िगर करें**
+
+पहले फ़ाइल पढ़ें:
+```bash
+cat /home/wwwroot/ads-php/apps/flutter/linux/my_application.cc
+```
+
+`my_application_activate` फ़ंक्शन में, `gtk_window_present` से पहले जोड़ें:
+
+```cpp
+gtk_window_set_decorated(GTK_WINDOW(window), FALSE);
+```
+
+- [x] **Step 5: तीनों फ़ाइलें सिंटैक्टिक रूप से बरकरार हैं (वापस पढ़कर) सत्यापित करें**
+
+```bash
+cd /home/wwwroot/ads-php/apps/flutter && head -30 macos/Runner/MainFlutterWindow.swift && echo "---" && grep -A5 'WS_POPUP' windows/runner/win32_window.cpp && echo "---" && grep 'gtk_window_set_decorated' linux/my_application.cc
+```
+
+अपेक्षा: प्रत्येक अनुभाग अपेक्षित संशोधन दिखाता है।
+
+- [x] **Step 6: कमिट करें**
+
+```bash
+cd /home/wwwroot/ads-php/apps/flutter && git add macos/ windows/ linux/ && git commit -m "feat: hide native title bars on macOS/Windows/Linux for custom TitleBar"
+```
+
+---
+
+### Task 12: एंड-टू-एंड सत्यापन
+
+- [x] **Step 1: पूर्ण स्टैटिक विश्लेषण**
+
+```bash
+cd /home/wwwroot/ads-php/apps/flutter && dart analyze lib/
+```
+
+अपेक्षा: कोई समस्या नहीं।
+
+- [x] **Step 2: वेब बिल्ड के कंपाइल होने का सत्यापन करें**
+
+```bash
+cd /home/wwwroot/ads-php/apps/flutter && flutter build web --no-pub
+```
+
+अपेक्षा: बिल्ड सफल।
+
+- [x] **Step 3: macOS बिल्ड जाँचें (macOS पर हो तो — न होने पर छोड़ें)**
+
+```bash
+cd /home/wwwroot/ads-php/apps/flutter && flutter build macos --no-pub 2>&1 || echo "Skipped: not on macOS or build env not configured"
+```
+
+- [x] **Step 4: फ़ाइल सूची स्पेक से मेल खाती है यह जाँचें**
+
+```bash
+cd /home/wwwroot/ads-php/apps/flutter && echo "=== Files created/modified ===" && ls -la lib/config/menu_config.dart lib/features/shell/title_bar.dart lib/features/shell/breadcrumb.dart lib/features/shell/side_nav.dart lib/features/shell/app_shell.dart lib/router.dart lib/main.dart lib/theme.dart && echo "=== Old file removed ===" && ls lib/features/shell/top_bar.dart 2>&1
+```
+
+अपेक्षा: सभी नई फ़ाइलें मौजूद, top_bar.dart "No such file"।
+
+- [x] **Step 5: कोई बदलाव बचा हो तो अंतिम स्थिति कमिट करें**
+
+```bash
+cd /home/wwwroot/ads-php/apps/flutter && git status
+```
+
+साफ हो तो कमिट आवश्यक नहीं। गंदा हो तो स्टेज करें और कमिट करें:
+
+```bash
+cd /home/wwwroot/ads-php/apps/flutter && git add -A && git commit -m "chore: final verification tweaks for desktop support"
+```
+
+---
+
+## सत्यापन चेकलिस्ट
+
+सभी कार्य पूरे होने के बाद सत्यापित करें:
+
+1. `dart analyze lib/` बिना किसी समस्या के पास होता है
+2. `flutter build web` बिना त्रुटि के कंपाइल होता है
+3. `flutter build macos` कंपाइल होता है (macOS पर)
+4. स्पेक की परिवर्तन तालिका की सभी फ़ाइलें सही स्थानों पर मौजूद हैं
+5. `top_bar.dart` हटा दिया गया है

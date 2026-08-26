@@ -1,5 +1,7 @@
 # API 接口文档
 
+[中文](docs/api.md) | [English](docs/api.en.md) | [한국어](docs/api.ko.md) | [Русский](docs/api.ru.md) | [Deutsch](docs/api.de.md) | [Français](docs/api.fr.md) | [Español](docs/api.es.md) | [Português](docs/api.pt.md) | [हिन्दी](docs/api.hi.md) | [العربية](docs/api.ar.md) | [বাংলা](docs/api.bn.md) | [Bahasa Indonesia](docs/api.id.md) | [日本語](docs/api.ja.md)
+
 Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 > **hg/apidoc 在线文档**: 启动服务后访问 `http://127.0.0.1:8788/apidoc`（Service + Admin 双应用切换）  

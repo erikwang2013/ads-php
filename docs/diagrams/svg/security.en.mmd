@@ -1,0 +1,45 @@
+graph TB
+    subgraph Perimeter["Outer Defense — Nginx"]
+        SSL["SSL Termination"]
+        NginxRL["Tiered Rate Limit 30r/s + burst 20"]
+        ConnLimit["Concurrent Connection Limit 20"]
+    end
+    subgraph Gate["Entry Guard — Service :8788"]
+        direction TB
+        CORS["CORS<br/>Domain Whitelist"] --> OG["OriginGuard<br/>Origin/Referer Validation<br/>Block Dangerous Methods"]
+        OG --> SH["SecurityHeaders<br/>CSP·HSTS·XFO·XCTO"]
+        SH --> AG["AttackGuard<br/>XSS 11 Patterns | Path Traversal 7<br/>Header Injection | 10MiB Limit<br/>Content-Type Whitelist"]
+    end
+    subgraph AuthN["Authentication"]
+        JWT["JWT Bearer<br/>IP+UA Binding"]
+        BC["bcrypt Password Hash"]
+        CAP["Slider CAPTCHA<br/>5px Tolerance·5min Valid"]
+        LT["Login Throttle<br/>5 Failures → 15min Lock<br/>Redis Counter"]
+        SL["Session Limit<br/>Max 3 Active Tokens"]
+        TB["Token Blacklist<br/>Old Tokens Revoked After Refresh"]
+        RP["Anti-Replay<br/>Nonce+Timestamp±5min"]
+    end
+    subgraph Validation["Input Validation"]
+        SQL["SQLGuard<br/>UNION/DROP/ALTER/EXEC<br/>INTO OUTFILE Detection"]
+        Val["Validation<br/>trim + strip_tags"]
+        CSRF["CSRF Token<br/>Session Validation on Admin"]
+        SSRF["SSRF Protection<br/>OAuth redirect_uri Whitelist"]
+    end
+    subgraph RateLimit["Rate Limiting"]
+        RL["Sliding Window<br/>60/60s<br/>Redis-based"]
+    end
+    subgraph Encryption["Data Encryption"]
+        TransEnc["Transport Encryption<br/>X-Encrypted AES<br/>EncryptionMiddleware"]
+        StoreEnc["Storage Encryption<br/>DB Field Level<br/>Encryptable"]
+        LogMask["Log Masking<br/>password/token<br/>→ ***"]
+    end
+    subgraph Audit["Audit Trail"]
+        AuditLog["Operation Audit<br/>IP·UA·ClientPlatform<br/>Action Details"]
+        Confirm["Double Confirmation<br/>Delete/Unbind/Batch<br/>Enter Confirmation Word"]
+    end
+    Perimeter --> Gate
+    Gate --> AuthN
+    AuthN --> Validation
+    Validation --> RateLimit
+    RateLimit --> Encryption
+    Encryption --> Audit

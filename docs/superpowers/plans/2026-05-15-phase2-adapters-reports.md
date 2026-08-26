@@ -1,5 +1,7 @@
 # Phase 2: 广告平台扩展 + 报表引擎 Implementation Plan
 
+[中文](docs/superpowers/plans/2026-05-15-phase2-adapters-reports.md) | [English](docs/superpowers/plans/2026-05-15-phase2-adapters-reports.en.md) | [한국어](docs/superpowers/plans/2026-05-15-phase2-adapters-reports.ko.md) | [Русский](docs/superpowers/plans/2026-05-15-phase2-adapters-reports.ru.md) | [Deutsch](docs/superpowers/plans/2026-05-15-phase2-adapters-reports.de.md) | [Français](docs/superpowers/plans/2026-05-15-phase2-adapters-reports.fr.md) | [Español](docs/superpowers/plans/2026-05-15-phase2-adapters-reports.es.md) | [Português](docs/superpowers/plans/2026-05-15-phase2-adapters-reports.pt.md) | [हिन्दी](docs/superpowers/plans/2026-05-15-phase2-adapters-reports.hi.md) | [العربية](docs/superpowers/plans/2026-05-15-phase2-adapters-reports.ar.md) | [বাংলা](docs/superpowers/plans/2026-05-15-phase2-adapters-reports.bn.md) | [Bahasa Indonesia](docs/superpowers/plans/2026-05-15-phase2-adapters-reports.id.md) | [日本語](docs/superpowers/plans/2026-05-15-phase2-adapters-reports.ja.md)
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development to implement this plan task-by-task.
 
 **Goal:** 新增百度营销和淘宝广告适配器，实现真正数据同步调度，增强报表引擎支持自定义多维度查询。

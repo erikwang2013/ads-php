@@ -1,5 +1,7 @@
 # Phase 7: 跨端契约修复 Implementation Plan
 
+[中文](docs/superpowers/plans/2026-08-07-phase7-contract-fix.md) | [English](docs/superpowers/plans/2026-08-07-phase7-contract-fix.en.md) | [한국어](docs/superpowers/plans/2026-08-07-phase7-contract-fix.ko.md) | [Русский](docs/superpowers/plans/2026-08-07-phase7-contract-fix.ru.md) | [Deutsch](docs/superpowers/plans/2026-08-07-phase7-contract-fix.de.md) | [Français](docs/superpowers/plans/2026-08-07-phase7-contract-fix.fr.md) | [Español](docs/superpowers/plans/2026-08-07-phase7-contract-fix.es.md) | [Português](docs/superpowers/plans/2026-08-07-phase7-contract-fix.pt.md) | [हिन्दी](docs/superpowers/plans/2026-08-07-phase7-contract-fix.hi.md) | [العربية](docs/superpowers/plans/2026-08-07-phase7-contract-fix.ar.md) | [বাংলা](docs/superpowers/plans/2026-08-07-phase7-contract-fix.bn.md) | [Bahasa Indonesia](docs/superpowers/plans/2026-08-07-phase7-contract-fix.id.md) | [日本語](docs/superpowers/plans/2026-08-07-phase7-contract-fix.ja.md)
+
 > **状态更新（2026-08-16）：** Task 1 ✅ / Task 2 ✅ / Task 3 ✅ / Task 4 ✅ 全部完成，tester 回归验证通过（35 tests OK，契约交叉核对无幽灵端点，Phase 7 可验收）。
 
 **Goal:** 修复团队审计发现的跨端 API 契约问题：Flutter 3 个幽灵端点（404）、Admin `admin.ts` 双前缀 bug、`/system/info` 无路由、ServiceProxy 未接线、文档口径过时。恢复三端（Admin/Flutter/HarmonyOS）对 service API 的一致消费。

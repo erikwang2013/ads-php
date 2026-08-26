@@ -1,5 +1,7 @@
 # Phase 10: 深化与商业化 Implementation Plan
 
+[中文](docs/superpowers/plans/2026-08-16-phase10-deepen.md) | [English](docs/superpowers/plans/2026-08-16-phase10-deepen.en.md) | [한국어](docs/superpowers/plans/2026-08-16-phase10-deepen.ko.md) | [Русский](docs/superpowers/plans/2026-08-16-phase10-deepen.ru.md) | [Deutsch](docs/superpowers/plans/2026-08-16-phase10-deepen.de.md) | [Français](docs/superpowers/plans/2026-08-16-phase10-deepen.fr.md) | [Español](docs/superpowers/plans/2026-08-16-phase10-deepen.es.md) | [Português](docs/superpowers/plans/2026-08-16-phase10-deepen.pt.md) | [हिन्दी](docs/superpowers/plans/2026-08-16-phase10-deepen.hi.md) | [العربية](docs/superpowers/plans/2026-08-16-phase10-deepen.ar.md) | [বাংলা](docs/superpowers/plans/2026-08-16-phase10-deepen.bn.md) | [Bahasa Indonesia](docs/superpowers/plans/2026-08-16-phase10-deepen.id.md) | [日本語](docs/superpowers/plans/2026-08-16-phase10-deepen.ja.md)
+
 **Goal:** 在 Phase 7-9 契约与多渠道基础上，落地同步状态可视化、转化数据闭环、移动端 CI 打包、多租户 SaaS 配额四项深化能力。
 
 **来源:** Phase 7 团队审计推断方向（researcher：ES/读写分离/队列落地、Flutter/鸿蒙 CI、29 平台真实联调、SaaS 计费配额、转化数据闭环、同步状态可视化、AI 出价）

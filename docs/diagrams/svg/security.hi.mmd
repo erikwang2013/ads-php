@@ -1,0 +1,45 @@
+graph TB
+    subgraph Perimeter["बाहरी सुरक्षा — Nginx"]
+        SSL["SSL समाप्ति"]
+        NginxRL["स्तरीय दर सीमा 30r/s + burst 20"]
+        ConnLimit["समवर्ती कनेक्शन सीमा 20"]
+    end
+    subgraph Gate["प्रवेश गार्ड — Service :8788"]
+        direction TB
+        CORS["CORS<br/>डोमेन व्हाइटलिस्ट"] --> OG["OriginGuard<br/>Origin/Referer सत्यापन<br/>खतरनाक विधियाँ ब्लॉक करें"]
+        OG --> SH["SecurityHeaders<br/>CSP·HSTS·XFO·XCTO"]
+        SH --> AG["AttackGuard<br/>XSS 11 पैटर्न | पाथ ट्रैवर्सल 7<br/>हेडर इंजेक्शन | 10MiB सीमा<br/>Content-Type व्हाइटलिस्ट"]
+    end
+    subgraph AuthN["प्रमाणीकरण"]
+        JWT["JWT Bearer<br/>IP+UA बाइंडिंग"]
+        BC["bcrypt पासवर्ड हैश"]
+        CAP["स्लाइडर CAPTCHA<br/>5px सहनशीलता·5मिनट वैध"]
+        LT["लॉगिन थ्रॉटल<br/>5 विफलताएँ → 15मिनट लॉक<br/>Redis काउंटर"]
+        SL["सत्र सीमा<br/>अधिकतम 3 सक्रिय टोकन"]
+        TB["टोकन ब्लैकलिस्ट<br/>रिफ्रेश के बाद पुराने टोकन अमान्य"]
+        RP["एंटी-रिप्ले<br/>Nonce+Timestamp±5मिनट"]
+    end
+    subgraph Validation["इनपुट सत्यापन"]
+        SQL["SQLGuard<br/>UNION/DROP/ALTER/EXEC<br/>INTO OUTFILE डिटेक्शन"]
+        Val["Validation<br/>trim + strip_tags"]
+        CSRF["CSRF Token<br/>Admin पर सत्र सत्यापन"]
+        SSRF["SSRF सुरक्षा<br/>OAuth redirect_uri व्हाइटलिस्ट"]
+    end
+    subgraph RateLimit["दर नियंत्रण"]
+        RL["स्लाइडिंग विंडो<br/>60/60s<br/>Redis-आधारित"]
+    end
+    subgraph Encryption["डेटा एन्क्रिप्शन"]
+        TransEnc["ट्रांसपोर्ट एन्क्रिप्शन<br/>X-Encrypted AES<br/>EncryptionMiddleware"]
+        StoreEnc["स्टोरेज एन्क्रिप्शन<br/>DB फ़ील्ड स्तर<br/>Encryptable"]
+        LogMask["लॉग मास्किंग<br/>password/token<br/>→ ***"]
+    end
+    subgraph Audit["ऑडिट ट्रेल"]
+        AuditLog["ऑपरेशन ऑडिट<br/>IP·UA·ClientPlatform<br/>कार्य विवरण"]
+        Confirm["दोहरी पुष्टि<br/>हटाएँ/अनबाइंड/बैच<br/>पुष्टि शब्द दर्ज करें"]
+    end
+    Perimeter --> Gate
+    Gate --> AuthN
+    AuthN --> Validation
+    Validation --> RateLimit
+    RateLimit --> Encryption
+    Encryption --> Audit

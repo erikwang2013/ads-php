@@ -1,0 +1,24 @@
+flowchart LR
+    subgraph S1["1. 接続認可"]
+        A1["OAuthリダイレクト"] --> A2["コールバックでトークン交換"] --> A3["暗号化保存"]
+    end
+    subgraph S2["2. 定期同期"]
+        B1["TokenRefresh 55min"] --> B2["DataSync 10分<br/>プラン·グループ·クリエイティブ·レポート取得"]
+        B3["RetrySync 3分<br/>失敗リトライ·指数バックオフ"] -.-> B2
+    end
+    subgraph S3["3. 保存とキャッシュ"]
+        C1[("MySQL 28テーブル")]
+        C2[("Redis L1/L2/L3")]
+        C3[("ES検索インデックス")]
+    end
+    subgraph S4["4. 業務処理"]
+        D1["レポート集計·エクスポート"]
+        D2["アラート評価 5分"]
+        D3["入札評価 10分"]
+        D4["予算警告 15分<br/>50/80/100%の段階"]
+    end
+    subgraph S5["5. 表示"]
+        E1["ダッシュボード ECharts"]
+        E2["Flutter fl_chart"]
+    end
+    S1 --> S2 --> S3 --> S4 --> S5

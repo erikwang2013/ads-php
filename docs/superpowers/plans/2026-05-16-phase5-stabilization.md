@@ -1,5 +1,7 @@
 # Phase 5: 稳定化计划
 
+[中文](docs/superpowers/plans/2026-05-16-phase5-stabilization.md) | [English](docs/superpowers/plans/2026-05-16-phase5-stabilization.en.md) | [한국어](docs/superpowers/plans/2026-05-16-phase5-stabilization.ko.md) | [Русский](docs/superpowers/plans/2026-05-16-phase5-stabilization.ru.md) | [Deutsch](docs/superpowers/plans/2026-05-16-phase5-stabilization.de.md) | [Français](docs/superpowers/plans/2026-05-16-phase5-stabilization.fr.md) | [Español](docs/superpowers/plans/2026-05-16-phase5-stabilization.es.md) | [Português](docs/superpowers/plans/2026-05-16-phase5-stabilization.pt.md) | [हिन्दी](docs/superpowers/plans/2026-05-16-phase5-stabilization.hi.md) | [العربية](docs/superpowers/plans/2026-05-16-phase5-stabilization.ar.md) | [বাংলা](docs/superpowers/plans/2026-05-16-phase5-stabilization.bn.md) | [Bahasa Indonesia](docs/superpowers/plans/2026-05-16-phase5-stabilization.id.md) | [日本語](docs/superpowers/plans/2026-05-16-phase5-stabilization.ja.md)
+
 ## 清单
 
 | # | 项目 | 内容 |

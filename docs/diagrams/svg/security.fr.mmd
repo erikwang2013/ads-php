@@ -1,0 +1,45 @@
+graph TB
+    subgraph Perimeter["Défense externe — Nginx"]
+        SSL["Terminaison SSL"]
+        NginxRL["Limitation par paliers 30r/s + burst 20"]
+        ConnLimit["Limite connexions simultanées 20"]
+    end
+    subgraph Gate["Garde d'entrée — Service :8788"]
+        direction TB
+        CORS["CORS<br/>Liste blanche de domaines"] --> OG["OriginGuard<br/>Vérification Origin/Referer<br/>Bloquer méthodes dangereuses"]
+        OG --> SH["SecurityHeaders<br/>CSP·HSTS·XFO·XCTO"]
+        SH --> AG["AttackGuard<br/>XSS 11 modèles | Traversée de chemin 7<br/>Injection Header | Limite 10MiB<br/>Liste blanche Content-Type"]
+    end
+    subgraph AuthN["Authentification"]
+        JWT["JWT Bearer<br/>Liaison IP+UA"]
+        BC["Hachage mot de passe bcrypt"]
+        CAP["CAPTCHA curseur<br/>Tolérance 5px·Valable 5min"]
+        LT["Limitation de connexion<br/>5 échecs → verrouillage 15min<br/>Compteur Redis"]
+        SL["Limite de session<br/>Max 3 Tokens actifs"]
+        TB["Liste noire Token<br/>Anciens Tokens révoqués après refresh"]
+        RP["Anti-rejeu<br/>Nonce+Timestamp±5min"]
+    end
+    subgraph Validation["Validation des entrées"]
+        SQL["SQLGuard<br/>UNION/DROP/ALTER/EXEC<br/>Détection INTO OUTFILE"]
+        Val["Validation<br/>trim + strip_tags"]
+        CSRF["CSRF Token<br/>Validation de session côté Admin"]
+        SSRF["Protection SSRF<br/>Liste blanche redirect_uri OAuth"]
+    end
+    subgraph RateLimit["Contrôle de fréquence"]
+        RL["Fenêtre glissante<br/>60/60s<br/>Implémentation Redis"]
+    end
+    subgraph Encryption["Chiffrement des données"]
+        TransEnc["Chiffrement transport<br/>X-Encrypted AES<br/>EncryptionMiddleware"]
+        StoreEnc["Chiffrement stockage<br/>Niveau champ DB<br/>Encryptable"]
+        LogMask["Masquage des logs<br/>password/token<br/>→ ***"]
+    end
+    subgraph Audit["Piste d'audit"]
+        AuditLog["Audit des opérations<br/>IP·UA·ClientPlatform<br/>Détails des actions"]
+        Confirm["Double confirmation<br/>Supprimer/Délier/Massif<br/>Saisir mot de confirmation"]
+    end
+    Perimeter --> Gate
+    Gate --> AuthN
+    AuthN --> Validation
+    Validation --> RateLimit
+    RateLimit --> Encryption
+    Encryption --> Audit

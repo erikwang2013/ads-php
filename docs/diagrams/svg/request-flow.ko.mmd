@@ -1,0 +1,14 @@
+flowchart TD
+    Start(["HTTP Request → :8788"]) --> CORS["1.CORS → 2.OriginGuard → 3.SecurityHeaders"]
+    CORS --> Attack["4.AttackGuard<br/>XSS 11패턴 · 경로탐색 7패턴<br/>Header 주입 · Body 10MiB 제한"]
+    Attack --> Mid["5.ClientPlatform → 6.ReplayGuard<br/>7.Version → 8.RateLimit(60회/60초)"]
+    Mid --> LoginT{"9.LoginThrottle<br/>로그인?"}
+    LoginT -->|예| Throttle["5회 실패 → 15분 잠금"]
+    LoginT -->|아니요| Mid2["10.SessionLimit(최대 3토큰)<br/>11.SQLGuard → 12.Validation"]
+    Throttle --> Mid2
+    Mid2 --> Encrypt{"14.Encryption<br/>X-Encrypted?"}
+    Encrypt -->|예| AES["AES 암복호화"]
+    Encrypt -->|아니요| Auth15["15.AuthMiddleware<br/>JWT · IP/UA 바인딩 · 블랙리스트"]
+    AES --> Auth15
+    Auth15 -->|통과| Ctrl["Controller → JSON Response"]
+    Auth15 -->|실패| Err401(["401 Unauthorized"])

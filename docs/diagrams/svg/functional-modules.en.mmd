@@ -1,0 +1,29 @@
+graph LR
+    subgraph Entry["Entry"]
+        A1["Auth<br/>JWT·bcrypt·CAPTCHA"]
+    end
+    subgraph Core["Core Business"]
+        B1["Platform Management<br/>29 Platforms·OAuth"]
+        B2["Account Binding<br/>Token Storage"]
+        B3["Ad Hierarchy<br/>Campaign→AdGroup→Creative"]
+        B4["Creative Library<br/>Upload·Gallery"]
+        B5["Targeting Templates<br/>Audience JSON"]
+    end
+    subgraph Engine["Engine Layer"]
+        C1["Data Sync<br/>6 Cron Jobs"]
+        C2["Report Engine<br/>CSV·Excel·PDF"]
+        C3["Alert Engine<br/>Threshold Evaluation"]
+        C4["Bid Engine<br/>Budget Adjustment·Start/Stop"]
+        C5["Attribution Engine<br/>5 Models·30-day Lookback"]
+    end
+    subgraph Endpoint["Consumers"]
+        D1["Vue Admin<br/>18 Pages·ECharts"]
+        D2["Flutter<br/>12 Pages·fl_chart"]
+        D3["Notification Center<br/>Web·Email·SMS"]
+    end
+    A1 --> B1 --> B2 --> C1
+    C1 --> B3 --> B4
+    B5 --> B3
+    C1 --> C2 & C3 & C4 & C5
+    C2 & C3 & C4 & C5 --> D1 & D2
+    C3 --> D3

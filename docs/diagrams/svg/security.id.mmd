@@ -1,0 +1,45 @@
+graph TB
+    subgraph Perimeter["Pertahanan Luar — Nginx"]
+        SSL["Terminasi SSL"]
+        NginxRL["Pembatasan Bertingkat 30r/s + burst 20"]
+        ConnLimit["Batas Koneksi Bersamaan 20"]
+    end
+    subgraph Gate["Penjaga Pintu — Service :8788"]
+        direction TB
+        CORS["CORS<br/>Daftar Putih Domain"] --> OG["OriginGuard<br/>Validasi Origin/Referer<br/>Blokir Metode Berbahaya"]
+        OG --> SH["SecurityHeaders<br/>CSP·HSTS·XFO·XCTO"]
+        SH --> AG["AttackGuard<br/>XSS 11 Pola | Path Traversal 7<br/>Injeksi Header | Batas 10MiB<br/>Daftar Putih Content-Type"]
+    end
+    subgraph AuthN["Otentikasi"]
+        JWT["JWT Bearer<br/>Ikatan IP+UA"]
+        BC["Hash Kata Sandi bcrypt"]
+        CAP["CAPTCHA Geser<br/>Toleransi 5px·Berlaku 5menit"]
+        LT["Pembatasan Login<br/>5 Kegagalan → Kunci 15menit<br/>Penghitung Redis"]
+        SL["Batas Sesi<br/>Maks 3 Token Aktif"]
+        TB["Daftar Hitam Token<br/>Token Lama Dicabut Setelah Refresh"]
+        RP["Anti-Reply<br/>Nonce+Timestamp±5menit"]
+    end
+    subgraph Validation["Validasi Input"]
+        SQL["SQLGuard<br/>UNION/DROP/ALTER/EXEC<br/>Deteksi INTO OUTFILE"]
+        Val["Validation<br/>trim + strip_tags"]
+        CSRF["CSRF Token<br/>Validasi Sesi di Admin"]
+        SSRF["Proteksi SSRF<br/>Daftar Putih redirect_uri OAuth"]
+    end
+    subgraph RateLimit["Kontrol Frekuensi"]
+        RL["Jendela Geser<br/>60/60d<br/>Berbasis Redis"]
+    end
+    subgraph Encryption["Enkripsi Data"]
+        TransEnc["Enkripsi Transport<br/>X-Encrypted AES<br/>EncryptionMiddleware"]
+        StoreEnc["Enkripsi Penyimpanan<br/>Tingkat Field DB<br/>Encryptable"]
+        LogMask["Masking Log<br/>password/token<br/>→ ***"]
+    end
+    subgraph Audit["Jejak Audit"]
+        AuditLog["Audit Operasi<br/>IP·UA·ClientPlatform<br/>Detail Tindakan"]
+        Confirm["Konfirmasi Ganda<br/>Hapus/Lepas Ikatan/Massal<br/>Ketik Kata Konfirmasi"]
+    end
+    Perimeter --> Gate
+    Gate --> AuthN
+    AuthN --> Validation
+    Validation --> RateLimit
+    RateLimit --> Encryption
+    Encryption --> Audit

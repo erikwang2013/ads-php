@@ -1,0 +1,45 @@
+graph TB
+    subgraph Perimeter["বাইরের প্রতিরক্ষা — Nginx"]
+        SSL["SSL সমাপ্তি"]
+        NginxRL["স্তরভিত্তিক হার সীমা 30r/s + burst 20"]
+        ConnLimit["সমান্তরাল সংযোগ সীমা 20"]
+    end
+    subgraph Gate["প্রবেশ প্রহরী — Service :8788"]
+        direction TB
+        CORS["CORS<br/>ডোমেইন সাদা তালিকা"] --> OG["OriginGuard<br/>Origin/Referer যাচাই<br/>বিপজ্জনক পদ্ধতি ব্লক"]
+        OG --> SH["SecurityHeaders<br/>CSP·HSTS·XFO·XCTO"]
+        SH --> AG["AttackGuard<br/>XSS 11 প্যাটার্ন | পাথ ট্রাভার্সাল 7<br/>হেডার ইনজেকশন | 10MiB সীমা<br/>Content-Type সাদা তালিকা"]
+    end
+    subgraph AuthN["প্রমাণীকরণ"]
+        JWT["JWT Bearer<br/>IP+UA বাইন্ডিং"]
+        BC["bcrypt পাসওয়ার্ড হ্যাশ"]
+        CAP["স্লাইডার CAPTCHA<br/>5px সহনশীলতা·5মিনিট বৈধ"]
+        LT["লগইন থ্রটল<br/>5 ব্যর্থতা → 15মিনিট লক<br/>Redis কাউন্টার"]
+        SL["সেশন সীমা<br/>সর্বোচ্চ 3 সক্রিয় টোকেন"]
+        TB["টোকেন ব্ল্যাকলিস্ট<br/>রিফ্রেশের পর পুরনো টোকেন বাতিল"]
+        RP["অ্যান্টি-রিপ্লে<br/>Nonce+Timestamp±5মিনিট"]
+    end
+    subgraph Validation["ইনপুট যাচাই"]
+        SQL["SQLGuard<br/>UNION/DROP/ALTER/EXEC<br/>INTO OUTFILE সনাক্তকরণ"]
+        Val["Validation<br/>trim + strip_tags"]
+        CSRF["CSRF Token<br/>Admin-এ সেশন যাচাই"]
+        SSRF["SSRF সুরক্ষা<br/>OAuth redirect_uri সাদা তালিকা"]
+    end
+    subgraph RateLimit["হার নিয়ন্ত্রণ"]
+        RL["স্লাইডিং উইন্ডো<br/>60/60s<br/>Redis-ভিত্তিক"]
+    end
+    subgraph Encryption["ডেটা এনক্রিপশন"]
+        TransEnc["ট্রান্সপোর্ট এনক্রিপশন<br/>X-Encrypted AES<br/>EncryptionMiddleware"]
+        StoreEnc["স্টোরেজ এনক্রিপশন<br/>DB ফিল্ড স্তর<br/>Encryptable"]
+        LogMask["লগ মাস্কিং<br/>password/token<br/>→ ***"]
+    end
+    subgraph Audit["অডিট ট্রেইল"]
+        AuditLog["অপারেশন অডিট<br/>IP·UA·ClientPlatform<br/>কর্ম বিবরণ"]
+        Confirm["দ্বিগুণ নিশ্চিতকরণ<br/>মুছুন/আনবাইন্ড/ব্যাচ<br/>নিশ্চিতকরণ শব্দ লিখুন"]
+    end
+    Perimeter --> Gate
+    Gate --> AuthN
+    AuthN --> Validation
+    Validation --> RateLimit
+    RateLimit --> Encryption
+    Encryption --> Audit

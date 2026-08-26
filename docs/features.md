@@ -1,6 +1,10 @@
 # 功能设计文档
 
+[中文](docs/features.md) | [English](docs/features.en.md) | [한국어](docs/features.ko.md) | [Русский](docs/features.ru.md) | [Deutsch](docs/features.de.md) | [Français](docs/features.fr.md) | [Español](docs/features.es.md) | [Português](docs/features.pt.md) | [हिन्दी](docs/features.hi.md) | [العربية](docs/features.ar.md) | [বাংলা](docs/features.bn.md) | [Bahasa Indonesia](docs/features.id.md) | [日本語](docs/features.ja.md)
+
 Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+
+> 全部 API 接口定义（请求/响应/参数）见 [api.md](api.md)。
 
 ---
 
@@ -35,70 +39,24 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 ## 模块 1: 认证授权
 
-### 1.1 登录
-
-```
-POST /api/auth/login
-Body: { username, password, captcha_token?, captcha_offset?, tenant_id? }
-```
-
 - 验证码检查（可选）
 - 查询 `admin_users` 表
 - bcrypt `password_verify()` 验证
 - JWT Token 生成 (24h TTL)
-- 返回: `{ access_token, token_type, expires_in, user }`
-
-### 1.2 Token 刷新
-
-```
-POST /api/auth/refresh
-Header: Authorization: Bearer <old_token>
-```
-
 - 旧 Token 自动加入黑名单
-- 返回新 Token
+- 从 Token 提取 `uid` 查询用户信息
 
-### 1.3 当前用户
-
-```
-GET /api/auth/me
-Header: Authorization: Bearer <token>
-```
-
-- 从 Token 提取 `uid`，查询数据库获取用户信息
+接口: 登录 / Token 刷新 / 当前用户 → [api.md 模块 2](api.md#模块-2-认证)
 
 ---
 
 ## 模块 2-3: 平台与账户管理
 
-### 2.1 平台列表
+- 平台列表缓存 1 小时 (Redis)，集成 Season 国旗 emoji
+- OAuth 流程: 生成随机 state → 构建授权 URL → 回调处理 → 存储 Token
+- 账户列表/详情缓存 5 分钟
 
-```
-GET /api/platforms
-Response: [{ code, name, flag, capabilities, auth_type }]
-```
-
-- 缓存 1 小时 (Redis)
-- 集成 Season 国旗 emoji
-
-### 2.2 OAuth 流程
-
-```
-GET  /api/platforms/:code/oauth-url?redirect_uri=...
-POST /api/platforms/:code/callback
-Body: { state, code }
-```
-
-- 生成随机 state → 构建授权 URL → 回调处理 → 存储 Token
-
-### 2.3 账户 CRUD
-
-```
-GET    /api/accounts             # 列表 (缓存 5min)
-GET    /api/accounts/:id         # 详情 (缓存 5min)
-DELETE /api/accounts/:id         # 解绑
-POST   /api/accounts/:id/sync    # 手动同步
-```
+接口: 平台列表 / OAuth / 账户 CRUD + 同步 → [api.md 模块 3](api.md#模块-3-平台--账户)
 
 ---
 
@@ -113,90 +71,28 @@ Campaign (广告计划)
   └── ReportMetrics (报表指标)
 ```
 
-### 4.1 广告计划
+- 创建计划通过平台适配器 + 写入本地
+- 支持按平台/状态/关键词筛选，列表含今日汇总
+- 广告组创建支持 `targeting_template_id` 加载定向模板
 
-```
-GET   /api/campaigns                 # 列表 (筛选/排序/分页 + 今日汇总)
-POST  /api/campaigns                 # 创建 (通过平台适配器 + 写入本地)
-GET   /api/campaigns/:id             # 详情 (含今日指标)
-PUT   /api/campaigns/:id             # 更新
-POST  /api/campaigns/:id/toggle      # 启停
-POST  /api/campaigns/batch/toggle    # 批量启停 (单次 API 调用)
-```
-
-### 4.2 广告组
-
-```
-GET   /api/ad-groups                 # 列表 (支持 campaign_id/status 筛选)
-POST  /api/ad-groups                 # 创建 (支持 targeting_template_id)
-GET   /api/ad-groups/:id             # 详情 (含今日指标)
-PUT   /api/ad-groups/:id             # 更新
-POST  /api/ad-groups/:id/toggle      # 启停
-```
-
-### 4.3 创意
-
-```
-GET   /api/creatives                 # 列表 (支持 ad_group_id/media_type 筛选)
-GET   /api/creatives/:id             # 详情 (含今日指标)
-```
+接口: 计划 / 广告组 / 创意 → [api.md 模块 4-6](api.md#模块-4-广告计划)
 
 ---
 
 ## 模块 7: 数据报表
 
-### 7.1 仪表盘
+- 仪表盘汇总缓存 5 分钟: 8 个 KPI 指标卡片 + 日趋势折线图 + 平台柱状图
+- 自定义报表维度: date, platform, campaign
+- 指标: cost, impressions, clicks, conversions, ctr, cvr, cpc, cpm, roi
+- 导出格式: CSV (UTF-8 BOM), Excel (HTML .xls), PDF (HTML 打印)
 
-```
-GET /api/reports/summary?date_start=...&date_end=...
-Response: { overview: {...}, by_platform: [...], daily: [...] }
-```
-
-- 缓存 5 分钟
-- 8 个 KPI 指标卡片 + 日趋势折线图 + 平台柱状图
-
-### 7.2 自定义报表
-
-```
-GET /api/reports/custom
-Query: dimensions[]=date&dimensions[]=platform&metrics[]=cost&metrics[]=clicks
-       &date_start=...&date_end=...
-```
-
-- 支持维度: date, platform, campaign
-- 支持指标: cost, impressions, clicks, conversions, ctr, cvr, cpc, cpm, roi
-
-### 7.3 报表导出
-
-```
-GET /api/reports/export?format=csv&...
-GET /api/reports/export-dashboard?format=pdf&...
-```
-
-- CSV (UTF-8 BOM), Excel (HTML .xls), PDF (HTML 打印)
+接口: 汇总 / 自定义 / 导出 → [api.md 模块 7](api.md#模块-7-报表)
 
 ---
 
 ## 模块 8: 告警监控
 
-### 8.1 规则管理
-
-```
-GET    /api/alerts/rules        # 列表 (缓存 2min, 筛选 platform/enabled/metric)
-POST   /api/alerts/rules        # 创建
-PUT    /api/alerts/rules/:id    # 更新
-DELETE /api/alerts/rules/:id    # 删除
-```
-
-### 8.2 告警记录
-
-```
-GET  /api/alerts/logs                  # 列表 (筛选 status/rule_id/metric)
-POST /api/alerts/logs/:id/acknowledge  # 确认
-GET  /api/alerts/unread-count          # 未读数 (缓存 30s, 前端 30s 轮询)
-```
-
-### 8.3 AlertEngine 求值流程
+### AlertEngine 求值流程
 
 ```
 遍历 enabled=1 的规则
@@ -207,7 +103,7 @@ GET  /api/alerts/unread-count          # 未读数 (缓存 30s, 前端 30s 轮�
   → NotificationService.send()
 ```
 
-### 8.4 通知渠道
+### 通知渠道
 
 | 渠道 | 状态 | 实现 |
 |------|------|------|
@@ -216,35 +112,22 @@ GET  /api/alerts/unread-count          # 未读数 (缓存 30s, 前端 30s 轮�
 | sms | 占位 | echo 存根 |
 | Redis pub/sub | ✅ | `alert:new` 频道 JSON 推送 |
 
+接口: 规则 CRUD / 告警记录 / 确认 / 未读数 → [api.md 模块 8](api.md#模块-8-告警)
+
 ---
 
 ## 模块 9: 通知中心
 
-```
-GET  /api/notifications                 # 列表 (筛选 type/is_read)
-GET  /api/notifications/unread-count    # 未读数
-POST /api/notifications/:id/read        # 标记已读
-POST /api/notifications/read-all        # 全部已读
-```
-
 - 前端 Pinia store 30s 轮询
 - 侧边栏铃铛图标 + 未读数字徽标
+
+接口: 列表 / 未读数 / 标记已读 / 全部已读 → [api.md 模块 9](api.md#模块-9-通知)
 
 ---
 
 ## 模块 10: 自动出价引擎
 
-### 10.1 规则管理
-
-```
-GET    /api/bid-rules          # 列表
-POST   /api/bid-rules          # 创建
-PUT    /api/bid-rules/:id      # 更新
-DELETE /api/bid-rules/:id      # 删除
-GET    /api/bid-rules/logs    # 操作历史
-```
-
-### 10.2 BidEngine 求值流程
+### BidEngine 求值流程
 
 ```
 遍历 enabled=1 的规则
@@ -259,7 +142,7 @@ GET    /api/bid-rules/logs    # 操作历史
   → 更新本地 DB + 写入 BidLog
 ```
 
-### 10.3 规则字段
+### 规则字段
 
 | 字段 | 类型 | 说明 |
 |------|------|------|
@@ -272,32 +155,22 @@ GET    /api/bid-rules/logs    # 操作历史
 | budget_min, budget_max | BIGINT | 预算边界 |
 | cooldown_minutes | INT | 冷却期 |
 
+接口: 规则 CRUD / 出价历史 → [api.md 模块 10](api.md#模块-10-自动出价)
+
 ---
 
 ## 模块 11: 受众定向模板
 
-### 11.1 模板 CRUD
+### 集成到广告组
 
 ```
-GET    /api/targeting-templates          # 列表 (按 platform 筛选)
-GET    /api/targeting-templates/:id      # 详情
-POST   /api/targeting-templates          # 创建
-PUT    /api/targeting-templates/:id      # 更新
-DELETE /api/targeting-templates/:id      # 删除
-```
-
-### 11.2 集成到广告组
-
-```
-POST /api/ad-groups
-Body: { targeting_template_id: 1, targeting: {...} }
-
+POST /api/ad-groups 支持 targeting_template_id
 → 加载模板 targeting JSON
 → 合并请求中的 targeting 覆盖
 → 传递给平台适配器
 ```
 
-### 11.3 通用 JSON Schema
+### 通用 JSON Schema
 
 ```json
 {
@@ -314,27 +187,19 @@ Body: { targeting_template_id: 1, targeting: {...} }
 }
 ```
 
+接口: 模板 CRUD → [api.md 模块 11](api.md#模块-11-定向模板)
+
 ---
 
 ## 模块 12: 系统管理 (Admin)
 
-### 12.1 用户管理
+- 用户列表 ID hashids 编码
+- 创建用户 bcrypt 哈希密码
+- 禁用用户为软禁用 (status=0)
 
-```
-GET    /api/admin/users         # 列表 (分页/搜索/角色筛选, ID hashids 编码)
-POST   /api/admin/users         # 创建 (bcrypt 哈希密码)
-PUT    /api/admin/users/:id     # 更新
-DELETE /api/admin/users/:id     # 软禁用 (status=0)
-GET    /api/admin/users/roles   # 角色列表
-```
+审计日志字段: `{ user_id, username, action, resource, resource_id, detail, ip, user_agent, client_platform }`
 
-### 12.2 审计日志
-
-```
-GET /api/admin/audit-logs       # 列表 (筛选 user_id/action/date, ID hashids 编码)
-```
-
-记录字段: `{ user_id, username, action, resource, resource_id, detail, ip, user_agent, client_platform }`
+接口: 用户管理 / 审计日志 / 角色 → [api.md Admin 端点](api.md#admin-端点端口-8789)
 
 ---
 
@@ -376,56 +241,38 @@ GET /api/admin/audit-logs       # 列表 (筛选 user_id/action/date, ID hashids
 
 ## 模块 14: 广告素材库
 
-```
-POST  /api/assets/upload       # multipart 上传 (图片/视频)
-GET   /api/assets              # 素材列表 (按 type 筛选)
-GET   /api/assets/:id          # 素材详情
-DELETE /api/assets/:id         # 删除素材
-```
-
 - 支持类型: image/jpeg, image/png, image/gif, image/webp, video/mp4
 - 文件存储: `public/uploads/assets/`
 - 前端: 网格画廊 + 拖拽上传 + 图片预览 + 视频播放 + 复制 URL
 
+接口: 上传 / 列表 / 详情 / 删除 → [api.md 模块 12](api.md#模块-12-素材库)
+
 ---
 
 ## 模块 15: 预算预警
-
-```
-GET /api/reports/budget-alerts
-Response: [{ campaign_id, campaign_name, platform, spent, budget, pct, level }]
-```
 
 - 三段告警: yellow (≥50%), orange (≥80%), red (≥100%)
 - BudgetCheckTask 每 15 分钟执行
 - 去重: 同一计划同一级别一天只通知一次
 - 写入 `erik_notifications` 表
 
+接口: 预算预警 → [api.md 模块 7](api.md#模块-7-报表)
+
 ---
 
 ## 模块 16: 投放日历
-
-```
-GET /api/reports/calendar?date_start=...&date_end=...&platform=...
-Response: [{ id, name, platform, status, start_date, end_date, budget }]
-```
 
 - 按日期聚合 campaign 排期
 - 前端 Gantt 图: x 轴日期, y 轴计划, 按平台颜色区分
 - 支持月/周视图切换
 
+接口: 投放日历 → [api.md 模块 7](api.md#模块-7-报表)
+
 ---
 
 ## 模块 17: 跨平台归因
 
-### 15.1 归因模型
-
-```
-GET /api/reports/attribution/models
-Response: [{ code, name, description }]
-```
-
-5 种模型:
+### 归因模型
 
 | 模型 | 算法 |
 |------|------|
@@ -435,27 +282,19 @@ Response: [{ code, name, description }]
 | time_decay | e^(-λ×Δt), 7天半衰期 |
 | position_based | 首40% + 末40% + 中间20% |
 
-### 15.2 归因计算
-
-```
-GET /api/reports/attribution?model=last_touch&date_start=...&date_end=...
-Response: { total_conversions, total_value, by_campaign: [...] }
-```
-
 - 回溯窗口: 30 天
 - 触点来源: `erik_report_metrics` (点击 > 0)
 - 结果写入 `erik_attribution_results`
+- 前端: AttributionReport.vue 模型切换 + 统计卡片 + ECharts 柱状图 + 明细表格
 
-### 15.3 前端
-
-AttributionReport.vue: 模型切换 + 统计卡片 + ECharts 柱状图 + 明细表格
-
-### 15.4 数据表
+### 数据表
 
 | 表 | 字段 |
 |----|------|
 | `erik_conversions` | id, tenant_id, platform, campaign_id, order_id, conversion_time, value, currency, channel |
 | `erik_attribution_results` | id, tenant_id, conversion_id, model, campaign_id, credit |
+
+接口: 归因分析 / 模型列表 → [api.md 模块 7](api.md#模块-7-报表)
 
 ### 健康检查
 ```json

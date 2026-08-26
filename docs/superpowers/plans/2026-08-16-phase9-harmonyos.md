@@ -1,5 +1,7 @@
 # Phase 9: HarmonyOS 真实联调 Implementation Plan
 
+[中文](docs/superpowers/plans/2026-08-16-phase9-harmonyos.md) | [English](docs/superpowers/plans/2026-08-16-phase9-harmonyos.en.md) | [한국어](docs/superpowers/plans/2026-08-16-phase9-harmonyos.ko.md) | [Русский](docs/superpowers/plans/2026-08-16-phase9-harmonyos.ru.md) | [Deutsch](docs/superpowers/plans/2026-08-16-phase9-harmonyos.de.md) | [Français](docs/superpowers/plans/2026-08-16-phase9-harmonyos.fr.md) | [Español](docs/superpowers/plans/2026-08-16-phase9-harmonyos.es.md) | [Português](docs/superpowers/plans/2026-08-16-phase9-harmonyos.pt.md) | [हिन्दी](docs/superpowers/plans/2026-08-16-phase9-harmonyos.hi.md) | [العربية](docs/superpowers/plans/2026-08-16-phase9-harmonyos.ar.md) | [বাংলা](docs/superpowers/plans/2026-08-16-phase9-harmonyos.bn.md) | [Bahasa Indonesia](docs/superpowers/plans/2026-08-16-phase9-harmonyos.id.md) | [日本語](docs/superpowers/plans/2026-08-16-phase9-harmonyos.ja.md)
+
 **Goal:** 将 HarmonyOS 端 6 个页面从模拟数据切换为真实 API 调用（service :8788），修复 ApiClient 的 baseUrl 硬编码问题，实现登录真实化，使鸿蒙端成为可用的第三客户端。
 
 **来源:** Phase 7 团队审计（mobile-dev 盘点：HarmonyOS 6 页面全部模拟数据、0 处真实调用、ApiClient baseUrl 硬编码 `http://127.0.0.1:8788/api`）

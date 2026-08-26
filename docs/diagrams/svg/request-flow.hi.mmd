@@ -1,0 +1,14 @@
+flowchart TD
+    Start(["HTTP Request → :8788"]) --> CORS["1.CORS → 2.OriginGuard → 3.SecurityHeaders"]
+    CORS --> Attack["4.AttackGuard<br/>XSS 11 पैटर्न · पाथ ट्रैवर्सल 7<br/>हेडर इंजेक्शन · Body 10MiB सीमा"]
+    Attack --> Mid["5.ClientPlatform → 6.ReplayGuard<br/>7.Version → 8.RateLimit(60/60s)"]
+    Mid --> LoginT{"9.LoginThrottle<br/>लॉगिन?"}
+    LoginT -->|हाँ| Throttle["5 विफलताएँ → 15 मिनट लॉक"]
+    LoginT -->|नहीं| Mid2["10.SessionLimit(अधिकतम 3 टोकन)<br/>11.SQLGuard → 12.Validation"]
+    Throttle --> Mid2
+    Mid2 --> Encrypt{"14.Encryption<br/>X-Encrypted?"}
+    Encrypt -->|हाँ| AES["AES एन्क्रिप्शन/डिक्रिप्शन"]
+    Encrypt -->|नहीं| Auth15["15.AuthMiddleware<br/>JWT · IP/UA बाइंडिंग · ब्लैकलिस्ट"]
+    AES --> Auth15
+    Auth15 -->|पास| Ctrl["Controller → JSON Response"]
+    Auth15 -->|असफल| Err401(["401 Unauthorized"])

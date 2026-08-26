@@ -1,0 +1,29 @@
+graph LR
+    subgraph Entry["প্রবেশ"]
+        A1["প্রমাণীকরণ<br/>JWT·bcrypt·CAPTCHA"]
+    end
+    subgraph Core["মূল ব্যবসা"]
+        B1["প্ল্যাটফর্ম ব্যবস্থাপনা<br/>29 প্ল্যাটফর্ম·OAuth"]
+        B2["অ্যাকাউন্ট বাইন্ডিং<br/>টোকেন সংরক্ষণ"]
+        B3["বিজ্ঞাপন শ্রেণিবিন্যাস<br/>Campaign→AdGroup→Creative"]
+        B4["ক্রিয়েটিভ লাইব্রেরি<br/>আপলোড·গ্যালারি"]
+        B5["টার্গেটিং টেমপ্লেট<br/>Audience JSON"]
+    end
+    subgraph Engine["ইঞ্জিন স্তর"]
+        C1["ডেটা সিঙ্ক<br/>6 Cron কাজ"]
+        C2["রিপোর্ট ইঞ্জিন<br/>CSV·Excel·PDF"]
+        C3["অ্যালার্ট ইঞ্জিন<br/>সীমা মূল্যায়ন"]
+        C4["বিড ইঞ্জিন<br/>বাজেট সমন্বয়·শুরু/বন্ধ"]
+        C5["অ্যাট্রিবিউশন ইঞ্জিন<br/>5 মডেল·30 দিন লুকব্যাক"]
+    end
+    subgraph Endpoint["ভোক্তা"]
+        D1["Vue Admin<br/>18 পৃষ্ঠা·ECharts"]
+        D2["Flutter<br/>12 পৃষ্ঠা·fl_chart"]
+        D3["নোটিফিকেশন সেন্টার<br/>Web·Email·SMS"]
+    end
+    A1 --> B1 --> B2 --> C1
+    C1 --> B3 --> B4
+    B5 --> B3
+    C1 --> C2 & C3 & C4 & C5
+    C2 & C3 & C4 & C5 --> D1 & D2
+    C3 --> D3

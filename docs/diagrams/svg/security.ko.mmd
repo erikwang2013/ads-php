@@ -1,0 +1,45 @@
+graph TB
+    subgraph Perimeter["외부 방어 — Nginx"]
+        SSL["SSL 종료"]
+        NginxRL["계층별 Rate Limit 30r/s + burst 20"]
+        ConnLimit["동시 연결 제한 20"]
+    end
+    subgraph Gate["입구 가드 — Service :8788"]
+        direction TB
+        CORS["CORS<br/>도메인 화이트리스트"] --> OG["OriginGuard<br/>Origin/Referer 검증<br/>위험 메서드 차단"]
+        OG --> SH["SecurityHeaders<br/>CSP·HSTS·XFO·XCTO"]
+        SH --> AG["AttackGuard<br/>XSS 11패턴 | 경로탐색 7<br/>Header 주입 | 10MiB 제한<br/>Content-Type 화이트리스트"]
+    end
+    subgraph AuthN["신원 인증"]
+        JWT["JWT Bearer<br/>IP+UA 바인딩"]
+        BC["bcrypt 비밀번호 해시"]
+        CAP["슬라이더 CAPTCHA<br/>5px 허용 오차·5분 유효"]
+        LT["로그인 제한<br/>5회 실패 → 15분 잠금<br/>Redis 카운트"]
+        SL["세션 제한<br/>최대 3개 활성 Token"]
+        TB["Token 블랙리스트<br/>갱신 후 이전 Token 무효화"]
+        RP["재전송 방지<br/>Nonce+Timestamp±5분"]
+    end
+    subgraph Validation["입력 검증"]
+        SQL["SQLGuard<br/>UNION/DROP/ALTER/EXEC<br/>INTO OUTFILE 탐지"]
+        Val["Validation<br/>trim + strip_tags"]
+        CSRF["CSRF Token<br/>Admin 세션 검증"]
+        SSRF["SSRF 방어<br/>OAuth redirect_uri 화이트리스트"]
+    end
+    subgraph RateLimit["빈도 제어"]
+        RL["슬라이딩 윈도우<br/>60회/60초<br/>Redis 구현"]
+    end
+    subgraph Encryption["데이터 암호화"]
+        TransEnc["전송 암호화<br/>X-Encrypted AES<br/>EncryptionMiddleware"]
+        StoreEnc["저장 암호화<br/>DB 필드 단위<br/>Encryptable"]
+        LogMask["로그 마스킹<br/>password/token<br/>→ ***"]
+    end
+    subgraph Audit["감사 추적"]
+        AuditLog["작업 감사<br/>IP·UA·ClientPlatform<br/>작업 상세 기록"]
+        Confirm["이중 확인<br/>삭제/해제/일괄<br/>확인어 입력"]
+    end
+    Perimeter --> Gate
+    Gate --> AuthN
+    AuthN --> Validation
+    Validation --> RateLimit
+    RateLimit --> Encryption
+    Encryption --> Audit

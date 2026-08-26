@@ -1,0 +1,29 @@
+graph LR
+    subgraph Entry["المدخل"]
+        A1["المصادقة<br/>JWT·bcrypt·CAPTCHA"]
+    end
+    subgraph Core["الأعمال الأساسية"]
+        B1["إدارة المنصات<br/>29 منصة·OAuth"]
+        B2["ربط الحسابات<br/>تخزين الرموز"]
+        B3["التسلسل الإعلاني<br/>Campaign→AdGroup→Creative"]
+        B4["مكتبة الإبداعات<br/>رفع·معرض"]
+        B5["قوالب الاستهداف<br/>Audience JSON"]
+    end
+    subgraph Engine["طبقة المحركات"]
+        C1["مزامنة البيانات<br/>6 مهام Cron"]
+        C2["محرك التقارير<br/>CSV·Excel·PDF"]
+        C3["محرك التنبيهات<br/>تقييم العتبات"]
+        C4["محرك العروض<br/>تعديل الميزانية·تشغيل/إيقاف"]
+        C5["محرك الإسناد<br/>5 نماذج·30 يوماً بأثر رجعي"]
+    end
+    subgraph Endpoint["المستهلكون"]
+        D1["Vue Admin<br/>18 صفحة·ECharts"]
+        D2["Flutter<br/>12 صفحة·fl_chart"]
+        D3["مركز الإشعارات<br/>Web·Email·SMS"]
+    end
+    A1 --> B1 --> B2 --> C1
+    C1 --> B3 --> B4
+    B5 --> B3
+    C1 --> C2 & C3 & C4 & C5
+    C2 & C3 & C4 & C5 --> D1 & D2
+    C3 --> D3

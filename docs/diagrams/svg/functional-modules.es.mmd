@@ -1,0 +1,29 @@
+graph LR
+    subgraph Entry["Entrada"]
+        A1["Autenticación<br/>JWT·bcrypt·CAPTCHA"]
+    end
+    subgraph Core["Negocio principal"]
+        B1["Gestión de plataformas<br/>29 Plataformas·OAuth"]
+        B2["Vinculación de cuentas<br/>Almacenamiento Token"]
+        B3["Jerarquía publicitaria<br/>Campaign→AdGroup→Creative"]
+        B4["Biblioteca de creativos<br/>Subida·Galería"]
+        B5["Plantillas de segmentación<br/>Audience JSON"]
+    end
+    subgraph Engine["Capa de motores"]
+        C1["Sincronización<br/>6 tareas Cron"]
+        C2["Motor de informes<br/>CSV·Excel·PDF"]
+        C3["Motor de alertas<br/>Evaluación de umbrales"]
+        C4["Motor de pujas<br/>Ajuste presupuesto·Inicio/Parada"]
+        C5["Motor de atribución<br/>5 modelos·30 días de retroceso"]
+    end
+    subgraph Endpoint["Consumidores"]
+        D1["Vue Admin<br/>18 Páginas·ECharts"]
+        D2["Flutter<br/>12 Páginas·fl_chart"]
+        D3["Centro de notificaciones<br/>Web·Email·SMS"]
+    end
+    A1 --> B1 --> B2 --> C1
+    C1 --> B3 --> B4
+    B5 --> B3
+    C1 --> C2 & C3 & C4 & C5
+    C2 & C3 & C4 & C5 --> D1 & D2
+    C3 --> D3

@@ -1,0 +1,24 @@
+flowchart LR
+    subgraph S1["1. Zugangs-Autorisierung"]
+        A1["OAuth-Weiterleitung"] --> A2["Callback-Token-Austausch"] --> A3["Verschlüsselte Speicherung"]
+    end
+    subgraph S2["2. Geplante Synchronisierung"]
+        B1["TokenRefresh 55min"] --> B2["DataSync 10min<br/>Pläne·Gruppen·Creatives·Berichte abrufen"]
+        B3["RetrySync 3min<br/>Wiederholung·Exponentielles Backoff"] -.-> B2
+    end
+    subgraph S3["3. Speicher & Cache"]
+        C1[("MySQL 28 Tabellen")]
+        C2[("Redis L1/L2/L3")]
+        C3[("ES Suchindex")]
+    end
+    subgraph S4["4. Geschäftsverarbeitung"]
+        D1["Berichts-Aggregation·Export"]
+        D2["Alarm-Prüfung 5min"]
+        D3["Gebots-Prüfung 10min"]
+        D4["Budget-Warnung 15min<br/>50/80/100% Stufen"]
+    end
+    subgraph S5["5. Anzeige"]
+        E1["Dashboard ECharts"]
+        E2["Flutter fl_chart"]
+    end
+    S1 --> S2 --> S3 --> S4 --> S5

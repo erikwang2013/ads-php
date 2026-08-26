@@ -1,5 +1,7 @@
 # Phase 1: 基础骨架 Implementation Plan
 
+[中文](docs/superpowers/plans/2026-05-14-phase1-foundation.md) | [English](docs/superpowers/plans/2026-05-14-phase1-foundation.en.md) | [한국어](docs/superpowers/plans/2026-05-14-phase1-foundation.ko.md) | [Русский](docs/superpowers/plans/2026-05-14-phase1-foundation.ru.md) | [Deutsch](docs/superpowers/plans/2026-05-14-phase1-foundation.de.md) | [Français](docs/superpowers/plans/2026-05-14-phase1-foundation.fr.md) | [Español](docs/superpowers/plans/2026-05-14-phase1-foundation.es.md) | [Português](docs/superpowers/plans/2026-05-14-phase1-foundation.pt.md) | [हिन्दी](docs/superpowers/plans/2026-05-14-phase1-foundation.hi.md) | [العربية](docs/superpowers/plans/2026-05-14-phase1-foundation.ar.md) | [বাংলা](docs/superpowers/plans/2026-05-14-phase1-foundation.bn.md) | [Bahasa Indonesia](docs/superpowers/plans/2026-05-14-phase1-foundation.id.md) | [日本語](docs/superpowers/plans/2026-05-14-phase1-foundation.ja.md)
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** 搭建 webman v2 服务端 + webman-admin v2 管理后台骨架，实现多租户、认证权限、账户管理、OAuth 流程框架，并以巨量引擎作为第一个平台跑通全链路。

@@ -1,0 +1,45 @@
+graph TB
+    subgraph Perimeter["Внешняя защита — Nginx"]
+        SSL["Завершение SSL"]
+        NginxRL["Многоуровневый лимит 30r/s + burst 20"]
+        ConnLimit["Лимит одновременных соединений 20"]
+    end
+    subgraph Gate["Входная защита — Service :8788"]
+        direction TB
+        CORS["CORS<br/>Белый список доменов"] --> OG["OriginGuard<br/>Проверка Origin/Referer<br/>Блокировка опасных методов"]
+        OG --> SH["SecurityHeaders<br/>CSP·HSTS·XFO·XCTO"]
+        SH --> AG["AttackGuard<br/>XSS 11 паттернов | Path Traversal 7<br/>Инъекция Header | Лимит 10MiB<br/>Белый список Content-Type"]
+    end
+    subgraph AuthN["Аутентификация"]
+        JWT["JWT Bearer<br/>Привязка IP+UA"]
+        BC["bcrypt хеш пароля"]
+        CAP["Слайдер CAPTCHA<br/>Допуск 5px·Действует 5мин"]
+        LT["Ограничение логина<br/>5 неудач → блокировка 15мин<br/>Счетчик Redis"]
+        SL["Лимит сессий<br/>Макс. 3 активных токена"]
+        TB["Черный список Token<br/>Старые токены отозваны после обновления"]
+        RP["Анти-повтор<br/>Nonce+Timestamp±5мин"]
+    end
+    subgraph Validation["Валидация ввода"]
+        SQL["SQLGuard<br/>UNION/DROP/ALTER/EXEC<br/>Обнаружение INTO OUTFILE"]
+        Val["Validation<br/>trim + strip_tags"]
+        CSRF["CSRF Token<br/>Проверка сессии на Admin"]
+        SSRF["Защита SSRF<br/>Белый список redirect_uri OAuth"]
+    end
+    subgraph RateLimit["Контроль частоты"]
+        RL["Скользящее окно<br/>60/60с<br/>Реализация Redis"]
+    end
+    subgraph Encryption["Шифрование данных"]
+        TransEnc["Шифрование передачи<br/>X-Encrypted AES<br/>EncryptionMiddleware"]
+        StoreEnc["Шифрование хранения<br/>Уровень поля БД<br/>Encryptable"]
+        LogMask["Маскирование логов<br/>password/token<br/>→ ***"]
+    end
+    subgraph Audit["Аудит-трейс"]
+        AuditLog["Аудит операций<br/>IP·UA·ClientPlatform<br/>Детали действий"]
+        Confirm["Двойное подтверждение<br/>Удаление/Отвязка/Массово<br/>Введите слово подтверждения"]
+    end
+    Perimeter --> Gate
+    Gate --> AuthN
+    AuthN --> Validation
+    Validation --> RateLimit
+    RateLimit --> Encryption
+    Encryption --> Audit

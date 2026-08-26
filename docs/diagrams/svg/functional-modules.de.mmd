@@ -1,0 +1,29 @@
+graph LR
+    subgraph Entry["Einstieg"]
+        A1["Authentifizierung<br/>JWT·bcrypt·CAPTCHA"]
+    end
+    subgraph Core["Kernfunktionen"]
+        B1["Plattformverwaltung<br/>29 Plattformen·OAuth"]
+        B2["Kontobindung<br/>Token-Speicher"]
+        B3["Anzeigen-Hierarchie<br/>Campaign→AdGroup→Creative"]
+        B4["Kreativ-Bibliothek<br/>Upload·Galerie"]
+        B5["Targeting-Vorlagen<br/>Audience-JSON"]
+    end
+    subgraph Engine["Engine-Schicht"]
+        C1["Datensynchronisierung<br/>6 Cron-Jobs"]
+        C2["Berichts-Engine<br/>CSV·Excel·PDF"]
+        C3["Alarm-Engine<br/>Schwellenwert-Prüfung"]
+        C4["Gebots-Engine<br/>Budget-Anpassung·Start/Stop"]
+        C5["Attributions-Engine<br/>5 Modelle·30-Tage-Rückschau"]
+    end
+    subgraph Endpoint["Konsumenten"]
+        D1["Vue Admin<br/>18 Seiten·ECharts"]
+        D2["Flutter<br/>12 Seiten·fl_chart"]
+        D3["Benachrichtigungszentrum<br/>Web·Email·SMS"]
+    end
+    A1 --> B1 --> B2 --> C1
+    C1 --> B3 --> B4
+    B5 --> B3
+    C1 --> C2 & C3 & C4 & C5
+    C2 & C3 & C4 & C5 --> D1 & D2
+    C3 --> D3

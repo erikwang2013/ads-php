@@ -1,5 +1,7 @@
 # Phase 8: 告警多渠道落地 Implementation Plan
 
+[中文](docs/superpowers/plans/2026-08-16-phase8-alert-channels.md) | [English](docs/superpowers/plans/2026-08-16-phase8-alert-channels.en.md) | [한국어](docs/superpowers/plans/2026-08-16-phase8-alert-channels.ko.md) | [Русский](docs/superpowers/plans/2026-08-16-phase8-alert-channels.ru.md) | [Deutsch](docs/superpowers/plans/2026-08-16-phase8-alert-channels.de.md) | [Français](docs/superpowers/plans/2026-08-16-phase8-alert-channels.fr.md) | [Español](docs/superpowers/plans/2026-08-16-phase8-alert-channels.es.md) | [Português](docs/superpowers/plans/2026-08-16-phase8-alert-channels.pt.md) | [हिन्दी](docs/superpowers/plans/2026-08-16-phase8-alert-channels.hi.md) | [العربية](docs/superpowers/plans/2026-08-16-phase8-alert-channels.ar.md) | [বাংলা](docs/superpowers/plans/2026-08-16-phase8-alert-channels.bn.md) | [Bahasa Indonesia](docs/superpowers/plans/2026-08-16-phase8-alert-channels.id.md) | [日本語](docs/superpowers/plans/2026-08-16-phase8-alert-channels.ja.md)
+
 **Goal:** 补齐 Phase 5 遗留缺口——`NotificationService` 的 email/sms 渠道从 echo 存根升级为真实实现（SMTP 邮件 + 通用 Webhook），并支持渠道配置。web 渠道与 Redis pub/sub 已实现，保持不变。
 
 **来源:** Phase 7 团队审计结论（researcher 规划对照：唯一明确"部分完成"项 = Phase 5 告警多渠道，`ads-alert` 缺 `channel/` 目录）

@@ -1,0 +1,31 @@
+graph TB
+    subgraph Clients["Клиентский слой"]
+        Vue["Vue 3 Admin SPA<br/>TypeScript + Element Plus"]
+        Flutter["Flutter Desktop<br/>Dart 3 + Riverpod"]
+        Harmony["HarmonyOS App<br/>ArkTS + ArkUI"]
+        Browser["Браузер"]
+    end
+    subgraph Gateway["Слой шлюза"]
+        Nginx["Nginx :80<br/>Завершение SSL · Ограничение частоты · Обратный прокси"]
+    end
+    subgraph AppLayer["Слой приложений"]
+        Admin["Admin :8789<br/>webman-admin v2<br/>RBAC · Аудит"]
+        Service["Service :8788<br/>webman v2 API<br/>7 Плагинов · 29 Адаптеров"]
+        ServiceProxy["ServiceProxy<br/>cURL HTTP + JWT"]
+    end
+    subgraph DataLayer["Слой данных"]
+        MySQL[("MySQL 8.0<br/>28 Таблиц · PK Snowflake")]
+        Redis[("Redis 7<br/>Кэш 3 уровней · Очередь")]
+        ES[("Elasticsearch<br/>Полнотекстовый поиск")]
+    end
+    subgraph External["Внешние платформы"]
+        Domestic["16 Отечественных платформ<br/>Juchuan·Baidu·Tencent·Kuaishou"]
+        International["13 Международных платформ<br/>Google·Meta·TikTok"]
+    end
+    Clients --> Nginx
+    Nginx -->|"/"| Admin
+    Nginx -->|"/api/"| Service
+    Admin -->|ServiceProxy| Service
+    Service --> MySQL & Redis & ES
+    Service --> Domestic & International
+    Admin --> MySQL

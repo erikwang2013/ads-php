@@ -1,0 +1,45 @@
+graph TB
+    subgraph Perimeter["外部防御 — Nginx"]
+        SSL["SSL終端"]
+        NginxRL["段階的レート制限 30r/s + burst 20"]
+        ConnLimit["同時接続制限 20"]
+    end
+    subgraph Gate["エントリーガード — Service :8788"]
+        direction TB
+        CORS["CORS<br/>ドメインホワイトリスト"] --> OG["OriginGuard<br/>Origin/Referer検証<br/>危険なメソッドをブロック"]
+        OG --> SH["SecurityHeaders<br/>CSP·HSTS·XFO·XCTO"]
+        SH --> AG["AttackGuard<br/>XSS 11パターン | パストラバーサル 7<br/>ヘッダー注入 | 10MiB制限<br/>Content-Typeホワイトリスト"]
+    end
+    subgraph AuthN["認証"]
+        JWT["JWT Bearer<br/>IP+UAバインド"]
+        BC["bcryptパスワードハッシュ"]
+        CAP["スライダーCAPTCHA<br/>5px許容差·5分有効"]
+        LT["ログインスロットル<br/>5回失敗→15分ロック<br/>Redisカウント"]
+        SL["セッション制限<br/>最大3つのアクティブトークン"]
+        TB["トークンブラックリスト<br/>リフレッシュ後は旧トークン無効"]
+        RP["リプレイ防止<br/>Nonce+Timestamp±5分"]
+    end
+    subgraph Validation["入力検証"]
+        SQL["SQLGuard<br/>UNION/DROP/ALTER/EXEC<br/>INTO OUTFILE検出"]
+        Val["Validation<br/>trim + strip_tags"]
+        CSRF["CSRF Token<br/>Admin側セッション検証"]
+        SSRF["SSRF対策<br/>OAuth redirect_uriホワイトリスト"]
+    end
+    subgraph RateLimit["頻度制御"]
+        RL["スライディングウィンドウ<br/>60回/60秒<br/>Redis実装"]
+    end
+    subgraph Encryption["データ暗号化"]
+        TransEnc["転送暗号化<br/>X-Encrypted AES<br/>EncryptionMiddleware"]
+        StoreEnc["保存暗号化<br/>DBフィールド単位<br/>Encryptable"]
+        LogMask["ログマスキング<br/>password/token<br/>→ ***"]
+    end
+    subgraph Audit["監査トレース"]
+        AuditLog["操作監査<br/>IP·UA·ClientPlatform<br/>操作詳細記録"]
+        Confirm["二重確認<br/>削除/解除/一括<br/>確認語を入力"]
+    end
+    Perimeter --> Gate
+    Gate --> AuthN
+    AuthN --> Validation
+    Validation --> RateLimit
+    RateLimit --> Encryption
+    Encryption --> Audit

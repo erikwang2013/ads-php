@@ -1,0 +1,14 @@
+flowchart TD
+    Start(["HTTP Request → :8788"]) --> CORS["1.CORS → 2.OriginGuard → 3.SecurityHeaders"]
+    CORS --> Attack["4.AttackGuard<br/>XSS 11 Muster · Pfad-Traversal 7 Muster<br/>Header-Injection · Body 10MiB-Limit"]
+    Attack --> Mid["5.ClientPlatform → 6.ReplayGuard<br/>7.Version → 8.RateLimit(60/60s)"]
+    Mid --> LoginT{"9.LoginThrottle<br/>Login?"}
+    LoginT -->|Ja| Throttle["5 Fehlversuche → 15 Min. Sperre"]
+    LoginT -->|Nein| Mid2["10.SessionLimit(max. 3 Tokens)<br/>11.SQLGuard → 12.Validation"]
+    Throttle --> Mid2
+    Mid2 --> Encrypt{"14.Encryption<br/>X-Encrypted?"}
+    Encrypt -->|Ja| AES["AES Ver-/Entschlüsselung"]
+    Encrypt -->|Nein| Auth15["15.AuthMiddleware<br/>JWT · IP/UA-Bindung · Blacklist"]
+    AES --> Auth15
+    Auth15 -->|OK| Ctrl["Controller → JSON Response"]
+    Auth15 -->|Fehler| Err401(["401 Unauthorized"])

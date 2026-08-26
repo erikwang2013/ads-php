@@ -1,0 +1,29 @@
+graph LR
+    subgraph Entry["エントリー"]
+        A1["認証<br/>JWT·bcrypt·CAPTCHA"]
+    end
+    subgraph Core["コア業務"]
+        B1["プラットフォーム管理<br/>29プラットフォーム·OAuth"]
+        B2["アカウント連携<br/>トークン保存"]
+        B3["広告階層<br/>Campaign→AdGroup→Creative"]
+        B4["素材ライブラリ<br/>アップロード·ギャラリー"]
+        B5["ターゲティングテンプレート<br/>オーディエンスJSON"]
+    end
+    subgraph Engine["エンジン層"]
+        C1["データ同期<br/>Cron 6タスク"]
+        C2["レポートエンジン<br/>CSV·Excel·PDF"]
+        C3["アラートエンジン<br/>閾値評価"]
+        C4["入札エンジン<br/>予算調整·開始/停止"]
+        C5["アトリビューションエンジン<br/>5モデル·30日ルックバック"]
+    end
+    subgraph Endpoint["コンシューマー"]
+        D1["Vue Admin<br/>18ページ·ECharts"]
+        D2["Flutter<br/>12ページ·fl_chart"]
+        D3["通知センター<br/>Web·Email·SMS"]
+    end
+    A1 --> B1 --> B2 --> C1
+    C1 --> B3 --> B4
+    B5 --> B3
+    C1 --> C2 & C3 & C4 & C5
+    C2 & C3 & C4 & C5 --> D1 & D2
+    C3 --> D3

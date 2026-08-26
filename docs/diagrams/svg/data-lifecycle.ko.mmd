@@ -1,0 +1,24 @@
+flowchart LR
+    subgraph S1["1. 접근 인증"]
+        A1["OAuth 리다이렉트"] --> A2["콜백 Token 교환"] --> A3["암호화 저장"]
+    end
+    subgraph S2["2. 정기 동기화"]
+        B1["TokenRefresh 55min"] --> B2["DataSync 10분<br/>계획·그룹·소재·리포트 가져오기"]
+        B3["RetrySync 3분<br/>실패 재시도·지수 백오프"] -.-> B2
+    end
+    subgraph S3["3. 저장 및 캐시"]
+        C1[("MySQL 28개 테이블")]
+        C2[("Redis L1/L2/L3")]
+        C3[("ES 검색 인덱스")]
+    end
+    subgraph S4["4. 비즈니스 처리"]
+        D1["리포트 집계·내보내기"]
+        D2["알람 평가 5분"]
+        D3["입찰 평가 10분"]
+        D4["예산 경고 15분<br/>50/80/100% 단계"]
+    end
+    subgraph S5["5. 표시"]
+        E1["대시보드 ECharts"]
+        E2["Flutter fl_chart"]
+    end
+    S1 --> S2 --> S3 --> S4 --> S5

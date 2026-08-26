@@ -1,0 +1,45 @@
+graph TB
+    subgraph Perimeter["Defesa externa — Nginx"]
+        SSL["Terminação SSL"]
+        NginxRL["Limite em níveis 30r/s + burst 20"]
+        ConnLimit["Limite de conexões simultâneas 20"]
+    end
+    subgraph Gate["Guarda de entrada — Service :8788"]
+        direction TB
+        CORS["CORS<br/>Lista branca de domínios"] --> OG["OriginGuard<br/>Validação Origin/Referer<br/>Bloquear métodos perigosos"]
+        OG --> SH["SecurityHeaders<br/>CSP·HSTS·XFO·XCTO"]
+        SH --> AG["AttackGuard<br/>XSS 11 padrões | Path Traversal 7<br/>Injeção Header | Limite 10MiB<br/>Lista branca Content-Type"]
+    end
+    subgraph AuthN["Autenticação"]
+        JWT["JWT Bearer<br/>Vínculo IP+UA"]
+        BC["Hash de senha bcrypt"]
+        CAP["CAPTCHA deslizante<br/>Tolerância 5px·Válido 5min"]
+        LT["Limitação de login<br/>5 falhas → bloqueio 15min<br/>Contador Redis"]
+        SL["Limite de sessão<br/>Máx. 3 Tokens ativos"]
+        TB["Lista negra Token<br/>Tokens antigos revogados após refresh"]
+        RP["Anti-replay<br/>Nonce+Timestamp±5min"]
+    end
+    subgraph Validation["Validação de entradas"]
+        SQL["SQLGuard<br/>UNION/DROP/ALTER/EXEC<br/>Detecção INTO OUTFILE"]
+        Val["Validation<br/>trim + strip_tags"]
+        CSRF["CSRF Token<br/>Validação de sessão no Admin"]
+        SSRF["Proteção SSRF<br/>Lista branca redirect_uri OAuth"]
+    end
+    subgraph RateLimit["Controle de frequência"]
+        RL["Janela deslizante<br/>60/60s<br/>Implementação Redis"]
+    end
+    subgraph Encryption["Criptografia de dados"]
+        TransEnc["Criptografia de transporte<br/>X-Encrypted AES<br/>EncryptionMiddleware"]
+        StoreEnc["Criptografia de armazenamento<br/>Nível de campo DB<br/>Encryptable"]
+        LogMask["Mascaramento de logs<br/>password/token<br/>→ ***"]
+    end
+    subgraph Audit["Trilha de auditoria"]
+        AuditLog["Auditoria de operações<br/>IP·UA·ClientPlatform<br/>Detalhes de ações"]
+        Confirm["Dupla confirmação<br/>Excluir/Desvincular/Em lote<br/>Digitar palavra de confirmação"]
+    end
+    Perimeter --> Gate
+    Gate --> AuthN
+    AuthN --> Validation
+    Validation --> RateLimit
+    RateLimit --> Encryption
+    Encryption --> Audit

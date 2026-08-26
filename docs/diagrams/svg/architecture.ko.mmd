@@ -1,0 +1,31 @@
+graph TB
+    subgraph Clients["클라이언트 계층"]
+        Vue["Vue 3 Admin SPA<br/>TypeScript + Element Plus"]
+        Flutter["Flutter Desktop<br/>Dart 3 + Riverpod"]
+        Harmony["HarmonyOS App<br/>ArkTS + ArkUI"]
+        Browser["브라우저"]
+    end
+    subgraph Gateway["게이트웨이 계층"]
+        Nginx["Nginx :80<br/>SSL 종료 · Rate Limiting · Reverse Proxy"]
+    end
+    subgraph AppLayer["애플리케이션 계층"]
+        Admin["Admin :8789<br/>webman-admin v2<br/>RBAC · Audit"]
+        Service["Service :8788<br/>webman v2 API<br/>7 Plugins · 29 Adapters"]
+        ServiceProxy["ServiceProxy<br/>cURL HTTP + JWT"]
+    end
+    subgraph DataLayer["데이터 계층"]
+        MySQL[("MySQL 8.0<br/>28 Tables · Snowflake PK")]
+        Redis[("Redis 7<br/>3-level Cache · Queue")]
+        ES[("Elasticsearch<br/>Full-text Search")]
+    end
+    subgraph External["외부 플랫폼"]
+        Domestic["국내 16개 플랫폼<br/>Juchuan·Baidu·Tencent·Kuaishou"]
+        International["해외 13개 플랫폼<br/>Google·Meta·TikTok"]
+    end
+    Clients --> Nginx
+    Nginx -->|"/"| Admin
+    Nginx -->|"/api/"| Service
+    Admin -->|ServiceProxy| Service
+    Service --> MySQL & Redis & ES
+    Service --> Domestic & International
+    Admin --> MySQL

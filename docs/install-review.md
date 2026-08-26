@@ -1,5 +1,7 @@
 # Ads-PHP 安全审查与修复报告（第 3 轮）
 
+[中文](docs/install-review.md) | [English](docs/install-review.en.md) | [한국어](docs/install-review.ko.md) | [Русский](docs/install-review.ru.md) | [Deutsch](docs/install-review.de.md) | [Français](docs/install-review.fr.md) | [Español](docs/install-review.es.md) | [Português](docs/install-review.pt.md) | [हिन्दी](docs/install-review.hi.md) | [العربية](docs/install-review.ar.md) | [বাংলা](docs/install-review.bn.md) | [Bahasa Indonesia](docs/install-review.id.md) | [日本語](docs/install-review.ja.md)
+
 **生成时间**: 2026-08-04  
 **审查范围**: 全部安全中间件、认证流程、安装控制器、配置文件  
 **PHP 版本**: 8.3.7 | **框架**: webman v2  

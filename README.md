@@ -1,6 +1,6 @@
 # Ads Platform — 多平台广告管理系统
 
-[English](README.en.md) | 中文
+[中文](README.md) | [English](docs/README.en.md) | [한국어](docs/README.ko.md) | [Русский](docs/README.ru.md) | [Deutsch](docs/README.de.md) | [Français](docs/README.fr.md) | [Español](docs/README.es.md) | [Português](docs/README.pt.md) | [हिन्दी](docs/README.hi.md) | [العربية](docs/README.ar.md) | [বাংলা](docs/README.bn.md) | [Bahasa Indonesia](docs/README.id.md) | [日本語](docs/README.ja.md)
 
 Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
@@ -324,129 +324,8 @@ ads-php/
 
 ## API 端点
 
-> 所有 API 端点均需 Header `X-API-Version: v1`。版本号不出现于 URL 路径。
-
-### 认证 & 基础
-
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| POST | /api/auth/login | 登录获取 JWT Token |
-| GET | /api/auth/me | 当前用户信息 |
-| POST | /api/auth/refresh | 刷新 JWT Token（旧 Token 自动黑名单） |
-| GET | /api/platforms | 29 个适配平台列表（缓存 1h） |
-| GET | /api/platforms/:code/oauth-url | 获取 OAuth 授权 URL |
-| POST | /api/platforms/:code/callback | OAuth 回调处理 |
-| GET | /health | 健康检查（DB + Redis 连通性） |
-| GET | /ping | 轻量探活 |
-| GET | /docs | API 文档（HTML） |
-| GET | /api/captcha/generate | 生成滑块验证码 |
-| POST | /api/captcha/verify | 验证滑块偏移量 |
-
-### 广告计划
-
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| GET | /api/campaigns | 列表（筛选/排序/分页，含今日汇总） |
-| POST | /api/campaigns | 创建广告计划 |
-| GET | /api/campaigns/:id | 详情（含今日指标） |
-| PUT | /api/campaigns/:id | 更新广告计划 |
-| POST | /api/campaigns/:id/toggle | 启停广告计划 |
-| POST | /api/campaigns/batch/toggle | 批量启停 |
-
-### 广告组
-
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| GET | /api/ad-groups | 列表（支持 platform/campaign_id/status 筛选） |
-| POST | /api/ad-groups | 创建广告组（支持定位模板） |
-| GET | /api/ad-groups/:id | 详情（含今日指标） |
-| PUT | /api/ad-groups/:id | 更新广告组 |
-| POST | /api/ad-groups/:id/toggle | 启停广告组 |
-
-### 广告创意
-
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| GET | /api/creatives | 列表（支持 platform/ad_group_id/media_type 筛选） |
-| GET | /api/creatives/:id | 详情（含今日指标） |
-
-### 报表
-
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| GET | /api/reports/summary | 仪表盘汇总（缓存 5 分钟） |
-| GET | /api/reports/custom | 自定义多维度报表 |
-| GET | /api/reports/export | 导出 CSV/Excel |
-| GET | /api/reports/export-dashboard | 导出仪表盘 PDF |
-
-### 账户
-
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| GET | /api/accounts | 已绑定账户列表（缓存 5 分钟） |
-| GET | /api/accounts/:id | 账户详情（缓存 5 分钟） |
-| DELETE | /api/accounts/:id | 解绑账户 |
-| POST | /api/accounts/:id/sync | 手动触发数据同步 |
-
-### 告警
-
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| GET | /api/alerts/rules | 告警规则列表（缓存 2 分钟） |
-| POST | /api/alerts/rules | 创建告警规则 |
-| PUT | /api/alerts/rules/:id | 更新告警规则 |
-| DELETE | /api/alerts/rules/:id | 删除告警规则 |
-| GET | /api/alerts/logs | 告警记录（按状态筛选） |
-| POST | /api/alerts/logs/:id/acknowledge | 确认告警 |
-| GET | /api/alerts/unread-count | 未读告警数量（缓存 30s） |
-
-### 通知
-
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| GET | /api/notifications | 通知列表（支持 type/is_read 筛选） |
-| GET | /api/notifications/unread-count | 未读通知数量 |
-| POST | /api/notifications/:id/read | 标记单条已读 |
-| POST | /api/notifications/read-all | 全部已读 |
-
-### 自动出价
-
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| GET | /api/bid-rules | 规则列表 |
-| POST | /api/bid-rules | 创建出价规则 |
-| PUT | /api/bid-rules/:id | 更新出价规则 |
-| DELETE | /api/bid-rules/:id | 删除出价规则 |
-| GET | /api/bid-rules/logs | 出价调整历史 |
-
-### 定向模板
-
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| GET | /api/targeting-templates | 模板列表（按平台筛选） |
-| GET | /api/targeting-templates/:id | 模板详情 |
-| POST | /api/targeting-templates | 创建定向模板 |
-| PUT | /api/targeting-templates/:id | 更新定向模板 |
-| DELETE | /api/targeting-templates/:id | 删除定向模板 |
-
-### Admin 端点（端口 8789）
-
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| GET | /install | 一键安装向导页面（无需认证） |
-| POST | /api/install/check | 测试数据库连接 |
-| POST | /api/install/run | 执行安装（建库/建表/种子数据/管理员） |
-| GET | /api/install/status | 检查是否已安装 |
-| POST | /api/admin/login | 管理员登录 |
-| GET | /api/admin/me | 当前管理员信息（含角色权限） |
-| GET | /api/admin/users | 用户管理列表 |
-| POST | /api/admin/users | 创建管理员用户 |
-| PUT | /api/admin/users/:id | 更新管理员用户 |
-| DELETE | /api/admin/users/:id | 禁用管理员用户 |
-| GET | /api/admin/audit-logs | 审计日志（按操作人/类型/日期筛选） |
-| GET | /api/admin/roles | 可用角色列表 |
-
----
+> 全部 API 端点定义见 [docs/api.md](docs/api.md)（含请求/响应示例、错误码、限流策略）。
+> hg/apidoc 在线文档: 启动服务后访问 `http://127.0.0.1:8788/apidoc`
 
 ## 数据库
 
@@ -532,6 +411,29 @@ cd apps/flutter && dart analyze   # 零错误
 | 微信 | 支付宝 |
 |:---:|:---:|
 | ![微信](./docs/weixinpay.png "微信") | ![支付宝](./docs/alipay.png "支付宝") |
+
+### 全球转账打赏 (Global Transfer Donation)
+
+**收款人信息 (Beneficiary)**
+
+| 字段 | 值 |
+|------|-----|
+| 收款人姓名 (Name) | WANG KEXUN |
+| 收款账户号码 (Account No.) | 881015918251 |
+
+**收款银行 (Receiving Bank) — ZA Bank**
+
+| 字段 | 值 |
+|------|-----|
+| SWIFT Code | AABLHKHHXXX |
+| 银行名称 (Bank Name) | ZA Bank Limited |
+| 银行编号 (Bank Code) | 387 |
+| 银行地址 (Bank Address) | Core F, Cyberport 3, 100 Cyberport Road, Hong Kong |
+
+> **跨境汇款代理银行（如需，Correspondent Bank）**：此为代理（中转）银行信息，非收款银行信息，请向汇款银行查询是否需要提供。
+>
+> - **港元、人民币及美元**：Citibank N.A. Hong Kong — SWIFT `CITIHKHXXXX` · 银行编号 006 · Hong Kong Branch（分行编号 391）· Citibank Tower, Citibank Plaza, 3 Garden Road, Central, Hong Kong
+> - **其他币种**：THE BANK OF NEW YORK MELLON — SWIFT `IRVTUS3NXXX` · 240 GREENWICH STREET, NEW YORK, United States
 
 ---
 

@@ -1,0 +1,769 @@
+# Dokumentasi Antarmuka API
+
+[中文](docs/api.md) | [English](docs/api.en.md) | [한국어](docs/api.ko.md) | [Русский](docs/api.ru.md) | [Deutsch](docs/api.de.md) | [Français](docs/api.fr.md) | [Español](docs/api.es.md) | [Português](docs/api.pt.md) | [हिन्दी](docs/api.hi.md) | [العربية](docs/api.ar.md) | [বাংলা](docs/api.bn.md) | [Bahasa Indonesia](docs/api.id.md) | [日本語](docs/api.ja.md)
+
+Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+
+> **Dokumentasi online hg/apidoc**: setelah layanan berjalan, akses `http://127.0.0.1:8788/apidoc`（peralihan ganda aplikasi Service + Admin）  
+> File konfigurasi: `service/config/plugin/hg/apidoc/app.php`
+
+---
+
+## Konvensi Umum
+
+### Base URL
+
+```
+http://your-domain.com/api
+```
+
+### Headers Wajib
+
+| Header | Nilai | Keterangan |
+|--------|----|------|
+| `X-API-Version` | `v1` | Nomor versi API（wajib, tidak muncul di path URL） |
+| `X-Client-Platform` | `web` / `ios` / `android` / `macos` / `windows` / `linux` / `harmonyos` | Ujung sumber operasi（wajib） |
+| `Authorization` | `Bearer <token>` | Token autentikasi JWT（wajib kecuali login/daftar platform/health check） |
+
+### Header Anti-Replay (sisi non-browser)
+
+| Header | Keterangan |
+|--------|------|
+| `X-Nonce` | String acak（unik untuk setiap request） |
+| `X-Timestamp` | Timestamp Unix detik（jendela ±5 menit） |
+
+### Headers Opsional
+
+| Header | Keterangan |
+|--------|------|
+| `X-Tenant-Id` | ID tenant（mode multi-tenant） |
+| `X-Encrypted` | `1` = body request perlu didekripsi, body respons perlu dienkripsi |
+| `Accept-Language` | `zh-CN` / `en` |
+
+### Content-Type
+
+| Nilai | Keterangan |
+|----|------|
+| `application/json` | Body request JSON（disarankan） |
+| `application/x-www-form-urlencoded` | Request form |
+| `multipart/form-data` | Unggah file |
+
+### Format Respons
+
+**Sukses**:
+```json
+{
+  "code": 0,
+  "message": "操作成功",
+  "data": { ... }
+}
+```
+
+**Paginasi**:
+```json
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "list": [ ... ],
+    "pagination": {
+      "page": 1,
+      "per_page": 20,
+      "total": 100,
+      "total_pages": 5
+    }
+  }
+}
+```
+
+**Error**:
+```json
+{ "code": 401, "message": "Unauthorized" }
+```
+
+**Health check**:
+```json
+{ "status": "healthy", "timestamp": "2026-05-22T00:00:00+08:00", "checks": { "database": "ok", "redis": "ok" } }
+```
+
+### Kode Status HTTP
+
+| Kode status | Arti |
+|--------|------|
+| 200 | Sukses |
+| 204 | Preflight OPTIONS sukses |
+| 400 | Parameter request salah, versi API tidak didukung |
+| 401 | Belum terautentikasi, Token kedaluwarsa, IP/UA Token tidak cocok |
+| 403 | Akses dilarang（XSS/path traversal/CSRF/SQL injection/Origin tidak cocok） |
+| 404 | Resource tidak ada |
+| 429 | Terlalu banyak request（rate limit/throttle login/batas sesi bersamaan） |
+| 500 | Error server |
+| 503 | Degradasi layanan（DB atau Redis tidak tersedia） |
+
+### Parameter Paginasi
+
+| Parameter | Nilai default | Nilai maksimum | Keterangan |
+|------|--------|--------|------|
+| `page` | 1 | — | Nomor halaman |
+| `per_page` | 20 | 100 | Jumlah per halaman（lebih dari otomatis dipotong） |
+| `sort` | `id` | — | Field pengurutan（harus di dalam whitelist） |
+
+### Strategi Cache
+
+| Endpoint | TTL | Lapisan |
+|------|-----|-----|
+| `/api/platforms` | 1 jam | L1 memori → L2 APCu → L3 Redis |
+| `/api/accounts` + `/api/accounts/:id` | 5 menit | sama seperti di atas |
+| `/api/reports/summary` | 5 menit | sama seperti di atas |
+| `/api/alerts/rules` | 2 menit | sama seperti di atas |
+| `/api/alerts/unread-count` | 30 detik | sama seperti di atas |
+
+---
+
+## Modul 1: Sistem
+
+### GET /health — Health Check
+
+```
+GET /health
+```
+
+**Respons**:
+```json
+{
+  "status": "healthy",
+  "timestamp": "2026-05-22T00:00:00+08:00",
+  "checks": {
+    "database": "ok",
+    "redis": "ok"
+  }
+}
+```
+
+- `status`: `healthy` (200) atau `degraded` (503)
+- Tanpa syarat autentikasi, tidak melalui route versi
+
+---
+
+### GET /ping — Cek Ketersediaan
+
+```
+GET /ping
+```
+
+**Respons**: `{ "pong": true }`
+
+---
+
+### GET /docs — Dokumentasi API
+
+```
+GET /docs
+```
+
+Mengembalikan halaman dokumentasi API dalam format HTML（tanpa autentikasi）。
+
+---
+
+### GET /api/captcha/generate — Generate Kode Verifikasi
+
+Tanpa autentikasi.
+
+**Respons**:
+```json
+{
+  "code": 0,
+  "data": {
+    "captcha_token": "aes-encrypted-token",
+    "background": "base64...",
+    "puzzle": "base64..."
+  }
+}
+```
+
+- Masa berlaku token 5 menit
+- Toleransi offset 5px
+
+---
+
+### POST /api/captcha/verify — Verifikasi Kode Verifikasi
+
+Tanpa autentikasi.
+
+**Request**:
+```json
+{
+  "captcha_token": "...",
+  "captcha_offset": 120
+}
+```
+
+**Respons**: `{ "code": 0, "message": "验证通过" }`
+
+---
+
+## Modul 2: Autentikasi
+
+### POST /api/auth/login — Login
+
+Tanpa autentikasi.
+
+**Request**:
+```json
+{
+  "username": "admin",
+  "password": "your-password",
+  "captcha_token": "...",
+  "captcha_offset": 120,
+  "tenant_id": 1
+}
+```
+
+**Respons**:
+```json
+{
+  "code": 0,
+  "message": "登录成功",
+  "data": {
+    "access_token": "eyJ...",
+    "token_type": "Bearer",
+    "expires_in": 86400,
+    "user": {
+      "id": 1,
+      "username": "admin",
+      "name": "超级管理员",
+      "email": "admin@example.com",
+      "role": "admin"
+    }
+  }
+}
+```
+
+- Masa berlaku Token JWT 24 jam
+- Token menyematkan hash IP + User-Agent
+- 5 kali gagal → kunci Redis 15 menit
+
+---
+
+### GET /api/auth/me — Pengguna Saat Ini
+
+**Header request**: `Authorization: Bearer <token>`
+
+**Respons**:
+```json
+{
+  "code": 0,
+  "data": {
+    "id": 1,
+    "username": "admin",
+    "name": "超级管理员",
+    "email": "admin@example.com",
+    "role": "admin",
+    "tenant_id": 1
+  }
+}
+```
+
+---
+
+### POST /api/auth/refresh — Refresh Token
+
+**Header request**: `Authorization: Bearer <old_token>`
+
+**Respons**:
+```json
+{
+  "code": 0,
+  "message": "Token 已刷新",
+  "data": {
+    "access_token": "eyJ...",
+    "token_type": "Bearer",
+    "expires_in": 86400
+  }
+}
+```
+
+- Token lama otomatis ditambahkan ke blacklist
+- Maksimal 3 Token aktif per pengguna
+
+---
+
+## Modul 3: Platform & Akun
+
+### GET /api/platforms — Daftar Platform
+
+Tanpa autentikasi. Cache 1 jam.
+
+**Respons**:
+```json
+{
+  "code": 0,
+  "data": [
+    { "code": "juliang", "name": "巨量引擎", "flag": "🇨🇳", "capabilities": ["campaign", "report"] },
+    { "code": "meta", "name": "Meta Ads", "flag": "🇺🇸", "capabilities": ["campaign", "report"] }
+  ]
+}
+```
+
+---
+
+### GET /api/platforms/:code/oauth-url — URL Otorisasi OAuth
+
+**Parameter**: `?redirect_uri=https://your-domain.com/callback`
+
+**Respons**: `{ "code": 0, "data": { "auth_url": "https://...", "state": "random-state" } }`
+
+- `redirect_uri` harus lolos validasi whitelist SSRF（variabel lingkungan `OAUTH_ALLOWED_REDIRECTS`）
+
+---
+
+### POST /api/platforms/:code/callback — Callback OAuth
+
+**Request**: `{ "state": "...", "code": "..." }`
+
+**Respons**: `{ "code": 0, "data": { "account_id": "hashids-encoded" } }`
+
+---
+
+### GET /api/accounts — Daftar Akun
+
+Cache 5 menit.
+
+**Parameter**:
+
+| Parameter | Keterangan |
+|------|------|
+| `platform` | Filter kode platform |
+| `page` | Nomor halaman |
+| `per_page` | Jumlah per halaman |
+
+**Respons**: format paginasi, setiap item di list berisi `id`(hashids), `platform`, `account_name`, `status`, `sync_enabled`, `last_sync_at`
+
+---
+
+### GET /api/accounts/:id — Detail Akun
+
+Cache 5 menit.
+
+---
+
+### DELETE /api/accounts/:id — Lepas Ikatan Akun
+
+---
+
+### POST /api/accounts/:id/sync — Sinkronisasi Manual
+
+---
+
+## Modul 4: Kampanye Iklan
+
+### GET /api/campaigns — Daftar Kampanye
+
+**Parameter**:
+
+| Parameter | Keterangan | Nilai opsional |
+|------|------|--------|
+| `platform` | Filter platform | juliang, meta, google... |
+| `status` | Filter status | enabled, paused |
+| `keyword` | Pencarian nama | teks bebas |
+| `sort` | Field pengurutan | id, name, platform, daily_budget, status, created_at |
+| `page` | Nomor halaman | — |
+| `per_page` | Jumlah per halaman | ≤100 |
+
+**Respons**: format paginasi + `summary: { total_cost, total_impressions, total_clicks, avg_ctr, avg_cvr }`
+
+---
+
+### POST /api/campaigns — Buat Kampanye
+
+**Request**:
+```json
+{
+  "platform": "juliang",
+  "platform_account_id": "hashids-encoded-account-id",
+  "name": "测试计划",
+  "daily_budget": 20000
+}
+```
+
+**Respons**: `{ "code": 0, "data": { "id": "hashids-encoded", "platform_campaign_id": "platform-side-id" } }`
+
+- Satuan `daily_budget`: sen（20000 = ¥200.00）
+
+---
+
+### GET /api/campaigns/:id — Detail Kampanye
+
+**Respons**: `{ "code": 0, "data": { "campaign": {...}, "today": { "cost":..., "impressions":... } } }`
+
+---
+
+### PUT /api/campaigns/:id — Perbarui Kampanye
+
+**Request**: `{ "name": "新名称", "daily_budget": 30000 }`
+
+---
+
+### POST /api/campaigns/:id/toggle — Start-Stop Kampanye
+
+**Request**: `{ "enabled": false }`
+
+---
+
+### POST /api/campaigns/batch/toggle — Start-Stop Batch
+
+**Request**: `{ "ids": ["hash1", "hash2", "hash3"], "enabled": false }`
+
+**Respons**: `{ "code": 0, "data": { "success": 3, "failed": 0, "total": 3 } }`
+
+---
+
+## Modul 5: Ad Group
+
+### GET /api/ad-groups — Daftar Ad Group
+
+**Parameter**: `platform`, `campaign_id`, `status`, `sort`(id/name/status/bid_amount), `page`, `per_page`
+
+### POST /api/ad-groups — Buat Ad Group
+
+**Request**:
+```json
+{
+  "campaign_id": 1,
+  "name": "测试广告组",
+  "bid_amount": 100,
+  "bid_type": "cpc",
+  "targeting": { "age": { "min": 18, "max": 45 } },
+  "targeting_template_id": "hashids-encoded-template-id"
+}
+```
+
+- `targeting_template_id`: opsional, memuat targeting JSON dari template penargetan dan menggabungkannya
+
+### GET /api/ad-groups/:id — Detail Ad Group
+
+### PUT /api/ad-groups/:id — Perbarui Ad Group
+
+### POST /api/ad-groups/:id/toggle — Start-Stop Ad Group
+
+---
+
+## Modul 6: Kreatif
+
+### GET /api/creatives — Daftar Kreatif
+
+**Parameter**: `platform`, `ad_group_id`, `campaign_id`, `media_type`(image/video/text), `sort`, `page`, `per_page`
+
+### GET /api/creatives/:id — Detail Kreatif
+
+---
+
+## Modul 7: Laporan
+
+### GET /api/reports/summary — Ringkasan Dasbor
+
+Cache 5 menit.
+
+**Parameter**: `date_start`, `date_end`
+
+**Respons**:
+```json
+{
+  "code": 0,
+  "data": {
+    "overview": { "cost": 123456, "impressions": 10000, ... },
+    "by_platform": [ ... ],
+    "daily": [ ... ]
+  }
+}
+```
+
+---
+
+### GET /api/reports/custom — Laporan Kustom
+
+**Parameter**:
+
+| Parameter | Keterangan |
+|------|------|
+| `dimensions[]` | Dimensi: date, platform, campaign |
+| `metrics[]` | Metrik: cost, impressions, clicks, conversions, ctr, cvr, cpc, cpm, roi |
+| `date_start` | Tanggal mulai |
+| `date_end` | Tanggal akhir |
+| `platform` | Filter platform |
+
+---
+
+### GET /api/reports/export — Ekspor Laporan
+
+**Parameter**: `format=csv`, `date_start`, `date_end`, `metrics[]`
+
+Mengembalikan unduhan file（CSV UTF-8 BOM atau Excel .xls）。
+
+---
+
+### GET /api/reports/export-dashboard — Ekspor Dasbor PDF
+
+---
+
+### GET /api/reports/calendar — Kalender Penayangan
+
+**Parameter**: `date_start`, `date_end`, `platform`
+
+**Respons**: `[{ id, name, platform, status, start_date, end_date, budget }]`
+
+---
+
+### GET /api/reports/budget-alerts — Peringatan Anggaran
+
+**Respons**: `[{ campaign_id, campaign_name, platform, spent, budget, pct, level }]`
+
+- `level`: yellow (≥50%), orange (≥80%), red (≥100%)
+
+---
+
+### GET /api/reports/attribution — Analisis Atribusi
+
+**Parameter**: `model`(first_touch/last_touch/linear/time_decay/position_based), `date_start`, `date_end`
+
+**Respons**:
+```json
+{
+  "code": 0,
+  "data": {
+    "total_conversions": 42,
+    "total_value": 123456.78,
+    "by_campaign": [ { "campaign_id": 1, "credit": 5000.00 } ]
+  }
+}
+```
+
+---
+
+### GET /api/reports/attribution/models — Daftar Model Atribusi
+
+**Respons**: `[{ code: "last_touch", name: "末次触点", description: "..." }]`
+
+Total 5 model.
+
+---
+
+## Modul 8: Peringatan
+
+### GET /api/alerts/rules — Daftar Aturan Peringatan
+
+Cache 2 menit.
+
+**Parameter**: `platform`, `enabled`(0/1), `metric`, `page`, `per_page`
+
+### POST /api/alerts/rules — Buat Aturan Peringatan
+
+**Request**:
+```json
+{
+  "name": "花费超限",
+  "metric": "cost",
+  "condition": "gt",
+  "threshold": 100000,
+  "scope": "tenant",
+  "platform": null,
+  "campaign_id": null,
+  "channels": ["web"]
+}
+```
+
+### PUT /api/alerts/rules/:id — Perbarui Aturan Peringatan
+
+### DELETE /api/alerts/rules/:id — Hapus Aturan Peringatan
+
+### GET /api/alerts/logs — Catatan Peringatan
+
+**Parameter**: `status`, `rule_id`, `metric`, `page`, `per_page`
+
+### POST /api/alerts/logs/:id/acknowledge — Konfirmasi Peringatan
+
+### GET /api/alerts/unread-count — Jumlah Peringatan Belum Dibaca
+
+Cache 30 detik. Frontend polling 30 detik.
+
+---
+
+## Modul 9: Notifikasi
+
+### GET /api/notifications — Daftar Notifikasi
+
+**Parameter**: `type`(alert/system), `is_read`(0/1), `page`, `per_page`
+
+### GET /api/notifications/unread-count — Jumlah Notifikasi Belum Dibaca
+
+### POST /api/notifications/:id/read — Tandai Dibaca
+
+### POST /api/notifications/read-all — Semua Dibaca
+
+---
+
+## Modul 10: Penawaran Otomatis
+
+### GET /api/bid-rules — Daftar Aturan
+
+### POST /api/bid-rules — Buat Aturan
+
+**Request**:
+```json
+{
+  "name": "ROI 达标加预算",
+  "metric": "roi",
+  "condition": "gte",
+  "threshold": 3.0,
+  "action_type": "adjust_budget",
+  "adjust_step": 5000,
+  "budget_min": 0,
+  "budget_max": 100000,
+  "cooldown_minutes": 60
+}
+```
+
+**Keterangan field**:
+
+| Field | Tipe | Keterangan |
+|------|------|------|
+| metric | cost/impressions/clicks/conversions/ctr/cvr/roi | Metrik yang dipantau |
+| condition | gt/gte/lt/lte | Kondisi pemicu |
+| threshold | decimal | Ambang batas |
+| action_type | adjust_budget/toggle_pause/toggle_enable | Tipe aksi |
+| adjust_step | int (sen) | Langkah penyesuaian anggaran（positif=tambah, negatif=kurang） |
+| budget_min | int | Batas bawah anggaran（sen） |
+| budget_max | int | Batas atas anggaran（sen） |
+| cooldown_minutes | int | Waktu cooldown（default 60） |
+
+### PUT /api/bid-rules/:id — Perbarui Aturan
+
+### DELETE /api/bid-rules/:id — Hapus Aturan
+
+### GET /api/bid-rules/logs — Riwayat Penawaran
+
+**Parameter**: `rule_id`, `campaign_id`
+
+---
+
+## Modul 11: Template Penargetan
+
+### GET /api/targeting-templates — Daftar Template
+
+**Parameter**: `platform`
+
+### GET /api/targeting-templates/:id — Detail Template
+
+### POST /api/targeting-templates — Buat Template
+
+**Request**:
+```json
+{
+  "name": "核心受众",
+  "platform": "",
+  "targeting": {
+    "age": { "min": 18, "max": 45 },
+    "gender": "all",
+    "interests": ["sports", "tech"],
+    "devices": { "os": ["android", "ios"] }
+  },
+  "is_shared": 0
+}
+```
+
+### PUT /api/targeting-templates/:id — Perbarui Template
+
+### DELETE /api/targeting-templates/:id — Hapus Template
+
+---
+
+## Modul 12: Pustaka Materi
+
+### GET /api/assets — Daftar Materi
+
+**Parameter**: `type`(image/video), `page`, `per_page`
+
+### POST /api/assets/upload — Unggah Materi
+
+**Request**: `multipart/form-data`, field `file`
+
+- Gambar: maksimal 5 MB (jpeg/png/gif/webp)
+- Video: maksimal 50 MB (mp4)
+
+**Respons**: `{ "code": 0, "data": { "id": "hashids", "url": "/uploads/assets/20260522/abc123.jpg", "type": "image" } }`
+
+### GET /api/assets/:id — Detail Materi
+
+### DELETE /api/assets/:id — Hapus Materi
+
+---
+
+## Endpoint Admin (port 8789)
+
+### POST /api/admin/login — Login Admin
+
+**Request**: `{ "username": "admin", "password": "..." }`
+
+**Respons**: `{ "code": 0, "data": { "access_token": "...", "user": {...}, "csrf_token": "..." } }`
+
+- Token disimpan ke localStorage
+- `csrf_token` perlu dibawa di header `X-CSRF-Token` untuk request POST/PUT/DELETE berikutnya
+
+### GET /api/admin/me — Admin Saat Ini
+
+### POST /api/admin/logout — Keluar
+
+### GET /api/admin/users — Daftar Pengguna
+
+**Parameter**: `keyword`, `role_id`, `page`, `per_page`
+
+`id` dan `role_id` di respons menggunakan encoding hashids.
+
+### POST /api/admin/users — Buat Pengguna
+
+### PUT /api/admin/users/:id — Perbarui Pengguna
+
+### DELETE /api/admin/users/:id — Nonaktifkan Pengguna
+
+### GET /api/admin/users/roles — Daftar Peran
+
+### GET /api/admin/audit-logs — Log Audit
+
+**Parameter**: `user_id`, `action`, `date_from`, `date_to`, `page`, `per_page`
+
+---
+
+## Referensi Kode Error
+
+| code | HTTP | Keterangan |
+|------|------|------|
+| 0 | 200 | Sukses |
+| 1 | 200/400 | Error bisnis umum |
+| 401 | 401 | Belum terautentikasi / Token kedaluwarsa / IP/UA tidak cocok |
+| 403 | 403 | Akses dilarang（intersepsi keamanan） |
+| 404 | 404 | Resource tidak ada |
+| 422 | 422 | Validasi parameter gagal |
+| 429 | 429 | Terlalu banyak request / throttle login / batas bersamaan |
+| 1001 | 200 | Autentikasi gagal（username atau password salah） |
+
+---
+
+## Respons Intersepsi Keamanan
+
+Ketika request diintersepsi middleware keamanan, kembalikan 403:
+
+```json
+{ "code": 403, "message": "Forbidden: XSS pattern detected in: q" }
+{ "code": 403, "message": "Forbidden: Path traversal detected" }
+{ "code": 403, "message": "Forbidden: Header injection detected in: User-Agent" }
+{ "code": 403, "message": "Forbidden: CSRF token mismatch" }
+{ "code": 403, "message": "Forbidden: HTTP method TRACE is not allowed" }
+```
+
+## Respons Rate Limit
+
+```json
+{ "code": 429, "message": "Too many requests. Retry after 15s" }
+```
+
+Header `Retry-After` berisi sisa detik tunggu.
