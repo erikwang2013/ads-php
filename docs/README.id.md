@@ -180,6 +180,7 @@ CORS → SecurityHeaders → AttackGuard → ClientPlatform → Version → Rate
 | Peringatan anggaran | Pelacakan real-time konsumsi anggaran harian, peringatan tiga tahap (50/80/100%) | BudgetAlertService + Cron 15 menit |
 | Kalender penayangan | Grafik Gantt lintas-platform, tampilan bulan/minggu, pewarnaan per platform | CalendarService + Gantt Vue |
 | Atribusi lintas-platform | 5 model atribusi (first/last/linear/time_decay/position_based), retrospektif 30 hari | AttributionEngine + ECharts |
+| Ketahanan panggilan platform | State machine circuit breaker per platform (5 kegagalan → OPEN → probe half-open 30 detik), degradasi fast-fail, audit timeout 29 adaptor | CircuitBreaker + GuardedAdapter |
 
 ---
 
@@ -285,7 +286,7 @@ ads-php/
 │   │   ├── ExceptionHandler.php       # Penanganan exception API
 │   │   └── ApiResponse.php            # Format respons terpadu
 │   ├── config/                        # Konfigurasi global (DB/Redis/Log/Middleware)
-│   ├── tests/                         # Pengujian PHPUnit (244 tests)
+│   ├── tests/                         # Pengujian PHPUnit (265 tests)
 │   │   ├── Unit/                      # Unit test (Middleware, Task)
 │   │   └── Integration/               # Integration test (Auth, Health)
 │   └── start.php                      # Titik masuk layanan
@@ -364,7 +365,7 @@ ads-php/
 
 ```bash
 cd service && ./vendor/bin/phpunit
-# 244 test / 654 assertion
+# 265 test / 717 assertion
 ```
 
 **Cakupan**: Middleware (Version/SQLGuard/SecurityHeaders) · Objek data (CampaignData/FieldMapping/Hashids) · Mesin (ReportBuilder/AdapterRegistry) · Integration test (Auth/Health)

@@ -180,6 +180,7 @@ CORS → SecurityHeaders → AttackGuard → ClientPlatform → Version → Rate
 | Alerta de presupuesto | Seguimiento en tiempo real del consumo del presupuesto diario, alertas en tres niveles (50/80/100%) | BudgetAlertService + Cron cada 15min |
 | Calendario de campañas | Diagrama de Gantt multiplataforma, vistas mensual/semanal, coloreado por plataforma | CalendarService + Gantt Vue |
 | Atribución multiplataforma | Atribución de 5 modelos (first/last/linear/time_decay/position_based), retroceso de 30 días | AttributionEngine + ECharts |
+| Resiliencia de llamadas a plataformas | Máquina de estados de interruptor por plataforma (5 fallos → OPEN → sonda semicerrada 30 s), degradación fast-fail, auditoría de timeout de 29 adaptadores | CircuitBreaker + GuardedAdapter |
 
 ---
 
@@ -285,7 +286,7 @@ ads-php/
 │   │   ├── ExceptionHandler.php       # Manejador de excepciones de API
 │   │   └── ApiResponse.php            # Formato de respuesta unificado
 │   ├── config/                        # Configuración global (DB/Redis/Log/Middleware)
-│   ├── tests/                         # Pruebas PHPUnit (244 tests)
+│   ├── tests/                         # Pruebas PHPUnit (265 tests)
 │   │   ├── Unit/                      # Pruebas unitarias (Middleware, Task)
 │   │   └── Integration/               # Pruebas de integración (Auth, Health)
 │   └── start.php                      # Punto de entrada del servicio
@@ -364,7 +365,7 @@ ads-php/
 
 ```bash
 cd service && ./vendor/bin/phpunit
-# 244 tests / 654 aserciones
+# 265 tests / 717 aserciones
 ```
 
 **Cobertura**: middlewares (Version/SQLGuard/SecurityHeaders) · objetos de datos (CampaignData/FieldMapping/Hashids) · motores (ReportBuilder/AdapterRegistry) · pruebas de integración (Auth/Health)

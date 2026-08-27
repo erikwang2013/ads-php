@@ -180,6 +180,7 @@ CORS → SecurityHeaders → AttackGuard → ClientPlatform → Version → Rate
 | Предупреждение о бюджете | Отслеживание расходования дневного бюджета в реальном времени, трёхуровневые оповещения (50/80/100%) | BudgetAlertService + Cron каждые 15 мин |
 | Календарь кампаний | Кросс-платформенная Gantt-диаграмма, месячный/недельный вид, раскраска по платформам | CalendarService + Vue Gantt |
 | Кросс-платформенная атрибуция | Атрибуция по 5 моделям (first/last/linear/time_decay/position_based), окно 30 дней | AttributionEngine + ECharts |
+| Устойчивость вызовов платформ | Машина состояний circuit breaker для каждой платформы (5 сбоев → OPEN → 30s half-open проба), деградация fast-fail, проверка таймаутов 29 адаптеров | CircuitBreaker + GuardedAdapter |
 
 ---
 
@@ -285,7 +286,7 @@ ads-php/
 │   │   ├── ExceptionHandler.php       # API 异常处理器
 │   │   └── ApiResponse.php            # 统一响应格式
 │   ├── config/                        # 全局配置 (DB/Redis/Log/Middleware)
-│   ├── tests/                         # PHPUnit 测试 (244 tests)
+│   ├── tests/                         # PHPUnit 测试 (265 tests)
 │   │   ├── Unit/                      # 单元测试 (Middleware, Task)
 │   │   └── Integration/               # 集成测试 (Auth, Health)
 │   └── start.php                      # 服务入口
@@ -364,7 +365,7 @@ ads-php/
 
 ```bash
 cd service && ./vendor/bin/phpunit
-# 244 测试 / 654 断言
+# 265 测试 / 717 断言
 ```
 
 **Покрытие**: Middleware (Version/SQLGuard/SecurityHeaders) · Объекты данных (CampaignData/FieldMapping/Hashids) · Движки (ReportBuilder/AdapterRegistry) · Интеграционные тесты (Auth/Health)

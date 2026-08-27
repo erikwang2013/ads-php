@@ -180,6 +180,7 @@ CORS → SecurityHeaders → AttackGuard → ClientPlatform → Version → Rate
 | تنبيه الميزانية | تتبع فوري لاستهلاك الميزانية اليومية، تنبيه ثلاثي المراحل (50/80/100%) | BudgetAlertService + Cron 15د |
 | تقويم النشر | مخطط Gantt عبر المنصات، عرض شهري/أسبوعي، تلوين حسب المنصة | CalendarService + Vue Gantt |
 | الإسناد عبر المنصات | إسناد بـ 5 نماذج (first/last/linear/time_decay/position_based)، رجوع 30 يومًا | AttributionEngine + ECharts |
+| مرونة استدعاء المنصة | آلة حالة قاطع الدائرة لكل منصة (5 إخفاقات → OPEN → اختبار نصف مفتوح 30 ثانية)، تدهور fast-fail، تدقيق مهلة 29 محولًا | CircuitBreaker + GuardedAdapter |
 
 ---
 
@@ -285,7 +286,7 @@ ads-php/
 │   │   ├── ExceptionHandler.php       # API 异常处理器
 │   │   └── ApiResponse.php            # 统一响应格式
 │   ├── config/                        # 全局配置 (DB/Redis/Log/Middleware)
-│   ├── tests/                         # PHPUnit 测试 (244 tests)
+│   ├── tests/                         # PHPUnit 测试 (265 tests)
 │   │   ├── Unit/                      # 单元测试 (Middleware, Task)
 │   │   └── Integration/               # 集成测试 (Auth, Health)
 │   └── start.php                      # 服务入口
@@ -364,7 +365,7 @@ ads-php/
 
 ```bash
 cd service && ./vendor/bin/phpunit
-# 244 测试 / 654 断言
+# 265 测试 / 717 断言
 ```
 
 **نطاق التغطية**: الوسائط الوسطية (Version/SQLGuard/SecurityHeaders) · كائنات البيانات (CampaignData/FieldMapping/Hashids) · المحركات (ReportBuilder/AdapterRegistry) · اختبارات التكامل (Auth/Health)

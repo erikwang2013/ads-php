@@ -180,6 +180,7 @@ CORS → SecurityHeaders → AttackGuard → ClientPlatform → Version → Rate
 | Alerta de orçamento | Rastreamento em tempo real do consumo do orçamento diário, alertas em três níveis (50/80/100%) | BudgetAlertService + Cron de 15min |
 | Calendário de veiculação | Gráfico Gantt entre plataformas, visões mensal/semanal, cores por plataforma | CalendarService + Gantt Vue |
 | Atribuição entre plataformas | Atribuição com 5 modelos (first/last/linear/time_decay/position_based), retrospectiva de 30 dias | AttributionEngine + ECharts |
+| Resiliência de chamadas de plataforma | Máquina de estados de disjuntor por plataforma (5 falhas → OPEN → sonda half-open 30 s), degradação fast-fail, auditoria de timeout de 29 adaptadores | CircuitBreaker + GuardedAdapter |
 
 ---
 
@@ -285,7 +286,7 @@ ads-php/
 │   │   ├── ExceptionHandler.php       # API 异常处理器
 │   │   └── ApiResponse.php            # 统一响应格式
 │   ├── config/                        # 全局配置 (DB/Redis/Log/Middleware)
-│   ├── tests/                         # PHPUnit 测试 (244 tests)
+│   ├── tests/                         # PHPUnit 测试 (265 tests)
 │   │   ├── Unit/                      # 单元测试 (Middleware, Task)
 │   │   └── Integration/               # 集成测试 (Auth, Health)
 │   └── start.php                      # 服务入口
@@ -364,7 +365,7 @@ ads-php/
 
 ```bash
 cd service && ./vendor/bin/phpunit
-# 244 测试 / 654 断言
+# 265 测试 / 717 断言
 ```
 
 **Cobertura**: middlewares (Version/SQLGuard/SecurityHeaders) · objetos de dados (CampaignData/FieldMapping/Hashids) · engines (ReportBuilder/AdapterRegistry) · testes de integração (Auth/Health)

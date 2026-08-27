@@ -180,6 +180,7 @@ CORS → SecurityHeaders → AttackGuard → ClientPlatform → Version → Rate
 | 예산 경보 | 일일 예산 소진 실시간 추적, 3단계 경보 (50/80/100%) | BudgetAlertService + 15min Cron |
 | 집행 캘린더 | 플랫폼 간 Gantt 차트, 월/주 뷰, 플랫폼별 색상 | CalendarService + Vue Gantt |
 | 플랫폼 간 기여도 | 5개 모델 기여도 (first/last/linear/time_decay/position_based), 30일 소급 | AttributionEngine + ECharts |
+| 플래틴 호출 탄력성 | 플래틴별 서킷 브레이커 상태 머신 (5회 실패 → OPEN → 30초 half-open 프로브), 다운그레이드 fast-fail, 29개 어댑터 타임아웃 점검 | CircuitBreaker + GuardedAdapter |
 
 ---
 
@@ -285,7 +286,7 @@ ads-php/
 │   │   ├── ExceptionHandler.php       # API 예외 처리기
 │   │   └── ApiResponse.php            # 통일 응답 형식
 │   ├── config/                        # 전역 설정 (DB/Redis/Log/Middleware)
-│   ├── tests/                         # PHPUnit 테스트 (244 tests)
+│   ├── tests/                         # PHPUnit 테스트 (265 tests)
 │   │   ├── Unit/                      # 단위 테스트 (Middleware, Task)
 │   │   └── Integration/               # 통합 테스트 (Auth, Health)
 │   └── start.php                      # 서비스 진입점
@@ -364,7 +365,7 @@ ads-php/
 
 ```bash
 cd service && ./vendor/bin/phpunit
-# 244 테스트 / 654 어서션
+# 265 테스트 / 717 어서션
 ```
 
 **커버리지 범위**: 미들웨어 (Version/SQLGuard/SecurityHeaders) · 데이터 객체 (CampaignData/FieldMapping/Hashids) · 엔진 (ReportBuilder/AdapterRegistry) · 통합 테스트 (Auth/Health)

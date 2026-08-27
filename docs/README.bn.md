@@ -180,6 +180,7 @@ CORS → SecurityHeaders → AttackGuard → ClientPlatform → Version → Rate
 | বাজেট অ্যালার্ট | দৈনিক বাজেট খরচ রিয়েল-টাইম ট্র্যাকিং, থ্রি-লেভেল অ্যালার্ট (50/80/100%) | BudgetAlertService + 15min Cron |
 | ক্যাম্পেইন ক্যালেন্ডার | ক্রস-প্ল্যাটফর্ম Gantt চার্ট, মাস/সপ্তাহ ভিউ, প্ল্যাটফর্ম অনুযায়ী কালার | CalendarService + Vue Gantt |
 | ক্রস-প্ল্যাটফর্ম অ্যাট্রিবিউশন | 5 মডেল অ্যাট্রিবিউশন (first/last/linear/time_decay/position_based)、30 দিন লুকব্যাক | AttributionEngine + ECharts |
+| প্ল্যাটফর্ম কল রেজিলিয়েন্স | প্ল্যাটফর্ম-ভিত্তিক সার্কিট ব্রেকার স্টেট মশিন (5 ব্যর্থতা → OPEN → 30s হাফ-ওপন প্রোব), ডিগ্রেডেশন fast-fail, 29 অ্যাডাপ্টার টাইমআউট অডিট | CircuitBreaker + GuardedAdapter |
 
 ---
 
@@ -285,7 +286,7 @@ ads-php/
 │   │   ├── ExceptionHandler.php       # API 异常处理器
 │   │   └── ApiResponse.php            # 统一响应格式
 │   ├── config/                        # 全局配置 (DB/Redis/Log/Middleware)
-│   ├── tests/                         # PHPUnit 测试 (244 tests)
+│   ├── tests/                         # PHPUnit 测试 (265 tests)
 │   │   ├── Unit/                      # 单元测试 (Middleware, Task)
 │   │   └── Integration/               # 集成测试 (Auth, Health)
 │   └── start.php                      # 服务入口
@@ -364,7 +365,7 @@ ads-php/
 
 ```bash
 cd service && ./vendor/bin/phpunit
-# 244 测试 / 654 断言
+# 265 测试 / 717 断言
 ```
 
 **কভারেজ রেঞ্জ**: মিডলওয়্যার (Version/SQLGuard/SecurityHeaders) · ডেটা অবজেক্ট (CampaignData/FieldMapping/Hashids) · ইঞ্জিন (ReportBuilder/AdapterRegistry) · ইন্টিগ্রেশন টেস্ট (Auth/Health)

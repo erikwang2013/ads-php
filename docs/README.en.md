@@ -180,6 +180,7 @@ CORS → SecurityHeaders → AttackGuard → ClientPlatform → Version → Rate
 | Budget Alerts | Daily budget real-time tracking, 3-tier alerts (50/80/100%) | BudgetAlertService + 15min Cron |
 | Campaign Calendar | Cross-platform Gantt chart, month/week views, color-coded | CalendarService + Vue Gantt |
 | Cross-Platform Attribution | 5 attribution models (first/last/linear/time_decay/position_based), 30-day lookback | AttributionEngine + ECharts |
+| Platform Call Resilience | Per-platform circuit breaker state machine (5 failures → OPEN → 30s half-open probe), degradation fast-fail, 29 adapter timeout audit | CircuitBreaker + GuardedAdapter |
 
 ---
 
@@ -285,7 +286,7 @@ ads-php/
 │   │   ├── ExceptionHandler.php       # API exception handler
 │   │   └── ApiResponse.php            # Unified response format
 │   ├── config/                        # Global config (DB/Redis/Log/Middleware)
-│   ├── tests/                         # PHPUnit tests (244 tests)
+│   ├── tests/                         # PHPUnit tests (265 tests)
 │   │   ├── Unit/                      # Unit tests (Middleware, Task)
 │   │   └── Integration/               # Integration tests (Auth, Health)
 │   └── start.php                      # Service entry point
@@ -364,7 +365,7 @@ ads-php/
 
 ```bash
 cd service && ./vendor/bin/phpunit
-# 244 tests / 654 assertions
+# 265 tests / 717 assertions
 ```
 
 **Coverage**: Middleware (Version/SQLGuard/SecurityHeaders) · Data objects (CampaignData/FieldMapping/Hashids) · Engines (ReportBuilder/AdapterRegistry) · Integration (Auth/Health)

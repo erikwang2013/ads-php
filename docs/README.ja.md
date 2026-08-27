@@ -180,6 +180,7 @@ CORS → SecurityHeaders → AttackGuard → ClientPlatform → Version → Rate
 | 予算警告 | 日予算消費のリアルタイム追跡、3 段階アラート (50/80/100%) | BudgetAlertService + 15min Cron |
 | 配信カレンダー | クロスプラットフォーム Gantt 図、月/週ビュー、プラットフォーム別配色 | CalendarService + Vue Gantt |
 | クロスプラットフォームアトリビューション | 5 モデルアトリビューション (first/last/linear/time_decay/position_based)、30 日遡及 | AttributionEngine + ECharts |
+| プラットフォーム呼び出しの弾力性 | プラットフォーム別サーキットブレーカー状態機械 (5 回失敗 → OPEN → 30 秒ハーフオープン探知)、降格 fast-fail、29 アダプターのタイムアウト監査 | CircuitBreaker + GuardedAdapter |
 
 ---
 
@@ -285,7 +286,7 @@ ads-php/
 │   │   ├── ExceptionHandler.php       # API 例外ハンドラー
 │   │   └── ApiResponse.php            # 統一レスポンス形式
 │   ├── config/                        # グローバル設定 (DB/Redis/Log/Middleware)
-│   ├── tests/                         # PHPUnit テスト (244 tests)
+│   ├── tests/                         # PHPUnit テスト (265 tests)
 │   │   ├── Unit/                      # ユニットテスト (Middleware, Task)
 │   │   └── Integration/               # 統合テスト (Auth, Health)
 │   └── start.php                      # サービスエントリ
@@ -364,7 +365,7 @@ ads-php/
 
 ```bash
 cd service && ./vendor/bin/phpunit
-# 244 テスト / 654 アサーション
+# 265 テスト / 717 アサーション
 ```
 
 **カバー範囲**: ミドルウェア (Version/SQLGuard/SecurityHeaders) · データオブジェクト (CampaignData/FieldMapping/Hashids) · エンジン (ReportBuilder/AdapterRegistry) · 統合テスト (Auth/Health)
