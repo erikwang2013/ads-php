@@ -59,7 +59,7 @@ async function getAuthUrl() {
 function reset() { step.value = 0; selectedPlatform.value = '' }
 
 onMounted(async () => {
-  platforms.value = await platformApi.list()
+  platforms.value = (await platformApi.list()).list ?? []
   const code = route.query.code as string
   const state = route.query.state as string
   if (code && state) {

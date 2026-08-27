@@ -10,68 +10,42 @@
  */
 namespace erik\support;
 
-use Erikwang2013\PosterPhp\Poster;
+use Erikwang2013\Poster\Captcha\CaptchaManager;
+use Erikwang2013\Poster\Drivers\DriverFactory;
+use Erikwang2013\Poster\Storage\StorageFactory;
 
 class CaptchaService
 {
-    protected Poster $poster;
+    protected CaptchaManager $manager;
 
     public function __construct()
     {
-        $this->poster = new Poster();
+        // 固定 GD 驱动：imagick 自动探测在该环境下 clone() 未初始化资源会崩
+        $this->manager = new CaptchaManager(DriverFactory::create('gd'), StorageFactory::create());
     }
 
     /**
-     * 生成验证码 — 返回背景图、拼图块、以及加密 token
+     * 生成验证码 — 返回背景图、拼图块、以及 token（答案存于服务端存储）
      */
     public function generate(): array
     {
-        $captcha = $this->poster->generate([
-            'width'    => 300,
-            'height'   => 150,
-            'accuracy' => 5,  // 容差（像素）
-        ]);
+        $captcha = $this->manager->create('slider')->generate();
 
-        // token 包含正确答案，服务端加密存储，防止前端篡改
-        $payload = [
-            'x'      => $captcha['x'],
-            'y'      => $captcha['y'],
-            'expire' => time() + 300,  // 5 分钟有效
-        ];
-        $token = $this->encode($payload);
+        // 包 output() 返回 'data:image/png;base64,...'，前端自行拼前缀，这里剥离为纯 base64
+        $stripPrefix = fn(string $uri): string => substr($uri, strpos($uri, ',') + 1);
 
         return [
-            'bg_image' => $captcha['bg'],      // 背景图 base64
-            'pz_image' => $captcha['puzzle'],  // 拼图块 base64
-            'token'    => $token,              // 加密 token
+            'bg_image' => $stripPrefix($captcha['image']),            // 背景图 base64
+            'pz_image' => $stripPrefix($captcha['extra']['puzzle']),  // 拼图块 base64
+            'token'    => $captcha['key'],                            // 校验 key
         ];
     }
 
     /**
-     * 验证滑块偏移量
+     * 验证滑块偏移量（容差取包配置 captcha.tolerance.slider，默认 4px）
      */
     public function verify(string $token, int $offsetX): bool
     {
-        $payload = $this->decode($token);
-        if (!$payload || $payload['expire'] < time()) {
-            return false;
-        }
-        return abs($offsetX - $payload['x']) <= 5; // 5px 容差
-    }
-
-    protected function encode(array $data): string
-    {
-        $json = json_encode($data);
-        $key  = env('APP_ENCRYPTION_KEY', 'poster-key');
-        $iv   = substr(md5($key), 0, 16);
-        return base64_encode(openssl_encrypt($json, 'AES-128-CBC', $key, 0, $iv));
-    }
-
-    protected function decode(string $token): ?array
-    {
-        $key = env('APP_ENCRYPTION_KEY', 'poster-key');
-        $iv  = substr(md5($key), 0, 16);
-        $json = openssl_decrypt(base64_decode($token), 'AES-128-CBC', $key, 0, $iv);
-        return $json ? json_decode($json, true) : null;
+        return $this->manager->verify($token, ['type' => 'slider', 'data' => $offsetX]);
     }
 }

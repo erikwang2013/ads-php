@@ -33,6 +33,7 @@ skills-lock.json
 node_modules/
 /admin/public/web/node_modules/
 /admin/public/web/dist/
+*.tsbuildinfo
 /apps/flutter/build/
 
 

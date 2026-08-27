@@ -285,9 +285,9 @@ ads-php/
 │   │   ├── ExceptionHandler.php       # API 异常处理器
 │   │   └── ApiResponse.php            # 统一响应格式
 │   ├── config/                        # 全局配置 (DB/Redis/Log/Middleware)
-│   ├── tests/                         # PHPUnit 测试 (35 tests)
-│   │   ├── Unit/                      # 单元测试 (Middleware, Task)
-│   │   └── Integration/               # 集成测试 (Auth, Health)
+│   ├── tests/                         # PHPUnit 测试 (244 tests)
+│   │   ├── Unit/                      # 单元测试 (Middleware, Task, Engines)
+│   │   └── Integration/               # 集成测试 (Auth, Health, API)
 │   └── start.php                      # 服务入口
 ├── admin/                             # 独立管理后台 (webman-admin v2 :8789)
 │   ├── public/web/src/
@@ -364,10 +364,12 @@ ads-php/
 
 ```bash
 cd service && ./vendor/bin/phpunit
-# 35 测试 / 70 断言
+# 244 测试 / 654 断言
 ```
 
-**覆盖范围**: 中间件 (Version/SQLGuard/SecurityHeaders) · 数据对象 (CampaignData/FieldMapping/Hashids) · 引擎 (ReportBuilder/AdapterRegistry) · 集成测试 (Auth/Health)
+**覆盖范围**: 14 个中间件 · 7 插件业务层 (账户/告警/平台/报表/任务/租户) · 引擎 (Bid/Alert/Attribution/Report) · API 集成测试 (66 路由) · UI E2E (18 页面)
+
+**测试报告**: 详见 [docs/test-reports/README.md](docs/test-reports/README.md)（PHP 单元 / API 自动化 / UI E2E / Go N/A / Rust N/A + Bug 汇总）
 
 ```bash
 # TypeScript 检查

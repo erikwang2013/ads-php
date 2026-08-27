@@ -285,7 +285,7 @@ ads-php/
 │   │   ├── ExceptionHandler.php       # Penanganan exception API
 │   │   └── ApiResponse.php            # Format respons terpadu
 │   ├── config/                        # Konfigurasi global (DB/Redis/Log/Middleware)
-│   ├── tests/                         # Pengujian PHPUnit (35 tests)
+│   ├── tests/                         # Pengujian PHPUnit (244 tests)
 │   │   ├── Unit/                      # Unit test (Middleware, Task)
 │   │   └── Integration/               # Integration test (Auth, Health)
 │   └── start.php                      # Titik masuk layanan
@@ -364,7 +364,7 @@ ads-php/
 
 ```bash
 cd service && ./vendor/bin/phpunit
-# 35 test / 70 assertion
+# 244 test / 654 assertion
 ```
 
 **Cakupan**: Middleware (Version/SQLGuard/SecurityHeaders) · Objek data (CampaignData/FieldMapping/Hashids) · Mesin (ReportBuilder/AdapterRegistry) · Integration test (Auth/Health)

@@ -285,7 +285,7 @@ ads-php/
 │   │   ├── ExceptionHandler.php       # API 例外ハンドラー
 │   │   └── ApiResponse.php            # 統一レスポンス形式
 │   ├── config/                        # グローバル設定 (DB/Redis/Log/Middleware)
-│   ├── tests/                         # PHPUnit テスト (35 tests)
+│   ├── tests/                         # PHPUnit テスト (244 tests)
 │   │   ├── Unit/                      # ユニットテスト (Middleware, Task)
 │   │   └── Integration/               # 統合テスト (Auth, Health)
 │   └── start.php                      # サービスエントリ
@@ -364,7 +364,7 @@ ads-php/
 
 ```bash
 cd service && ./vendor/bin/phpunit
-# 35 テスト / 70 アサーション
+# 244 テスト / 654 アサーション
 ```
 
 **カバー範囲**: ミドルウェア (Version/SQLGuard/SecurityHeaders) · データオブジェクト (CampaignData/FieldMapping/Hashids) · エンジン (ReportBuilder/AdapterRegistry) · 統合テスト (Auth/Health)

@@ -12,11 +12,12 @@ class ValidationMiddleware implements MiddlewareInterface
 {
     public function process(Request $request, callable $handler): Response
     {
-        $inputs = $request->all();
-        $sanitized = $this->sanitize($inputs);
-        // Set sanitized inputs back
-        foreach ($sanitized as $key => $value) {
-            $request->set($key, $value);
+        // 按来源写回：webman Request 无 set()，提供 setGet()/setPost()
+        foreach ($this->sanitize($request->get()) as $key => $value) {
+            $request->setGet($key, $value);
+        }
+        foreach ($this->sanitize($request->post()) as $key => $value) {
+            $request->setPost($key, $value);
         }
         return $handler($request);
     }

@@ -56,7 +56,9 @@ class AssetController
         $mediaType = $isVideo ? 'video' : 'image';
         $url = '/uploads/assets/' . $filename;
 
-        $id = DB::table('erik_assets')->insertGetId([
+        $id = \plugin\ads_platform\model\Campaign::snowflakeId();
+        DB::table('erik_assets')->insert([
+            'id'           => $id,
             'tenant_id'    => $request->tenantId ?? 1,
             'type'         => $mediaType,
             'filename'     => $file->getUploadName(),

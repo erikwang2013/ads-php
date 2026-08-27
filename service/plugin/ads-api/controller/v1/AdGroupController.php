@@ -111,7 +111,9 @@ class AdGroupController
                 $request->post()
             );
 
-            $id = DB::table('erik_ad_groups')->insertGetId([
+            $id = \plugin\ads_platform\model\Campaign::snowflakeId();
+            DB::table('erik_ad_groups')->insert([
+                'id'                  => $id,
                 'campaign_id'         => $campaignId,
                 'platform_adgroup_id' => $platformAdGroupId,
                 'name'                => $request->post('name', ''),

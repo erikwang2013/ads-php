@@ -285,7 +285,7 @@ ads-php/
 │   │   ├── ExceptionHandler.php       # API 예외 처리기
 │   │   └── ApiResponse.php            # 통일 응답 형식
 │   ├── config/                        # 전역 설정 (DB/Redis/Log/Middleware)
-│   ├── tests/                         # PHPUnit 테스트 (35 tests)
+│   ├── tests/                         # PHPUnit 테스트 (244 tests)
 │   │   ├── Unit/                      # 단위 테스트 (Middleware, Task)
 │   │   └── Integration/               # 통합 테스트 (Auth, Health)
 │   └── start.php                      # 서비스 진입점
@@ -364,7 +364,7 @@ ads-php/
 
 ```bash
 cd service && ./vendor/bin/phpunit
-# 35 테스트 / 70 어서션
+# 244 테스트 / 654 어서션
 ```
 
 **커버리지 범위**: 미들웨어 (Version/SQLGuard/SecurityHeaders) · 데이터 객체 (CampaignData/FieldMapping/Hashids) · 엔진 (ReportBuilder/AdapterRegistry) · 통합 테스트 (Auth/Health)

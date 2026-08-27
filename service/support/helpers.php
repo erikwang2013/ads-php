@@ -47,3 +47,21 @@ if (!function_exists('now')) {
         return \Carbon\Carbon::now();
     }
 }
+
+if (!function_exists('snowflake_id')) {
+    /**
+     * 生成 snowflake BIGINT 主键。
+     * 被 plugin/ads-report/service/AttributionEngine.php 与
+     * plugin/ads-task/task/BudgetCheckTask.php 调用但从未定义，
+     * 相关写入路径（归因计算/预算检查）会抛 "Call to undefined function"。
+     * 与 SnowflakeTrait 使用同一生成器。
+     */
+    function snowflake_id(): int
+    {
+        static $generator = null;
+        if ($generator === null) {
+            $generator = new \Erikwang2013\Snowflake\Snowflake();
+        }
+        return $generator->id();
+    }
+}

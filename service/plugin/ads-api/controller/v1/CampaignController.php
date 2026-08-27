@@ -86,7 +86,9 @@ class CampaignController
                 $data
             );
 
-            $id = DB::table('erik_campaigns')->insertGetId([
+            $id = \plugin\ads_platform\model\Campaign::snowflakeId();
+            DB::table('erik_campaigns')->insert([
+                'id'                   => $id,
                 'tenant_id'            => $request->tenantId ?? 1,
                 'platform_account_id'  => $accountId,
                 'platform'             => $platform,

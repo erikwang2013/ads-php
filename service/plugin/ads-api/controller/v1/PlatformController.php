@@ -13,6 +13,7 @@ use app\support\ApiResponse;
 use Webman\Http\Response;
 use erik\support\CacheService;
 use Erikwang2013\Season\SeasonService;
+use Throwable;
 
 class PlatformController
 {

@@ -43,60 +43,85 @@ const MOCKS = [
   ['POST', '/auth/login', ok({ access_token: 'mock-token', csrf_token: 'mock-csrf', user: USER })],
   ['GET', '/auth/me', ok(USER)],
   ['GET', '/captcha/generate', ok({ token: 'mock-captcha', expires_in: 300 })],
-  ['GET', '/reports/summary', ok({ impressions: 123456, clicks: 9876, cost: 5432.1, conversions: 321, ctr: 8.0, cpc: 0.55, conversion_rate: 3.25, spend_today: 888.8, revenue: 12345.6, roi: 2.27, trend: [{ date: '08-25', cost: 100 }, { date: '08-26', cost: 200 }], kpi: { impressions: { today: 123456, yesterday: 110000, growth: 12.2 }, clicks: { today: 9876, yesterday: 9000, growth: 9.7 }, cost: { today: 5432.1, yesterday: 5000, growth: 8.6 }, conversions: { today: 321, yesterday: 300, growth: 7.0 } } })],
-  ['GET', '/accounts', ok({ list: [{ id: 1, name: '测试账户A', platform: 'douyin', status: 1, balance: 100.5, daily_budget: 50, created_at: '2026-08-01 10:00:00' }], total: 1 })],
-  ['GET', '/campaigns', ok({ list: [{ id: 1, name: '测试计划A', account_id: 1, status: 1, budget: 100, cost: 50, created_at: '2026-08-01 10:00:00' }], total: 1 })],
-  ['GET', '/ad-groups', ok({ list: [{ id: 1, name: '测试广告组A', campaign_id: 1, status: 1, created_at: '2026-08-01 10:00:00' }], total: 1 })],
-  ['GET', '/creatives', ok({ list: [{ id: 1, name: '测试创意A', type: 'image', status: 1, created_at: '2026-08-01 10:00:00' }], total: 1 })],
-  ['GET', '/alerts/rules', ok({ list: [{ id: 1, name: '预算超限告警', metric: 'cost', threshold: 1000, channel: 'email', enabled: true }], total: 1 })],
-  ['GET', '/alerts/logs', ok({ list: [{ id: 1, rule_name: '预算超限告警', level: 'warning', message: '今日花费已超预算 80%', created_at: '2026-08-27 09:00:00' }], total: 1 })],
+  ['POST', '/captcha/verify', ok({ valid: true })],
+  ['GET', '/reports/summary', ok({ impressions: 123456, clicks: 9876, cost: 5432.1, conversions: 321, ctr: 8.0, cpc: 0.55, conversion_rate: 3.25, spend_today: 888.8, revenue: 12345.6, roi: 2.27, overview: { total_cost: 543210, total_impressions: 123456, total_clicks: 9876, total_conversions: 321, avg_ctr: 8.0, avg_cvr: 3.25, avg_cpc: 55, avg_cpa: 1692 }, by_platform: [{ platform: 'douyin', cost: 260000, impressions: 60000, clicks: 5000, conversions: 150 }, { platform: 'xhs', cost: 80000, impressions: 20000, clicks: 1500, conversions: 40 }], daily: [{ date: '2026-08-25', platform: 'douyin', impressions: 60000, clicks: 5000, cost: 2600, conversions: 150 }, { date: '2026-08-26', platform: 'douyin', impressions: 63456, clicks: 4876, cost: 2832.1, conversions: 171 }, { date: '2026-08-26', platform: 'xhs', impressions: 20000, clicks: 1500, cost: 800, conversions: 40 }], trend: [{ date: '08-25', cost: 100 }, { date: '08-26', cost: 200 }], kpi: { impressions: { today: 123456, yesterday: 110000, growth: 12.2 }, clicks: { today: 9876, yesterday: 9000, growth: 9.7 }, cost: { today: 5432.1, yesterday: 5000, growth: 8.6 }, conversions: { today: 321, yesterday: 300, growth: 7.0 } } })],
+  ['GET', '/accounts', ok({ list: [{ id: 1, name: '测试账户A', platform: 'douyin', status: 1, balance: 100.5, daily_budget: 50, created_at: '2026-08-01 10:00:00' }], total: 1, pagination: { total: 1, page: 1, per_page: 20 } })],
+  ['GET', '/campaigns', ok({ list: [{ id: 1, name: '测试计划A', account_id: 1, status: 1, budget: 100, cost: 50, created_at: '2026-08-01 10:00:00' }], total: 1, pagination: { total: 1, page: 1, per_page: 20 } })],
+  ['GET', '/ad-groups', ok({ list: [{ id: 1, name: '测试广告组A', campaign_id: 1, status: 1, created_at: '2026-08-01 10:00:00' }], total: 1, pagination: { total: 1, page: 1, per_page: 20 } })],
+  ['GET', '/creatives', ok({ list: [{ id: 1, name: '测试创意A', type: 'image', status: 1, created_at: '2026-08-01 10:00:00' }], total: 1, pagination: { total: 1, page: 1, per_page: 20 } })],
+  ['GET', '/alerts/rules', ok({ list: [{ id: 1, name: '预算超限告警', metric: 'cost', threshold: 1000, channel: 'email', enabled: true }], total: 1, pagination: { total: 1, page: 1, per_page: 20 } })],
+  ['GET', '/alerts/logs', ok({ list: [{ id: 1, rule_name: '预算超限告警', level: 'warning', message: '今日花费已超预算 80%', created_at: '2026-08-27 09:00:00' }], total: 1, pagination: { total: 1, page: 1, per_page: 20 } })],
   ['GET', '/alerts/unread-count', ok({ count: 2 })],
-  ['GET', '/notifications', ok({ list: [{ id: 1, title: '测试通知', content: '这是一条测试通知', read: false, created_at: '2026-08-27 08:00:00' }], total: 1 })],
+  ['GET', '/notifications', ok({ list: [{ id: 1, title: '测试通知', content: '这是一条测试通知', read: false, created_at: '2026-08-27 08:00:00' }], total: 1, pagination: { total: 1, page: 1, per_page: 20 } })],
   ['GET', '/notifications/unread-count', ok({ count: 1 })],
   ['GET', '/sync/status', ok({ last_sync_at: '2026-08-27 09:30:00', running: false, items: [{ name: 'accounts', status: 'ok' }] })],
   ['GET', '/sync/errors', ok({ list: [], total: 0 })],
-  ['GET', '/admin/users', ok({ list: [{ id: 1, username: 'admin', name: '管理员', role: 'admin', status: 1 }], total: 1 })],
+  ['GET', '/admin/users', ok({ list: [{ id: 1, username: 'admin', name: '管理员', role: 'admin', status: 1 }], total: 1, pagination: { total: 1, page: 1, per_page: 20 } })],
   ['GET', '/admin/users/roles', ok(['admin', 'operator', 'viewer'])],
-  ['GET', '/admin/audit-logs', ok({ list: [{ id: 1, user: 'admin', action: 'login', target: '系统', created_at: '2026-08-27 09:00:00' }], total: 1 })],
-  ['GET', '/platforms', ok({ list: [{ id: 1, name: '抖音', platform: 'douyin', connected: true }], total: 1 })],
+  ['GET', '/admin/audit-logs', ok({ list: [{ id: 1, user: 'admin', action: 'login', target: '系统', created_at: '2026-08-27 09:00:00' }], total: 1, pagination: { total: 1, page: 1, per_page: 20 } })],
+  ['GET', '/platforms', ok({ list: [{ id: 1, code: 'douyin', name: '抖音', platform: 'douyin', connected: true, capabilities: ['账号管理', '报表数据'] }, { id: 2, code: 'xhs', name: '小红书', platform: 'xhs', connected: false, capabilities: ['内容种草'] }], total: 2, pagination: { total: 2, page: 1, per_page: 20 } })],
   ['GET', '/tenant/quota', ok({ tenant: 'default', used: 300, quota: 1000 })],
   ['GET', '/reports/export', ok({ list: [], total: 0 })],
   ['GET', '/reports/calendar', ok([])],
-  ['GET', '/reports/attribution', ok({ list: [], total: 0 })],
+  ['GET', '/reports/attribution', ok({ total_conversions: 5, total_value: 12500, by_campaign: [{ campaign_id: 1, credit: 3000 }, { campaign_id: 2, credit: 2000 }] })],
   ['GET', '/reports/attribution/models', ok([])],
-  ['GET', '/assets', ok({ list: [], total: 0 })],
+  ['GET', '/assets', ok({ list: [{ id: 1, name: '素材1', type: 'image', status: 1, created_at: '2026-08-01 10:00:00' }], total: 1, pagination: { total: 1, page: 1, per_page: 20 } })],
   ['GET', '/bid-rules', ok({ list: [], total: 0 })],
   ['GET', '/health', ok({ status: 'ok' })],
 ]
 const mockHandler = route => {
   const req = route.request()
   const url = new URL(req.url())
-  const m = MOCKS.find(([method, p]) => req.method() === method && url.pathname === p)
+  const m = MOCKS.find(([method, p]) => req.method() === method && url.pathname.replace(/^\/api/, '') === p)
   const body = m ? m[2] : ok([]) // 未枚举的 /api/* 一律回空列表
   return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(body) })
 }
 
 // ---------- 页面清单（与 src/router/index.ts 对应） ----------
+// [key, route, title, 首屏核心元素]
 const PAGES = [
-  ['login', '/login', '登录页'],
-  ['dashboard', '/dashboard', '仪表盘'],
-  ['accounts', '/accounts', '账户管理'],
-  ['accounts_bind', '/accounts/bind', '绑定账户'],
-  ['campaigns', '/campaigns', '广告计划'],
-  ['adgroups', '/adgroups', '广告组'],
-  ['creatives', '/creatives', '广告创意'],
-  ['alerts', '/alerts', '告警规则'],
-  ['alerts_logs', '/alerts/logs', '告警记录'],
-  ['reports_export', '/reports/export', '报表导出'],
-  ['reports_calendar', '/reports/calendar', '投放日历'],
-  ['reports_attribution', '/reports/attribution', '归因分析'],
-  ['reports_view', '/reports/view', '报表分析'],
-  ['assets', '/assets', '素材库'],
-  ['notifications', '/notifications', '通知中心'],
-  ['sync', '/sync', '同步状态'],
-  ['system_users', '/system/users', '用户管理'],
-  ['system_audit', '/system/audit', '审计日志'],
+  ['login', '/login', '登录页', ''],
+  ['dashboard', '/dashboard', '仪表盘', 'canvas'],
+  ['accounts', '/accounts', '账户管理', '.el-table'],
+  ['accounts_bind', '/accounts/bind', '绑定账户', 'button'],
+  ['campaigns', '/campaigns', '广告计划', '.el-table'],
+  ['adgroups', '/adgroups', '广告组', '.el-table'],
+  ['creatives', '/creatives', '广告创意', '.el-table'],
+  ['alerts', '/alerts', '告警规则', '.el-table'],
+  ['alerts_logs', '/alerts/logs', '告警记录', '.el-table'],
+  ['reports_export', '/reports/export', '报表导出', '.el-button--primary'],
+  ['reports_calendar', '/reports/calendar', '投放日历', '.el-select'],
+  ['reports_attribution', '/reports/attribution', '归因分析', '.el-table'],
+  ['reports_view', '/reports/view', '报表分析', 'canvas'],
+  ['assets', '/assets', '素材库', '.el-table'],
+  ['notifications', '/notifications', '通知中心', '.el-table'],
+  ['sync', '/sync', '同步状态', '.el-table'],
+  ['system_users', '/system/users', '用户管理', '.el-table'],
+  ['system_audit', '/system/audit', '审计日志', '.el-table'],
 ]
+
+// ---------- 页面交互断言（关键页） ----------
+// 返回追加到 note 的说明；抛错即失败
+async function interact(page, key) {
+  if (key === 'dashboard') {
+    // 侧边栏导航切换: 广告管理 → 广告计划 → 仪表盘
+    await page.click('text=广告管理', { timeout: 8000 })
+    await page.click('.el-menu-item:has-text("广告计划")', { timeout: 5000 })
+    await page.waitForURL('**/campaigns', { timeout: 8000 })
+    await page.click('.el-menu-item:has-text("仪表盘")')
+    await page.waitForURL('**/dashboard', { timeout: 8000 })
+    // 退出登录 → 回登录页
+    await page.click('button:has-text("退出")')
+    await page.waitForURL('**/login', { timeout: 8000 })
+    return '侧边栏导航切换+退出登录 OK'
+  }
+  if (key === 'reports_export') {
+    await page.click('.el-button--primary', { timeout: 8000 })
+    await page.waitForTimeout(800)
+    return '点击导出 OK'
+  }
+  return ''
+}
 
 await mkdir(SHOTS, { recursive: true })
 const browser = await chromium.launch({ channel: 'chrome', headless: true })
@@ -115,11 +140,25 @@ try {
   await loginPage.goto('/login', { waitUntil: 'networkidle', timeout: 20000 })
   await loginPage.waitForSelector('button:has-text("登 录")', { timeout: 10000 })
   await loginPage.screenshot({ path: `${SHOTS}/login.png`, fullPage: true })
-  loginOk = true
-  // 登录流程 → 应跳转仪表盘
+  // 表单校验: 清空用户名 → 点登录 → 出现校验错误
+  const userInput = loginPage.locator('input[placeholder="用户名"]')
+  await userInput.fill('')
   await loginPage.click('button:has-text("登 录")')
+  await loginPage.waitForSelector('text=请输入用户名', { timeout: 5000 })
+  await userInput.fill('admin')
+  // 滑块验证码完整流程
+  await loginPage.click('button:has-text("登 录")')
+  const btn = loginPage.locator('.slider-btn')
+  await btn.waitFor({ state: 'visible', timeout: 5000 })
+  const c = await loginPage.locator('.captcha-canvas').boundingBox()
+  if (!c) throw new Error('captcha canvas 不可见')
+  await loginPage.mouse.move(c.x + 30, c.y + c.height / 2)
+  await loginPage.mouse.down()
+  for (let i = 1; i <= 8; i++) await loginPage.mouse.move(c.x + 30 + i * 20, c.y + c.height / 2)
+  await loginPage.mouse.up()
   await loginPage.waitForURL('**/dashboard', { timeout: 15000 })
-  loginNote = '登录成功并跳转 /dashboard'
+  loginOk = true
+  loginNote = '校验断言+滑块登录成功并跳转 /dashboard'
   await loginPage.screenshot({ path: `${SHOTS}/login_after.png`, fullPage: true })
 } catch (e) {
   loginNote = `失败: ${String(e).split('\n')[0]}`
@@ -134,7 +173,7 @@ await ctx.addInitScript(() => {
   localStorage.setItem('csrf_token', 'mock-csrf')
   localStorage.setItem('user', JSON.stringify({ id: 1, username: 'admin', name: '管理员', role: 'admin' }))
 })
-for (const [key, route, title] of PAGES.slice(1)) {
+for (const [key, route, title, sel] of PAGES.slice(1)) {
   const page = await ctx.newPage()
   const errs = []
   page.on('pageerror', e => errs.push(String(e)))
@@ -142,12 +181,13 @@ for (const [key, route, title] of PAGES.slice(1)) {
   let pass = false, note = ''
   try {
     await page.goto(route, { waitUntil: 'networkidle', timeout: 20000 })
-    await page.waitForTimeout(800) // 等首屏数据渲染
+    await page.waitForSelector(sel, { state: 'visible', timeout: 10000 }) // 核心元素断言
     const titleText = await page.title()
-    const hasApp = await page.evaluate(() => document.querySelector('#app')?.children.length > 0)
+    let extra = ''
+    try { extra = await interact(page, key) } catch (e) { throw new Error(`交互失败: ${String(e).split('\n')[0]}`) }
     await page.screenshot({ path: `${SHOTS}/${key}.png`, fullPage: true })
-    pass = hasApp && errs.length === 0
-    note = `${titleText} | app=${hasApp}`
+    pass = errs.length === 0
+    note = `${titleText} | 核心元素 ${sel} | ${extra}`
   } catch (e) {
     note = `超时/失败: ${String(e).split('\n')[0]}`
   }

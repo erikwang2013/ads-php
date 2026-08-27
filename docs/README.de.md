@@ -285,7 +285,7 @@ ads-php/
 │   │   ├── ExceptionHandler.php       # API 异常处理器
 │   │   └── ApiResponse.php            # 统一响应格式
 │   ├── config/                        # 全局配置 (DB/Redis/Log/Middleware)
-│   ├── tests/                         # PHPUnit 测试 (35 tests)
+│   ├── tests/                         # PHPUnit 测试 (244 tests)
 │   │   ├── Unit/                      # 单元测试 (Middleware, Task)
 │   │   └── Integration/               # 集成测试 (Auth, Health)
 │   └── start.php                      # 服务入口
@@ -364,7 +364,7 @@ ads-php/
 
 ```bash
 cd service && ./vendor/bin/phpunit
-# 35 Tests / 70 Assertions
+# 244 Tests / 654 Assertions
 ```
 
 **Abdeckung**: Middleware (Version/SQLGuard/SecurityHeaders) · Datenobjekte (CampaignData/FieldMapping/Hashids) · Engines (ReportBuilder/AdapterRegistry) · Integrationstests (Auth/Health)
