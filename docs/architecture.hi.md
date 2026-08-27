@@ -163,22 +163,22 @@ ads-php/
 
 | श्रेणी | टेबल नाम | प्राइमरी की | उपयोग |
 |------|------|------|------|
-| बेसिक | `erik_tenants` | BIGINT Snowflake | मल्टी-टेनेंट |
-| खाता | `erik_platform_accounts`, `erik_auth_tokens` | BIGINT Snowflake | OAuth प्लेटफ़ॉर्म खाते |
-| डिलीवरी पदानुक्रम | `erik_campaigns`, `erik_ad_groups`, `erik_creatives` | BIGINT Snowflake | विज्ञापन डिलीवरी |
-| रिपोर्ट | `erik_report_metrics`, `erik_report_extras` | BIGINT Snowflake | एकीकृत मेट्रिक्स |
-| अलर्ट | `erik_alert_rules`, `erik_alert_logs` | BIGINT Snowflake | मॉनिटरिंग अलर्ट |
-| बिडिंग | `erik_bid_rules`, `erik_bid_logs` | BIGINT Snowflake | स्वचालित बिडिंग |
-| टार्गेटिंग | `erik_targeting_templates` | BIGINT Snowflake | ऑडियंस टेम्पलेट |
-| एसेट | `erik_assets` | BIGINT Snowflake | क्रिएटिव एसेट लाइब्रेरी |
-| नोटिफिकेशन | `erik_notifications` | BIGINT Snowflake | साइट-इन नोटिफिकेशन |
-| एट्रिब्यूशन | `erik_conversions`, `erik_attribution_results` | BIGINT Snowflake | कन्वर्ज़न ट्रैकिंग + एट्रिब्यूशन |
-| सिस्टम | `erik_sync_errors` | BIGINT Snowflake | सिंक त्रुटियाँ |
+| बेसिक | `ads_tenants` | BIGINT Snowflake | मल्टी-टेनेंट |
+| खाता | `ads_platform_accounts`, `ads_auth_tokens` | BIGINT Snowflake | OAuth प्लेटफ़ॉर्म खाते |
+| डिलीवरी पदानुक्रम | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | BIGINT Snowflake | विज्ञापन डिलीवरी |
+| रिपोर्ट | `ads_report_metrics`, `ads_report_extras` | BIGINT Snowflake | एकीकृत मेट्रिक्स |
+| अलर्ट | `ads_alert_rules`, `ads_alert_logs` | BIGINT Snowflake | मॉनिटरिंग अलर्ट |
+| बिडिंग | `ads_bid_rules`, `ads_bid_logs` | BIGINT Snowflake | स्वचालित बिडिंग |
+| टार्गेटिंग | `ads_targeting_templates` | BIGINT Snowflake | ऑडियंस टेम्पलेट |
+| एसेट | `ads_assets` | BIGINT Snowflake | क्रिएटिव एसेट लाइब्रेरी |
+| नोटिफिकेशन | `ads_notifications` | BIGINT Snowflake | साइट-इन नोटिफिकेशन |
+| एट्रिब्यूशन | `ads_conversions`, `ads_attribution_results` | BIGINT Snowflake | कन्वर्ज़न ट्रैकिंग + एट्रिब्यूशन |
+| सिस्टम | `ads_sync_errors` | BIGINT Snowflake | सिंक त्रुटियाँ |
 | प्रशासन | `admin_users`, `admin_roles`, `admin_audit_logs` | BIGINT Snowflake | RBAC + ऑडिट |
 
 ### 5.2 नामकरण मानक
 
-- टेबल प्रीफ़िक्स: `erik_`
+- टेबल प्रीफ़िक्स: `ads_`
 - प्राइमरी की: `BIGINT UNSIGNED PRIMARY KEY` (बिना auto-increment, Snowflake ID)
 - इंजन: InnoDB, कैरेक्टर सेट: utf8mb4
 - टाइमस्टैम्प: `created_at`, `updated_at` (DATETIME)

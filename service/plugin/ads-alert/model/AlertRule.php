@@ -12,7 +12,7 @@ class AlertRule extends Model
 {
     use SnowflakeTrait;
 
-    protected $table = 'erik_alert_rules';
+    protected $table = 'ads_alert_rules';
     // 除 id 外全部字段可批量赋值（含 channels / webhook_url）
     protected $guarded = ['id'];
     protected $casts = [

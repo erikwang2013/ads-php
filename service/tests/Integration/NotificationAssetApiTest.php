@@ -17,7 +17,7 @@ class NotificationAssetApiTest extends ApiTestCase
     protected function seedNotification(array $overrides = []): int
     {
         $id = $this->nextId();
-        DB::table('erik_notifications')->insert(array_merge([
+        DB::table('ads_notifications')->insert(array_merge([
             'id'         => $id,
             'tenant_id'  => $this->tenantId,
             'type'       => 'alert',
@@ -32,7 +32,7 @@ class NotificationAssetApiTest extends ApiTestCase
     protected function seedAsset(array $overrides = []): int
     {
         $id = $this->nextId();
-        DB::table('erik_assets')->insert(array_merge([
+        DB::table('ads_assets')->insert(array_merge([
             'id'         => $id,
             'tenant_id'  => $this->tenantId,
             'type'       => 'image',
@@ -84,7 +84,7 @@ class NotificationAssetApiTest extends ApiTestCase
         $request = $this->authedRequest('POST', "/api/notifications/$id/read");
 
         $this->assertSuccess((new NotificationController())->markRead($request, $id));
-        $this->assertEquals(1, (int) DB::table('erik_notifications')->find($id)->is_read);
+        $this->assertEquals(1, (int) DB::table('ads_notifications')->find($id)->is_read);
     }
 
     public function testMarkReadNotFound(): void
@@ -100,7 +100,7 @@ class NotificationAssetApiTest extends ApiTestCase
 
         $request = $this->authedRequest('POST', '/api/notifications/read-all');
         $this->assertSuccess((new NotificationController())->markAllRead($request));
-        $this->assertEquals(0, (int) DB::table('erik_notifications')->where('is_read', 0)->count());
+        $this->assertEquals(0, (int) DB::table('ads_notifications')->where('is_read', 0)->count());
     }
 
     public function testAssetListEmptyAndSeeded(): void
@@ -136,7 +136,7 @@ class NotificationAssetApiTest extends ApiTestCase
     {
         $id = $this->seedAsset();
         $this->assertSuccess((new AssetController())->destroy($id));
-        $this->assertEquals(0, DB::table('erik_assets')->count());
+        $this->assertEquals(0, DB::table('ads_assets')->count());
     }
 
     public function testAssetDestroyNotFound(): void

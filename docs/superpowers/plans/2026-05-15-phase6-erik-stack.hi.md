@@ -8,7 +8,7 @@
 
 | # | परिवर्तन | पैकेज | प्रभाव क्षेत्र |
 |---|------|----|---------|
-| 1 | डेटाबेस टेबल प्रीफ़िक्स `erik_` | — | सभी SQL/माइग्रेशन फ़ाइलें |
+| 1 | डेटाबेस टेबल प्रीफ़िक्स `ads_` | — | सभी SQL/माइग्रेशन फ़ाइलें |
 | 2 | प्राथमिक कुंजी Snowflake ID (कोई auto-increment नहीं) | erikwang2013/snowflake-php | सभी Model + SQL |
 | 3 | API ID hashids एन्क्रिप्शन/डिक्रिप्शन | erikwang2013/hashids | सभी Controller रिस्पॉन्स |
 | 4 | JWT प्रमाणीकरण स्विच | erikwang2013/jwt-webman | AuthMiddleware + AuthController |
@@ -29,7 +29,7 @@
 
 **Batch A: इन्फ्रास्ट्रक्चर (निर्भरताएँ + ID + एन्क्रिप्शन)**
 - composer.json अपडेट करके 6 erikwang2013 पैकेज जोड़ें
-- सभी SQL माइग्रेशन फ़ाइलें फिर से लिखें (erik_ प्रीफ़िक्स + bigint कोई auto-increment नहीं)
+- सभी SQL माइग्रेशन फ़ाइलें फिर से लिखें (ads_ प्रीफ़िक्स + bigint कोई auto-increment नहीं)
 - Snowflake ID trait बनाएँ
 - सभी Model अपडेट करें (SnowflakeTrait उपयोग करें)
 - hashids मिडलवेयर कॉन्फ़िगर करें

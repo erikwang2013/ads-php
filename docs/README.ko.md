@@ -59,7 +59,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 계층 | 기술 | 설명 |
 |----|------|------|
 | 서버 | webman v2 + PHP 8.2+ | 7개 플러그인, 65+ API 엔드포인트 |
-| 데이터베이스 | MySQL 8.0 | 28개 테이블, erik_ 접두사, Snowflake BIGINT 기본 키 |
+| 데이터베이스 | MySQL 8.0 | 28개 테이블, ads_ 접두사, Snowflake BIGINT 기본 키 |
 | 캐시 | Redis 7 | 3단계 캐시 (L1 메모리/L2 APCu/L3 Redis), 속도 제한 카운터, Pub/Sub, 메시지 큐 |
 | 검색 | Elasticsearch | webman-scout 자동 인덱스 동기화 (구성됨) |
 | 관리 백엔드 | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP 백엔드(포트 8789), SPA에서 비즈니스 API 직접 호출(포트 8788), 19개 페이지, ECharts 시각화 |
@@ -329,21 +329,21 @@ ads-php/
 
 ## 데이터베이스
 
-**네이밍 규칙**: 테이블 접두사 `erik_`, 기본 키 `BIGINT UNSIGNED PRIMARY KEY`（자동 증가 없음, Snowflake ID）, 엔진 InnoDB, 문자셋 utf8mb4
+**네이밍 규칙**: 테이블 접두사 `ads_`, 기본 키 `BIGINT UNSIGNED PRIMARY KEY`（자동 증가 없음, Snowflake ID）, 엔진 InnoDB, 문자셋 utf8mb4
 
 | 분류 | 테이블 이름 | 용도 |
 |------|------|------|
-| 기반 | `erik_tenants` | 멀티 테넌트 |
-| 계정 | `erik_platform_accounts`, `erik_auth_tokens` | OAuth 플랫폼 계정 |
-| 집행 | `erik_campaigns`, `erik_ad_groups`, `erik_creatives` | 광고 집행 계층 |
-| 보고서 | `erik_report_metrics`, `erik_report_extras` | 통일 보고서 지표 |
-| 소재 | `erik_assets` | 소재 라이브러리 |
-| 타겟팅 | `erik_targeting_templates` | 타겟팅 템플릿 |
-| 기여도 | `erik_conversions`, `erik_attribution_results` | 전환 추적 + 기여도 결과 |
-| 입찰 | `erik_bid_rules`, `erik_bid_logs` | 자동 입찰 규칙 + 이력 |
-| 경보 | `erik_alert_rules`, `erik_alert_logs` | 경보 모니터링 |
-| 알림 | `erik_notifications` | 사내 알림 |
-| 시스템 | `erik_sync_errors`, `admin_users`, `admin_roles`, `admin_audit_logs` | 동기화 오류, RBAC, 감사 |
+| 기반 | `ads_tenants` | 멀티 테넌트 |
+| 계정 | `ads_platform_accounts`, `ads_auth_tokens` | OAuth 플랫폼 계정 |
+| 집행 | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | 광고 집행 계층 |
+| 보고서 | `ads_report_metrics`, `ads_report_extras` | 통일 보고서 지표 |
+| 소재 | `ads_assets` | 소재 라이브러리 |
+| 타겟팅 | `ads_targeting_templates` | 타겟팅 템플릿 |
+| 기여도 | `ads_conversions`, `ads_attribution_results` | 전환 추적 + 기여도 결과 |
+| 입찰 | `ads_bid_rules`, `ads_bid_logs` | 자동 입찰 규칙 + 이력 |
+| 경보 | `ads_alert_rules`, `ads_alert_logs` | 경보 모니터링 |
+| 알림 | `ads_notifications` | 사내 알림 |
+| 시스템 | `ads_sync_errors`, `admin_users`, `admin_roles`, `admin_audit_logs` | 동기화 오류, RBAC, 감사 |
 
 ---
 
@@ -394,7 +394,7 @@ cd apps/flutter && dart analyze   # 오류 0개
 | Skill | 설명 |
 |------|------|
 | `adapter-generator` | 새 광고 플랫폼 어댑터 생성 (14 메서드 템플릿) |
-| `migration-generator` | SQL 마이그레이션 파일 생성 (erik_ 접두사 + BIGINT PK) |
+| `migration-generator` | SQL 마이그레이션 파일 생성 (ads_ 접두사 + BIGINT PK) |
 | `erik-stack` | Erik Stack 8개 패키지 통합 사용 가이드 |
 | `admin-page-generator` | Vue3 관리 백엔드 페이지 생성 |
 | `api-endpoint` | RESTful API 엔드포인트 추가 |

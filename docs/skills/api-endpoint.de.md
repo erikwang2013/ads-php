@@ -26,7 +26,7 @@ class ExampleController
     {
         $tenantId = $request->tenantId ?? 1;
         $perPage = min((int) $request->get('per_page', 20), 100);
-        $paginator = DB::table('erik_example')->where('tenant_id', $tenantId)->paginate($perPage);
+        $paginator = DB::table('ads_example')->where('tenant_id', $tenantId)->paginate($perPage);
 
         return ApiResponse::paginated(
             $paginator->items(), $paginator->total(),
@@ -36,14 +36,14 @@ class ExampleController
 
     public function show(int $id): \Webman\Http\Response
     {
-        $item = DB::table('erik_example')->find($id);
+        $item = DB::table('ads_example')->find($id);
         if (!$item) return ApiResponse::error('Not found');
         return ApiResponse::success($item);
     }
 
     public function store(Request $request): \Webman\Http\Response
     {
-        $id = DB::table('erik_example')->insertGetId([
+        $id = DB::table('ads_example')->insertGetId([
             'name' => $request->post('name'),
             'created_at' => now(),
         ]);
@@ -52,7 +52,7 @@ class ExampleController
 
     public function update(Request $request, int $id): \Webman\Http\Response
     {
-        DB::table('erik_example')->where('id', $id)->update([
+        DB::table('ads_example')->where('id', $id)->update([
             'name' => $request->post('name'),
             'updated_at' => now(),
         ]);
@@ -82,7 +82,7 @@ Innerhalb der `auth`-Middleware-Gruppe hinzufügen:
 ## Regeln
 
 1. **Sortier-Whitelist**: Sortierspalten immer validieren: `$allowed = ['id','name','created_at']; $sort = in_array($sort,$allowed) ? $sort : 'id';`
-2. **Tabellenpräfix**: `erik_`-Präfix für alle `DB::table()`-Aufrufe verwenden
+2. **Tabellenpräfix**: `ads_`-Präfix für alle `DB::table()`-Aufrufe verwenden
 3. **Paginierung**: Maximal 100 pro Seite, `ApiResponse::paginated()` verwenden
 4. **Geld**: Alle Werte in Fen (分), keine Umrechnung in Controllern
 5. **Fehlerbehandlung**: Throwable abfangen, `ApiResponse::error($e->getMessage())` zurückgeben

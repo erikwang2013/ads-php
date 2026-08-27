@@ -26,7 +26,7 @@ class ExampleController
     {
         $tenantId = $request->tenantId ?? 1;
         $perPage = min((int) $request->get('per_page', 20), 100);
-        $paginator = DB::table('erik_example')->where('tenant_id', $tenantId)->paginate($perPage);
+        $paginator = DB::table('ads_example')->where('tenant_id', $tenantId)->paginate($perPage);
 
         return ApiResponse::paginated(
             $paginator->items(), $paginator->total(),
@@ -36,14 +36,14 @@ class ExampleController
 
     public function show(int $id): \Webman\Http\Response
     {
-        $item = DB::table('erik_example')->find($id);
+        $item = DB::table('ads_example')->find($id);
         if (!$item) return ApiResponse::error('Not found');
         return ApiResponse::success($item);
     }
 
     public function store(Request $request): \Webman\Http\Response
     {
-        $id = DB::table('erik_example')->insertGetId([
+        $id = DB::table('ads_example')->insertGetId([
             'name' => $request->post('name'),
             'created_at' => now(),
         ]);
@@ -52,7 +52,7 @@ class ExampleController
 
     public function update(Request $request, int $id): \Webman\Http\Response
     {
-        DB::table('erik_example')->where('id', $id)->update([
+        DB::table('ads_example')->where('id', $id)->update([
             'name' => $request->post('name'),
             'updated_at' => now(),
         ]);
@@ -82,7 +82,7 @@ Tambahkan di dalam grup middleware `auth`:
 ## Aturan
 
 1. **Whitelist sort**: Selalu validasi kolom sort: `$allowed = ['id','name','created_at']; $sort = in_array($sort,$allowed) ? $sort : 'id';`
-2. **Prefiks tabel**: Gunakan prefiks `erik_` untuk semua panggilan `DB::table()`
+2. **Prefiks tabel**: Gunakan prefiks `ads_` untuk semua panggilan `DB::table()`
 3. **Paginasi**: Maksimal 100 per halaman, gunakan `ApiResponse::paginated()`
 4. **Uang**: Semua nilai dalam sen (分), tanpa konversi di controller
 5. **Penanganan error**: Tangkap Throwable, kembalikan `ApiResponse::error($e->getMessage())`

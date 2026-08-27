@@ -163,22 +163,22 @@ ads-php/
 
 | 分类 | 表名 | 主键 | 用途 |
 |------|------|------|------|
-| 基础 | `erik_tenants` | BIGINT Snowflake | 多租户 |
-| 账户 | `erik_platform_accounts`, `erik_auth_tokens` | BIGINT Snowflake | OAuth 平台账户 |
-| 投放层级 | `erik_campaigns`, `erik_ad_groups`, `erik_creatives` | BIGINT Snowflake | 广告投放 |
-| 报表 | `erik_report_metrics`, `erik_report_extras` | BIGINT Snowflake | 统一指标 |
-| 告警 | `erik_alert_rules`, `erik_alert_logs` | BIGINT Snowflake | 监控告警 |
-| 出价 | `erik_bid_rules`, `erik_bid_logs` | BIGINT Snowflake | 自动出价 |
-| 定向 | `erik_targeting_templates` | BIGINT Snowflake | 受众模板 |
-| 素材 | `erik_assets` | BIGINT Snowflake | 创意素材库 |
-| 通知 | `erik_notifications` | BIGINT Snowflake | 站内通知 |
-| 归因 | `erik_conversions`, `erik_attribution_results` | BIGINT Snowflake | 转化追踪 + 归因 |
-| 系统 | `erik_sync_errors` | BIGINT Snowflake | 同步错误 |
+| 基础 | `ads_tenants` | BIGINT Snowflake | 多租户 |
+| 账户 | `ads_platform_accounts`, `ads_auth_tokens` | BIGINT Snowflake | OAuth 平台账户 |
+| 投放层级 | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | BIGINT Snowflake | 广告投放 |
+| 报表 | `ads_report_metrics`, `ads_report_extras` | BIGINT Snowflake | 统一指标 |
+| 告警 | `ads_alert_rules`, `ads_alert_logs` | BIGINT Snowflake | 监控告警 |
+| 出价 | `ads_bid_rules`, `ads_bid_logs` | BIGINT Snowflake | 自动出价 |
+| 定向 | `ads_targeting_templates` | BIGINT Snowflake | 受众模板 |
+| 素材 | `ads_assets` | BIGINT Snowflake | 创意素材库 |
+| 通知 | `ads_notifications` | BIGINT Snowflake | 站内通知 |
+| 归因 | `ads_conversions`, `ads_attribution_results` | BIGINT Snowflake | 转化追踪 + 归因 |
+| 系统 | `ads_sync_errors` | BIGINT Snowflake | 同步错误 |
 | 管理 | `admin_users`, `admin_roles`, `admin_audit_logs` | BIGINT Snowflake | RBAC + 审计 |
 
 ### 5.2 命名规范
 
-- 表前缀: `erik_`
+- 表前缀: `ads_`
 - 主键: `BIGINT UNSIGNED PRIMARY KEY` (无自增, Snowflake ID)
 - 引擎: InnoDB, 字符集: utf8mb4
 - 时间戳: `created_at`, `updated_at` (DATETIME)

@@ -26,7 +26,7 @@ class ExampleController
     {
         $tenantId = $request->tenantId ?? 1;
         $perPage = min((int) $request->get('per_page', 20), 100);
-        $paginator = DB::table('erik_example')->where('tenant_id', $tenantId)->paginate($perPage);
+        $paginator = DB::table('ads_example')->where('tenant_id', $tenantId)->paginate($perPage);
 
         return ApiResponse::paginated(
             $paginator->items(), $paginator->total(),
@@ -36,14 +36,14 @@ class ExampleController
 
     public function show(int $id): \Webman\Http\Response
     {
-        $item = DB::table('erik_example')->find($id);
+        $item = DB::table('ads_example')->find($id);
         if (!$item) return ApiResponse::error('Not found');
         return ApiResponse::success($item);
     }
 
     public function store(Request $request): \Webman\Http\Response
     {
-        $id = DB::table('erik_example')->insertGetId([
+        $id = DB::table('ads_example')->insertGetId([
             'name' => $request->post('name'),
             'created_at' => now(),
         ]);
@@ -52,7 +52,7 @@ class ExampleController
 
     public function update(Request $request, int $id): \Webman\Http\Response
     {
-        DB::table('erik_example')->where('id', $id)->update([
+        DB::table('ads_example')->where('id', $id)->update([
             'name' => $request->post('name'),
             'updated_at' => now(),
         ]);
@@ -82,7 +82,7 @@ class ExampleController
 ## नियम
 
 1. **सॉर्ट व्हाइटलिस्ट**: हमेशा सॉर्ट कॉलम सत्यापित करें: `$allowed = ['id','name','created_at']; $sort = in_array($sort,$allowed) ? $sort : 'id';`
-2. **टेबल प्रीफ़िक्स**: सभी `DB::table()` कॉल में `erik_` प्रीफ़िक्स का उपयोग करें
+2. **टेबल प्रीफ़िक्स**: सभी `DB::table()` कॉल में `ads_` प्रीफ़िक्स का उपयोग करें
 3. **पेजिनेशन**: प्रति पेज अधिकतम 100, `ApiResponse::paginated()` का उपयोग करें
 4. **पैसा**: सभी मान fen (分) में, कंट्रोलर में कोई रूपांतरण नहीं
 5. **त्रुटि प्रबंधन**: Throwable पकड़ें, `ApiResponse::error($e->getMessage())` लौटाएँ

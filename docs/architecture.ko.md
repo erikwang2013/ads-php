@@ -163,22 +163,22 @@ ads-php/
 
 | 분류 | 테이블 이름 | 기본 키 | 용도 |
 |------|------|------|------|
-| 기반 | `erik_tenants` | BIGINT Snowflake | 멀티 테넌트 |
-| 계정 | `erik_platform_accounts`, `erik_auth_tokens` | BIGINT Snowflake | OAuth 플랫폼 계정 |
-| 집행 계층 | `erik_campaigns`, `erik_ad_groups`, `erik_creatives` | BIGINT Snowflake | 광고 집행 |
-| 보고서 | `erik_report_metrics`, `erik_report_extras` | BIGINT Snowflake | 통일 지표 |
-| 경보 | `erik_alert_rules`, `erik_alert_logs` | BIGINT Snowflake | 모니터링 경보 |
-| 입찰 | `erik_bid_rules`, `erik_bid_logs` | BIGINT Snowflake | 자동 입찰 |
-| 타겟팅 | `erik_targeting_templates` | BIGINT Snowflake | 타겟팅 템플릿 |
-| 소재 | `erik_assets` | BIGINT Snowflake | 소재 라이브러리 |
-| 알림 | `erik_notifications` | BIGINT Snowflake | 사내 알림 |
-| 기여도 | `erik_conversions`, `erik_attribution_results` | BIGINT Snowflake | 전환 추적 + 기여도 |
-| 시스템 | `erik_sync_errors` | BIGINT Snowflake | 동기화 오류 |
+| 기반 | `ads_tenants` | BIGINT Snowflake | 멀티 테넌트 |
+| 계정 | `ads_platform_accounts`, `ads_auth_tokens` | BIGINT Snowflake | OAuth 플랫폼 계정 |
+| 집행 계층 | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | BIGINT Snowflake | 광고 집행 |
+| 보고서 | `ads_report_metrics`, `ads_report_extras` | BIGINT Snowflake | 통일 지표 |
+| 경보 | `ads_alert_rules`, `ads_alert_logs` | BIGINT Snowflake | 모니터링 경보 |
+| 입찰 | `ads_bid_rules`, `ads_bid_logs` | BIGINT Snowflake | 자동 입찰 |
+| 타겟팅 | `ads_targeting_templates` | BIGINT Snowflake | 타겟팅 템플릿 |
+| 소재 | `ads_assets` | BIGINT Snowflake | 소재 라이브러리 |
+| 알림 | `ads_notifications` | BIGINT Snowflake | 사내 알림 |
+| 기여도 | `ads_conversions`, `ads_attribution_results` | BIGINT Snowflake | 전환 추적 + 기여도 |
+| 시스템 | `ads_sync_errors` | BIGINT Snowflake | 동기화 오류 |
 | 관리 | `admin_users`, `admin_roles`, `admin_audit_logs` | BIGINT Snowflake | RBAC + 감사 |
 
 ### 5.2 네이밍 규칙
 
-- 테이블 접두사: `erik_`
+- 테이블 접두사: `ads_`
 - 기본 키: `BIGINT UNSIGNED PRIMARY KEY` (자동 증가 없음, Snowflake ID)
 - 엔진: InnoDB, 문자셋: utf8mb4
 - 타임스탬프: `created_at`, `updated_at` (DATETIME)

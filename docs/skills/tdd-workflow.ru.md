@@ -79,6 +79,6 @@ git add service/tests/ service/plugin/ && git commit -m "feat: add feature X wit
 - [ ] `find service -name "*.php" -not -path "*/vendor/*" -exec php -l {} \;` проходит
 - [ ] Заголовок Copyright на всех новых файлах
 - [ ] Никаких `getenv()` — используйте `env()` вместо этого
-- [ ] Имена таблиц с префиксом `erik_`
+- [ ] Имена таблиц с префиксом `ads_`
 - [ ] Никакого ведущего `\` у глобальных классов
 - [ ] `use Throwable;` / `use RuntimeException;` / `use InvalidArgumentException;` в файлах с namespace

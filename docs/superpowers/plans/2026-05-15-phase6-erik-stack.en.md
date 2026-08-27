@@ -8,7 +8,7 @@
 
 | # | Change | Package | Scope |
 |---|--------|---------|-------|
-| 1 | Database table prefix `erik_` | — | All SQL/migration files |
+| 1 | Database table prefix `ads_` | — | All SQL/migration files |
 | 2 | Snowflake ID primary keys (no auto-increment) | erikwang2013/snowflake-php | All Models + SQL |
 | 3 | API ID hashids encryption/decryption | erikwang2013/hashids | All Controller responses |
 | 4 | JWT authentication switch | erikwang2013/jwt-webman | AuthMiddleware + AuthController |
@@ -29,7 +29,7 @@
 
 **Batch A: Infrastructure (dependencies + ID + encryption)**
 - Update composer.json to add the 6 erikwang2013 packages
-- Rewrite all SQL migration files (erik_ prefix + bigint without auto-increment)
+- Rewrite all SQL migration files (ads_ prefix + bigint without auto-increment)
 - Create the Snowflake ID trait
 - Update all Models (use SnowflakeTrait)
 - Configure the hashids middleware

@@ -11,7 +11,7 @@ class BidLog extends Model
 {
     use SnowflakeTrait;
 
-    protected $table = 'erik_bid_logs';
+    protected $table = 'ads_bid_logs';
     protected $guarded = ['id'];
     public $timestamps = false;
 

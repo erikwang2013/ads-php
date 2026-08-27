@@ -135,24 +135,24 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 | التصنيف | اسم الجدول | Lite | Standard | Full |
 |------|------|:---:|:---:|:---:|
-| أساسيات | erik_tenants | ✅ | ✅ | ✅ |
-| الحسابات | erik_platform_accounts | ✅ | ✅ | ✅ |
-| | erik_auth_tokens | ✅ | ✅ | ✅ |
-| النشر | erik_campaigns | ✅ | ✅ | ✅ |
-| | erik_report_metrics | ✅ | ✅ | ✅ |
-| | erik_report_extras | ✅ | ✅ | ✅ |
-| | erik_ad_groups | — | ✅ | ✅ |
-| | erik_creatives | — | ✅ | ✅ |
-| التنبيهات | erik_alert_rules | — | ✅ | ✅ |
-| | erik_alert_logs | — | ✅ | ✅ |
-| الإشعارات | erik_notifications | — | ✅ | ✅ |
-| المزايدة | erik_bid_rules | — | — | ✅ |
-| | erik_bid_logs | — | — | ✅ |
-| الاستهداف | erik_targeting_templates | — | — | ✅ |
-| المواد | erik_assets | — | — | ✅ |
-| الإسناد | erik_conversions | — | — | ✅ |
-| | erik_attribution_results | — | — | ✅ |
-| النظام | erik_sync_errors | ✅ | ✅ | ✅ |
+| أساسيات | ads_tenants | ✅ | ✅ | ✅ |
+| الحسابات | ads_platform_accounts | ✅ | ✅ | ✅ |
+| | ads_auth_tokens | ✅ | ✅ | ✅ |
+| النشر | ads_campaigns | ✅ | ✅ | ✅ |
+| | ads_report_metrics | ✅ | ✅ | ✅ |
+| | ads_report_extras | ✅ | ✅ | ✅ |
+| | ads_ad_groups | — | ✅ | ✅ |
+| | ads_creatives | — | ✅ | ✅ |
+| التنبيهات | ads_alert_rules | — | ✅ | ✅ |
+| | ads_alert_logs | — | ✅ | ✅ |
+| الإشعارات | ads_notifications | — | ✅ | ✅ |
+| المزايدة | ads_bid_rules | — | — | ✅ |
+| | ads_bid_logs | — | — | ✅ |
+| الاستهداف | ads_targeting_templates | — | — | ✅ |
+| المواد | ads_assets | — | — | ✅ |
+| الإسناد | ads_conversions | — | — | ✅ |
+| | ads_attribution_results | — | — | ✅ |
+| النظام | ads_sync_errors | ✅ | ✅ | ✅ |
 | الإدارة | admin_users/roles/audit_logs | ✅ | ✅ | ✅ |
 | **الإجمالي** | | **8** | **13** | **18** |
 

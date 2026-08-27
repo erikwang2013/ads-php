@@ -8,7 +8,7 @@
 
 | # | Изменение | Пакет | Область влияния |
 |---|------|----|---------|
-| 1 | Префикс таблиц БД `erik_` | — | Все файлы SQL/миграций |
+| 1 | Префикс таблиц БД `ads_` | — | Все файлы SQL/миграций |
 | 2 | Первичный ключ Snowflake ID (без автоинкремента) | erikwang2013/snowflake-php | Все Model + SQL |
 | 3 | Хеширование/дешифрование API ID hashids | erikwang2013/hashids | Все ответы Controller |
 | 4 | Переключение аутентификации JWT | erikwang2013/jwt-webman | AuthMiddleware + AuthController |
@@ -29,7 +29,7 @@
 
 **Batch A: Инфраструктура (зависимости + ID + шифрование)**
 - Обновить composer.json, добавить 6 пакетов erikwang2013
-- Переписать все файлы SQL-миграций (префикс erik_ + bigint без автоинкремента)
+- Переписать все файлы SQL-миграций (префикс ads_ + bigint без автоинкремента)
 - Создать Snowflake ID trait
 - Обновить все Model (использование SnowflakeTrait)
 - Настроить hashids middleware

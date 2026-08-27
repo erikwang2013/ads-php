@@ -81,20 +81,20 @@ graph TB
 ```mermaid
 flowchart LR
     subgraph Input["数据输入"]
-        OAuth["OAuth 授权"] -->|"存储 Token"| DB["erik_platform_accounts<br/>erik_auth_tokens"]
-        Manual["手动创建"] -->|"写入"| Campaigns["erik_campaigns<br/>erik_ad_groups<br/>erik_creatives"]
+        OAuth["OAuth 授权"] -->|"存储 Token"| DB["ads_platform_accounts<br/>ads_auth_tokens"]
+        Manual["手动创建"] -->|"写入"| Campaigns["ads_campaigns<br/>ads_ad_groups<br/>ads_creatives"]
     end
 
     subgraph Sync2["定时同步 (Cron)"]
         Cron["DataSyncTask<br/>每 10 分钟"] -->|"拉取平台 API"| Raw["原始广告数据"]
         Raw -->|"updateOrInsert"| Campaigns
-        Raw -->|"聚合写入"| Metrics["erik_report_metrics"]
+        Raw -->|"聚合写入"| Metrics["ads_report_metrics"]
     end
 
     subgraph Process["数据处理"]
         Metrics -->|"5min 缓存"| Dashboard["仪表盘 KPI"]
         Metrics -->|"多维度查询"| CustomReport["自定义报表"]
-        Metrics -->|"5 模型计算"| AttributionResult["erik_attribution_results"]
+        Metrics -->|"5 模型计算"| AttributionResult["ads_attribution_results"]
         Metrics -->|"阈值评估"| AlertEngine["AlertEngine"]
         Metrics -->|"规则求值"| BidEngine["BidEngine"]
         Metrics -->|"预算追踪"| BudgetAlert["BudgetAlertService"]
@@ -104,8 +104,8 @@ flowchart LR
         Dashboard --> Vue["Vue ECharts<br/>8 KPI 卡片<br/>趋势图 · 柱状图"]
         CustomReport --> Export["CSV / Excel / PDF"]
         AttributionResult --> AttributionChart["归因柱状图<br/>模型对比"]
-        AlertEngine --> Notifications["erik_notifications<br/>站内 · Email · SMS"]
-        BidEngine --> BidLogs["erik_bid_logs<br/>预算调整记录"]
+        AlertEngine --> Notifications["ads_notifications<br/>站内 · Email · SMS"]
+        BidEngine --> BidLogs["ads_bid_logs<br/>预算调整记录"]
         BudgetAlert --> Notifications
     end
 

@@ -163,22 +163,22 @@ ads-php/
 
 | Categoria | Nome da tabela | Chave primária | Finalidade |
 |------|------|------|------|
-| Base | `erik_tenants` | BIGINT Snowflake | Multitenant |
-| Contas | `erik_platform_accounts`, `erik_auth_tokens` | BIGINT Snowflake | Contas de plataforma OAuth |
-| Hierarquia de veiculação | `erik_campaigns`, `erik_ad_groups`, `erik_creatives` | BIGINT Snowflake | Veiculação de anúncios |
-| Relatórios | `erik_report_metrics`, `erik_report_extras` | BIGINT Snowflake | Métricas unificadas |
-| Alertas | `erik_alert_rules`, `erik_alert_logs` | BIGINT Snowflake | Monitoramento de alertas |
-| Lances | `erik_bid_rules`, `erik_bid_logs` | BIGINT Snowflake | Lance automático |
-| Segmentação | `erik_targeting_templates` | BIGINT Snowflake | Modelos de público |
-| Materiais | `erik_assets` | BIGINT Snowflake | Biblioteca de materiais criativos |
-| Notificações | `erik_notifications` | BIGINT Snowflake | Notificações no sistema |
-| Atribuição | `erik_conversions`, `erik_attribution_results` | BIGINT Snowflake | Rastreamento de conversões + atribuição |
-| Sistema | `erik_sync_errors` | BIGINT Snowflake | Erros de sincronização |
+| Base | `ads_tenants` | BIGINT Snowflake | Multitenant |
+| Contas | `ads_platform_accounts`, `ads_auth_tokens` | BIGINT Snowflake | Contas de plataforma OAuth |
+| Hierarquia de veiculação | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | BIGINT Snowflake | Veiculação de anúncios |
+| Relatórios | `ads_report_metrics`, `ads_report_extras` | BIGINT Snowflake | Métricas unificadas |
+| Alertas | `ads_alert_rules`, `ads_alert_logs` | BIGINT Snowflake | Monitoramento de alertas |
+| Lances | `ads_bid_rules`, `ads_bid_logs` | BIGINT Snowflake | Lance automático |
+| Segmentação | `ads_targeting_templates` | BIGINT Snowflake | Modelos de público |
+| Materiais | `ads_assets` | BIGINT Snowflake | Biblioteca de materiais criativos |
+| Notificações | `ads_notifications` | BIGINT Snowflake | Notificações no sistema |
+| Atribuição | `ads_conversions`, `ads_attribution_results` | BIGINT Snowflake | Rastreamento de conversões + atribuição |
+| Sistema | `ads_sync_errors` | BIGINT Snowflake | Erros de sincronização |
 | Administração | `admin_users`, `admin_roles`, `admin_audit_logs` | BIGINT Snowflake | RBAC + auditoria |
 
 ### 5.2 Convenção de nomenclatura
 
-- Prefixo de tabela: `erik_`
+- Prefixo de tabela: `ads_`
 - Chave primária: `BIGINT UNSIGNED PRIMARY KEY` (sem autoincremento, Snowflake ID)
 - Engine: InnoDB, charset: utf8mb4
 - Timestamps: `created_at`, `updated_at` (DATETIME)

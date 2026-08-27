@@ -10,7 +10,7 @@ class RetrySyncTask
 {
     public function execute(): void
     {
-        $failures = DB::table('erik_sync_errors')
+        $failures = DB::table('ads_sync_errors')
             ->where('retry_count', '<', 3)
             ->where('next_retry_at', '<=', now())
             ->orderBy('next_retry_at')
@@ -24,10 +24,10 @@ class RetrySyncTask
                 $task = new DataSyncTask();
                 $task->executeSingleAccount($failure->platform_account_id);
 
-                DB::table('erik_sync_errors')->where('id', $failure->id)->delete();
+                DB::table('ads_sync_errors')->where('id', $failure->id)->delete();
                 echo "  Success.\n";
             } catch (\Throwable $e) {
-                DB::table('erik_sync_errors')->where('id', $failure->id)->update([
+                DB::table('ads_sync_errors')->where('id', $failure->id)->update([
                     'retry_count'  => $failure->retry_count + 1,
                     'last_error'   => $e->getMessage(),
                     'next_retry_at'=> now()->addMinutes(pow(5, $failure->retry_count + 1)),

@@ -5,7 +5,7 @@
  * API 集成测试基类 — 直接实例化控制器 + 构造 Webman Request，
  * 与既有 Integration 测试（AuthControllerTest）模式保持一致。
  *
- * 测试数据写 ads_test 库（erik_ 表与生产同名，bootstrap 已建表），
+ * 测试数据写 ads_test 库（ads_ 表与生产同名，bootstrap 已建表），
  * 不依赖外部广告平台：通过 AdapterRegistry 注入 mock 适配器。
  */
 
@@ -29,10 +29,10 @@ abstract class ApiTestCase extends TestCase
 
     /** 被测试写入的业务表，setUp 时清空保证用例可重复 */
     protected const DIRTY_TABLES = [
-        'erik_platform_accounts', 'erik_campaigns', 'erik_ad_groups', 'erik_creatives',
-        'erik_alert_rules', 'erik_alert_logs', 'erik_bid_rules', 'erik_bid_logs',
-        'erik_targeting_templates', 'erik_notifications', 'erik_assets', 'erik_sync_errors',
-        'erik_conversions', 'erik_auth_tokens', 'erik_attribution_results', 'erik_report_metrics',
+        'ads_platform_accounts', 'ads_campaigns', 'ads_ad_groups', 'ads_creatives',
+        'ads_alert_rules', 'ads_alert_logs', 'ads_bid_rules', 'ads_bid_logs',
+        'ads_targeting_templates', 'ads_notifications', 'ads_assets', 'ads_sync_errors',
+        'ads_conversions', 'ads_auth_tokens', 'ads_attribution_results', 'ads_report_metrics',
     ];
 
     protected function setUp(): void
@@ -64,7 +64,7 @@ abstract class ApiTestCase extends TestCase
 
     protected function seedTenant(): void
     {
-        DB::table('erik_tenants')->updateOrInsert(['id' => $this->tenantId], [
+        DB::table('ads_tenants')->updateOrInsert(['id' => $this->tenantId], [
             'id'     => $this->tenantId,
             'name'   => 'Test Tenant',
             'plan'   => 'enterprise',
@@ -192,11 +192,11 @@ abstract class ApiTestCase extends TestCase
         return (int) ((microtime(true) - 1700000000) * 1000) << 12 | random_int(0, 4095);
     }
 
-    /** 在 erik_campaigns 中直接插入一条测试计划，返回 id */
+    /** 在 ads_campaigns 中直接插入一条测试计划，返回 id */
     protected function seedCampaign(array $overrides = []): int
     {
         $id = $overrides['id'] ?? $this->nextId();
-        DB::table('erik_campaigns')->insert(array_merge([
+        DB::table('ads_campaigns')->insert(array_merge([
             'id'                   => $id,
             'tenant_id'            => $this->tenantId,
             'platform_account_id'  => $this->seedAccount(),
@@ -213,11 +213,11 @@ abstract class ApiTestCase extends TestCase
         return $id;
     }
 
-    /** 在 erik_platform_accounts 中插入测试账户，返回 id */
+    /** 在 ads_platform_accounts 中插入测试账户，返回 id */
     protected function seedAccount(array $overrides = []): int
     {
         $id = $overrides['id'] ?? $this->nextId();
-        DB::table('erik_platform_accounts')->insert(array_merge([
+        DB::table('ads_platform_accounts')->insert(array_merge([
             'id'                     => $id,
             'tenant_id'              => $this->tenantId,
             'platform'               => 'mock',

@@ -14,10 +14,10 @@
 
 | 候选子项 | 现状 |
 |---|---|
-| 同步状态可视化 | `erik_sync_errors` 表 + `RetrySyncTask`（重试 3 次、退避 5^n 分钟）已存在；**无前端页面/API 展示同步失败率与延迟** |
-| 转化数据闭环 | `erik_conversions` + `erik_attribution_results` 表已存在，归因引擎已实现；**无转化数据采集入口**（回传/埋点 API） |
+| 同步状态可视化 | `ads_sync_errors` 表 + `RetrySyncTask`（重试 3 次、退避 5^n 分钟）已存在；**无前端页面/API 展示同步失败率与延迟** |
+| 转化数据闭环 | `ads_conversions` + `ads_attribution_results` 表已存在，归因引擎已实现；**无转化数据采集入口**（回传/埋点 API） |
 | 移动端 CI | `ci.yml` 仅 PHP 语法→PHPUnit→vue-tsc→Docker；**无 Flutter/HarmonyOS 构建打包** |
-| 多租户 SaaS | `erik_tenants` 表 + TenantIdentify 中间件已存在；**无计费/配额/用量统计** |
+| 多租户 SaaS | `ads_tenants` 表 + TenantIdentify 中间件已存在；**无计费/配额/用量统计** |
 | ES 落地 | scout.php 已配置 + webman-scout 依赖已引入；**docker-compose 无 ES 服务** |
 | 29 平台真实联调 | 29 适配器代码齐全；**无沙箱/凭据联调记录**（需外部凭据，标记为人工项） |
 
@@ -31,7 +31,7 @@
 ### 设计要点
 - 端点：`GET /api/sync/status`（账户维度：last_sync_at、成功率、今日失败数、pending 重试数）+ `GET /api/sync/errors`（分页错误列表，含 last_error/retry_count/next_retry_at）
 - 前端：同步状态页（表格 + 摘要卡片），仅 Full/Standard 版本线
-- 数据源：erik_platform_accounts（last_sync_at）+ erik_sync_errors
+- 数据源：ads_platform_accounts（last_sync_at）+ ads_sync_errors
 
 ## Task 2: 转化数据采集 API
 
@@ -41,7 +41,7 @@
 
 ### 设计要点
 - 端点：`POST /api/conversions`（业务方回传转化：platform/campaign_id/order_id/conversion_time/value/currency/channel）+ `GET /api/conversions`（查询）
-- 校验：campaign_id 存在、金额非负、时间格式；写入 erik_conversions
+- 校验：campaign_id 存在、金额非负、时间格式；写入 ads_conversions
 - 归因联动：回传后可触发归因重算（或说明由现有 AttributionEngine 定时/手动重算）
 - 前端：归因报表页增加"转化回传"说明/演示（可选）
 
@@ -62,7 +62,7 @@
 - Modify: `service/plugin/ads-api/config/route.php` + controller
 
 ### 设计要点
-- 数据：erik_tenants 增加 quota 字段或新表 erik_tenant_quotas（plan/account_limit/campaign_limit/sync_quota）
+- 数据：ads_tenants 增加 quota 字段或新表 ads_tenant_quotas（plan/account_limit/campaign_limit/sync_quota）
 - 校验点：账户绑定数、计划创建数、每日同步次数（在 AccountController/CampaignController/DataSyncTask 入口检查）
 - 端点：`GET /api/tenant/quota`（用量 + 配额）
 - 前端：系统页展示配额用量（可选，MVP 可仅 API）

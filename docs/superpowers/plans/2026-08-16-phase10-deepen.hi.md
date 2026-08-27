@@ -14,10 +14,10 @@
 
 | उम्मीदवार उप-आइटम | वर्तमान स्थिति |
 |---|---|
-| सिंक स्थिति विज़ुअलाइज़ेशन | `erik_sync_errors` टेबल + `RetrySyncTask` (3 बार रीट्राय, 5^n मिनट बैकऑफ़) मौजूद; **सिंक विफलता दर और विलंब दिखाने वाला कोई फ़्रंटएंड पेज/API नहीं** |
-| रूपांतरण डेटा लूप | `erik_conversions` + `erik_attribution_results` टेबल मौजूद, एट्रिब्यूशन इंजन लागू; **कोई रूपांतरण डेटा संग्रह प्रवेश बिंदु नहीं** (रिटर्न/ट्रैकिंग API) |
+| सिंक स्थिति विज़ुअलाइज़ेशन | `ads_sync_errors` टेबल + `RetrySyncTask` (3 बार रीट्राय, 5^n मिनट बैकऑफ़) मौजूद; **सिंक विफलता दर और विलंब दिखाने वाला कोई फ़्रंटएंड पेज/API नहीं** |
+| रूपांतरण डेटा लूप | `ads_conversions` + `ads_attribution_results` टेबल मौजूद, एट्रिब्यूशन इंजन लागू; **कोई रूपांतरण डेटा संग्रह प्रवेश बिंदु नहीं** (रिटर्न/ट्रैकिंग API) |
 | मोबाइल CI | `ci.yml` में केवल PHP सिंटैक्स→PHPUnit→vue-tsc→Docker; **कोई Flutter/HarmonyOS बिल्ड पैकेजिंग नहीं** |
-| मल्टी-टेनेंट SaaS | `erik_tenants` टेबल + TenantIdentify मिडलवेयर मौजूद; **कोई बिलिंग/कोटा/उपयोग आँकड़े नहीं** |
+| मल्टी-टेनेंट SaaS | `ads_tenants` टेबल + TenantIdentify मिडलवेयर मौजूद; **कोई बिलिंग/कोटा/उपयोग आँकड़े नहीं** |
 | ES लागू करना | scout.php कॉन्फ़िगर + webman-scout निर्भरता जोड़ी गई; **docker-compose में कोई ES सेवा नहीं** |
 | 29 प्लेटफ़ॉर्म वास्तविक इंटीग्रेशन | 29 एडाप्टर कोड पूर्ण; **कोई सैंडबॉक्स/क्रेडेंशियल इंटीग्रेशन रिकॉर्ड नहीं** (बाहरी क्रेडेंशियल आवश्यक, मैनुअल आइटम के रूप में चिह्नित) |
 
@@ -31,7 +31,7 @@
 ### डिज़ाइन मुख्य बिंदु
 - एंडपॉइंट: `GET /api/sync/status` (खाता आयाम: last_sync_at, सफलता दर, आज की विफलताएँ, pending रीट्राय संख्या) + `GET /api/sync/errors` (पेजिनेटेड त्रुटि सूची, last_error/retry_count/next_retry_at सहित)
 - फ़्रंटएंड: सिंक स्थिति पेज (टेबल + सारांश कार्ड), केवल Full/Standard वर्शन लाइन
-- डेटा स्रोत: erik_platform_accounts (last_sync_at) + erik_sync_errors
+- डेटा स्रोत: ads_platform_accounts (last_sync_at) + ads_sync_errors
 
 ## Task 2: रूपांतरण डेटा संग्रह API
 
@@ -41,7 +41,7 @@
 
 ### डिज़ाइन मुख्य बिंदु
 - एंडपॉइंट: `POST /api/conversions` (बिज़नेस पक्ष रूपांतरण रिटर्न: platform/campaign_id/order_id/conversion_time/value/currency/channel) + `GET /api/conversions` (क्वेरी)
-- सत्यापन: campaign_id मौजूद हो, राशि गैर-ऋणात्मक, समय प्रारूप; erik_conversions में लिखें
+- सत्यापन: campaign_id मौजूद हो, राशि गैर-ऋणात्मक, समय प्रारूप; ads_conversions में लिखें
 - एट्रिब्यूशन लिंकेज: रिटर्न के बाद एट्रिब्यूशन पुनर्गणना ट्रिगर हो सकती है (या बताएँ कि मौजूदा AttributionEngine नियमित/मैनुअल पुनर्गणना करता है)
 - फ़्रंटएंड: एट्रिब्यूशन रिपोर्ट पेज में "रूपांतरण रिटर्न" स्पष्टीकरण/डेमो जोड़ें (वैकल्पिक)
 
@@ -62,7 +62,7 @@
 - Modify: `service/plugin/ads-api/config/route.php` + controller
 
 ### डिज़ाइन मुख्य बिंदु
-- डेटा: erik_tenants में quota फ़ील्ड जोड़ें या नई टेबल erik_tenant_quotas (plan/account_limit/campaign_limit/sync_quota)
+- डेटा: ads_tenants में quota फ़ील्ड जोड़ें या नई टेबल ads_tenant_quotas (plan/account_limit/campaign_limit/sync_quota)
 - सत्यापन बिंदु: खाता बाइंडिंग संख्या, प्लान निर्माण संख्या, दैनिक सिंक संख्या (AccountController/CampaignController/DataSyncTask प्रवेश पर जाँच)
 - एंडपॉइंट: `GET /api/tenant/quota` (उपयोग + कोटा)
 - फ़्रंटएंड: सिस्टम पेज में कोटा उपयोग दिखाएँ (वैकल्पिक, MVP में केवल API हो सकता है)

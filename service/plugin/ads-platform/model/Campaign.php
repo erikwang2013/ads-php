@@ -13,7 +13,7 @@ class Campaign extends Model
     use SnowflakeTrait;
     use Searchable;
 
-    protected $table = 'erik_campaigns';
+    protected $table = 'ads_campaigns';
     protected $guarded = ['id'];
     public $timestamps = false;
 

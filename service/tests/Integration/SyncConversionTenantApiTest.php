@@ -42,7 +42,7 @@ class SyncConversionTenantApiTest extends ApiTestCase
         $this->assertEquals(0, $body['data']['pagination']['total']);
 
         $accountId = $this->seedAccount();
-        DB::table('erik_sync_errors')->insert([
+        DB::table('ads_sync_errors')->insert([
             'id'                  => $this->nextId(),
             'platform_account_id' => $accountId,
             'platform'            => 'mock',
@@ -120,7 +120,7 @@ class SyncConversionTenantApiTest extends ApiTestCase
         ]);
         $this->assertError($controller->store($noCampaign), 400);
 
-        $this->assertEquals(0, DB::table('erik_conversions')->count());
+        $this->assertEquals(0, DB::table('ads_conversions')->count());
     }
 
     public function testConversionIndex(): void

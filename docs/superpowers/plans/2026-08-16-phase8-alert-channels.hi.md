@@ -14,7 +14,7 @@
 
 | घटक | स्थिति |
 |---|---|
-| `NotificationService::send()` | `match ($channel)` web/email/sms वितरण; web वास्तव में `erik_notifications` में लिखता है, email/sms echo स्टब हैं |
+| `NotificationService::send()` | `match ($channel)` web/email/sms वितरण; web वास्तव में `ads_notifications` में लिखता है, email/sms echo स्टब हैं |
 | `AlertRule.channels` | JSON फ़ील्ड + Eloquent cast array, फ़्रंटएंड पहले से `['web','email','sms']` सबमिट करता है |
 | Admin AlertRuleList.vue | चैनल चयन UI पहले से है (web लॉक्ड, email/sms वैकल्पिक) |
 | Redis pub/sub | `alert:new` चैनल पुश लागू |

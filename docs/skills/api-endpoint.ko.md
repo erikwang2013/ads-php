@@ -26,7 +26,7 @@ class ExampleController
     {
         $tenantId = $request->tenantId ?? 1;
         $perPage = min((int) $request->get('per_page', 20), 100);
-        $paginator = DB::table('erik_example')->where('tenant_id', $tenantId)->paginate($perPage);
+        $paginator = DB::table('ads_example')->where('tenant_id', $tenantId)->paginate($perPage);
 
         return ApiResponse::paginated(
             $paginator->items(), $paginator->total(),
@@ -36,14 +36,14 @@ class ExampleController
 
     public function show(int $id): \Webman\Http\Response
     {
-        $item = DB::table('erik_example')->find($id);
+        $item = DB::table('ads_example')->find($id);
         if (!$item) return ApiResponse::error('Not found');
         return ApiResponse::success($item);
     }
 
     public function store(Request $request): \Webman\Http\Response
     {
-        $id = DB::table('erik_example')->insertGetId([
+        $id = DB::table('ads_example')->insertGetId([
             'name' => $request->post('name'),
             'created_at' => now(),
         ]);
@@ -52,7 +52,7 @@ class ExampleController
 
     public function update(Request $request, int $id): \Webman\Http\Response
     {
-        DB::table('erik_example')->where('id', $id)->update([
+        DB::table('ads_example')->where('id', $id)->update([
             'name' => $request->post('name'),
             'updated_at' => now(),
         ]);
@@ -82,7 +82,7 @@ class ExampleController
 ## 규칙
 
 1. **정렬 화이트리스트**: 항상 정렬 컬럼 검증: `$allowed = ['id','name','created_at']; $sort = in_array($sort,$allowed) ? $sort : 'id';`
-2. **테이블 접두사**: 모든 `DB::table()` 호출에 `erik_` 접두사 사용
+2. **테이블 접두사**: 모든 `DB::table()` 호출에 `ads_` 접두사 사용
 3. **페이징**: 페이지당 최대 100, `ApiResponse::paginated()` 사용
 4. **금액**: 모든 값은 분(分) 단위, 컨트롤러에서 변환 금지
 5. **오류 처리**: Throwable 캐치, `ApiResponse::error($e->getMessage())` 반환

@@ -139,7 +139,7 @@ class NotificationServiceChannelTest extends TestCase
 
     public function testSendWithRealWebChannelDoesNotThrow(): void
     {
-        // 真实 NotificationService：web 渠道走 erik_notifications insert 路径，
+        // 真实 NotificationService：web 渠道走 ads_notifications insert 路径，
         // Redis pub/sub 走 alert:new 推送；两者内部失败均被捕获，send() 不抛异常。
         $service = new NotificationService();
         $service->send($this->makeLog(), $this->makeRule(['web']));

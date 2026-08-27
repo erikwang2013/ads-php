@@ -79,6 +79,6 @@ git add service/tests/ service/plugin/ && git commit -m "feat: add feature X wit
 - [ ] `find service -name "*.php" -not -path "*/vendor/*" -exec php -l {} \;` পাস করে
 - [ ] সব নতুন ফাইলে Copyright header
 - [ ] `getenv()` নেই — বদলে `env()` ব্যবহার করুন
-- [ ] টেবিল নাম `erik_` প্রিফিক্স ব্যবহার করে
+- [ ] টেবিল নাম `ads_` প্রিফিক্স ব্যবহার করে
 - [ ] গ্লোবাল ক্লাসে লিডিং `\` নেই
 - [ ] নেমস্পেসড ফাইলে `use Throwable;` / `use RuntimeException;` / `use InvalidArgumentException;`

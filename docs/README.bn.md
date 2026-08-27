@@ -59,7 +59,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | স্তর | প্রযুক্তি | বিবরণ |
 |----|------|------|
 | সার্ভার | webman v2 + PHP 8.2+ | 7টি প্লাগইন, 65+ API এন্ডপয়েন্ট |
-| ডেটাবেস | MySQL 8.0 | 28টি টেবিল, erik_ প্রিফিক্স, Snowflake BIGINT প্রাইমারি কী |
+| ডেটাবেস | MySQL 8.0 | 28টি টেবিল, ads_ প্রিফিক্স, Snowflake BIGINT প্রাইমারি কী |
 | ক্যাশ | Redis 7 | থ্রি-লেভেল ক্যাশ (L1 মেমরি/L2 APCu/L3 Redis)、রেট লিমিট কাউন্টার、Pub/Sub、মেসেজ কিউ |
 | সার্চ | Elasticsearch | webman-scout অটো ইনডেক্স সিঙ্ক (কনফিগারড) |
 | অ্যাডমিন প্যানেল | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP ব্যাকএন্ড (পোর্ট 8789)、SPA সরাসরি বিজনেস API (পোর্ট 8788) সংযোগ, 19টি পেজ, ECharts ভিজুয়ালাইজেশন |
@@ -329,21 +329,21 @@ ads-php/
 
 ## ডেটাবেস
 
-**নেমিং কনভেনশন**: টেবিল প্রিফিক্স `erik_`，প্রাইমারি কী `BIGINT UNSIGNED PRIMARY KEY`（নো অটো-ইনক্রিমেন্ট，Snowflake ID）、ইঞ্জিন InnoDB、ক্যারেক্টার সেট utf8mb4
+**নেমিং কনভেনশন**: টেবিল প্রিফিক্স `ads_`，প্রাইমারি কী `BIGINT UNSIGNED PRIMARY KEY`（নো অটো-ইনক্রিমেন্ট，Snowflake ID）、ইঞ্জিন InnoDB、ক্যারেক্টার সেট utf8mb4
 
 | ক্যাটাগরি | টেবিল নাম | ব্যবহার |
 |------|------|------|
-| বেসিক | `erik_tenants` | মাল্টি-টেন্যান্সি |
-| অ্যাকাউন্ট | `erik_platform_accounts`, `erik_auth_tokens` | OAuth প্ল্যাটফর্ম অ্যাকাউন্ট |
-| ডেলিভারি | `erik_campaigns`, `erik_ad_groups`, `erik_creatives` | বিজ্ঞাপন ডেলিভারি হায়ারার্কি |
-| রিপোর্ট | `erik_report_metrics`, `erik_report_extras` | ইউনিফাইড রিপোর্ট মেট্রিক |
-| অ্যাসেট | `erik_assets` | ক্রিয়েটিভ অ্যাসেট লাইব্রেরি |
-| টার্গেটিং | `erik_targeting_templates` | অডিয়েন্স টার্গেটিং টেমপ্লেট |
-| অ্যাট্রিবিউশন | `erik_conversions`, `erik_attribution_results` | কনভার্সন ট্র্যাকিং + অ্যাট্রিবিউশন ফলাফল |
-| বিডিং | `erik_bid_rules`, `erik_bid_logs` | অটো বিডিং রুল + হিস্টোরি |
-| অ্যালার্ট | `erik_alert_rules`, `erik_alert_logs` | অ্যালার্ট মনিটরিং |
-| নোটিফিকেশন | `erik_notifications` | সাইট-ইন নোটিফিকেশন |
-| সিস্টেম | `erik_sync_errors`, `admin_users`, `admin_roles`, `admin_audit_logs` | সিঙ্ক এরর、RBAC、অডিট |
+| বেসিক | `ads_tenants` | মাল্টি-টেন্যান্সি |
+| অ্যাকাউন্ট | `ads_platform_accounts`, `ads_auth_tokens` | OAuth প্ল্যাটফর্ম অ্যাকাউন্ট |
+| ডেলিভারি | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | বিজ্ঞাপন ডেলিভারি হায়ারার্কি |
+| রিপোর্ট | `ads_report_metrics`, `ads_report_extras` | ইউনিফাইড রিপোর্ট মেট্রিক |
+| অ্যাসেট | `ads_assets` | ক্রিয়েটিভ অ্যাসেট লাইব্রেরি |
+| টার্গেটিং | `ads_targeting_templates` | অডিয়েন্স টার্গেটিং টেমপ্লেট |
+| অ্যাট্রিবিউশন | `ads_conversions`, `ads_attribution_results` | কনভার্সন ট্র্যাকিং + অ্যাট্রিবিউশন ফলাফল |
+| বিডিং | `ads_bid_rules`, `ads_bid_logs` | অটো বিডিং রুল + হিস্টোরি |
+| অ্যালার্ট | `ads_alert_rules`, `ads_alert_logs` | অ্যালার্ট মনিটরিং |
+| নোটিফিকেশন | `ads_notifications` | সাইট-ইন নোটিফিকেশন |
+| সিস্টেম | `ads_sync_errors`, `admin_users`, `admin_roles`, `admin_audit_logs` | সিঙ্ক এরর、RBAC、অডিট |
 
 ---
 
@@ -394,7 +394,7 @@ cd apps/flutter && dart analyze   # 零错误
 | Skill | বিবরণ |
 |------|------|
 | `adapter-generator` | নতুন বিজ্ঞাপন প্ল্যাটফর্ম অ্যাডাপ্টার তৈরি (14 মেথড টেমপ্লেট) |
-| `migration-generator` | SQL মাইগ্রেশন ফাইল তৈরি (erik_ প্রিফিক্স + BIGINT PK) |
+| `migration-generator` | SQL মাইগ্রেশন ফাইল তৈরি (ads_ প্রিফিক্স + BIGINT PK) |
 | `erik-stack` | Erik Stack 8 প্যাকেজ ইন্টিগ্রেশন ব্যবহার গাইড |
 | `admin-page-generator` | Vue3 অ্যাডমিন প্যানেল পেজ তৈরি |
 | `api-endpoint` | RESTful API এন্ডপয়েন্ট যোগ |

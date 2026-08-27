@@ -31,7 +31,7 @@ class DashboardController
         $cacheKey = CacheService::dashboardKey($tenantId, $dateStart, $dateEnd);
 
         $data = CacheService::remember($cacheKey, 300, function () use ($tenantId, $dateStart, $dateEnd) {
-            $overview = (array) DB::table('erik_report_metrics')
+            $overview = (array) DB::table('ads_report_metrics')
                 ->where('tenant_id', $tenantId)
                 ->whereBetween('date', [$dateStart, $dateEnd])
                 ->selectRaw('COALESCE(SUM(cost), 0) as total_cost')
@@ -43,7 +43,7 @@ class DashboardController
                 ->selectRaw('CASE WHEN SUM(cost) > 0 THEN ROUND(SUM(cost)/SUM(conversions), 2) ELSE 0 END as avg_cpa')
                 ->first();
 
-            $byPlatform = DB::table('erik_report_metrics')
+            $byPlatform = DB::table('ads_report_metrics')
                 ->where('tenant_id', $tenantId)
                 ->whereBetween('date', [$dateStart, $dateEnd])
                 ->groupBy('platform')
@@ -55,7 +55,7 @@ class DashboardController
                 ->orderByDesc('cost')
                 ->get();
 
-            $daily = DB::table('erik_report_metrics')
+            $daily = DB::table('ads_report_metrics')
                 ->where('tenant_id', $tenantId)
                 ->whereBetween('date', [$dateStart, $dateEnd])
                 ->groupBy('date', 'platform')

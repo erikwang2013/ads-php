@@ -8,7 +8,7 @@
 
 | # | Changement | Paquet | Périmètre d'impact |
 |---|------|----|---------|
-| 1 | Préfixe de table de base de données `erik_` | — | Tous les fichiers SQL/migration |
+| 1 | Préfixe de table de base de données `ads_` | — | Tous les fichiers SQL/migration |
 | 2 | Clé primaire Snowflake ID (sans auto-incrément) | erikwang2013/snowflake-php | Tous les Model + SQL |
 | 3 | Chiffrement/déchiffrement hashids des IDs API | erikwang2013/hashids | Toutes les réponses Controller |
 | 4 | Bascule de l'authentification JWT | erikwang2013/jwt-webman | AuthMiddleware + AuthController |
@@ -29,7 +29,7 @@
 
 **Batch A : Infrastructure (dépendances + ID + chiffrement)**
 - Mettre à jour composer.json pour ajouter les 6 paquets erikwang2013
-- Réécrire tous les fichiers de migration SQL (préfixe erik_ + bigint sans auto-incrément)
+- Réécrire tous les fichiers de migration SQL (préfixe ads_ + bigint sans auto-incrément)
 - Créer le trait Snowflake ID
 - Mettre à jour tous les Model (utilisation de SnowflakeTrait)
 - Configurer le middleware hashids

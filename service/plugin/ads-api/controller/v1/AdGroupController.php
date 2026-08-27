@@ -28,23 +28,23 @@ class AdGroupController
     {
         $tenantId = $this->tenantId($request);
 
-        $query = DB::table('erik_ad_groups')
-            ->join('erik_campaigns', 'erik_ad_groups.campaign_id', '=', 'erik_campaigns.id')
-            ->where('erik_campaigns.tenant_id', $tenantId)
-            ->select('erik_ad_groups.*', 'erik_campaigns.platform', 'erik_campaigns.name as campaign_name');
+        $query = DB::table('ads_ad_groups')
+            ->join('ads_campaigns', 'ads_ad_groups.campaign_id', '=', 'ads_campaigns.id')
+            ->where('ads_campaigns.tenant_id', $tenantId)
+            ->select('ads_ad_groups.*', 'ads_campaigns.platform', 'ads_campaigns.name as campaign_name');
 
         if ($platform = $request->get('platform')) {
-            $query->where('erik_campaigns.platform', $platform);
+            $query->where('ads_campaigns.platform', $platform);
         }
         if ($campaignId = $request->get('campaign_id')) {
-            $query->where('erik_ad_groups.campaign_id', (int) $campaignId);
+            $query->where('ads_ad_groups.campaign_id', (int) $campaignId);
         }
         if ($status = $request->get('status')) {
-            $query->where('erik_ad_groups.status', $status);
+            $query->where('ads_ad_groups.status', $status);
         }
 
         $this->allowedSorts = ['id', 'name', 'status', 'bid_amount', 'created_at', 'updated_at'];
-        [$items, $total, $page, $perPage] = $this->paginate($request, $query, 'erik_ad_groups');
+        [$items, $total, $page, $perPage] = $this->paginate($request, $query, 'ads_ad_groups');
 
         return ApiResponse::paginated($items, $total, $page, $perPage);
     }
@@ -57,17 +57,17 @@ class AdGroupController
      */
     public function show(int $id): \Webman\Http\Response
     {
-        $adGroup = DB::table('erik_ad_groups')
-            ->join('erik_campaigns', 'erik_ad_groups.campaign_id', '=', 'erik_campaigns.id')
-            ->where('erik_ad_groups.id', $id)
-            ->select('erik_ad_groups.*', 'erik_campaigns.platform', 'erik_campaigns.name as campaign_name')
+        $adGroup = DB::table('ads_ad_groups')
+            ->join('ads_campaigns', 'ads_ad_groups.campaign_id', '=', 'ads_campaigns.id')
+            ->where('ads_ad_groups.id', $id)
+            ->select('ads_ad_groups.*', 'ads_campaigns.platform', 'ads_campaigns.name as campaign_name')
             ->first();
 
         if (!$adGroup) {
             return ApiResponse::error('Ad group not found');
         }
 
-        $todayMetrics = DB::table('erik_report_metrics')
+        $todayMetrics = DB::table('ads_report_metrics')
             ->where('ad_group_id', $id)
             ->where('date', date('Y-m-d'))
             ->first();
@@ -84,7 +84,7 @@ class AdGroupController
     public function store(Request $request): \Webman\Http\Response
     {
         $campaignId = (int) $request->post('campaign_id');
-        $campaign = DB::table('erik_campaigns')->find($campaignId);
+        $campaign = DB::table('ads_campaigns')->find($campaignId);
         if (!$campaign) {
             return ApiResponse::error('Campaign not found');
         }
@@ -112,7 +112,7 @@ class AdGroupController
             );
 
             $id = \plugin\ads_platform\model\Campaign::snowflakeId();
-            DB::table('erik_ad_groups')->insert([
+            DB::table('ads_ad_groups')->insert([
                 'id'                  => $id,
                 'campaign_id'         => $campaignId,
                 'platform_adgroup_id' => $platformAdGroupId,
@@ -140,7 +140,7 @@ class AdGroupController
      */
     public function update(Request $request, int $id): \Webman\Http\Response
     {
-        $adGroup = DB::table('erik_ad_groups')->find($id);
+        $adGroup = DB::table('ads_ad_groups')->find($id);
         if (!$adGroup) {
             return ApiResponse::error('Ad group not found');
         }
@@ -153,7 +153,7 @@ class AdGroupController
             }
         }
 
-        $campaign = DB::table('erik_campaigns')->find($adGroup->campaign_id);
+        $campaign = DB::table('ads_campaigns')->find($adGroup->campaign_id);
         $account = PlatformAccount::find($campaign->platform_account_id);
         $adapter = AdapterRegistry::get($campaign->platform);
 
@@ -172,7 +172,7 @@ class AdGroupController
             if ($request->post('bid_type') !== null) $updates['bid_type'] = $request->post('bid_type');
             if ($request->post('targeting') !== null) $updates['targeting'] = json_encode($request->post('targeting'), JSON_UNESCAPED_UNICODE);
 
-            DB::table('erik_ad_groups')->where('id', $id)->update($updates);
+            DB::table('ads_ad_groups')->where('id', $id)->update($updates);
 
             return ApiResponse::success(null, 'Updated');
         } catch (Throwable $e) {
@@ -188,13 +188,13 @@ class AdGroupController
      */
     public function toggle(Request $request, int $id): \Webman\Http\Response
     {
-        $adGroup = DB::table('erik_ad_groups')->find($id);
+        $adGroup = DB::table('ads_ad_groups')->find($id);
         if (!$adGroup) {
             return ApiResponse::error('Ad group not found');
         }
 
         $enabled = (bool) $request->post('enabled', true);
-        $campaign = DB::table('erik_campaigns')->find($adGroup->campaign_id);
+        $campaign = DB::table('ads_campaigns')->find($adGroup->campaign_id);
         $account = PlatformAccount::find($campaign->platform_account_id);
         $adapter = AdapterRegistry::get($campaign->platform);
 
@@ -207,7 +207,7 @@ class AdGroupController
                 $enabled
             );
 
-            DB::table('erik_ad_groups')->where('id', $id)->update([
+            DB::table('ads_ad_groups')->where('id', $id)->update([
                 'status'     => $enabled ? 'enabled' : 'paused',
                 'updated_at' => now(),
             ]);

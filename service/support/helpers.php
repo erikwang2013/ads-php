@@ -28,6 +28,7 @@ if (!function_exists('redis')) {
             $client->auth($config['password']);
         }
         $client->select((int) ($config['database'] ?? 0));
+        $client->setOption(\Redis::OPT_PREFIX, $config['prefix'] ?? 'ads:');
         return $client;
     }
 }

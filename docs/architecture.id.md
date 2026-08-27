@@ -163,22 +163,22 @@ ads-php/
 
 | Kategori | Nama tabel | Primary key | Kegunaan |
 |------|------|------|------|
-| Dasar | `erik_tenants` | BIGINT Snowflake | Multi-tenant |
-| Akun | `erik_platform_accounts`, `erik_auth_tokens` | BIGINT Snowflake | Akun platform OAuth |
-| Hierarki penayangan | `erik_campaigns`, `erik_ad_groups`, `erik_creatives` | BIGINT Snowflake | Penayangan iklan |
-| Laporan | `erik_report_metrics`, `erik_report_extras` | BIGINT Snowflake | Metrik terpadu |
-| Peringatan | `erik_alert_rules`, `erik_alert_logs` | BIGINT Snowflake | Pemantauan peringatan |
-| Penawaran | `erik_bid_rules`, `erik_bid_logs` | BIGINT Snowflake | Penawaran otomatis |
-| Penargetan | `erik_targeting_templates` | BIGINT Snowflake | Template audiens |
-| Materi | `erik_assets` | BIGINT Snowflake | Pustaka materi kreatif |
-| Notifikasi | `erik_notifications` | BIGINT Snowflake | Notifikasi dalam aplikasi |
-| Atribusi | `erik_conversions`, `erik_attribution_results` | BIGINT Snowflake | Pelacakan konversi + atribusi |
-| Sistem | `erik_sync_errors` | BIGINT Snowflake | Error sinkronisasi |
+| Dasar | `ads_tenants` | BIGINT Snowflake | Multi-tenant |
+| Akun | `ads_platform_accounts`, `ads_auth_tokens` | BIGINT Snowflake | Akun platform OAuth |
+| Hierarki penayangan | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | BIGINT Snowflake | Penayangan iklan |
+| Laporan | `ads_report_metrics`, `ads_report_extras` | BIGINT Snowflake | Metrik terpadu |
+| Peringatan | `ads_alert_rules`, `ads_alert_logs` | BIGINT Snowflake | Pemantauan peringatan |
+| Penawaran | `ads_bid_rules`, `ads_bid_logs` | BIGINT Snowflake | Penawaran otomatis |
+| Penargetan | `ads_targeting_templates` | BIGINT Snowflake | Template audiens |
+| Materi | `ads_assets` | BIGINT Snowflake | Pustaka materi kreatif |
+| Notifikasi | `ads_notifications` | BIGINT Snowflake | Notifikasi dalam aplikasi |
+| Atribusi | `ads_conversions`, `ads_attribution_results` | BIGINT Snowflake | Pelacakan konversi + atribusi |
+| Sistem | `ads_sync_errors` | BIGINT Snowflake | Error sinkronisasi |
 | Manajemen | `admin_users`, `admin_roles`, `admin_audit_logs` | BIGINT Snowflake | RBAC + audit |
 
 ### 5.2 Konvensi Penamaan
 
-- Prefiks tabel: `erik_`
+- Prefiks tabel: `ads_`
 - Primary key: `BIGINT UNSIGNED PRIMARY KEY` (tanpa auto-increment, Snowflake ID)
 - Engine: InnoDB, charset: utf8mb4
 - Timestamp: `created_at`, `updated_at` (DATETIME)

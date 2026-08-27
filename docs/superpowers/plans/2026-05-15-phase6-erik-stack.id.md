@@ -8,7 +8,7 @@
 
 | # | Perubahan | Paket | Cakupan Pengaruh |
 |---|-----------|-------|------------------|
-| 1 | Prefiks tabel database `erik_` | — | Semua file SQL/migrasi |
+| 1 | Prefiks tabel database `ads_` | — | Semua file SQL/migrasi |
 | 2 | Kunci utama Snowflake ID (tanpa auto-increment) | erikwang2013/snowflake-php | Semua Model + SQL |
 | 3 | Enkripsi/dekripsi hashids ID API | erikwang2013/hashids | Semua respons Controller |
 | 4 | Beralih autentikasi JWT | erikwang2013/jwt-webman | AuthMiddleware + AuthController |
@@ -29,7 +29,7 @@
 
 **Batch A: Infrastruktur (dependensi + ID + enkripsi)**
 - Perbarui composer.json tambahkan 6 paket erikwang2013
-- Tulis ulang semua file migrasi SQL (prefiks erik_ + bigint tanpa auto-increment)
+- Tulis ulang semua file migrasi SQL (prefiks ads_ + bigint tanpa auto-increment)
 - Buat trait Snowflake ID
 - Perbarui semua Model (gunakan SnowflakeTrait)
 - Konfigurasi middleware hashids

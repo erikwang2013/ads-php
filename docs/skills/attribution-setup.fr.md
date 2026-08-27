@@ -9,12 +9,12 @@ Configurer et utiliser le moteur d'attribution pour analyser les sources de conv
 1. Créer la table des événements de conversion :
 
 ```sql
--- erik_conversions: 转化事件
-INSERT INTO erik_conversions (id, tenant_id, platform, campaign_id, conversion_time, value, order_id)
+-- ads_conversions: 转化事件
+INSERT INTO ads_conversions (id, tenant_id, platform, campaign_id, conversion_time, value, order_id)
 VALUES (snowflake_id(), 1, 'juliang', 1, NOW(), 299.00, 'ORD-001');
 ```
 
-2. Les données de points de contact proviennent de `erik_report_metrics` (les enregistrements avec clicks > 0 servent de points de contact).
+2. Les données de points de contact proviennent de `ads_report_metrics` (les enregistrements avec clicks > 0 servent de points de contact).
 
 ## Modèles d'attribution
 

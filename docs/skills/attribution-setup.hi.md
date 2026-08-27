@@ -9,12 +9,12 @@
 1. कन्वर्ज़न इवेंट टेबल बनाएँ:
 
 ```sql
--- erik_conversions: 转化事件
-INSERT INTO erik_conversions (id, tenant_id, platform, campaign_id, conversion_time, value, order_id)
+-- ads_conversions: 转化事件
+INSERT INTO ads_conversions (id, tenant_id, platform, campaign_id, conversion_time, value, order_id)
 VALUES (snowflake_id(), 1, 'juliang', 1, NOW(), 299.00, 'ORD-001');
 ```
 
-2. टचपॉइंट डेटा `erik_report_metrics` से आता है (clicks > 0 वाले रिकॉर्ड टचपॉइंट माने जाते हैं)।
+2. टचपॉइंट डेटा `ads_report_metrics` से आता है (clicks > 0 वाले रिकॉर्ड टचपॉइंट माने जाते हैं)।
 
 ## एट्रिब्यूशन मॉडल
 

@@ -51,7 +51,7 @@ class TokenRefreshTaskTest extends SqliteTestCase
         $this->adapter = new SpyRefreshAdapter();
         AdapterRegistry::register($this->adapter);
 
-        $this->exec('CREATE TABLE erik_platform_accounts (
+        $this->exec('CREATE TABLE ads_platform_accounts (
             id INTEGER PRIMARY KEY AUTOINCREMENT, tenant_id INT, platform TEXT, account_name TEXT,
             account_id_on_platform TEXT, access_token TEXT, refresh_token TEXT, status INT,
             token_expires_at TEXT, last_sync_at TEXT, sync_enabled INT, created_at TEXT, updated_at TEXT)');
@@ -105,7 +105,7 @@ class TokenRefreshTaskTest extends SqliteTestCase
     {
         $account = $this->seedAccount(['refresh_token' => '']);
         // 直接写库模拟存储层空 refresh_token（绕过 Encryptable cast 对空串的加密）
-        DB::table('erik_platform_accounts')->where('id', $account->id)->update(['refresh_token' => '']);
+        DB::table('ads_platform_accounts')->where('id', $account->id)->update(['refresh_token' => '']);
 
         (new TokenRefreshTask())->execute();
 

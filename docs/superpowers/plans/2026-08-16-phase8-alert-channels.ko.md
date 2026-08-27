@@ -14,7 +14,7 @@
 
 | 컴포넌트 | 상태 |
 |---|---|
-| `NotificationService::send()` | `match ($channel)`로 web/email/sms 분기; web은 실제로 `erik_notifications`에 기록, email/sms는 echo 스텁 |
+| `NotificationService::send()` | `match ($channel)`로 web/email/sms 분기; web은 실제로 `ads_notifications`에 기록, email/sms는 echo 스텁 |
 | `AlertRule.channels` | JSON 필드 + Eloquent cast array, 프론트엔드가 이미 `['web','email','sms']` 제출 |
 | Admin AlertRuleList.vue | 채널 선택 UI 이미 존재(web 잠금, email/sms 선택 가능) |
 | Redis pub/sub | `alert:new` 채널 푸시 구현 완료 |

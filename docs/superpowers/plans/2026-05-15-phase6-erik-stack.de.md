@@ -8,7 +8,7 @@
 
 | # | Änderung | Paket | Auswirkungsbereich |
 |---|------|----|---------|
-| 1 | Datenbank-Tabellenpräfix `erik_` | — | Alle SQL-/Migrationsdateien |
+| 1 | Datenbank-Tabellenpräfix `ads_` | — | Alle SQL-/Migrationsdateien |
 | 2 | Primärschlüssel Snowflake-ID (ohne Auto-Increment) | erikwang2013/snowflake-php | Alle Modelle + SQL |
 | 3 | API-ID hashids Ver-/Entschlüsselung | erikwang2013/hashids | Alle Controller-Antworten |
 | 4 | Umstellung auf JWT-Authentifizierung | erikwang2013/jwt-webman | AuthMiddleware + AuthController |
@@ -29,7 +29,7 @@
 
 **Batch A: Infrastruktur (Abhängigkeiten + ID + Verschlüsselung)**
 - composer.json aktualisieren, 6 erikwang2013-Pakete hinzufügen
-- Alle SQL-Migrationsdateien neu schreiben (erik_-Präfix + bigint ohne Auto-Increment)
+- Alle SQL-Migrationsdateien neu schreiben (ads_-Präfix + bigint ohne Auto-Increment)
 - Snowflake-ID-Trait erstellen
 - Alle Modelle aktualisieren (SnowflakeTrait verwenden)
 - hashids-Middleware konfigurieren

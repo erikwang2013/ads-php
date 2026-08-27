@@ -9,12 +9,12 @@ Configura y usa el motor de atribución para analizar el origen de las conversio
 1. Crea la tabla de eventos de conversión:
 
 ```sql
--- erik_conversions: 转化事件
-INSERT INTO erik_conversions (id, tenant_id, platform, campaign_id, conversion_time, value, order_id)
+-- ads_conversions: 转化事件
+INSERT INTO ads_conversions (id, tenant_id, platform, campaign_id, conversion_time, value, order_id)
 VALUES (snowflake_id(), 1, 'juliang', 1, NOW(), 299.00, 'ORD-001');
 ```
 
-2. Los datos de puntos de contacto provienen de `erik_report_metrics` (los registros con clicks > 0 actúan como puntos de contacto).
+2. Los datos de puntos de contacto provienen de `ads_report_metrics` (los registros con clicks > 0 actúan como puntos de contacto).
 
 ## Modelos de atribución
 

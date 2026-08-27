@@ -14,7 +14,7 @@
 
 | Komponen | Status |
 |---|---|
-| `NotificationService::send()` | `match ($channel)` mendistribusikan web/email/sms; web menulis nyata ke `erik_notifications`, email/sms adalah stub echo |
+| `NotificationService::send()` | `match ($channel)` mendistribusikan web/email/sms; web menulis nyata ke `ads_notifications`, email/sms adalah stub echo |
 | `AlertRule.channels` | Field JSON + Eloquent cast array, frontend sudah mengirim `['web','email','sms']` |
 | Admin AlertRuleList.vue | Sudah ada UI ceklis saluran (web terkunci, email/sms opsional) |
 | Redis pub/sub | Penerusan saluran `alert:new` sudah diimplementasikan |

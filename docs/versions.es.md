@@ -135,24 +135,24 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 | Categoría | Nombre de tabla | Lite | Standard | Full |
 |------|------|:---:|:---:|:---:|
-| Base | erik_tenants | ✅ | ✅ | ✅ |
-| Cuentas | erik_platform_accounts | ✅ | ✅ | ✅ |
-| | erik_auth_tokens | ✅ | ✅ | ✅ |
-| Campañas | erik_campaigns | ✅ | ✅ | ✅ |
-| | erik_report_metrics | ✅ | ✅ | ✅ |
-| | erik_report_extras | ✅ | ✅ | ✅ |
-| | erik_ad_groups | — | ✅ | ✅ |
-| | erik_creatives | — | ✅ | ✅ |
-| Alertas | erik_alert_rules | — | ✅ | ✅ |
-| | erik_alert_logs | — | ✅ | ✅ |
-| Notificaciones | erik_notifications | — | ✅ | ✅ |
-| Ofertas | erik_bid_rules | — | — | ✅ |
-| | erik_bid_logs | — | — | ✅ |
-| Segmentación | erik_targeting_templates | — | — | ✅ |
-| Materiales | erik_assets | — | — | ✅ |
-| Atribución | erik_conversions | — | — | ✅ |
-| | erik_attribution_results | — | — | ✅ |
-| Sistema | erik_sync_errors | ✅ | ✅ | ✅ |
+| Base | ads_tenants | ✅ | ✅ | ✅ |
+| Cuentas | ads_platform_accounts | ✅ | ✅ | ✅ |
+| | ads_auth_tokens | ✅ | ✅ | ✅ |
+| Campañas | ads_campaigns | ✅ | ✅ | ✅ |
+| | ads_report_metrics | ✅ | ✅ | ✅ |
+| | ads_report_extras | ✅ | ✅ | ✅ |
+| | ads_ad_groups | — | ✅ | ✅ |
+| | ads_creatives | — | ✅ | ✅ |
+| Alertas | ads_alert_rules | — | ✅ | ✅ |
+| | ads_alert_logs | — | ✅ | ✅ |
+| Notificaciones | ads_notifications | — | ✅ | ✅ |
+| Ofertas | ads_bid_rules | — | — | ✅ |
+| | ads_bid_logs | — | — | ✅ |
+| Segmentación | ads_targeting_templates | — | — | ✅ |
+| Materiales | ads_assets | — | — | ✅ |
+| Atribución | ads_conversions | — | — | ✅ |
+| | ads_attribution_results | — | — | ✅ |
+| Sistema | ads_sync_errors | ✅ | ✅ | ✅ |
 | Administración | admin_users/roles/audit_logs | ✅ | ✅ | ✅ |
 | **Total** | | **8** | **13** | **18** |
 

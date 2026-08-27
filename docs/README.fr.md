@@ -59,7 +59,7 @@ Intégration de **29 plateformes publicitaires**, gestion unifiée du ciblage pu
 | Couche | Technologie | Description |
 |----|------|------|
 | Serveur | webman v2 + PHP 8.2+ | 7 plugins, 65+ points de terminaison API |
-| Base de données | MySQL 8.0 | 28 tables, préfixe erik_, clés primaires BIGINT Snowflake |
+| Base de données | MySQL 8.0 | 28 tables, préfixe ads_, clés primaires BIGINT Snowflake |
 | Cache | Redis 7 | Cache à trois niveaux (L1 mémoire / L2 APCu / L3 Redis), compteurs de limitation, Pub/Sub, file de messages |
 | Recherche | Elasticsearch | Synchronisation d'index automatique webman-scout (configurée) |
 | Admin | webman-admin v2 + Vue 3 + TypeScript + Element Plus | Backend PHP (port 8789), SPA accédant directement à l'API métier (port 8788), 19 pages, visualisation ECharts |
@@ -329,21 +329,21 @@ ads-php/
 
 ## Base de données
 
-**Conventions de nommage** : préfixe de table `erik_`, clé primaire `BIGINT UNSIGNED PRIMARY KEY` (sans auto-incrément, ID Snowflake), moteur InnoDB, jeu de caractères utf8mb4
+**Conventions de nommage** : préfixe de table `ads_`, clé primaire `BIGINT UNSIGNED PRIMARY KEY` (sans auto-incrément, ID Snowflake), moteur InnoDB, jeu de caractères utf8mb4
 
 | Catégorie | Nom de table | Utilisation |
 |------|------|------|
-| Base | `erik_tenants` | Multi-locataires |
-| Comptes | `erik_platform_accounts`, `erik_auth_tokens` | Comptes de plateformes OAuth |
-| Diffusion | `erik_campaigns`, `erik_ad_groups`, `erik_creatives` | Hiérarchie de diffusion publicitaire |
-| Rapports | `erik_report_metrics`, `erik_report_extras` | Métriques de rapport unifiées |
-| Ressources | `erik_assets` | Bibliothèque de ressources créatives |
-| Ciblage | `erik_targeting_templates` | Modèles de ciblage d'audience |
-| Attribution | `erik_conversions`, `erik_attribution_results` | Suivi des conversions + résultats d'attribution |
-| Enchères | `erik_bid_rules`, `erik_bid_logs` | Règles d'enchères automatiques + historique |
-| Alertes | `erik_alert_rules`, `erik_alert_logs` | Surveillance des alertes |
-| Notifications | `erik_notifications` | Notifications internes |
-| Système | `erik_sync_errors`, `admin_users`, `admin_roles`, `admin_audit_logs` | Erreurs de synchronisation, RBAC, audit |
+| Base | `ads_tenants` | Multi-locataires |
+| Comptes | `ads_platform_accounts`, `ads_auth_tokens` | Comptes de plateformes OAuth |
+| Diffusion | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | Hiérarchie de diffusion publicitaire |
+| Rapports | `ads_report_metrics`, `ads_report_extras` | Métriques de rapport unifiées |
+| Ressources | `ads_assets` | Bibliothèque de ressources créatives |
+| Ciblage | `ads_targeting_templates` | Modèles de ciblage d'audience |
+| Attribution | `ads_conversions`, `ads_attribution_results` | Suivi des conversions + résultats d'attribution |
+| Enchères | `ads_bid_rules`, `ads_bid_logs` | Règles d'enchères automatiques + historique |
+| Alertes | `ads_alert_rules`, `ads_alert_logs` | Surveillance des alertes |
+| Notifications | `ads_notifications` | Notifications internes |
+| Système | `ads_sync_errors`, `admin_users`, `admin_roles`, `admin_audit_logs` | Erreurs de synchronisation, RBAC, audit |
 
 ---
 
@@ -394,7 +394,7 @@ cd apps/flutter && dart analyze   # zéro erreur
 | Skill | Description |
 |------|------|
 | `adapter-generator` | Génère un nouvel adaptateur de plateforme publicitaire (modèle de 14 méthodes) |
-| `migration-generator` | Génère des fichiers de migration SQL (préfixe erik_ + PK BIGINT) |
+| `migration-generator` | Génère des fichiers de migration SQL (préfixe ads_ + PK BIGINT) |
 | `erik-stack` | Guide d'intégration des 8 paquets Erik Stack |
 | `admin-page-generator` | Génère des pages de back-office Vue 3 |
 | `api-endpoint` | Ajoute des points de terminaison API RESTful |

@@ -26,7 +26,7 @@ class ExampleController
     {
         $tenantId = $request->tenantId ?? 1;
         $perPage = min((int) $request->get('per_page', 20), 100);
-        $paginator = DB::table('erik_example')->where('tenant_id', $tenantId)->paginate($perPage);
+        $paginator = DB::table('ads_example')->where('tenant_id', $tenantId)->paginate($perPage);
 
         return ApiResponse::paginated(
             $paginator->items(), $paginator->total(),
@@ -36,14 +36,14 @@ class ExampleController
 
     public function show(int $id): \Webman\Http\Response
     {
-        $item = DB::table('erik_example')->find($id);
+        $item = DB::table('ads_example')->find($id);
         if (!$item) return ApiResponse::error('Not found');
         return ApiResponse::success($item);
     }
 
     public function store(Request $request): \Webman\Http\Response
     {
-        $id = DB::table('erik_example')->insertGetId([
+        $id = DB::table('ads_example')->insertGetId([
             'name' => $request->post('name'),
             'created_at' => now(),
         ]);
@@ -52,7 +52,7 @@ class ExampleController
 
     public function update(Request $request, int $id): \Webman\Http\Response
     {
-        DB::table('erik_example')->where('id', $id)->update([
+        DB::table('ads_example')->where('id', $id)->update([
             'name' => $request->post('name'),
             'updated_at' => now(),
         ]);
@@ -82,7 +82,7 @@ class ExampleController
 ## القواعد
 
 1. **قائمة الفرز البيضاء**: التحقق دائمًا من أعمدة الفرز: `$allowed = ['id','name','created_at']; $sort = in_array($sort,$allowed) ? $sort : 'id';`
-2. **بادئة الجداول**: استخدام بادئة `erik_` لجميع استدعاءات `DB::table()`
+2. **بادئة الجداول**: استخدام بادئة `ads_` لجميع استدعاءات `DB::table()`
 3. **الترقيم**: 100 كحد أقصى لكل صفحة، واستخدام `ApiResponse::paginated()`
 4. **المال**: جميع القيم بالفين (分)، بدون تحويل في وحدات التحكم
 5. **معالجة الأخطاء**: التقاط Throwable، وإرجاع `ApiResponse::error($e->getMessage())`

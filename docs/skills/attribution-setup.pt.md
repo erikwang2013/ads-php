@@ -9,12 +9,12 @@ Como configurar e usar o mecanismo de atribuição para analisar a origem das co
 1. Criar a tabela de eventos de conversão:
 
 ```sql
--- erik_conversions: 转化事件
-INSERT INTO erik_conversions (id, tenant_id, platform, campaign_id, conversion_time, value, order_id)
+-- ads_conversions: 转化事件
+INSERT INTO ads_conversions (id, tenant_id, platform, campaign_id, conversion_time, value, order_id)
 VALUES (snowflake_id(), 1, 'juliang', 1, NOW(), 299.00, 'ORD-001');
 ```
 
-2. Os dados de pontos de contato vêm de `erik_report_metrics` (registros com clicks > 0 são considerados pontos de contato).
+2. Os dados de pontos de contato vêm de `ads_report_metrics` (registros com clicks > 0 são considerados pontos de contato).
 
 ## Modelos de atribuição
 

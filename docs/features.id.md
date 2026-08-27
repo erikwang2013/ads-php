@@ -96,7 +96,7 @@ Antarmuka: Ringkasan / Kustom / Ekspor → [api.id.md modul 7](api.id.md#模块-
 
 ```
 遍历 enabled=1 的规则
-  → 查询 erik_report_metrics (今天数据, 按 scope 过滤)
+  → 查询 ads_report_metrics (今天数据, 按 scope 过滤)
   → compare(metric_value, threshold, condition)
   → 去重检查 (check_interval 内已有触发 → 跳过)
   → 创建 AlertLog (status=triggered)
@@ -107,7 +107,7 @@ Antarmuka: Ringkasan / Kustom / Ekspor → [api.id.md modul 7](api.id.md#模块-
 
 | Kanal | Status | Implementasi |
 |------|------|------|
-| web | ✅ | Tulis ke erik_notifications |
+| web | ✅ | Tulis ke ads_notifications |
 | email | placeholder | Stub echo |
 | sms | placeholder | Stub echo |
 | Redis pub/sub | ✅ | Push JSON kanal `alert:new` |
@@ -131,7 +131,7 @@ Antarmuka: Daftar / jumlah belum dibaca / tandai dibaca / semua dibaca → [api.
 
 ```
 遍历 enabled=1 的规则
-  → 查询 erik_report_metrics (今天数据, 按 scope 过滤)
+  → 查询 ads_report_metrics (今天数据, 按 scope 过滤)
   → compare(metric_value, threshold, condition)
   → 冷却检查 (cooldown_minutes 内是否有过操作)
   → 执行动作:
@@ -254,7 +254,7 @@ Antarmuka: Unggah / daftar / detail / hapus → [api.id.md modul 12](api.id.md#�
 - Peringatan tiga tahap: yellow (≥50%), orange (≥80%), red (≥100%)
 - BudgetCheckTask dieksekusi setiap 15 menit
 - Deduplikasi: kampanye yang sama di level yang sama hanya dinotifikasi sekali per hari
-- Tulis ke tabel `erik_notifications`
+- Tulis ke tabel `ads_notifications`
 
 Antarmuka: Peringatan anggaran → [api.id.md modul 7](api.id.md#模块-7-报表)
 
@@ -283,16 +283,16 @@ Antarmuka: Kalender penayangan → [api.id.md modul 7](api.id.md#模块-7-报表
 | position_based | Awal 40% + akhir 40% + tengah 20% |
 
 - Jendela retrospektif: 30 hari
-- Sumber titik sentuh: `erik_report_metrics` (klik > 0)
-- Hasil ditulis ke `erik_attribution_results`
+- Sumber titik sentuh: `ads_report_metrics` (klik > 0)
+- Hasil ditulis ke `ads_attribution_results`
 - Frontend: peralihan model AttributionReport.vue + kartu statistik + grafik batang ECharts + tabel detail
 
 ### Tabel Data
 
 | Tabel | Field |
 |----|------|
-| `erik_conversions` | id, tenant_id, platform, campaign_id, order_id, conversion_time, value, currency, channel |
-| `erik_attribution_results` | id, tenant_id, conversion_id, model, campaign_id, credit |
+| `ads_conversions` | id, tenant_id, platform, campaign_id, order_id, conversion_time, value, currency, channel |
+| `ads_attribution_results` | id, tenant_id, conversion_id, model, campaign_id, credit |
 
 Antarmuka: Analisis atribusi / daftar model → [api.id.md modul 7](api.id.md#模块-7-报表)
 

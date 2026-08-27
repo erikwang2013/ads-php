@@ -135,24 +135,24 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 | 분류 | 테이블 이름 | Lite | Standard | Full |
 |------|------|:---:|:---:|:---:|
-| 기반 | erik_tenants | ✅ | ✅ | ✅ |
-| 계정 | erik_platform_accounts | ✅ | ✅ | ✅ |
-| | erik_auth_tokens | ✅ | ✅ | ✅ |
-| 집행 | erik_campaigns | ✅ | ✅ | ✅ |
-| | erik_report_metrics | ✅ | ✅ | ✅ |
-| | erik_report_extras | ✅ | ✅ | ✅ |
-| | erik_ad_groups | — | ✅ | ✅ |
-| | erik_creatives | — | ✅ | ✅ |
-| 경보 | erik_alert_rules | — | ✅ | ✅ |
-| | erik_alert_logs | — | ✅ | ✅ |
-| 알림 | erik_notifications | — | ✅ | ✅ |
-| 입찰 | erik_bid_rules | — | — | ✅ |
-| | erik_bid_logs | — | — | ✅ |
-| 타겟팅 | erik_targeting_templates | — | — | ✅ |
-| 소재 | erik_assets | — | — | ✅ |
-| 기여도 | erik_conversions | — | — | ✅ |
-| | erik_attribution_results | — | — | ✅ |
-| 시스템 | erik_sync_errors | ✅ | ✅ | ✅ |
+| 기반 | ads_tenants | ✅ | ✅ | ✅ |
+| 계정 | ads_platform_accounts | ✅ | ✅ | ✅ |
+| | ads_auth_tokens | ✅ | ✅ | ✅ |
+| 집행 | ads_campaigns | ✅ | ✅ | ✅ |
+| | ads_report_metrics | ✅ | ✅ | ✅ |
+| | ads_report_extras | ✅ | ✅ | ✅ |
+| | ads_ad_groups | — | ✅ | ✅ |
+| | ads_creatives | — | ✅ | ✅ |
+| 경보 | ads_alert_rules | — | ✅ | ✅ |
+| | ads_alert_logs | — | ✅ | ✅ |
+| 알림 | ads_notifications | — | ✅ | ✅ |
+| 입찰 | ads_bid_rules | — | — | ✅ |
+| | ads_bid_logs | — | — | ✅ |
+| 타겟팅 | ads_targeting_templates | — | — | ✅ |
+| 소재 | ads_assets | — | — | ✅ |
+| 기여도 | ads_conversions | — | — | ✅ |
+| | ads_attribution_results | — | — | ✅ |
+| 시스템 | ads_sync_errors | ✅ | ✅ | ✅ |
 | 관리 | admin_users/roles/audit_logs | ✅ | ✅ | ✅ |
 | **합계** | | **8** | **13** | **18** |
 

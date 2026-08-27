@@ -59,7 +59,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | परत | तकनीक | विवरण |
 |----|------|------|
 | सर्वर-साइड | webman v2 + PHP 8.2+ | 7 प्लगइन, 65+ API एंडपॉइंट |
-| डेटाबेस | MySQL 8.0 | 28 टेबल, erik_ प्रीफ़िक्स, Snowflake BIGINT प्राइमरी की |
+| डेटाबेस | MySQL 8.0 | 28 टेबल, ads_ प्रीफ़िक्स, Snowflake BIGINT प्राइमरी की |
 | कैश | Redis 7 | त्रि-स्तरीय कैश (L1 मेमोरी/L2 APCu/L3 Redis), रेट-लिमिट काउंटिंग, Pub/Sub, मैसेज क्यू |
 | सर्च | Elasticsearch | webman-scout स्वचालित इंडेक्स सिंक (कॉन्फ़िगर किया गया) |
 | एडमिन पैनल | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP बैकएंड (पोर्ट 8789), SPA सीधे बिज़नेस API से जुड़ता है (पोर्ट 8788), 19 पेज, ECharts विज़ुअलाइज़ेशन |
@@ -329,21 +329,21 @@ ads-php/
 
 ## डेटाबेस
 
-**नामकरण मानक**: टेबल प्रीफ़िक्स `erik_`, प्राइमरी की `BIGINT UNSIGNED PRIMARY KEY`（बिना auto-increment, Snowflake ID）, इंजन InnoDB, कैरेक्टर सेट utf8mb4
+**नामकरण मानक**: टेबल प्रीफ़िक्स `ads_`, प्राइमरी की `BIGINT UNSIGNED PRIMARY KEY`（बिना auto-increment, Snowflake ID）, इंजन InnoDB, कैरेक्टर सेट utf8mb4
 
 | श्रेणी | टेबल नाम | उपयोग |
 |------|------|------|
-| बेसिक | `erik_tenants` | मल्टी-टेनेंट |
-| खाता | `erik_platform_accounts`, `erik_auth_tokens` | OAuth प्लेटफ़ॉर्म खाते |
-| डिलीवरी | `erik_campaigns`, `erik_ad_groups`, `erik_creatives` | विज्ञापन डिलीवरी पदानुक्रम |
-| रिपोर्ट | `erik_report_metrics`, `erik_report_extras` | एकीकृत रिपोर्ट मेट्रिक्स |
-| एसेट | `erik_assets` | क्रिएटिव एसेट लाइब्रेरी |
-| टार्गेटिंग | `erik_targeting_templates` | ऑडियंस टार्गेटिंग टेम्पलेट |
-| एट्रिब्यूशन | `erik_conversions`, `erik_attribution_results` | कन्वर्ज़न ट्रैकिंग + एट्रिब्यूशन परिणाम |
-| बिडिंग | `erik_bid_rules`, `erik_bid_logs` | स्वचालित बिडिंग नियम + इतिहास |
-| अलर्ट | `erik_alert_rules`, `erik_alert_logs` | अलर्ट मॉनिटरिंग |
-| नोटिफिकेशन | `erik_notifications` | साइट-इन नोटिफिकेशन |
-| सिस्टम | `erik_sync_errors`, `admin_users`, `admin_roles`, `admin_audit_logs` | सिंक त्रुटियाँ, RBAC, ऑडिट |
+| बेसिक | `ads_tenants` | मल्टी-टेनेंट |
+| खाता | `ads_platform_accounts`, `ads_auth_tokens` | OAuth प्लेटफ़ॉर्म खाते |
+| डिलीवरी | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | विज्ञापन डिलीवरी पदानुक्रम |
+| रिपोर्ट | `ads_report_metrics`, `ads_report_extras` | एकीकृत रिपोर्ट मेट्रिक्स |
+| एसेट | `ads_assets` | क्रिएटिव एसेट लाइब्रेरी |
+| टार्गेटिंग | `ads_targeting_templates` | ऑडियंस टार्गेटिंग टेम्पलेट |
+| एट्रिब्यूशन | `ads_conversions`, `ads_attribution_results` | कन्वर्ज़न ट्रैकिंग + एट्रिब्यूशन परिणाम |
+| बिडिंग | `ads_bid_rules`, `ads_bid_logs` | स्वचालित बिडिंग नियम + इतिहास |
+| अलर्ट | `ads_alert_rules`, `ads_alert_logs` | अलर्ट मॉनिटरिंग |
+| नोटिफिकेशन | `ads_notifications` | साइट-इन नोटिफिकेशन |
+| सिस्टम | `ads_sync_errors`, `admin_users`, `admin_roles`, `admin_audit_logs` | सिंक त्रुटियाँ, RBAC, ऑडिट |
 
 ---
 
@@ -394,7 +394,7 @@ cd apps/flutter && dart analyze   # 零错误
 | Skill | विवरण |
 |------|------|
 | `adapter-generator` | नया विज्ञापन प्लेटफ़ॉर्म एडाप्टर जनरेट करें (14-मेथड टेम्पलेट) |
-| `migration-generator` | SQL माइग्रेशन फ़ाइलें जनरेट करें (erik_ प्रीफ़िक्स + BIGINT PK) |
+| `migration-generator` | SQL माइग्रेशन फ़ाइलें जनरेट करें (ads_ प्रीफ़िक्स + BIGINT PK) |
 | `erik-stack` | Erik Stack 8 पैकेज एकीकरण उपयोग गाइड |
 | `admin-page-generator` | Vue3 एडमिन पैनल पेज जनरेट करें |
 | `api-endpoint` | RESTful API एंडपॉइंट जोड़ें |

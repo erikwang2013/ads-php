@@ -96,7 +96,7 @@ Campaign (广告计划)
 
 ```
 遍历 enabled=1 的规则
-  → 查询 erik_report_metrics (今天数据, 按 scope 过滤)
+  → 查询 ads_report_metrics (今天数据, 按 scope 过滤)
   → compare(metric_value, threshold, condition)
   → 去重检查 (check_interval 内已有触发 → 跳过)
   → 创建 AlertLog (status=triggered)
@@ -107,7 +107,7 @@ Campaign (广告计划)
 
 | 渠道 | 状态 | 实现 |
 |------|------|------|
-| web | ✅ | 写入 erik_notifications |
+| web | ✅ | 写入 ads_notifications |
 | email | 占位 | echo 存根 |
 | sms | 占位 | echo 存根 |
 | Redis pub/sub | ✅ | `alert:new` 频道 JSON 推送 |
@@ -131,7 +131,7 @@ Campaign (广告计划)
 
 ```
 遍历 enabled=1 的规则
-  → 查询 erik_report_metrics (今天数据, 按 scope 过滤)
+  → 查询 ads_report_metrics (今天数据, 按 scope 过滤)
   → compare(metric_value, threshold, condition)
   → 冷却检查 (cooldown_minutes 内是否有过操作)
   → 执行动作:
@@ -254,7 +254,7 @@ POST /api/ad-groups 支持 targeting_template_id
 - 三段告警: yellow (≥50%), orange (≥80%), red (≥100%)
 - BudgetCheckTask 每 15 分钟执行
 - 去重: 同一计划同一级别一天只通知一次
-- 写入 `erik_notifications` 表
+- 写入 `ads_notifications` 表
 
 接口: 预算预警 → [api.md 模块 7](api.md#模块-7-报表)
 
@@ -283,16 +283,16 @@ POST /api/ad-groups 支持 targeting_template_id
 | position_based | 首40% + 末40% + 中间20% |
 
 - 回溯窗口: 30 天
-- 触点来源: `erik_report_metrics` (点击 > 0)
-- 结果写入 `erik_attribution_results`
+- 触点来源: `ads_report_metrics` (点击 > 0)
+- 结果写入 `ads_attribution_results`
 - 前端: AttributionReport.vue 模型切换 + 统计卡片 + ECharts 柱状图 + 明细表格
 
 ### 数据表
 
 | 表 | 字段 |
 |----|------|
-| `erik_conversions` | id, tenant_id, platform, campaign_id, order_id, conversion_time, value, currency, channel |
-| `erik_attribution_results` | id, tenant_id, conversion_id, model, campaign_id, credit |
+| `ads_conversions` | id, tenant_id, platform, campaign_id, order_id, conversion_time, value, currency, channel |
+| `ads_attribution_results` | id, tenant_id, conversion_id, model, campaign_id, credit |
 
 接口: 归因分析 / 模型列表 → [api.md 模块 7](api.md#模块-7-报表)
 

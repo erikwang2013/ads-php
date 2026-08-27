@@ -37,7 +37,7 @@
    - 专有名词：SWIFT Code、ZA Bank、Citibank、BNY Mellon、银行编号、分行编号、收款人姓名（WANG KEXUN）、账号、银行地址、Webman、Redis、JWT、Erik Stack、webman-admin、Flutter、HarmonyOS、ECharts、Element Plus、Vue、Pinia
    - 银行转账信息（docs/index.md 和 README 中的打赏章节）逐字保留，仅翻译段落性说明文字
    - Copyright 行 `Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz`
-   - 文件路径、表名（erik_ 前缀）、字段名、API 路由、URL、端口号
+   - 文件路径、表名（ads_ 前缀）、字段名、API 路由、URL、端口号
    - Mermaid 图表中的节点标签可翻译，但语法结构不能变
    - docs/index.md 中的目录树（``` 代码块）不翻译
 

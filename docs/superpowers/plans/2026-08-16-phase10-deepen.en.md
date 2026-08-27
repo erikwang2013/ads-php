@@ -14,10 +14,10 @@
 
 | Candidate sub-item | Current state |
 |---|---|
-| Sync status visualization | `erik_sync_errors` table + `RetrySyncTask` (retry 3 times, backoff 5^n minutes) already exist; **no frontend page/API showing sync failure rate and latency** |
-| Conversion data loop | `erik_conversions` + `erik_attribution_results` tables already exist, attribution engine implemented; **no conversion data collection entry point** (callback/tracking API) |
+| Sync status visualization | `ads_sync_errors` table + `RetrySyncTask` (retry 3 times, backoff 5^n minutes) already exist; **no frontend page/API showing sync failure rate and latency** |
+| Conversion data loop | `ads_conversions` + `ads_attribution_results` tables already exist, attribution engine implemented; **no conversion data collection entry point** (callback/tracking API) |
 | Mobile CI | `ci.yml` only does PHP syntax → PHPUnit → vue-tsc → Docker; **no Flutter/HarmonyOS build packaging** |
-| Multi-tenant SaaS | `erik_tenants` table + TenantIdentify middleware already exist; **no billing/quota/usage statistics** |
+| Multi-tenant SaaS | `ads_tenants` table + TenantIdentify middleware already exist; **no billing/quota/usage statistics** |
 | ES implementation | scout.php configured + webman-scout dependency added; **docker-compose has no ES service** |
 | 29-platform real integration | 29 adapter codebases complete; **no sandbox/credential integration records** (requires external credentials, marked as manual item) |
 
@@ -31,7 +31,7 @@
 ### Design points
 - Endpoints: `GET /api/sync/status` (account dimension: last_sync_at, success rate, today's failure count, pending retry count) + `GET /api/sync/errors` (paginated error list, including last_error/retry_count/next_retry_at)
 - Frontend: sync status page (table + summary cards), Full/Standard version lines only
-- Data sources: erik_platform_accounts (last_sync_at) + erik_sync_errors
+- Data sources: ads_platform_accounts (last_sync_at) + ads_sync_errors
 
 ## Task 2: Conversion data collection API
 
@@ -41,7 +41,7 @@
 
 ### Design points
 - Endpoints: `POST /api/conversions` (business-side conversion callbacks: platform/campaign_id/order_id/conversion_time/value/currency/channel) + `GET /api/conversions` (query)
-- Validation: campaign_id exists, amount non-negative, time format; write to erik_conversions
+- Validation: campaign_id exists, amount non-negative, time format; write to ads_conversions
 - Attribution integration: callbacks can trigger attribution recomputation (or document that the existing AttributionEngine recomputes on a schedule/manually)
 - Frontend: attribution report page adds "conversion callback" explanation/demo (optional)
 
@@ -62,7 +62,7 @@
 - Modify: `service/plugin/ads-api/config/route.php` + controller
 
 ### Design points
-- Data: add quota fields to erik_tenants or a new table erik_tenant_quotas (plan/account_limit/campaign_limit/sync_quota)
+- Data: add quota fields to ads_tenants or a new table ads_tenant_quotas (plan/account_limit/campaign_limit/sync_quota)
 - Check points: bound account count, campaign creation count, daily sync count (checked at AccountController/CampaignController/DataSyncTask entry points)
 - Endpoints: `GET /api/tenant/quota` (usage + quota)
 - Frontend: system page shows quota usage (optional; MVP can be API-only)

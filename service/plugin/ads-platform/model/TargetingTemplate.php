@@ -11,7 +11,7 @@ class TargetingTemplate extends Model
 {
     use SnowflakeTrait;
 
-    protected $table = 'erik_targeting_templates';
+    protected $table = 'ads_targeting_templates';
     protected $guarded = ['id'];
     public $timestamps = false;
 

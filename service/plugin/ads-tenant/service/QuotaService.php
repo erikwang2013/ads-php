@@ -4,13 +4,13 @@
  *
  * QuotaService — 多租户 SaaS 配额 MVP（Phase 10 Task 4）。
  *
- * 表结构核实：erik_tenants 存在 plan 字段，类型 ENUM('free','pro','enterprise')，
+ * 表结构核实：ads_tenants 存在 plan 字段，类型 ENUM('free','pro','enterprise')，
  * 取值与任务约定的 lite/standard/full 不一致，故做一次映射；
  * 未知/缺失 plan 一律按 full（任务约定默认 full）。
  *
  * 用量口径：
- * - accounts  : erik_platform_accounts 中 tenant_id 计数（当前绑定账户数）
- * - campaigns : erik_campaigns 中 tenant_id 计数（计划数）
+ * - accounts  : ads_platform_accounts 中 tenant_id 计数（当前绑定账户数）
+ * - campaigns : ads_campaigns 中 tenant_id 计数（计划数）
  * - sync_today: 今日同步次数。MVP 无独立同步审计表，选 platform_accounts.last_sync_at
  *   计数（last_sync_at 落在今天的账户数）作为代理口径——每次同步完成会更新该字段
  *   （DataSyncTask / AccountController::sync）。更精确的逐次计数需引入同步审计表，留待迭代。
@@ -23,7 +23,7 @@ use InvalidArgumentException;
 
 class QuotaService
 {
-    /** erik_tenants.plan → 配额版本线 */
+    /** ads_tenants.plan → 配额版本线 */
     public const PLAN_TIER_MAP = [
         'free'       => 'lite',
         'pro'        => 'standard',
@@ -84,11 +84,11 @@ class QuotaService
     // ---------------- 以下依赖 DB ----------------
 
     /**
-     * 当前租户的配额版本线（读 erik_tenants.plan）。
+     * 当前租户的配额版本线（读 ads_tenants.plan）。
      */
     public function tierForTenant(int $tenantId): string
     {
-        $plan = DB::table('erik_tenants')->where('id', $tenantId)->value('plan');
+        $plan = DB::table('ads_tenants')->where('id', $tenantId)->value('plan');
         return static::resolveTier($plan);
     }
 
@@ -99,16 +99,16 @@ class QuotaService
     {
         $todayStart = date('Y-m-d 00:00:00');
 
-        $accounts = (int) DB::table('erik_platform_accounts')
+        $accounts = (int) DB::table('ads_platform_accounts')
             ->where('tenant_id', $tenantId)
             ->count();
 
-        $campaigns = (int) DB::table('erik_campaigns')
+        $campaigns = (int) DB::table('ads_campaigns')
             ->where('tenant_id', $tenantId)
             ->count();
 
         // sync_today 代理口径：今日完成过同步的账户数（last_sync_at 落在今天）
-        $syncToday = (int) DB::table('erik_platform_accounts')
+        $syncToday = (int) DB::table('ads_platform_accounts')
             ->where('tenant_id', $tenantId)
             ->where('last_sync_at', '>=', $todayStart)
             ->count();

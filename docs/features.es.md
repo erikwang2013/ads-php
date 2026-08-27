@@ -96,7 +96,7 @@ Interfaces: Resumen / Personalizado / Exportación → [módulo 7 de api.es.md](
 
 ```
 遍历 enabled=1 的规则
-  → 查询 erik_report_metrics (今天数据, 按 scope 过滤)
+  → 查询 ads_report_metrics (今天数据, 按 scope 过滤)
   → compare(metric_value, threshold, condition)
   → 去重检查 (check_interval 内已有触发 → 跳过)
   → 创建 AlertLog (status=triggered)
@@ -107,7 +107,7 @@ Interfaces: Resumen / Personalizado / Exportación → [módulo 7 de api.es.md](
 
 | Canal | Estado | Implementación |
 |------|------|------|
-| web | ✅ | Escritura en erik_notifications |
+| web | ✅ | Escritura en ads_notifications |
 | email | Placeholder | Stub echo |
 | sms | Placeholder | Stub echo |
 | Redis pub/sub | ✅ | Push JSON en el canal `alert:new` |
@@ -131,7 +131,7 @@ Interfaces: Lista / no leídos / marcar como leído / marcar todo como leído �
 
 ```
 遍历 enabled=1 的规则
-  → 查询 erik_report_metrics (今天数据, 按 scope 过滤)
+  → 查询 ads_report_metrics (今天数据, 按 scope 过滤)
   → compare(metric_value, threshold, condition)
   → 冷却检查 (cooldown_minutes 内是否有过操作)
   → 执行动作:
@@ -254,7 +254,7 @@ Interfaces: Carga / lista / detalle / eliminación → [módulo 12 de api.es.md]
 - Alertas en tres niveles: yellow (≥50%), orange (≥80%), red (≥100%)
 - BudgetCheckTask se ejecuta cada 15 minutos
 - Deduplicación: una sola notificación por día para la misma campaña y el mismo nivel
-- Escritura en la tabla `erik_notifications`
+- Escritura en la tabla `ads_notifications`
 
 Interfaces: Alerta de presupuesto → [módulo 7 de api.es.md](api.es.md#模块-7-报表)
 
@@ -283,16 +283,16 @@ Interfaces: Calendario de campañas → [módulo 7 de api.es.md](api.es.md#模�
 | position_based | Primero 40% + último 40% + medio 20% |
 
 - Ventana de retroceso: 30 días
-- Fuente de puntos de contacto: `erik_report_metrics` (clics > 0)
-- Los resultados se escriben en `erik_attribution_results`
+- Fuente de puntos de contacto: `ads_report_metrics` (clics > 0)
+- Los resultados se escriben en `ads_attribution_results`
 - Frontend: AttributionReport.vue cambio de modelo + tarjetas de estadísticas + gráfico de barras ECharts + tabla de detalle
 
 ### Tablas de datos
 
 | Tabla | Campos |
 |----|------|
-| `erik_conversions` | id, tenant_id, platform, campaign_id, order_id, conversion_time, value, currency, channel |
-| `erik_attribution_results` | id, tenant_id, conversion_id, model, campaign_id, credit |
+| `ads_conversions` | id, tenant_id, platform, campaign_id, order_id, conversion_time, value, currency, channel |
+| `ads_attribution_results` | id, tenant_id, conversion_id, model, campaign_id, credit |
 
 Interfaces: Análisis de atribución / lista de modelos → [módulo 7 de api.es.md](api.es.md#模块-7-报表)
 

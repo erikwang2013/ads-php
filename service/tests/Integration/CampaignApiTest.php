@@ -47,7 +47,7 @@ class CampaignApiTest extends ApiTestCase
         $this->assertNotEmpty($body['data']['id']);
         $this->assertStringStartsWith('pc-', $body['data']['platform_campaign_id']);
 
-        $row = DB::table('erik_campaigns')->find($body['data']['id']);
+        $row = DB::table('ads_campaigns')->find($body['data']['id']);
         $this->assertEquals('新计划', $row->name);
         $this->assertEquals('enabled', $row->status);
     }
@@ -87,7 +87,7 @@ class CampaignApiTest extends ApiTestCase
         $request = $this->authedRequest('PUT', "/api/campaigns/$id", ['name' => '改名后']);
 
         $this->assertSuccess((new CampaignController())->update($request, $id));
-        $this->assertEquals('改名后', DB::table('erik_campaigns')->find($id)->name);
+        $this->assertEquals('改名后', DB::table('ads_campaigns')->find($id)->name);
     }
 
     public function testCampaignTogglePause(): void
@@ -96,7 +96,7 @@ class CampaignApiTest extends ApiTestCase
         $request = $this->authedRequest('POST', "/api/campaigns/$id/toggle", ['enabled' => false]);
 
         $this->assertSuccess((new CampaignController())->toggle($request, $id));
-        $this->assertEquals('paused', DB::table('erik_campaigns')->find($id)->status);
+        $this->assertEquals('paused', DB::table('ads_campaigns')->find($id)->status);
     }
 
     public function testCampaignBatchToggle(): void
@@ -166,11 +166,11 @@ class CampaignApiTest extends ApiTestCase
 
         $update = $this->authedRequest('PUT', "/api/ad-groups/$groupId", ['name' => '组改名']);
         $this->assertSuccess((new AdGroupController())->update($update, $groupId));
-        $this->assertEquals('组改名', DB::table('erik_ad_groups')->find($groupId)->name);
+        $this->assertEquals('组改名', DB::table('ads_ad_groups')->find($groupId)->name);
 
         $toggle = $this->authedRequest('POST', "/api/ad-groups/$groupId/toggle", ['enabled' => false]);
         $this->assertSuccess((new AdGroupController())->toggle($toggle, $groupId));
-        $this->assertEquals('paused', DB::table('erik_ad_groups')->find($groupId)->status);
+        $this->assertEquals('paused', DB::table('ads_ad_groups')->find($groupId)->status);
     }
 
     public function testAdGroupShowNotFound(): void
@@ -201,7 +201,7 @@ class CampaignApiTest extends ApiTestCase
     protected function seedAdGroup(int $campaignId, array $overrides = []): int
     {
         $id = $this->nextId();
-        DB::table('erik_ad_groups')->insert(array_merge([
+        DB::table('ads_ad_groups')->insert(array_merge([
             'id'                  => $id,
             'campaign_id'         => $campaignId,
             'platform_adgroup_id' => 'pc-ag-1',
@@ -220,7 +220,7 @@ class CampaignApiTest extends ApiTestCase
     protected function seedCreative(int $adGroupId, array $overrides = []): int
     {
         $id = $this->nextId();
-        DB::table('erik_creatives')->insert(array_merge([
+        DB::table('ads_creatives')->insert(array_merge([
             'id'                    => $id,
             'ad_group_id'           => $adGroupId,
             'platform_creative_id'  => 'pc-cr-1',

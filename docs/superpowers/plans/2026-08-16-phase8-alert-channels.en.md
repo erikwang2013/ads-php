@@ -14,7 +14,7 @@
 
 | Component | Status |
 |---|---|
-| `NotificationService::send()` | `match ($channel)` dispatches web/email/sms; web really writes to `erik_notifications`, email/sms are echo stubs |
+| `NotificationService::send()` | `match ($channel)` dispatches web/email/sms; web really writes to `ads_notifications`, email/sms are echo stubs |
 | `AlertRule.channels` | JSON field + Eloquent cast array, frontend already submits `['web','email','sms']` |
 | Admin AlertRuleList.vue | Already has channel checkbox UI (web locked, email/sms optional) |
 | Redis pub/sub | `alert:new` channel push implemented |

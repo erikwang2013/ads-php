@@ -28,7 +28,7 @@
       </el-table>
 
       <div v-if="!loading && (result.by_campaign ?? []).length === 0" style="text-align:center;padding:60px;color:#999">
-        暂无归因数据，请先导入转化事件 (erik_conversions 表)
+        暂无归因数据，请先导入转化事件 (ads_conversions 表)
       </div>
     </div>
   </div>

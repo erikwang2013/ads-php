@@ -8,7 +8,7 @@
 
 | # | 変更 | パッケージ | 影響範囲 |
 |---|------|----|---------|
-| 1 | データベーステーブルプレフィックス `erik_` | — | すべての SQL/マイグレーションファイル |
+| 1 | データベーステーブルプレフィックス `ads_` | — | すべての SQL/マイグレーションファイル |
 | 2 | 主キー Snowflake ID（自動採番なし） | erikwang2013/snowflake-php | すべての Model + SQL |
 | 3 | API ID hashids 暗号化/復号 | erikwang2013/hashids | すべての Controller レスポンス |
 | 4 | JWT 認証切り替え | erikwang2013/jwt-webman | AuthMiddleware + AuthController |
@@ -29,7 +29,7 @@
 
 **Batch A: インフラ（依存 + ID + 暗号化）**
 - composer.json を更新して erikwang2013 の 6 パッケージを追加
-- すべての SQL マイグレーションファイルを書き換え（erik_ プレフィックス + bigint 自動採番なし）
+- すべての SQL マイグレーションファイルを書き換え（ads_ プレフィックス + bigint 自動採番なし）
 - Snowflake ID trait を作成
 - すべての Model を更新（SnowflakeTrait を使用）
 - hashids ミドルウェアを設定

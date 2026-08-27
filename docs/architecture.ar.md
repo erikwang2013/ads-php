@@ -163,22 +163,22 @@ ads-php/
 
 | التصنيف | اسم الجدول | المفتاح الرئيسي | الاستخدام |
 |------|------|------|------|
-| أساسيات | `erik_tenants` | BIGINT Snowflake | متعدد المستأجرين |
-| الحسابات | `erik_platform_accounts`, `erik_auth_tokens` | BIGINT Snowflake | حسابات منصات OAuth |
-| مستويات النشر | `erik_campaigns`, `erik_ad_groups`, `erik_creatives` | BIGINT Snowflake | نشر الإعلانات |
-| التقارير | `erik_report_metrics`, `erik_report_extras` | BIGINT Snowflake | مقاييس موحدة |
-| التنبيهات | `erik_alert_rules`, `erik_alert_logs` | BIGINT Snowflake | مراقبة التنبيهات |
-| المزايدة | `erik_bid_rules`, `erik_bid_logs` | BIGINT Snowflake | المزايدة التلقائية |
-| الاستهداف | `erik_targeting_templates` | BIGINT Snowflake | قوالب الجمهور |
-| المواد | `erik_assets` | BIGINT Snowflake | مكتبة المواد الإبداعية |
-| الإشعارات | `erik_notifications` | BIGINT Snowflake | إشعارات داخلية |
-| الإسناد | `erik_conversions`, `erik_attribution_results` | BIGINT Snowflake | تتبع التحويلات + الإسناد |
-| النظام | `erik_sync_errors` | BIGINT Snowflake | أخطاء المزامنة |
+| أساسيات | `ads_tenants` | BIGINT Snowflake | متعدد المستأجرين |
+| الحسابات | `ads_platform_accounts`, `ads_auth_tokens` | BIGINT Snowflake | حسابات منصات OAuth |
+| مستويات النشر | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | BIGINT Snowflake | نشر الإعلانات |
+| التقارير | `ads_report_metrics`, `ads_report_extras` | BIGINT Snowflake | مقاييس موحدة |
+| التنبيهات | `ads_alert_rules`, `ads_alert_logs` | BIGINT Snowflake | مراقبة التنبيهات |
+| المزايدة | `ads_bid_rules`, `ads_bid_logs` | BIGINT Snowflake | المزايدة التلقائية |
+| الاستهداف | `ads_targeting_templates` | BIGINT Snowflake | قوالب الجمهور |
+| المواد | `ads_assets` | BIGINT Snowflake | مكتبة المواد الإبداعية |
+| الإشعارات | `ads_notifications` | BIGINT Snowflake | إشعارات داخلية |
+| الإسناد | `ads_conversions`, `ads_attribution_results` | BIGINT Snowflake | تتبع التحويلات + الإسناد |
+| النظام | `ads_sync_errors` | BIGINT Snowflake | أخطاء المزامنة |
 | الإدارة | `admin_users`, `admin_roles`, `admin_audit_logs` | BIGINT Snowflake | RBAC + التدقيق |
 
 ### 5.2 قواعد التسمية
 
-- بادئة الجداول: `erik_`
+- بادئة الجداول: `ads_`
 - المفتاح الرئيسي: `BIGINT UNSIGNED PRIMARY KEY` (بدون زيادة تلقائية، معرفات Snowflake)
 - المحرك: InnoDB، الترميز: utf8mb4
 - الطوابع الزمنية: `created_at`, `updated_at` (DATETIME)

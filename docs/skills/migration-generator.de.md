@@ -6,7 +6,7 @@ SQL-Migrationsdateien gemäß den Projektkonventionen generieren.
 
 ## Regeln
 
-1. **Tabellenpräfix**: `erik_` für alle nutzerseitigen Tabellen, `admin_` für Admin-Panel-Tabellen
+1. **Tabellenpräfix**: `ads_` für alle nutzerseitigen Tabellen, `admin_` für Admin-Panel-Tabellen
 2. **Primärschlüssel**: `BIGINT UNSIGNED PRIMARY KEY` — KEIN AUTO_INCREMENT, Snowflake-ID verwenden
 3. **Engine**: `ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`
 4. **Geldspalten**: `BIGINT DEFAULT 0` für Fen (分) — konsistent mit dem vereinheitlichten Modell
@@ -17,7 +17,7 @@ SQL-Migrationsdateien gemäß den Projektkonventionen generieren.
 ## Vorlage
 
 ```sql
-CREATE TABLE IF NOT EXISTS `erik_table_name` (
+CREATE TABLE IF NOT EXISTS `ads_table_name` (
     `id` BIGINT UNSIGNED PRIMARY KEY,
     `tenant_id` BIGINT UNSIGNED NOT NULL,
     `name` VARCHAR(100) NOT NULL,
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `erik_table_name` (
 ## Seed-Daten (optional)
 
 ```sql
-INSERT INTO erik_table_name (id, name) VALUES (1, '默认数据')
+INSERT INTO ads_table_name (id, name) VALUES (1, '默认数据')
 ON DUPLICATE KEY UPDATE name = VALUES(name);
 ```
 

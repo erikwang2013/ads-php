@@ -74,10 +74,10 @@ class OAuthServiceTest extends SqliteTestCase
         $this->adapter = new SpyOAuthAdapter();
         AdapterRegistry::register($this->adapter);
 
-        $this->exec('CREATE TABLE erik_auth_tokens (
+        $this->exec('CREATE TABLE ads_auth_tokens (
             id TEXT PRIMARY KEY, tenant_id INT, platform TEXT, state TEXT, redirect_uri TEXT,
             expires_at TEXT, created_at TEXT, updated_at TEXT)');
-        $this->exec('CREATE TABLE erik_platform_accounts (
+        $this->exec('CREATE TABLE ads_platform_accounts (
             id INTEGER PRIMARY KEY AUTOINCREMENT, tenant_id INT, platform TEXT, account_name TEXT,
             account_id_on_platform TEXT, access_token TEXT, refresh_token TEXT, status INT,
             token_expires_at TEXT, last_sync_at TEXT, sync_enabled INT, created_at TEXT, updated_at TEXT)');

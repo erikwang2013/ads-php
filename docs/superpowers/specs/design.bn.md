@@ -270,7 +270,7 @@ protected array $fieldMap = [
 ## 三、ডাটাবেস ডিজাইন
 
 ### নামকরণ কনভেনশন
-- টেবিল প্রিফিক্স: `erik_`
+- টেবিল প্রিফিক্স: `ads_`
 - প্রাইমারি কী: `BIGINT UNSIGNED PRIMARY KEY` (কোনো অটো-ইনক্রিমেন্ট নেই, Snowflake ID জেনারেট)
 - ইঞ্জিন: InnoDB，ক্যারেক্টার সেট: utf8mb4
 
@@ -278,7 +278,7 @@ protected array $fieldMap = [
 
 ```sql
 -- 租户
-CREATE TABLE erik_tenants (
+CREATE TABLE ads_tenants (
     id BIGINT UNSIGNED PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     domain VARCHAR(255) DEFAULT NULL,
@@ -292,7 +292,7 @@ CREATE TABLE erik_tenants (
 );
 
 -- 平台账户 (access_token/refresh_token 由 encryptable 自动加解密)
-CREATE TABLE erik_platform_accounts (
+CREATE TABLE ads_platform_accounts (
     id BIGINT UNSIGNED PRIMARY KEY,
     tenant_id BIGINT UNSIGNED NOT NULL,
     platform VARCHAR(32) NOT NULL,
@@ -311,7 +311,7 @@ CREATE TABLE erik_platform_accounts (
 );
 
 -- OAuth 状态 Token
-CREATE TABLE erik_auth_tokens (
+CREATE TABLE ads_auth_tokens (
     id BIGINT UNSIGNED PRIMARY KEY,
     tenant_id BIGINT UNSIGNED NOT NULL,
     platform VARCHAR(32) NOT NULL,
@@ -323,7 +323,7 @@ CREATE TABLE erik_auth_tokens (
 );
 
 -- 统一广告计划
-CREATE TABLE erik_campaigns (
+CREATE TABLE ads_campaigns (
     id BIGINT UNSIGNED PRIMARY KEY,
     tenant_id BIGINT UNSIGNED NOT NULL,
     platform_account_id BIGINT UNSIGNED NOT NULL,
@@ -344,7 +344,7 @@ CREATE TABLE erik_campaigns (
 );
 
 -- 统一广告组
-CREATE TABLE erik_ad_groups (
+CREATE TABLE ads_ad_groups (
     id BIGINT UNSIGNED PRIMARY KEY,
     campaign_id BIGINT UNSIGNED NOT NULL,
     platform_adgroup_id VARCHAR(128) NOT NULL,
@@ -360,7 +360,7 @@ CREATE TABLE erik_ad_groups (
 );
 
 -- 统一创意
-CREATE TABLE erik_creatives (
+CREATE TABLE ads_creatives (
     id BIGINT UNSIGNED PRIMARY KEY,
     ad_group_id BIGINT UNSIGNED NOT NULL,
     platform_creative_id VARCHAR(128) NOT NULL,
@@ -376,7 +376,7 @@ CREATE TABLE erik_creatives (
 );
 
 -- 报表核心指标
-CREATE TABLE erik_report_metrics (
+CREATE TABLE ads_report_metrics (
     id BIGINT UNSIGNED PRIMARY KEY,
     tenant_id BIGINT UNSIGNED NOT NULL,
     platform_account_id BIGINT UNSIGNED NOT NULL,
@@ -402,16 +402,16 @@ CREATE TABLE erik_report_metrics (
 );
 
 -- 报表扩展数据
-CREATE TABLE erik_report_extras (
+CREATE TABLE ads_report_extras (
     id BIGINT UNSIGNED PRIMARY KEY,
     report_metric_id BIGINT UNSIGNED NOT NULL,
     platform VARCHAR(32) NOT NULL,
     extra JSON,
-    FOREIGN KEY (report_metric_id) REFERENCES erik_report_metrics(id) ON DELETE CASCADE
+    FOREIGN KEY (report_metric_id) REFERENCES ads_report_metrics(id) ON DELETE CASCADE
 );
 
 -- 告警规则
-CREATE TABLE erik_alert_rules (
+CREATE TABLE ads_alert_rules (
     id BIGINT UNSIGNED PRIMARY KEY,
     tenant_id BIGINT UNSIGNED NOT NULL,
     name VARCHAR(100) NOT NULL,
@@ -430,7 +430,7 @@ CREATE TABLE erik_alert_rules (
 );
 
 -- 告警记录
-CREATE TABLE erik_alert_logs (
+CREATE TABLE ads_alert_logs (
     id BIGINT UNSIGNED PRIMARY KEY,
     tenant_id BIGINT UNSIGNED NOT NULL,
     rule_id BIGINT UNSIGNED NOT NULL,
@@ -840,7 +840,7 @@ webman/crontab ব্যবহার করে, Redis ক্যাশ দিয�
 | TokenRefreshTask | প্রতি ৫৫ মিনিট | মেয়াদোত্তীর্ণ টোকেন স্ক্যান, অটো রিফ্রেশ |
 | DataSyncTask | প্রতি ১০ মিনিট | প্রতিটি প্ল্যাটফর্মের প্ল্যান + সাম্প্রতিক ২ দিনের রিপোর্ট পুল, সিঙ্কের পর ড্যাশবোর্ড ক্যাশ ক্লিয়ার |
 | AlertCheckTask | প্রতি ৫ মিনিট | এনাবল করা রুল ট্রাভার্স, থ্রেশহোল্ড ইভালুয়েট, পুশ ট্রিগার |
-| RetrySyncTask | প্রতি ৩ মিনিট | ব্যর্থ সিঙ্ক পুনরায় চেষ্টা (erik_sync_errors টেবিল, সর্বোচ্চ ৩ বার, এক্সপোনেনশিয়াল ব্যাকঅফ) |
+| RetrySyncTask | প্রতি ৩ মিনিট | ব্যর্থ সিঙ্ক পুনরায় চেষ্টা (ads_sync_errors টেবিল, সর্বোচ্চ ৩ বার, এক্সপোনেনশিয়াল ব্যাকঅফ) |
 
 সিঙ্ক কৌশল: অ্যাডাপ্টার Generator স্ট্রিমিং প্রসেসিং, কার্সর/পেজিনেশন দিয়ে লিক রোধ, ব্যর্থ হলে অটো রিট্রাই, curl_errno চেক, প্ল্যাটফর্ম-লেভেল QPS রেট লিমিট।
 
@@ -877,7 +877,7 @@ webman/crontab ব্যবহার করে, Redis ক্যাশ দিয�
               v            v            v
         ┌─────────┐ ┌──────────┐ ┌──────────┐
         │MySQL 8.0│ │ Redis 7  │ │ ES 9200  │
-        │erik_*   │ │ cache,   │ │ search   │
+        │ads_*   │ │ cache,   │ │ search   │
         │admin_*  │ │ queue    │ │          │
         └─────────┘ └──────────┘ └──────────┘
 ```
@@ -931,7 +931,7 @@ make admin-dev                # 前端开发模式
 | Phase 7 | Docker ডিপ্লয়মেন্ট + সিকিউরিটি হার্ডেনিং (RateLimit/CORS/SQLGuard) + ক্যাশ লেয়ার + README | ✅ |
 | Phase 8 | ডিরেক্টরি রিঅর্গানাইজেশন (apps/) + Admin স্বাধীন webman-admin v2 (PHP ব্যাকএন্ড+ServiceProxy) + RBAC + অডিট লগ | ✅ |
 | Phase 9 | API ডকুমেন্টেশন + প্ল্যাটফর্ম রেট লিমিট + সিঙ্ক রিট্রাই কিউ + PHPUnit 20 টেস্ট + GitHub Actions CI/CD | ✅ |
-| Phase 10 | কনফিগ ফাইলে চাইনিজ কমেন্ট + .env কমেন্ট + প্ল্যাটফর্ম ক্রেডেনশিয়াল ডক + erik_ টেবিল প্রিফিক্স রিরাইট + BIGINT PK | ✅ |
+| Phase 10 | কনফিগ ফাইলে চাইনিজ কমেন্ট + .env কমেন্ট + প্ল্যাটফর্ম ক্রেডেনশিয়াল ডক + ads_ টেবিল প্রিফিক্স রিরাইট + BIGINT PK | ✅ |
 | Phase 11 | আন্তর্জাতিকীকরণ (vue-i18n + I18n.php + Flutter + HarmonyOS) + স্লাইডার ক্যাপচা (poster-php) | ✅ |
 | Phase 12 | সেকেন্ডারি কনফার্মেশন (ইনপুট টু কনফার্ম) — আনবাইন্ড/ডিলিট/ব্যাচ অপারেশনে টার্গেটের নাম টাইপ করতে হবে | ✅ |
 

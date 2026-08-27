@@ -46,7 +46,7 @@ class PlatformAccountApiTest extends ApiTestCase
         $body = $this->assertSuccess((new PlatformController())->oauthUrl($request, 'mock'));
         $this->assertStringContainsString('state=', $body['data']['auth_url']);
         $this->assertNotEmpty($body['data']['state']);
-        $this->assertEquals(1, DB::table('erik_auth_tokens')->count());
+        $this->assertEquals(1, DB::table('ads_auth_tokens')->count());
     }
 
     public function testCallbackWithInvalidState(): void
@@ -96,7 +96,7 @@ class PlatformAccountApiTest extends ApiTestCase
         $id = $this->seedAccount();
         $this->assertSuccess((new AccountController())->destroy($id));
 
-        $row = DB::table('erik_platform_accounts')->find($id);
+        $row = DB::table('ads_platform_accounts')->find($id);
         $this->assertEquals(0, $row->status);
     }
 
@@ -106,7 +106,7 @@ class PlatformAccountApiTest extends ApiTestCase
         $request = $this->authedRequest('POST', "/api/accounts/$id/sync");
 
         $this->assertSuccess((new AccountController())->sync($request, $id));
-        $this->assertNotNull(DB::table('erik_platform_accounts')->find($id)->last_sync_at);
+        $this->assertNotNull(DB::table('ads_platform_accounts')->find($id)->last_sync_at);
     }
 
     public function testAccountSyncRejectsUnknownAccount(): void

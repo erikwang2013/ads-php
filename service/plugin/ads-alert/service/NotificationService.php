@@ -41,7 +41,7 @@ class NotificationService
     protected function sendWeb(AlertLog $log, AlertRule $rule): void
     {
         try {
-            DB::table('erik_notifications')->insert([
+            DB::table('ads_notifications')->insert([
                 'tenant_id'  => $log->tenant_id,
                 'type'       => 'alert',
                 'title'      => "告警触发: {$rule->name}",

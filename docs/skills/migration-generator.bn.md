@@ -6,7 +6,7 @@
 
 ## নিয়ম
 
-1. **টেবিল প্রিফিক্স**: সব ইউজার-ফেসিং টেবিলে `erik_`，অ্যাডমিন প্যানেল টেবিলে `admin_`
+1. **টেবিল প্রিফিক্স**: সব ইউজার-ফেসিং টেবিলে `ads_`，অ্যাডমিন প্যানেল টেবিলে `admin_`
 2. **প্রাইমারি কী**: `BIGINT UNSIGNED PRIMARY KEY` — NO AUTO_INCREMENT, Snowflake ID ব্যবহার করুন
 3. **ইঞ্জিন**: `ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`
 4. **টাকার কলাম**: ফেন (分)-এর জন্য `BIGINT DEFAULT 0` — ইউনিফাইড মডেলের সাথে সামঞ্জস্যপূর্ণ
@@ -17,7 +17,7 @@
 ## টেমপ্লেট
 
 ```sql
-CREATE TABLE IF NOT EXISTS `erik_table_name` (
+CREATE TABLE IF NOT EXISTS `ads_table_name` (
     `id` BIGINT UNSIGNED PRIMARY KEY,
     `tenant_id` BIGINT UNSIGNED NOT NULL,
     `name` VARCHAR(100) NOT NULL,
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `erik_table_name` (
 ## সিড ডেটা (ঐচ্ছিক)
 
 ```sql
-INSERT INTO erik_table_name (id, name) VALUES (1, '默认数据')
+INSERT INTO ads_table_name (id, name) VALUES (1, '默认数据')
 ON DUPLICATE KEY UPDATE name = VALUES(name);
 ```
 

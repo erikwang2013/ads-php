@@ -14,7 +14,7 @@
 
 | Компонент | Статус |
 |---|---|
-| `NotificationService::send()` | `match ($channel)` распределяет web/email/sms; web реально пишет в `erik_notifications`, email/sms — echo-заглушки |
+| `NotificationService::send()` | `match ($channel)` распределяет web/email/sms; web реально пишет в `ads_notifications`, email/sms — echo-заглушки |
 | `AlertRule.channels` | JSON-поле + Eloquent cast array, фронтенд уже отправляет `['web','email','sms']` |
 | Admin AlertRuleList.vue | UI выбора каналов уже есть (web заблокирован, email/sms выбираемы) |
 | Redis pub/sub | push на канал `alert:new` реализован |

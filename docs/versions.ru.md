@@ -135,24 +135,24 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 | Категория | Таблица | Lite | Standard | Full |
 |------|------|:---:|:---:|:---:|
-| Базовые | erik_tenants | ✅ | ✅ | ✅ |
-| Аккаунты | erik_platform_accounts | ✅ | ✅ | ✅ |
-| | erik_auth_tokens | ✅ | ✅ | ✅ |
-| Кампании | erik_campaigns | ✅ | ✅ | ✅ |
-| | erik_report_metrics | ✅ | ✅ | ✅ |
-| | erik_report_extras | ✅ | ✅ | ✅ |
-| | erik_ad_groups | — | ✅ | ✅ |
-| | erik_creatives | — | ✅ | ✅ |
-| Оповещения | erik_alert_rules | — | ✅ | ✅ |
-| | erik_alert_logs | — | ✅ | ✅ |
-| Уведомления | erik_notifications | — | ✅ | ✅ |
-| Ставки | erik_bid_rules | — | — | ✅ |
-| | erik_bid_logs | — | — | ✅ |
-| Таргетинг | erik_targeting_templates | — | — | ✅ |
-| Материалы | erik_assets | — | — | ✅ |
-| Атрибуция | erik_conversions | — | — | ✅ |
-| | erik_attribution_results | — | — | ✅ |
-| Системные | erik_sync_errors | ✅ | ✅ | ✅ |
+| Базовые | ads_tenants | ✅ | ✅ | ✅ |
+| Аккаунты | ads_platform_accounts | ✅ | ✅ | ✅ |
+| | ads_auth_tokens | ✅ | ✅ | ✅ |
+| Кампании | ads_campaigns | ✅ | ✅ | ✅ |
+| | ads_report_metrics | ✅ | ✅ | ✅ |
+| | ads_report_extras | ✅ | ✅ | ✅ |
+| | ads_ad_groups | — | ✅ | ✅ |
+| | ads_creatives | — | ✅ | ✅ |
+| Оповещения | ads_alert_rules | — | ✅ | ✅ |
+| | ads_alert_logs | — | ✅ | ✅ |
+| Уведомления | ads_notifications | — | ✅ | ✅ |
+| Ставки | ads_bid_rules | — | — | ✅ |
+| | ads_bid_logs | — | — | ✅ |
+| Таргетинг | ads_targeting_templates | — | — | ✅ |
+| Материалы | ads_assets | — | — | ✅ |
+| Атрибуция | ads_conversions | — | — | ✅ |
+| | ads_attribution_results | — | — | ✅ |
+| Системные | ads_sync_errors | ✅ | ✅ | ✅ |
 | Управление | admin_users/roles/audit_logs | ✅ | ✅ | ✅ |
 | **Итого** | | **8** | **13** | **18** |
 

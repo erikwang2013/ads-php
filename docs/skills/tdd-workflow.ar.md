@@ -79,6 +79,6 @@ git add service/tests/ service/plugin/ && git commit -m "feat: add feature X wit
 - [ ] اجتياز `find service -name "*.php" -not -path "*/vendor/*" -exec php -l {} \;`
 - [ ] ترويسة حقوق النشر على جميع الملفات الجديدة
 - [ ] عدم استخدام `getenv()` — استخدم `env()` بدلاً منه
-- [ ] أسماء الجداول تستخدم بادئة `erik_`
+- [ ] أسماء الجداول تستخدم بادئة `ads_`
 - [ ] لا توجد `\` بادئة على الفئات العامة
 - [ ] `use Throwable;` / `use RuntimeException;` / `use InvalidArgumentException;` في الملفات ذات المساحات الاسمية

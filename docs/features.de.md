@@ -96,7 +96,7 @@ Schnittstellen: Zusammenfassung / Benutzerdefiniert / Export → [api.md Modul 7
 
 ```
 遍历 enabled=1 的规则
-  → 查询 erik_report_metrics (今天数据, 按 scope 过滤)
+  → 查询 ads_report_metrics (今天数据, 按 scope 过滤)
   → compare(metric_value, threshold, condition)
   → 去重检查 (check_interval 内已有触发 → 跳过)
   → 创建 AlertLog (status=triggered)
@@ -107,7 +107,7 @@ Schnittstellen: Zusammenfassung / Benutzerdefiniert / Export → [api.md Modul 7
 
 | Kanal | Status | Implementierung |
 |------|------|------|
-| web | ✅ | schreibt in erik_notifications |
+| web | ✅ | schreibt in ads_notifications |
 | email | Platzhalter | echo-Stub |
 | sms | Platzhalter | echo-Stub |
 | Redis pub/sub | ✅ | JSON-Push über Kanal `alert:new` |
@@ -131,7 +131,7 @@ Schnittstellen: Liste / Ungelesen-Zähler / Als gelesen markieren / Alle als gel
 
 ```
 遍历 enabled=1 的规则
-  → 查询 erik_report_metrics (今天数据, 按 scope 过滤)
+  → 查询 ads_report_metrics (今天数据, 按 scope 过滤)
   → compare(metric_value, threshold, condition)
   → 冷却检查 (cooldown_minutes 内是否有过操作)
   → 执行动作:
@@ -254,7 +254,7 @@ Schnittstellen: Upload / Liste / Details / Löschen → [api.md Modul 12](api.de
 - Dreistufen-Alarm: yellow (≥50%), orange (≥80%), red (≥100%)
 - BudgetCheckTask wird alle 15 Minuten ausgeführt
 - Deduplizierung: pro Plan und Stufe nur einmal täglich benachrichtigen
-- Schreiben in die Tabelle `erik_notifications`
+- Schreiben in die Tabelle `ads_notifications`
 
 Schnittstellen: Budget-Warnung → [api.md Modul 7](api.de.md#模块-7-报表)
 
@@ -283,16 +283,16 @@ Schnittstellen: Schaltungs-Kalender → [api.md Modul 7](api.de.md#模块-7-报�
 | position_based | Erste 40% + Letzte 40% + Mitte 20% |
 
 - Rückverfolgungsfenster: 30 Tage
-- Touchpoint-Quelle: `erik_report_metrics` (Klicks > 0)
-- Ergebnis wird in `erik_attribution_results` geschrieben
+- Touchpoint-Quelle: `ads_report_metrics` (Klicks > 0)
+- Ergebnis wird in `ads_attribution_results` geschrieben
 - Frontend: AttributionReport.vue Modellumschaltung + Statistik-Karten + ECharts-Balkendiagramm + Detailtabelle
 
 ### Datenbanktabellen
 
 | Tabelle | Felder |
 |----|------|
-| `erik_conversions` | id, tenant_id, platform, campaign_id, order_id, conversion_time, value, currency, channel |
-| `erik_attribution_results` | id, tenant_id, conversion_id, model, campaign_id, credit |
+| `ads_conversions` | id, tenant_id, platform, campaign_id, order_id, conversion_time, value, currency, channel |
+| `ads_attribution_results` | id, tenant_id, conversion_id, model, campaign_id, credit |
 
 Schnittstellen: Attributionsanalyse / Modellliste → [api.md Modul 7](api.de.md#模块-7-报表)
 

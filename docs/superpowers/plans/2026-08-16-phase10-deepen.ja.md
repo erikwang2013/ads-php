@@ -14,10 +14,10 @@
 
 | 候補サブ項目 | 現状 |
 |---|---|
-| 同期状態の可視化 | `erik_sync_errors` テーブル + `RetrySyncTask`（リトライ 3 回、退避 5^n 分）は既存；**同期失敗率と遅延を表示するフロントエンドページ/API なし** |
-| コンバージョンデータのループ | `erik_conversions` + `erik_attribution_results` テーブルは既存、帰因エンジン実装済み；**コンバージョンデータ収集の入口なし**（回送/埋点 API） |
+| 同期状態の可視化 | `ads_sync_errors` テーブル + `RetrySyncTask`（リトライ 3 回、退避 5^n 分）は既存；**同期失敗率と遅延を表示するフロントエンドページ/API なし** |
+| コンバージョンデータのループ | `ads_conversions` + `ads_attribution_results` テーブルは既存、帰因エンジン実装済み；**コンバージョンデータ収集の入口なし**（回送/埋点 API） |
 | モバイル端 CI | `ci.yml` は PHP 構文→PHPUnit→vue-tsc→Docker のみ；**Flutter/HarmonyOS のビルドパッケージングなし** |
-| マルチテナント SaaS | `erik_tenants` テーブル + TenantIdentify ミドルウェアは既存；**課金/クォータ/使用量統計なし** |
+| マルチテナント SaaS | `ads_tenants` テーブル + TenantIdentify ミドルウェアは既存；**課金/クォータ/使用量統計なし** |
 | ES の着地 | scout.php 設定済み + webman-scout 依存導入済み；**docker-compose に ES サービスなし** |
 | 29 プラットフォーム実機連携 | 29 アダプターのコードは揃っている；**サンドボックス/資格情報の連携記録なし**（外部資格情報が必要、手動項目と明記） |
 
@@ -31,7 +31,7 @@
 ### 設計ポイント
 - エンドポイント：`GET /api/sync/status`（アカウント次元：last_sync_at、成功率、今日の失敗数、pending リトライ数）+ `GET /api/sync/errors`（ページングエラー一覧、last_error/retry_count/next_retry_at 含む）
 - フロントエンド：同期状態ページ（テーブル + サマリーカード）、Full/Standard バージョン線のみ
-- データソース：erik_platform_accounts（last_sync_at）+ erik_sync_errors
+- データソース：ads_platform_accounts（last_sync_at）+ ads_sync_errors
 
 ## Task 2: コンバージョンデータ収集 API
 
@@ -41,7 +41,7 @@
 
 ### 設計ポイント
 - エンドポイント：`POST /api/conversions`（業務側のコンバージョン回送：platform/campaign_id/order_id/conversion_time/value/currency/channel）+ `GET /api/conversions`（照会）
-- 検証：campaign_id の存在、金額が非負、時間形式；erik_conversions に書き込み
+- 検証：campaign_id の存在、金額が非負、時間形式；ads_conversions に書き込み
 - 帰因連携：回送後に帰因再計算をトリガー可能（または既存の AttributionEngine の定期/手動再計算に任せる旨を説明）
 - フロントエンド：帰因レポートページに"コンバージョン回送"の説明/デモを追加（任意）
 
@@ -62,7 +62,7 @@
 - Modify: `service/plugin/ads-api/config/route.php` + controller
 
 ### 設計ポイント
-- データ：erik_tenants に quota フィールド追加、または新テーブル erik_tenant_quotas（plan/account_limit/campaign_limit/sync_quota）
+- データ：ads_tenants に quota フィールド追加、または新テーブル ads_tenant_quotas（plan/account_limit/campaign_limit/sync_quota）
 - 検証ポイント：アカウント紐付け数、計画作成数、毎日同期回数（AccountController/CampaignController/DataSyncTask の入口で検査）
 - エンドポイント：`GET /api/tenant/quota`（使用量 + クォータ）
 - フロントエンド：システムページにクォータ使用量を表示（任意、MVP は API のみ可）

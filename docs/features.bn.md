@@ -96,7 +96,7 @@ Campaign (广告计划)
 
 ```
 遍历 enabled=1 的规则
-  → 查询 erik_report_metrics (今天数据, 按 scope 过滤)
+  → 查询 ads_report_metrics (今天数据, 按 scope 过滤)
   → compare(metric_value, threshold, condition)
   → 去重检查 (check_interval 内已有触发 → 跳过)
   → 创建 AlertLog (status=triggered)
@@ -107,7 +107,7 @@ Campaign (广告计划)
 
 | চ্যানেল | স্ট্যাটাস | বাস্তবায়ন |
 |------|------|------|
-| web | ✅ | erik_notifications-এ লেখা |
+| web | ✅ | ads_notifications-এ লেখা |
 | email | প্লেসহোল্ডার | echo স্টাব |
 | sms | প্লেসহোল্ডার | echo স্টাব |
 | Redis pub/sub | ✅ | `alert:new` চ্যানেলে JSON পুশ |
@@ -131,7 +131,7 @@ Campaign (广告计划)
 
 ```
 遍历 enabled=1 的规则
-  → 查询 erik_report_metrics (今天数据, 按 scope 过滤)
+  → 查询 ads_report_metrics (今天数据, 按 scope 过滤)
   → compare(metric_value, threshold, condition)
   → 冷却检查 (cooldown_minutes 内是否有过操作)
   → 执行动作:
@@ -254,7 +254,7 @@ POST /api/ad-groups 支持 targeting_template_id
 - থ্রি-লেভেল অ্যালার্ট: yellow (≥50%), orange (≥80%), red (≥100%)
 - BudgetCheckTask প্রতি 15 মিনিটে এক্সিকিউট
 - ডিডুপ্লিকেশন: একই প্ল্যান একই লেভেল দিনে একবারই নোটিফাই
-- `erik_notifications` টেবিলে লেখা
+- `ads_notifications` টেবিলে লেখা
 
 ইন্টারফেস: বাজেট অ্যালার্ট → [api.bn.md মডিউল 7](api.bn.md#模块-7-报表)
 
@@ -283,16 +283,16 @@ POST /api/ad-groups 支持 targeting_template_id
 | position_based | প্রথম 40% + শেষ 40% + মাঝের 20% |
 
 - লুকব্যাক উইন্ডো: 30 দিন
-- টাচপয়েন্ট উৎস: `erik_report_metrics` (ক্লিক > 0)
-- ফলাফল `erik_attribution_results`-এ লেখা
+- টাচপয়েন্ট উৎস: `ads_report_metrics` (ক্লিক > 0)
+- ফলাফল `ads_attribution_results`-এ লেখা
 - ফ্রন্টএন্ড: AttributionReport.vue মডেল সুইচ + স্ট্যাট কার্ড + ECharts বার চার্ট + ডিটেইল টেবিল
 
 ### ডেটা টেবিল
 
 | টেবিল | ফিল্ড |
 |----|------|
-| `erik_conversions` | id, tenant_id, platform, campaign_id, order_id, conversion_time, value, currency, channel |
-| `erik_attribution_results` | id, tenant_id, conversion_id, model, campaign_id, credit |
+| `ads_conversions` | id, tenant_id, platform, campaign_id, order_id, conversion_time, value, currency, channel |
+| `ads_attribution_results` | id, tenant_id, conversion_id, model, campaign_id, credit |
 
 ইন্টারফেস: অ্যাট্রিবিউশন অ্যানালাইসিস / মডেল লিস্ট → [api.bn.md মডিউল 7](api.bn.md#模块-7-报表)
 

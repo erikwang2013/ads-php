@@ -12,7 +12,7 @@ class Tenant extends Model
 {
     use SnowflakeTrait;
 
-    protected $table = 'erik_tenants';
+    protected $table = 'ads_tenants';
     protected $guarded = ['id'];
     protected $casts = [
         'db_config' => 'array',

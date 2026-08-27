@@ -6,7 +6,7 @@
 
 ## Правила
 
-1. **Префикс таблиц**: `erik_` для всех пользовательских таблиц, `admin_` для таблиц админ-панели
+1. **Префикс таблиц**: `ads_` для всех пользовательских таблиц, `admin_` для таблиц админ-панели
 2. **Первичный ключ**: `BIGINT UNSIGNED PRIMARY KEY` — БЕЗ AUTO_INCREMENT, используйте Snowflake ID
 3. **Движок**: `ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`
 4. **Денежные столбцы**: `BIGINT DEFAULT 0` для фэней (分) — в соответствии с унифицированной моделью
@@ -17,7 +17,7 @@
 ## Шаблон
 
 ```sql
-CREATE TABLE IF NOT EXISTS `erik_table_name` (
+CREATE TABLE IF NOT EXISTS `ads_table_name` (
     `id` BIGINT UNSIGNED PRIMARY KEY,
     `tenant_id` BIGINT UNSIGNED NOT NULL,
     `name` VARCHAR(100) NOT NULL,
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `erik_table_name` (
 ## Seed-данные (опционально)
 
 ```sql
-INSERT INTO erik_table_name (id, name) VALUES (1, '默认数据')
+INSERT INTO ads_table_name (id, name) VALUES (1, '默认数据')
 ON DUPLICATE KEY UPDATE name = VALUES(name);
 ```
 

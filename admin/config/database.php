@@ -6,9 +6,9 @@
  *
  * 存储 admin 专用表：admin_users / admin_roles / admin_audit_logs。
  *
- * 业务数据（erik_campaigns、erik_report_metrics 等）存储在同一个 MySQL 实例中，
+ * 业务数据（ads_campaigns、ads_report_metrics 等）存储在同一个 MySQL 实例中，
  * 但 admin 不直接操作业务表——所有业务查询通过 service API（:8788）完成。
- * 两者通过表命名前缀区分：业务表 erik_* ，管理表 admin_*。
+ * 两者通过表命名前缀区分：业务表 ads_* ，管理表 admin_*。
  */
 
 return [

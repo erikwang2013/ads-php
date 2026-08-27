@@ -13,7 +13,7 @@ class CalendarService
 {
     public function getEvents(string $dateStart, string $dateEnd, int $tenantId = 1, ?string $platform = null): array
     {
-        $query = DB::table('erik_campaigns')
+        $query = DB::table('ads_campaigns')
             ->where('tenant_id', $tenantId)
             ->where(function ($q) use ($dateStart, $dateEnd) {
                 $q->whereBetween('start_date', [$dateStart, $dateEnd])

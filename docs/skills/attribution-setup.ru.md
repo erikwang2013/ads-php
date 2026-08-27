@@ -9,12 +9,12 @@
 1. Создайте таблицу событий конверсий:
 
 ```sql
--- erik_conversions: 转化事件
-INSERT INTO erik_conversions (id, tenant_id, platform, campaign_id, conversion_time, value, order_id)
+-- ads_conversions: 转化事件
+INSERT INTO ads_conversions (id, tenant_id, platform, campaign_id, conversion_time, value, order_id)
 VALUES (snowflake_id(), 1, 'juliang', 1, NOW(), 299.00, 'ORD-001');
 ```
 
-2. Данные точек касания берутся из `erik_report_metrics` (записи с clicks > 0 считаются точками касания).
+2. Данные точек касания берутся из `ads_report_metrics` (записи с clicks > 0 считаются точками касания).
 
 ## Модели атрибуции
 

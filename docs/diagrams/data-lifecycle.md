@@ -11,7 +11,7 @@ flowchart TD
         A2 --> A3["GET /api/platforms/:code/oauth-url<br/>生成随机 state · 构建授权 URL"]
         A3 --> A4["跳转平台 OAuth 授权页<br/>用户确认授权"]
         A4 --> A5["POST /api/platforms/:code/callback<br/>验证 state · 交换 code → Token"]
-        A5 --> A6["加密存储 Token<br/>erik_platform_accounts<br/>erik_auth_tokens<br/>Encryptable 字段级加密"]
+        A5 --> A6["加密存储 Token<br/>ads_platform_accounts<br/>ads_auth_tokens<br/>Encryptable 字段级加密"]
     end
 
     subgraph Phase2["阶段 2: 数据同步"]
@@ -32,7 +32,7 @@ flowchart TD
     end
 
     subgraph Phase3["阶段 3: 存储与缓存"]
-        D1[("MySQL 8.0<br/>28 张表<br/>BIGINT Snowflake PK<br/>erik_ 前缀")]
+        D1[("MySQL 8.0<br/>28 张表<br/>BIGINT Snowflake PK<br/>ads_ 前缀")]
         D2[("Redis 7<br/>三级缓存")]
         D3[("Elasticsearch<br/>全文搜索索引")]
 
@@ -71,7 +71,7 @@ flowchart TD
         E4C -->|"≥ 80%"| E4E["🟠 橙色预警"]
         E4C -->|"≥ 100%"| E4F["🔴 红色预警"]
         E4D & E4E & E4F --> E4G["去重: 同一计划同级别<br/>一天只通知一次"]
-        E4G --> E4H["写入 erik_notifications"]
+        E4G --> E4H["写入 ads_notifications"]
     end
 
     subgraph Phase5["阶段 5: 消费与展示"]
@@ -82,14 +82,14 @@ flowchart TD
     end
 
     subgraph Phase6["阶段 6: 归因分析"]
-        G1["转化追踪"] --> G1A["erik_conversions<br/>order_id · value · channel"]
+        G1["转化追踪"] --> G1A["ads_conversions<br/>order_id · value · channel"]
         G1A --> G2["AttributionEngine<br/>5 模型计算"]
         G2 --> G2A["first_touch: 首触点 100%"]
         G2 --> G2B["last_touch: 末触点 100%"]
         G2 --> G2C["linear: 均分 1/N"]
         G2 --> G2D["time_decay: e^(-λ×Δt)<br/>7天半衰期"]
         G2 --> G2E["position_based:<br/>首40% + 末40% + 中20%"]
-        G2A & G2B & G2C & G2D & G2E --> G3["erik_attribution_results<br/>model · campaign_id · credit"]
+        G2A & G2B & G2C & G2D & G2E --> G3["ads_attribution_results<br/>model · campaign_id · credit"]
     end
 
     Phase1 --> Phase2

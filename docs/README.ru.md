@@ -59,7 +59,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | Слой | Технология | Описание |
 |----|------|------|
 | Сервер | webman v2 + PHP 8.2+ | 7 плагинов, 65+ API-эндпоинтов |
-| База данных | MySQL 8.0 | 28 таблиц, префикс erik_, Snowflake BIGINT первичные ключи |
+| База данных | MySQL 8.0 | 28 таблиц, префикс ads_, Snowflake BIGINT первичные ключи |
 | Кэш | Redis 7 | Трёхуровневый кэш (L1 память/L2 APCu/L3 Redis)、лимитирование запросов、Pub/Sub、очередь сообщений |
 | Поиск | Elasticsearch | webman-scout автоматическая синхронизация индексов (настроено) |
 | Админ-панель | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP-бэкенд (порт 8789), SPA напрямую обращается к бизнес-API (порт 8788), 19 страниц, визуализация ECharts |
@@ -329,21 +329,21 @@ ads-php/
 
 ## База данных
 
-**Правила именования**: префикс таблиц `erik_`, первичный ключ `BIGINT UNSIGNED PRIMARY KEY`（без автоинкремента, Snowflake ID）, движок InnoDB, кодировка utf8mb4
+**Правила именования**: префикс таблиц `ads_`, первичный ключ `BIGINT UNSIGNED PRIMARY KEY`（без автоинкремента, Snowflake ID）, движок InnoDB, кодировка utf8mb4
 
 | Категория | Таблица | Назначение |
 |------|------|------|
-| Базовые | `erik_tenants` | Мультитенантность |
-| Аккаунты | `erik_platform_accounts`, `erik_auth_tokens` | OAuth-аккаунты платформ |
-| Кампании | `erik_campaigns`, `erik_ad_groups`, `erik_creatives` | Иерархия рекламных кампаний |
-| Отчеты | `erik_report_metrics`, `erik_report_extras` | Унифицированные метрики отчетов |
-| Материалы | `erik_assets` | Библиотека креативов |
-| Таргетинг | `erik_targeting_templates` | Шаблоны таргетинга аудитории |
-| Атрибуция | `erik_conversions`, `erik_attribution_results` | Отслеживание конверсий + результаты атрибуции |
-| Ставки | `erik_bid_rules`, `erik_bid_logs` | Правила автобеттинга + история |
-| Оповещения | `erik_alert_rules`, `erik_alert_logs` | Мониторинг оповещений |
-| Уведомления | `erik_notifications` | Внутренние уведомления |
-| Системные | `erik_sync_errors`, `admin_users`, `admin_roles`, `admin_audit_logs` | Ошибки синхронизации, RBAC, аудит |
+| Базовые | `ads_tenants` | Мультитенантность |
+| Аккаунты | `ads_platform_accounts`, `ads_auth_tokens` | OAuth-аккаунты платформ |
+| Кампании | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | Иерархия рекламных кампаний |
+| Отчеты | `ads_report_metrics`, `ads_report_extras` | Унифицированные метрики отчетов |
+| Материалы | `ads_assets` | Библиотека креативов |
+| Таргетинг | `ads_targeting_templates` | Шаблоны таргетинга аудитории |
+| Атрибуция | `ads_conversions`, `ads_attribution_results` | Отслеживание конверсий + результаты атрибуции |
+| Ставки | `ads_bid_rules`, `ads_bid_logs` | Правила автобеттинга + история |
+| Оповещения | `ads_alert_rules`, `ads_alert_logs` | Мониторинг оповещений |
+| Уведомления | `ads_notifications` | Внутренние уведомления |
+| Системные | `ads_sync_errors`, `admin_users`, `admin_roles`, `admin_audit_logs` | Ошибки синхронизации, RBAC, аудит |
 
 ---
 
@@ -394,7 +394,7 @@ cd apps/flutter && dart analyze   # 零错误
 | Skill | Описание |
 |------|------|
 | `adapter-generator` | Генерация нового адаптера рекламной платформы (шаблон из 14 методов) |
-| `migration-generator` | Генерация SQL-миграций (префикс erik_ + BIGINT PK) |
+| `migration-generator` | Генерация SQL-миграций (префикс ads_ + BIGINT PK) |
 | `erik-stack` | Руководство по интеграции 8 пакетов Erik Stack |
 | `admin-page-generator` | Генерация страниц админ-панели на Vue3 |
 | `api-endpoint` | Добавление RESTful API-эндпоинтов |

@@ -28,7 +28,7 @@ class CampaignController
     {
         $this->allowedSorts = ['id', 'name', 'platform', 'daily_budget', 'status', 'created_at', 'updated_at'];
         $tenantId = $this->tenantId($request);
-        $query = DB::table('erik_campaigns')->where('tenant_id', $tenantId);
+        $query = DB::table('ads_campaigns')->where('tenant_id', $tenantId);
 
         if ($platform = $request->get('platform')) $query->where('platform', $platform);
         if ($status = $request->get('status')) $query->where('status', $status);
@@ -39,7 +39,7 @@ class CampaignController
 
         [$items, $total, $page, $perPage] = $this->paginate($request, $query);
 
-        $summary = (array) DB::table('erik_report_metrics')
+        $summary = (array) DB::table('ads_report_metrics')
             ->where('tenant_id', $tenantId)
             ->where('date', date('Y-m-d'))
             ->selectRaw('COALESCE(SUM(cost), 0) as total_cost')
@@ -87,7 +87,7 @@ class CampaignController
             );
 
             $id = \plugin\ads_platform\model\Campaign::snowflakeId();
-            DB::table('erik_campaigns')->insert([
+            DB::table('ads_campaigns')->insert([
                 'id'                   => $id,
                 'tenant_id'            => $request->tenantId ?? 1,
                 'platform_account_id'  => $accountId,
@@ -116,12 +116,12 @@ class CampaignController
      */
     public function show(int $id): \Webman\Http\Response
     {
-        $campaign = DB::table('erik_campaigns')->find($id);
+        $campaign = DB::table('ads_campaigns')->find($id);
         if (!$campaign) {
             return ApiResponse::error('Campaign not found');
         }
 
-        $todayMetrics = DB::table('erik_report_metrics')
+        $todayMetrics = DB::table('ads_report_metrics')
             ->where('campaign_id', $id)
             ->where('date', date('Y-m-d'))
             ->first();
@@ -137,7 +137,7 @@ class CampaignController
      */
     public function update(Request $request, int $id): \Webman\Http\Response
     {
-        $campaign = DB::table('erik_campaigns')->find($id);
+        $campaign = DB::table('ads_campaigns')->find($id);
         if (!$campaign) {
             return ApiResponse::error('Campaign not found');
         }
@@ -154,7 +154,7 @@ class CampaignController
                 $data
             );
 
-            DB::table('erik_campaigns')->where('id', $id)->update([
+            DB::table('ads_campaigns')->where('id', $id)->update([
                 'name'         => $data->name,
                 'daily_budget' => $data->dailyBudget,
                 'updated_at'   => now(),
@@ -174,7 +174,7 @@ class CampaignController
      */
     public function toggle(Request $request, int $id): \Webman\Http\Response
     {
-        $campaign = DB::table('erik_campaigns')->find($id);
+        $campaign = DB::table('ads_campaigns')->find($id);
         if (!$campaign) {
             return ApiResponse::error('Campaign not found');
         }
@@ -191,7 +191,7 @@ class CampaignController
                 $enabled
             );
 
-            DB::table('erik_campaigns')->where('id', $id)->update([
+            DB::table('ads_campaigns')->where('id', $id)->update([
                 'status'     => $enabled ? 'enabled' : 'paused',
                 'updated_at' => now(),
             ]);
@@ -218,7 +218,7 @@ class CampaignController
         }
 
         $ids = array_map('intval', $ids);
-        $campaigns = DB::table('erik_campaigns')->whereIn('id', $ids)->get();
+        $campaigns = DB::table('ads_campaigns')->whereIn('id', $ids)->get();
         $accountIds = $campaigns->pluck('platform_account_id')->unique()->toArray();
         $accounts = PlatformAccount::whereIn('id', $accountIds)->get()->keyBy('id');
 
@@ -240,7 +240,7 @@ class CampaignController
                     }
                 }
 
-                DB::table('erik_campaigns')->where('id', $campaign->id)->update([
+                DB::table('ads_campaigns')->where('id', $campaign->id)->update([
                     'status'     => $enabled ? 'enabled' : 'paused',
                     'updated_at' => now(),
                 ]);

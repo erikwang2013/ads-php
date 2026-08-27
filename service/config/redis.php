@@ -13,6 +13,7 @@ return [
         'port'     => env('REDIS_PORT', '6379'),
         'password' => env('REDIS_PASSWORD', ''),
         'database' => 0,
+        'prefix'   => env('REDIS_PREFIX', 'ads:'),
         'persistent' => true,
         'read_write_timeout' => 3,
         'connection_timeout' => 3,
@@ -24,6 +25,7 @@ return [
         'port'     => env('REDIS_READ_PORT', env('REDIS_PORT', '6379')),
         'password' => env('REDIS_READ_PASSWORD', env('REDIS_PASSWORD', '')),
         'database' => env('REDIS_READ_DB', 0),
+        'prefix'   => env('REDIS_PREFIX', 'ads:'),
         'persistent' => true,
     ],
 ];

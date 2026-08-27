@@ -9,12 +9,12 @@ Attributions-Engine einrichten und verwenden, um Konversionsquellen zu analysier
 1. Tabelle der Konversionsereignisse erstellen:
 
 ```sql
--- erik_conversions: 转化事件
-INSERT INTO erik_conversions (id, tenant_id, platform, campaign_id, conversion_time, value, order_id)
+-- ads_conversions: 转化事件
+INSERT INTO ads_conversions (id, tenant_id, platform, campaign_id, conversion_time, value, order_id)
 VALUES (snowflake_id(), 1, 'juliang', 1, NOW(), 299.00, 'ORD-001');
 ```
 
-2. Touchpoint-Daten stammen aus `erik_report_metrics` (Datensätze mit clicks > 0 gelten als Touchpoints).
+2. Touchpoint-Daten stammen aus `ads_report_metrics` (Datensätze mit clicks > 0 gelten als Touchpoints).
 
 ## Attributionsmodelle
 

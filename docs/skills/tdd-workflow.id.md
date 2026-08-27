@@ -79,6 +79,6 @@ git add service/tests/ service/plugin/ && git commit -m "feat: add feature X wit
 - [ ] `find service -name "*.php" -not -path "*/vendor/*" -exec php -l {} \;` lulus
 - [ ] Header Copyright di semua file baru
 - [ ] Tanpa `getenv()` — gunakan `env()` sebagai gantinya
-- [ ] Nama tabel menggunakan prefiks `erik_`
+- [ ] Nama tabel menggunakan prefiks `ads_`
 - [ ] Tanpa `\` di awal kelas global
 - [ ] `use Throwable;` / `use RuntimeException;` / `use InvalidArgumentException;` di file ber-namespace

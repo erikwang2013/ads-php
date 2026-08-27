@@ -96,7 +96,7 @@ Campaign (広告プラン)
 
 ```
 enabled=1 のルールを走査
-  → erik_report_metrics を照会 (今日のデータ, scope でフィルタ)
+  → ads_report_metrics を照会 (今日のデータ, scope でフィルタ)
   → compare(metric_value, threshold, condition)
   → 重複チェック (check_interval 内に既に発火 → スキップ)
   → AlertLog を作成 (status=triggered)
@@ -107,7 +107,7 @@ enabled=1 のルールを走査
 
 | チャネル | 状態 | 実装 |
 |------|------|------|
-| web | ✅ | erik_notifications に書き込み |
+| web | ✅ | ads_notifications に書き込み |
 | email | プレースホルダー | echo スタブ |
 | sms | プレースホルダー | echo スタブ |
 | Redis pub/sub | ✅ | `alert:new` チャネルへ JSON プッシュ |
@@ -131,7 +131,7 @@ enabled=1 のルールを走査
 
 ```
 enabled=1 のルールを走査
-  → erik_report_metrics を照会 (今日のデータ, scope でフィルタ)
+  → ads_report_metrics を照会 (今日のデータ, scope でフィルタ)
   → compare(metric_value, threshold, condition)
   → クールダウンチェック (cooldown_minutes 内に操作があったか)
   → アクションを実行:
@@ -254,7 +254,7 @@ sync_enabled=1 のアカウントを走査
 - 3 段階アラート: yellow (≥50%), orange (≥80%), red (≥100%)
 - BudgetCheckTask は 15 分ごとに実行
 - 重複排除: 同一プラン・同一レベルは 1 日 1 回のみ通知
-- `erik_notifications` テーブルに書き込み
+- `ads_notifications` テーブルに書き込み
 
 インターフェース: 予算警告 → [api.ja.md モジュール 7](api.ja.md#模块-7-报表)
 
@@ -283,16 +283,16 @@ sync_enabled=1 のアカウントを走査
 | position_based | 先頭 40% + 末尾 40% + 中間 20% |
 
 - 遡及ウィンドウ: 30 日
-- タッチポイントのソース: `erik_report_metrics` (クリック > 0)
-- 結果は `erik_attribution_results` に書き込み
+- タッチポイントのソース: `ads_report_metrics` (クリック > 0)
+- 結果は `ads_attribution_results` に書き込み
 - フロントエンド: AttributionReport.vue のモデル切替 + 統計カード + ECharts 棒グラフ + 明細テーブル
 
 ### データテーブル
 
 | テーブル | フィールド |
 |----|------|
-| `erik_conversions` | id, tenant_id, platform, campaign_id, order_id, conversion_time, value, currency, channel |
-| `erik_attribution_results` | id, tenant_id, conversion_id, model, campaign_id, credit |
+| `ads_conversions` | id, tenant_id, platform, campaign_id, order_id, conversion_time, value, currency, channel |
+| `ads_attribution_results` | id, tenant_id, conversion_id, model, campaign_id, credit |
 
 インターフェース: アトリビューション分析 / モデルリスト → [api.ja.md モジュール 7](api.ja.md#模块-7-报表)
 

@@ -14,7 +14,7 @@
 
 | المكوّن | الحالة |
 |---|---|
-| `NotificationService::send()` | توزيع `match ($channel)` على web/email/sms؛ web يكتب فعليًا في `erik_notifications`، email/sms كـ echo stubs |
+| `NotificationService::send()` | توزيع `match ($channel)` على web/email/sms؛ web يكتب فعليًا في `ads_notifications`، email/sms كـ echo stubs |
 | `AlertRule.channels` | حقل JSON + تحويل Eloquent cast array، الواجهة الأمامية ترسل بالفعل `['web','email','sms']` |
 | Admin AlertRuleList.vue | توجد واجهة اختيار القنوات (web مثبتة، email/sms اختيارية) |
 | Redis pub/sub | دفع قناة `alert:new` منفذ |

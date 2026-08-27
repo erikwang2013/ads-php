@@ -59,7 +59,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 层 | 技术 | 说明 |
 |----|------|------|
 | 服务端 | webman v2 + PHP 8.2+ | 7 个插件，65+ API 端点 |
-| 数据库 | MySQL 8.0 | 28 张表，erik_ 前缀，Snowflake BIGINT 主键 |
+| 数据库 | MySQL 8.0 | 28 张表，ads_ 前缀，Snowflake BIGINT 主键 |
 | 缓存 | Redis 7 | 三级缓存 (L1内存/L2 APCu/L3 Redis)、限流计数、Pub/Sub、消息队列 |
 | 搜索 | Elasticsearch | webman-scout 自动索引同步（已配置） |
 | 管理后台 | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP 后端(端口 8789)，SPA 直连业务 API(端口 8788)，19 页面，ECharts 可视化 |
@@ -329,21 +329,21 @@ ads-php/
 
 ## 数据库
 
-**命名规范**: 表前缀 `erik_`，主键 `BIGINT UNSIGNED PRIMARY KEY`（无自增，Snowflake ID），引擎 InnoDB，字符集 utf8mb4
+**命名规范**: 表前缀 `ads_`，主键 `BIGINT UNSIGNED PRIMARY KEY`（无自增，Snowflake ID），引擎 InnoDB，字符集 utf8mb4
 
 | 分类 | 表名 | 用途 |
 |------|------|------|
-| 基础 | `erik_tenants` | 多租户 |
-| 账户 | `erik_platform_accounts`, `erik_auth_tokens` | OAuth 平台账户 |
-| 投放 | `erik_campaigns`, `erik_ad_groups`, `erik_creatives` | 广告投放层级 |
-| 报表 | `erik_report_metrics`, `erik_report_extras` | 统一报表指标 |
-| 素材 | `erik_assets` | 创意素材库 |
-| 定向 | `erik_targeting_templates` | 受众定向模板 |
-| 归因 | `erik_conversions`, `erik_attribution_results` | 转化追踪 + 归因结果 |
-| 出价 | `erik_bid_rules`, `erik_bid_logs` | 自动出价规则 + 历史 |
-| 告警 | `erik_alert_rules`, `erik_alert_logs` | 告警监控 |
-| 通知 | `erik_notifications` | 站内通知 |
-| 系统 | `erik_sync_errors`, `admin_users`, `admin_roles`, `admin_audit_logs` | 同步错误、RBAC、审计 |
+| 基础 | `ads_tenants` | 多租户 |
+| 账户 | `ads_platform_accounts`, `ads_auth_tokens` | OAuth 平台账户 |
+| 投放 | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | 广告投放层级 |
+| 报表 | `ads_report_metrics`, `ads_report_extras` | 统一报表指标 |
+| 素材 | `ads_assets` | 创意素材库 |
+| 定向 | `ads_targeting_templates` | 受众定向模板 |
+| 归因 | `ads_conversions`, `ads_attribution_results` | 转化追踪 + 归因结果 |
+| 出价 | `ads_bid_rules`, `ads_bid_logs` | 自动出价规则 + 历史 |
+| 告警 | `ads_alert_rules`, `ads_alert_logs` | 告警监控 |
+| 通知 | `ads_notifications` | 站内通知 |
+| 系统 | `ads_sync_errors`, `admin_users`, `admin_roles`, `admin_audit_logs` | 同步错误、RBAC、审计 |
 
 ---
 
@@ -396,7 +396,7 @@ cd apps/flutter && dart analyze   # 零错误
 | Skill | 说明 |
 |------|------|
 | `adapter-generator` | 生成新的广告平台适配器（14 方法模板） |
-| `migration-generator` | 生成 SQL 迁移文件（erik_ 前缀 + BIGINT PK） |
+| `migration-generator` | 生成 SQL 迁移文件（ads_ 前缀 + BIGINT PK） |
 | `erik-stack` | Erik Stack 8 包集成使用指南 |
 | `admin-page-generator` | 生成 Vue3 管理后台页面 |
 | `api-endpoint` | 添加 RESTful API 端点 |

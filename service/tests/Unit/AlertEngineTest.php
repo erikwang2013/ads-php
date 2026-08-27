@@ -17,14 +17,14 @@ class AlertEngineTest extends SqliteTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->exec('CREATE TABLE erik_report_metrics (
+        $this->exec('CREATE TABLE ads_report_metrics (
             id INTEGER PRIMARY KEY AUTOINCREMENT, tenant_id INT, platform TEXT,
             campaign_id INT, date TEXT, cost INT, impressions INT, clicks INT, conversions INT)');
-        $this->exec('CREATE TABLE erik_alert_rules (
+        $this->exec('CREATE TABLE ads_alert_rules (
             id TEXT PRIMARY KEY, tenant_id INT, name TEXT, metric TEXT, threshold REAL,
             condition TEXT, scope TEXT, platform TEXT, campaign_id INT, check_interval INT,
             channels TEXT, webhook_url TEXT, enabled INT, created_at TEXT, updated_at TEXT)');
-        $this->exec('CREATE TABLE erik_alert_logs (
+        $this->exec('CREATE TABLE ads_alert_logs (
             id TEXT PRIMARY KEY, tenant_id INT, rule_id TEXT, rule_name TEXT, metric TEXT,
             current_value REAL, threshold REAL, condition TEXT, status TEXT, extra TEXT,
             created_at TEXT)');
@@ -79,7 +79,7 @@ class AlertEngineTest extends SqliteTestCase
 
     public function testEvaluateTriggersLogWhenThresholdExceeded(): void
     {
-        \Illuminate\Database\Capsule\Manager::table('erik_report_metrics')->insert([
+        \Illuminate\Database\Capsule\Manager::table('ads_report_metrics')->insert([
             ['tenant_id' => 1, 'platform' => 'juliang', 'campaign_id' => 11, 'date' => date('Y-m-d'), 'cost' => 100, 'impressions' => 1000, 'clicks' => 10, 'conversions' => 2],
             ['tenant_id' => 1, 'platform' => 'juliang', 'campaign_id' => 12, 'date' => date('Y-m-d'), 'cost' => 40, 'impressions' => 500, 'clicks' => 5, 'conversions' => 1],
         ]);
@@ -95,7 +95,7 @@ class AlertEngineTest extends SqliteTestCase
 
     public function testEvaluateDoesNotTriggerBelowThreshold(): void
     {
-        \Illuminate\Database\Capsule\Manager::table('erik_report_metrics')->insert([
+        \Illuminate\Database\Capsule\Manager::table('ads_report_metrics')->insert([
             'tenant_id' => 1, 'platform' => 'juliang', 'date' => date('Y-m-d'), 'cost' => 10,
         ]);
 
@@ -107,7 +107,7 @@ class AlertEngineTest extends SqliteTestCase
 
     public function testEvaluateSuppressesDuplicateWithinCheckInterval(): void
     {
-        \Illuminate\Database\Capsule\Manager::table('erik_report_metrics')->insert([
+        \Illuminate\Database\Capsule\Manager::table('ads_report_metrics')->insert([
             'tenant_id' => 1, 'platform' => 'juliang', 'date' => date('Y-m-d'), 'cost' => 100,
         ]);
 
@@ -121,7 +121,7 @@ class AlertEngineTest extends SqliteTestCase
 
     public function testEvaluateScopeCampaignFiltersByCampaign(): void
     {
-        \Illuminate\Database\Capsule\Manager::table('erik_report_metrics')->insert([
+        \Illuminate\Database\Capsule\Manager::table('ads_report_metrics')->insert([
             ['tenant_id' => 1, 'campaign_id' => 11, 'date' => date('Y-m-d'), 'cost' => 200],
             ['tenant_id' => 1, 'campaign_id' => 12, 'date' => date('Y-m-d'), 'cost' => 5],
         ]);

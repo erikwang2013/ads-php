@@ -163,22 +163,22 @@ ads-php/
 
 | Category | Tables | Primary Key | Purpose |
 |----------|--------|-------------|---------|
-| Foundation | `erik_tenants` | BIGINT Snowflake | Multi-tenancy |
-| Accounts | `erik_platform_accounts`, `erik_auth_tokens` | BIGINT Snowflake | OAuth platform accounts |
-| Delivery hierarchy | `erik_campaigns`, `erik_ad_groups`, `erik_creatives` | BIGINT Snowflake | Ad delivery |
-| Reporting | `erik_report_metrics`, `erik_report_extras` | BIGINT Snowflake | Unified metrics |
-| Alerts | `erik_alert_rules`, `erik_alert_logs` | BIGINT Snowflake | Monitoring alerts |
-| Bidding | `erik_bid_rules`, `erik_bid_logs` | BIGINT Snowflake | Auto-bidding |
-| Targeting | `erik_targeting_templates` | BIGINT Snowflake | Audience templates |
-| Assets | `erik_assets` | BIGINT Snowflake | Creative asset library |
-| Notifications | `erik_notifications` | BIGINT Snowflake | In-app notifications |
-| Attribution | `erik_conversions`, `erik_attribution_results` | BIGINT Snowflake | Conversion tracking + attribution |
-| System | `erik_sync_errors` | BIGINT Snowflake | Sync errors |
+| Foundation | `ads_tenants` | BIGINT Snowflake | Multi-tenancy |
+| Accounts | `ads_platform_accounts`, `ads_auth_tokens` | BIGINT Snowflake | OAuth platform accounts |
+| Delivery hierarchy | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | BIGINT Snowflake | Ad delivery |
+| Reporting | `ads_report_metrics`, `ads_report_extras` | BIGINT Snowflake | Unified metrics |
+| Alerts | `ads_alert_rules`, `ads_alert_logs` | BIGINT Snowflake | Monitoring alerts |
+| Bidding | `ads_bid_rules`, `ads_bid_logs` | BIGINT Snowflake | Auto-bidding |
+| Targeting | `ads_targeting_templates` | BIGINT Snowflake | Audience templates |
+| Assets | `ads_assets` | BIGINT Snowflake | Creative asset library |
+| Notifications | `ads_notifications` | BIGINT Snowflake | In-app notifications |
+| Attribution | `ads_conversions`, `ads_attribution_results` | BIGINT Snowflake | Conversion tracking + attribution |
+| System | `ads_sync_errors` | BIGINT Snowflake | Sync errors |
 | Admin | `admin_users`, `admin_roles`, `admin_audit_logs` | BIGINT Snowflake | RBAC + audit |
 
 ### 5.2 Naming Conventions
 
-- Table prefix: `erik_`
+- Table prefix: `ads_`
 - Primary key: `BIGINT UNSIGNED PRIMARY KEY` (no auto-increment, Snowflake ID)
 - Engine: InnoDB, charset: utf8mb4
 - Timestamps: `created_at`, `updated_at` (DATETIME)

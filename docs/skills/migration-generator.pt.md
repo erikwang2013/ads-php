@@ -6,7 +6,7 @@ Gere arquivos de migração SQL seguindo as convenções do projeto.
 
 ## Regras
 
-1. **Prefixo de tabela**: `erik_` para todas as tabelas voltadas ao usuário, `admin_` para tabelas do painel administrativo
+1. **Prefixo de tabela**: `ads_` para todas as tabelas voltadas ao usuário, `admin_` para tabelas do painel administrativo
 2. **Chave primária**: `BIGINT UNSIGNED PRIMARY KEY` — SEM AUTO_INCREMENT, use ID Snowflake
 3. **Engine**: `ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`
 4. **Colunas de dinheiro**: `BIGINT DEFAULT 0` para fen (分) — consistente com o modelo unificado
@@ -17,7 +17,7 @@ Gere arquivos de migração SQL seguindo as convenções do projeto.
 ## Modelo
 
 ```sql
-CREATE TABLE IF NOT EXISTS `erik_table_name` (
+CREATE TABLE IF NOT EXISTS `ads_table_name` (
     `id` BIGINT UNSIGNED PRIMARY KEY,
     `tenant_id` BIGINT UNSIGNED NOT NULL,
     `name` VARCHAR(100) NOT NULL,
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `erik_table_name` (
 ## Dados de seed (opcional)
 
 ```sql
-INSERT INTO erik_table_name (id, name) VALUES (1, '默认数据')
+INSERT INTO ads_table_name (id, name) VALUES (1, '默认数据')
 ON DUPLICATE KEY UPDATE name = VALUES(name);
 ```
 

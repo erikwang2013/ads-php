@@ -96,7 +96,7 @@ Campaign (광고 캠페인)
 
 ```
 enabled=1 규칙 순회
-  → erik_report_metrics 조회 (오늘 데이터, scope 기준 필터)
+  → ads_report_metrics 조회 (오늘 데이터, scope 기준 필터)
   → compare(metric_value, threshold, condition)
   → 중복 검사 (check_interval 내 이미 트리거됨 → 건너뜀)
   → AlertLog 생성 (status=triggered)
@@ -107,7 +107,7 @@ enabled=1 규칙 순회
 
 | 채널 | 상태 | 구현 |
 |------|------|------|
-| web | ✅ | erik_notifications에 저장 |
+| web | ✅ | ads_notifications에 저장 |
 | email | 자리 표시 | echo 스텁 |
 | sms | 자리 표시 | echo 스텁 |
 | Redis pub/sub | ✅ | `alert:new` 채널 JSON 푸시 |
@@ -131,7 +131,7 @@ enabled=1 규칙 순회
 
 ```
 enabled=1 규칙 순회
-  → erik_report_metrics 조회 (오늘 데이터, scope 기준 필터)
+  → ads_report_metrics 조회 (오늘 데이터, scope 기준 필터)
   → compare(metric_value, threshold, condition)
   → 쿨다운 검사 (cooldown_minutes 내 작업 이력 확인)
   → 작업 실행:
@@ -254,7 +254,7 @@ sync_enabled=1 계정 순회
 - 3단계 경보: yellow (≥50%), orange (≥80%), red (≥100%)
 - BudgetCheckTask 15분마다 실행
 - 중복 방지: 같은 캠페인 같은 레벨은 하루에 한 번만 알림
-- `erik_notifications` 테이블에 저장
+- `ads_notifications` 테이블에 저장
 
 인터페이스: 예산 경보 → [api.md 모듈 7](api.ko.md#模块-7-报表)
 
@@ -283,16 +283,16 @@ sync_enabled=1 계정 순회
 | position_based | 처음 40% + 마지막 40% + 중간 20% |
 
 - 소급 창: 30일
-- 터치포인트 출처: `erik_report_metrics` (클릭 > 0)
-- 결과는 `erik_attribution_results`에 저장
+- 터치포인트 출처: `ads_report_metrics` (클릭 > 0)
+- 결과는 `ads_attribution_results`에 저장
 - 프론트엔드: AttributionReport.vue 모델 전환 + 통계 카드 + ECharts 막대 그래프 + 상세 테이블
 
 ### 데이터 테이블
 
 | 테이블 | 필드 |
 |----|------|
-| `erik_conversions` | id, tenant_id, platform, campaign_id, order_id, conversion_time, value, currency, channel |
-| `erik_attribution_results` | id, tenant_id, conversion_id, model, campaign_id, credit |
+| `ads_conversions` | id, tenant_id, platform, campaign_id, order_id, conversion_time, value, currency, channel |
+| `ads_attribution_results` | id, tenant_id, conversion_id, model, campaign_id, credit |
 
 인터페이스: 기여도 분석 / 모델 목록 → [api.md 모듈 7](api.ko.md#模块-7-报表)
 

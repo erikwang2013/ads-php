@@ -270,7 +270,7 @@ protected array $fieldMap = [
 ## 3. Database Design
 
 ### Naming Conventions
-- Table prefix: `erik_`
+- Table prefix: `ads_`
 - Primary key: `BIGINT UNSIGNED PRIMARY KEY` (no auto-increment, Snowflake ID generation)
 - Engine: InnoDB, charset: utf8mb4
 
@@ -278,7 +278,7 @@ protected array $fieldMap = [
 
 ```sql
 -- 租户
-CREATE TABLE erik_tenants (
+CREATE TABLE ads_tenants (
     id BIGINT UNSIGNED PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     domain VARCHAR(255) DEFAULT NULL,
@@ -292,7 +292,7 @@ CREATE TABLE erik_tenants (
 );
 
 -- 平台账户 (access_token/refresh_token 由 encryptable 自动加解密)
-CREATE TABLE erik_platform_accounts (
+CREATE TABLE ads_platform_accounts (
     id BIGINT UNSIGNED PRIMARY KEY,
     tenant_id BIGINT UNSIGNED NOT NULL,
     platform VARCHAR(32) NOT NULL,
@@ -311,7 +311,7 @@ CREATE TABLE erik_platform_accounts (
 );
 
 -- OAuth 状态 Token
-CREATE TABLE erik_auth_tokens (
+CREATE TABLE ads_auth_tokens (
     id BIGINT UNSIGNED PRIMARY KEY,
     tenant_id BIGINT UNSIGNED NOT NULL,
     platform VARCHAR(32) NOT NULL,
@@ -323,7 +323,7 @@ CREATE TABLE erik_auth_tokens (
 );
 
 -- 统一广告计划
-CREATE TABLE erik_campaigns (
+CREATE TABLE ads_campaigns (
     id BIGINT UNSIGNED PRIMARY KEY,
     tenant_id BIGINT UNSIGNED NOT NULL,
     platform_account_id BIGINT UNSIGNED NOT NULL,
@@ -344,7 +344,7 @@ CREATE TABLE erik_campaigns (
 );
 
 -- 统一广告组
-CREATE TABLE erik_ad_groups (
+CREATE TABLE ads_ad_groups (
     id BIGINT UNSIGNED PRIMARY KEY,
     campaign_id BIGINT UNSIGNED NOT NULL,
     platform_adgroup_id VARCHAR(128) NOT NULL,
@@ -360,7 +360,7 @@ CREATE TABLE erik_ad_groups (
 );
 
 -- 统一创意
-CREATE TABLE erik_creatives (
+CREATE TABLE ads_creatives (
     id BIGINT UNSIGNED PRIMARY KEY,
     ad_group_id BIGINT UNSIGNED NOT NULL,
     platform_creative_id VARCHAR(128) NOT NULL,
@@ -376,7 +376,7 @@ CREATE TABLE erik_creatives (
 );
 
 -- 报表核心指标
-CREATE TABLE erik_report_metrics (
+CREATE TABLE ads_report_metrics (
     id BIGINT UNSIGNED PRIMARY KEY,
     tenant_id BIGINT UNSIGNED NOT NULL,
     platform_account_id BIGINT UNSIGNED NOT NULL,
@@ -402,16 +402,16 @@ CREATE TABLE erik_report_metrics (
 );
 
 -- 报表扩展数据
-CREATE TABLE erik_report_extras (
+CREATE TABLE ads_report_extras (
     id BIGINT UNSIGNED PRIMARY KEY,
     report_metric_id BIGINT UNSIGNED NOT NULL,
     platform VARCHAR(32) NOT NULL,
     extra JSON,
-    FOREIGN KEY (report_metric_id) REFERENCES erik_report_metrics(id) ON DELETE CASCADE
+    FOREIGN KEY (report_metric_id) REFERENCES ads_report_metrics(id) ON DELETE CASCADE
 );
 
 -- 告警规则
-CREATE TABLE erik_alert_rules (
+CREATE TABLE ads_alert_rules (
     id BIGINT UNSIGNED PRIMARY KEY,
     tenant_id BIGINT UNSIGNED NOT NULL,
     name VARCHAR(100) NOT NULL,
@@ -430,7 +430,7 @@ CREATE TABLE erik_alert_rules (
 );
 
 -- 告警记录
-CREATE TABLE erik_alert_logs (
+CREATE TABLE ads_alert_logs (
     id BIGINT UNSIGNED PRIMARY KEY,
     tenant_id BIGINT UNSIGNED NOT NULL,
     rule_id BIGINT UNSIGNED NOT NULL,
@@ -839,7 +839,7 @@ Uses webman/crontab, accelerated with Redis caching.
 | TokenRefreshTask | Every 55 min | Scan expired tokens, auto-refresh |
 | DataSyncTask | Every 10 min | Pull platform campaigns + last 2 days of reports, clear dashboard cache after sync |
 | AlertCheckTask | Every 5 min | Iterate enabled rules, evaluate thresholds, trigger push |
-| RetrySyncTask | Every 3 min | Retry failed syncs (erik_sync_errors table, max 3 retries, exponential backoff) |
+| RetrySyncTask | Every 3 min | Retry failed syncs (ads_sync_errors table, max 3 retries, exponential backoff) |
 
 Sync strategy: adapter Generator streaming, cursor/pagination to prevent gaps, automatic retry on failure, curl_errno checks, platform-level QPS rate limiting.
 
@@ -876,7 +876,7 @@ Sync strategy: adapter Generator streaming, cursor/pagination to prevent gaps, a
               v            v            v
         ┌─────────┐ ┌──────────┐ ┌──────────┐
         │MySQL 8.0│ │ Redis 7  │ │ ES 9200  │
-        │erik_*   │ │ cache,   │ │ search   │
+        │ads_*   │ │ cache,   │ │ search   │
         │admin_*  │ │ queue    │ │          │
         └─────────┘ └──────────┘ └──────────┘
 ```
@@ -930,7 +930,7 @@ make admin-dev                # 前端开发模式
 | Phase 7 | Docker deployment + security hardening (RateLimit/CORS/SQLGuard) + cache layer + README | ✅ |
 | Phase 8 | Directory reorganization (apps/) + standalone Admin webman-admin v2 (PHP backend + ServiceProxy) + RBAC + audit logs | ✅ |
 | Phase 9 | API docs + platform rate limits + sync retry queue + PHPUnit 20 tests + GitHub Actions CI/CD | ✅ |
-| Phase 10 | Chinese comments in config files + .env comments + platform credentials docs + `erik_` table prefix rewrite + BIGINT PK | ✅ |
+| Phase 10 | Chinese comments in config files + .env comments + platform credentials docs + `ads_` table prefix rewrite + BIGINT PK | ✅ |
 | Phase 11 | Internationalization (vue-i18n + I18n.php + Flutter + HarmonyOS) + slider CAPTCHA (poster-php) | ✅ |
 | Phase 12 | Type-to-confirm — unbind/delete/batch operations require typing the target name | ✅ |
 

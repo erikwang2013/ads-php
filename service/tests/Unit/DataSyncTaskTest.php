@@ -55,27 +55,27 @@ class DataSyncTaskTest extends SqliteTestCase
         parent::setUp();
         AdapterRegistry::register(new SpySyncAdapter());
 
-        $this->exec('CREATE TABLE erik_platform_accounts (
+        $this->exec('CREATE TABLE ads_platform_accounts (
             id INTEGER PRIMARY KEY AUTOINCREMENT, tenant_id INT, platform TEXT, account_name TEXT,
             account_id_on_platform TEXT, access_token TEXT, refresh_token TEXT, status INT,
             token_expires_at TEXT, last_sync_at TEXT, sync_enabled INT, created_at TEXT, updated_at TEXT)');
-        $this->exec('CREATE TABLE erik_campaigns (
+        $this->exec('CREATE TABLE ads_campaigns (
             id INTEGER PRIMARY KEY AUTOINCREMENT, tenant_id INT, platform TEXT, name TEXT,
             platform_account_id INT, platform_campaign_id TEXT, daily_budget INT, status TEXT,
             extra TEXT, synced_at TEXT, created_at TEXT, updated_at TEXT)');
-        $this->exec('CREATE TABLE erik_ad_groups (
+        $this->exec('CREATE TABLE ads_ad_groups (
             id INTEGER PRIMARY KEY AUTOINCREMENT, campaign_id INT, platform_adgroup_id TEXT,
             name TEXT, status TEXT, bid_amount INT, bid_type TEXT, targeting TEXT, extra TEXT,
             created_at TEXT, updated_at TEXT)');
-        $this->exec('CREATE TABLE erik_creatives (
+        $this->exec('CREATE TABLE ads_creatives (
             id INTEGER PRIMARY KEY AUTOINCREMENT, ad_group_id INT, platform_creative_id TEXT,
             title TEXT, description TEXT, media_type TEXT, media_urls TEXT, landing_url TEXT,
             extra TEXT, created_at TEXT, updated_at TEXT)');
-        $this->exec('CREATE TABLE erik_report_metrics (
+        $this->exec('CREATE TABLE ads_report_metrics (
             id INTEGER PRIMARY KEY AUTOINCREMENT, tenant_id INT, platform TEXT,
             platform_account_id INT, campaign_id INT, date TEXT, granularity TEXT,
             cost INT, impressions INT, clicks INT, conversions INT, ctr REAL, cpc REAL, cpm REAL, cvr REAL)');
-        $this->exec('CREATE TABLE erik_sync_errors (
+        $this->exec('CREATE TABLE ads_sync_errors (
             id INTEGER PRIMARY KEY AUTOINCREMENT, platform_account_id INT, platform TEXT,
             error_message TEXT, next_retry_at TEXT, created_at TEXT)');
     }
@@ -107,21 +107,21 @@ class DataSyncTaskTest extends SqliteTestCase
         (new DataSyncTask())->executeSingleAccount((int) $account->id);
 
         // campaigns upserted
-        $this->assertSame(2, DB::table('erik_campaigns')->count());
-        $campA = DB::table('erik_campaigns')->where('platform_campaign_id', 'pc-1')->first();
+        $this->assertSame(2, DB::table('ads_campaigns')->count());
+        $campA = DB::table('ads_campaigns')->where('platform_campaign_id', 'pc-1')->first();
         $this->assertSame('Camp A', $campA->name);
         $this->assertSame(1000, (int) $campA->daily_budget);
 
         // ad groups (1 per campaign → 2)
-        $this->assertSame(2, DB::table('erik_ad_groups')->count());
+        $this->assertSame(2, DB::table('ads_ad_groups')->count());
 
         // creatives (1 per ad group → 2)
-        $this->assertSame(2, DB::table('erik_creatives')->count());
-        $creative = DB::table('erik_creatives')->first();
+        $this->assertSame(2, DB::table('ads_creatives')->count());
+        $creative = DB::table('ads_creatives')->first();
         $this->assertSame('Creative 1', $creative->title);
 
         // report metrics linked to campaign pc-1
-        $metric = DB::table('erik_report_metrics')->first();
+        $metric = DB::table('ads_report_metrics')->first();
         $this->assertSame($campA->id, (int) $metric->campaign_id);
         $this->assertSame(100, (int) $metric->cost);
 
@@ -137,10 +137,10 @@ class DataSyncTaskTest extends SqliteTestCase
         $task->executeSingleAccount((int) $account->id);
         $task->executeSingleAccount((int) $account->id);
 
-        $this->assertSame(2, DB::table('erik_campaigns')->count());
-        $this->assertSame(2, DB::table('erik_ad_groups')->count());
-        $this->assertSame(2, DB::table('erik_creatives')->count());
-        $this->assertSame(1, DB::table('erik_report_metrics')->count());
+        $this->assertSame(2, DB::table('ads_campaigns')->count());
+        $this->assertSame(2, DB::table('ads_ad_groups')->count());
+        $this->assertSame(2, DB::table('ads_creatives')->count());
+        $this->assertSame(1, DB::table('ads_report_metrics')->count());
     }
 
     public function testExecuteSingleAccountThrowsForMissingAccount(): void

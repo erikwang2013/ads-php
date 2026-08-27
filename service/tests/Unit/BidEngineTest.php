@@ -54,23 +54,23 @@ class BidEngineTest extends SqliteTestCase
         $this->adapter = new SpyBidAdapter();
         AdapterRegistry::register($this->adapter);
 
-        $this->exec('CREATE TABLE erik_bid_rules (
+        $this->exec('CREATE TABLE ads_bid_rules (
             id TEXT PRIMARY KEY, tenant_id INT, metric TEXT, threshold REAL, condition TEXT,
             scope TEXT, platform TEXT, campaign_id INT, cooldown_minutes INT, action_type TEXT,
             adjust_step INT, budget_min INT, budget_max INT, enabled INT, created_at TEXT, updated_at TEXT)');
-        $this->exec('CREATE TABLE erik_bid_logs (
+        $this->exec('CREATE TABLE ads_bid_logs (
             id TEXT PRIMARY KEY, rule_id TEXT, tenant_id INT, campaign_id INT, metric_value REAL,
             action_type TEXT, old_budget INT, new_budget INT, old_status TEXT, new_status TEXT,
             created_at TEXT)');
-        $this->exec('CREATE TABLE erik_campaigns (
+        $this->exec('CREATE TABLE ads_campaigns (
             id INTEGER PRIMARY KEY AUTOINCREMENT, tenant_id INT, platform TEXT, name TEXT,
             platform_account_id INT, platform_campaign_id TEXT, daily_budget INT, status TEXT,
             created_at TEXT, updated_at TEXT)');
-        $this->exec('CREATE TABLE erik_platform_accounts (
+        $this->exec('CREATE TABLE ads_platform_accounts (
             id INTEGER PRIMARY KEY AUTOINCREMENT, tenant_id INT, platform TEXT, account_name TEXT,
             account_id_on_platform TEXT, access_token TEXT, refresh_token TEXT, status INT,
             token_expires_at TEXT, created_at TEXT, updated_at TEXT)');
-        $this->exec('CREATE TABLE erik_report_metrics (
+        $this->exec('CREATE TABLE ads_report_metrics (
             id INTEGER PRIMARY KEY AUTOINCREMENT, tenant_id INT, platform TEXT,
             campaign_id INT, date TEXT, cost INT, impressions INT, clicks INT, conversions INT)');
     }
@@ -86,17 +86,17 @@ class BidEngineTest extends SqliteTestCase
 
     private function seedBaseData(): void
     {
-        DB::table('erik_platform_accounts')->insert([
+        DB::table('ads_platform_accounts')->insert([
             'id' => 1, 'tenant_id' => 1, 'platform' => 'spybid', 'account_name' => 'a',
             'account_id_on_platform' => 'acc-1', 'access_token' => 'tok', 'refresh_token' => 'rt',
             'status' => 1,
         ]);
-        DB::table('erik_campaigns')->insert([
+        DB::table('ads_campaigns')->insert([
             'id' => 1, 'tenant_id' => 1, 'platform' => 'spybid', 'name' => 'c1',
             'platform_account_id' => 1, 'platform_campaign_id' => 'pc-1', 'daily_budget' => 100,
             'status' => 'enabled',
         ]);
-        DB::table('erik_report_metrics')->insert([
+        DB::table('ads_report_metrics')->insert([
             'tenant_id' => 1, 'platform' => 'spybid', 'campaign_id' => 1,
             'date' => date('Y-m-d'), 'cost' => 200,
         ]);
@@ -166,7 +166,7 @@ class BidEngineTest extends SqliteTestCase
         $this->assertSame(150, $log->new_budget);
         $this->assertSame('adjust_budget', $log->action_type);
 
-        $campaign = DB::table('erik_campaigns')->find(1);
+        $campaign = DB::table('ads_campaigns')->find(1);
         $this->assertSame(150, (int) $campaign->daily_budget);
         $this->assertSame(['pc-1', 150], $this->adapter->updates[0] ?? null);
     }
@@ -181,7 +181,7 @@ class BidEngineTest extends SqliteTestCase
         $this->assertSame('enabled', $log->old_status);
         $this->assertSame('paused', $log->new_status);
         $this->assertSame(['pc-1', false], $this->adapter->toggles[0] ?? null);
-        $this->assertSame('paused', DB::table('erik_campaigns')->find(1)->status);
+        $this->assertSame('paused', DB::table('ads_campaigns')->find(1)->status);
     }
 
     public function testEvaluateRespectsCooldown(): void

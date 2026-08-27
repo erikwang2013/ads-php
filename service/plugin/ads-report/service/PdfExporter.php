@@ -23,7 +23,7 @@ class PdfExporter
         $dateEnd   = $params['date_end']   ?? date('Y-m-d');
 
         // --- Fetch summary overview ---
-        $overview = (array) DB::table('erik_report_metrics')
+        $overview = (array) DB::table('ads_report_metrics')
             ->where('tenant_id', $tenantId)
             ->whereBetween('date', [$dateStart, $dateEnd])
             ->selectRaw('COALESCE(SUM(cost), 0) as total_cost')
@@ -37,7 +37,7 @@ class PdfExporter
             ->first();
 
         // --- Fetch platform comparison ---
-        $byPlatform = DB::table('erik_report_metrics')
+        $byPlatform = DB::table('ads_report_metrics')
             ->where('tenant_id', $tenantId)
             ->whereBetween('date', [$dateStart, $dateEnd])
             ->groupBy('platform')
@@ -54,7 +54,7 @@ class PdfExporter
             ->toArray();
 
         // --- Fetch daily trend ---
-        $daily = DB::table('erik_report_metrics')
+        $daily = DB::table('ads_report_metrics')
             ->where('tenant_id', $tenantId)
             ->whereBetween('date', [$dateStart, $dateEnd])
             ->groupBy('date')

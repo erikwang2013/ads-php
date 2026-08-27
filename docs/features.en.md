@@ -96,7 +96,7 @@ API: Summary / Custom / Export → [api.md Module 7](api.en.md#模块-7-报表)
 
 ```
 遍历 enabled=1 的规则
-  → 查询 erik_report_metrics (今天数据, 按 scope 过滤)
+  → 查询 ads_report_metrics (今天数据, 按 scope 过滤)
   → compare(metric_value, threshold, condition)
   → 去重检查 (check_interval 内已有触发 → 跳过)
   → 创建 AlertLog (status=triggered)
@@ -107,7 +107,7 @@ API: Summary / Custom / Export → [api.md Module 7](api.en.md#模块-7-报表)
 
 | Channel | Status | Implementation |
 |---------|--------|----------------|
-| web | ✅ | Write to `erik_notifications` |
+| web | ✅ | Write to `ads_notifications` |
 | email | placeholder | echo stub |
 | sms | placeholder | echo stub |
 | Redis pub/sub | ✅ | JSON push on `alert:new` channel |
@@ -131,7 +131,7 @@ API: List / unread count / mark read / mark all read → [api.md Module 9](api.e
 
 ```
 遍历 enabled=1 的规则
-  → 查询 erik_report_metrics (今天数据, 按 scope 过滤)
+  → 查询 ads_report_metrics (今天数据, 按 scope 过滤)
   → compare(metric_value, threshold, condition)
   → 冷却检查 (cooldown_minutes 内是否有过操作)
   → 执行动作:
@@ -254,7 +254,7 @@ API: Upload / list / detail / delete → [api.md Module 12](api.en.md#模块-12-
 - 3-tier alerts: yellow (≥50%), orange (≥80%), red (≥100%)
 - BudgetCheckTask runs every 15 minutes
 - Deduplication: same campaign, same level, only notified once per day
-- Written to the `erik_notifications` table
+- Written to the `ads_notifications` table
 
 API: Budget alerts → [api.md Module 7](api.en.md#模块-7-报表)
 
@@ -283,16 +283,16 @@ API: Campaign calendar → [api.md Module 7](api.en.md#模块-7-报表)
 | position_based | First 40% + last 40% + middle 20% |
 
 - Lookback window: 30 days
-- Touchpoint source: `erik_report_metrics` (clicks > 0)
-- Results written to `erik_attribution_results`
+- Touchpoint source: `ads_report_metrics` (clicks > 0)
+- Results written to `ads_attribution_results`
 - Frontend: AttributionReport.vue model switcher + stat cards + ECharts bar chart + detail table
 
 ### Data Tables
 
 | Table | Fields |
 |-------|--------|
-| `erik_conversions` | id, tenant_id, platform, campaign_id, order_id, conversion_time, value, currency, channel |
-| `erik_attribution_results` | id, tenant_id, conversion_id, model, campaign_id, credit |
+| `ads_conversions` | id, tenant_id, platform, campaign_id, order_id, conversion_time, value, currency, channel |
+| `ads_attribution_results` | id, tenant_id, conversion_id, model, campaign_id, credit |
 
 API: Attribution analysis / model list → [api.md Module 7](api.en.md#模块-7-报表)
 

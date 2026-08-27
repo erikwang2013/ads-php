@@ -59,7 +59,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | الطبقة | التقنية | الوصف |
 |----|------|------|
 | الخادم | webman v2 + PHP 8.2+ | 7 إضافات، 65+ نقطة نهاية API |
-| قاعدة البيانات | MySQL 8.0 | 28 جدولًا، بادئة erik_، مفاتيح رئيسية Snowflake BIGINT |
+| قاعدة البيانات | MySQL 8.0 | 28 جدولًا، بادئة ads_، مفاتيح رئيسية Snowflake BIGINT |
 | التخزين المؤقت | Redis 7 | تخزين مؤقت ثلاثي المستويات (L1 ذاكرة/L2 APCu/L3 Redis)、عدادات تحديد المعدل وPub/Sub وقائمة انتظار الرسائل |
 | البحث | Elasticsearch | مزامنة فهرسة تلقائية عبر webman-scout (مُهيأ) |
 | لوحة الإدارة | webman-admin v2 + Vue 3 + TypeScript + Element Plus | خلفية PHP (المنفذ 8789)، SPA يتصل مباشرة بـ API الأعمال (المنفذ 8788)، 19 صفحة، تصوير ECharts |
@@ -329,21 +329,21 @@ ads-php/
 
 ## قاعدة البيانات
 
-**قواعد التسمية**: بادئة الجداول `erik_`، مفتاح رئيسي `BIGINT UNSIGNED PRIMARY KEY` (بدون زيادة تلقائية، معرفات Snowflake)، محرك InnoDB، ترميز utf8mb4
+**قواعد التسمية**: بادئة الجداول `ads_`، مفتاح رئيسي `BIGINT UNSIGNED PRIMARY KEY` (بدون زيادة تلقائية، معرفات Snowflake)، محرك InnoDB، ترميز utf8mb4
 
 | التصنيف | اسم الجدول | الاستخدام |
 |------|------|------|
-| أساسيات | `erik_tenants` | متعدد المستأجرين |
-| الحسابات | `erik_platform_accounts`, `erik_auth_tokens` | حسابات منصات OAuth |
-| النشر | `erik_campaigns`, `erik_ad_groups`, `erik_creatives` | مستويات نشر الإعلانات |
-| التقارير | `erik_report_metrics`, `erik_report_extras` | مقاييس تقارير موحدة |
-| المواد | `erik_assets` | مكتبة المواد الإبداعية |
-| الاستهداف | `erik_targeting_templates` | قوالب استهداف الجمهور |
-| الإسناد | `erik_conversions`, `erik_attribution_results` | تتبع التحويلات + نتائج الإسناد |
-| المزايدة | `erik_bid_rules`, `erik_bid_logs` | قواعد المزايدة التلقائية + السجل |
-| التنبيهات | `erik_alert_rules`, `erik_alert_logs` | مراقبة التنبيهات |
-| الإشعارات | `erik_notifications` | إشعارات داخلية |
-| النظام | `erik_sync_errors`, `admin_users`, `admin_roles`, `admin_audit_logs` | أخطاء المزامنة، RBAC، التدقيق |
+| أساسيات | `ads_tenants` | متعدد المستأجرين |
+| الحسابات | `ads_platform_accounts`, `ads_auth_tokens` | حسابات منصات OAuth |
+| النشر | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | مستويات نشر الإعلانات |
+| التقارير | `ads_report_metrics`, `ads_report_extras` | مقاييس تقارير موحدة |
+| المواد | `ads_assets` | مكتبة المواد الإبداعية |
+| الاستهداف | `ads_targeting_templates` | قوالب استهداف الجمهور |
+| الإسناد | `ads_conversions`, `ads_attribution_results` | تتبع التحويلات + نتائج الإسناد |
+| المزايدة | `ads_bid_rules`, `ads_bid_logs` | قواعد المزايدة التلقائية + السجل |
+| التنبيهات | `ads_alert_rules`, `ads_alert_logs` | مراقبة التنبيهات |
+| الإشعارات | `ads_notifications` | إشعارات داخلية |
+| النظام | `ads_sync_errors`, `admin_users`, `admin_roles`, `admin_audit_logs` | أخطاء المزامنة، RBAC، التدقيق |
 
 ---
 
@@ -394,7 +394,7 @@ cd apps/flutter && dart analyze   # 零错误
 | Skill | الوصف |
 |------|------|
 | `adapter-generator` | توليد محول منصة إعلانية جديد (قالب 14 دالة) |
-| `migration-generator` | توليد ملفات ترحيل SQL (بادئة erik_ + BIGINT PK) |
+| `migration-generator` | توليد ملفات ترحيل SQL (بادئة ads_ + BIGINT PK) |
 | `erik-stack` | دليل استخدام تكامل حزم Erik Stack الثماني |
 | `admin-page-generator` | توليد صفحات لوحة إدارة Vue3 |
 | `api-endpoint` | إضافة نقاط نهاية RESTful API |

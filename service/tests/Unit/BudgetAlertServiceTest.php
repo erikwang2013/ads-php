@@ -15,21 +15,21 @@ class BudgetAlertServiceTest extends SqliteTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->exec('CREATE TABLE erik_campaigns (
+        $this->exec('CREATE TABLE ads_campaigns (
             id INTEGER PRIMARY KEY AUTOINCREMENT, tenant_id INT, platform TEXT, name TEXT,
             daily_budget INT, status TEXT, created_at TEXT, updated_at TEXT)');
-        $this->exec('CREATE TABLE erik_report_metrics (
+        $this->exec('CREATE TABLE ads_report_metrics (
             id INTEGER PRIMARY KEY AUTOINCREMENT, tenant_id INT, platform TEXT,
             campaign_id INT, date TEXT, cost INT, impressions INT, clicks INT, conversions INT)');
     }
 
     private function seedCampaign(int $id, int $budget, int $spent): void
     {
-        DB::table('erik_campaigns')->insert([
+        DB::table('ads_campaigns')->insert([
             'id' => $id, 'tenant_id' => 1, 'platform' => 'juliang', 'name' => "campaign {$id}",
             'daily_budget' => $budget, 'status' => 'enabled',
         ]);
-        DB::table('erik_report_metrics')->insert([
+        DB::table('ads_report_metrics')->insert([
             'tenant_id' => 1, 'platform' => 'juliang', 'campaign_id' => $id,
             'date' => date('Y-m-d'), 'cost' => $spent,
         ]);
@@ -74,7 +74,7 @@ class BudgetAlertServiceTest extends SqliteTestCase
 
     public function testSkipsDisabledAndZeroBudgetCampaigns(): void
     {
-        DB::table('erik_campaigns')->insert([
+        DB::table('ads_campaigns')->insert([
             ['id' => 1, 'tenant_id' => 1, 'platform' => 'juliang', 'name' => 'paused', 'daily_budget' => 1000, 'status' => 'paused'],
             ['id' => 2, 'tenant_id' => 1, 'platform' => 'juliang', 'name' => 'zero budget', 'daily_budget' => 0, 'status' => 'enabled'],
         ]);

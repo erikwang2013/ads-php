@@ -25,7 +25,7 @@ class ReportExporterTest extends SqliteTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->exec('CREATE TABLE erik_report_metrics (
+        $this->exec('CREATE TABLE ads_report_metrics (
             id INTEGER PRIMARY KEY AUTOINCREMENT, tenant_id INT, platform TEXT,
             campaign_id INT, date TEXT, cost INT, impressions INT, clicks INT, conversions INT)');
     }
@@ -83,7 +83,7 @@ class ReportExporterTest extends SqliteTestCase
 
     public function testExportCsvIncludesDataRows(): void
     {
-        DB::table('erik_report_metrics')->insert([
+        DB::table('ads_report_metrics')->insert([
             'tenant_id' => 1, 'platform' => 'juliang', 'date' => '2026-08-20', 'cost' => 1234, 'clicks' => 56,
         ]);
 
@@ -101,7 +101,7 @@ class ReportExporterTest extends SqliteTestCase
 
     public function testExportExcelBuildsHtmlTable(): void
     {
-        DB::table('erik_report_metrics')->insert([
+        DB::table('ads_report_metrics')->insert([
             'tenant_id' => 1, 'platform' => 'juliang', 'date' => '2026-08-20', 'cost' => 100, 'clicks' => 10,
         ]);
 

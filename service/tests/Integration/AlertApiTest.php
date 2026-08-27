@@ -150,7 +150,7 @@ class AlertApiTest extends ApiTestCase
     protected function seedAlertLog(array $overrides = []): int
     {
         $id = $this->nextId();
-        DB::table('erik_alert_logs')->insert(array_merge([
+        DB::table('ads_alert_logs')->insert(array_merge([
             'id'             => $id,
             'tenant_id'      => $this->tenantId,
             'rule_id'        => $this->nextId(),

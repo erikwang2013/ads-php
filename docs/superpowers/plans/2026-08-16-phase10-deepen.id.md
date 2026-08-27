@@ -14,10 +14,10 @@
 
 | Sub-item Kandidat | Status |
 |---|---|
-| Visualisasi status sinkronisasi | Tabel `erik_sync_errors` + `RetrySyncTask` (retry 3 kali, backoff 5^n menit) sudah ada; **tidak ada halaman frontend/API yang menampilkan tingkat kegagalan sinkronisasi dan latensi** |
-| Loop tertutup data konversi | Tabel `erik_conversions` + `erik_attribution_results` sudah ada, mesin atribusi sudah diimplementasikan; **tidak ada pintu masuk pengumpulan data konversi** (API callback/tracking) |
+| Visualisasi status sinkronisasi | Tabel `ads_sync_errors` + `RetrySyncTask` (retry 3 kali, backoff 5^n menit) sudah ada; **tidak ada halaman frontend/API yang menampilkan tingkat kegagalan sinkronisasi dan latensi** |
+| Loop tertutup data konversi | Tabel `ads_conversions` + `ads_attribution_results` sudah ada, mesin atribusi sudah diimplementasikan; **tidak ada pintu masuk pengumpulan data konversi** (API callback/tracking) |
 | CI seluler | `ci.yml` hanya sintaks PHP→PHPUnit→vue-tsc→Docker; **tidak ada build/packaging Flutter/HarmonyOS** |
-| SaaS multi-tenant | Tabel `erik_tenants` + middleware TenantIdentify sudah ada; **tidak ada penagihan/kuota/statistik penggunaan** |
+| SaaS multi-tenant | Tabel `ads_tenants` + middleware TenantIdentify sudah ada; **tidak ada penagihan/kuota/statistik penggunaan** |
 | Realisasi ES | scout.php sudah dikonfigurasi + dependensi webman-scout sudah diperkenalkan; **docker-compose tidak memiliki layanan ES** |
 | Integrasi nyata 29 platform | Kode 29 adapter lengkap; **tidak ada catatan integrasi sandbox/kredensial** (perlu kredensial eksternal, ditandai sebagai item manual) |
 
@@ -31,7 +31,7 @@
 ### Poin Desain
 - Endpoint: `GET /api/sync/status` (dimensi akun: last_sync_at, tingkat keberhasilan, jumlah gagal hari ini, jumlah retry pending) + `GET /api/sync/errors` (daftar error terpaginasi, berisi last_error/retry_count/next_retry_at)
 - Frontend: halaman status sinkronisasi (tabel + kartu ringkasan), hanya jalur versi Full/Standard
-- Sumber data: erik_platform_accounts (last_sync_at) + erik_sync_errors
+- Sumber data: ads_platform_accounts (last_sync_at) + ads_sync_errors
 
 ## Task 2: API Pengumpulan Data Konversi
 
@@ -41,7 +41,7 @@
 
 ### Poin Desain
 - Endpoint: `POST /api/conversions` (callback konversi dari pihak bisnis: platform/campaign_id/order_id/conversion_time/value/currency/channel) + `GET /api/conversions` (query)
-- Validasi: campaign_id ada, jumlah non-negatif, format waktu; tulis ke erik_conversions
+- Validasi: campaign_id ada, jumlah non-negatif, format waktu; tulis ke ads_conversions
 - Kaitan atribusi: setelah callback dapat memicu perhitungan ulang atribusi (atau jelaskan dihitung ulang oleh AttributionEngine yang ada secara terjadwal/manual)
 - Frontend: halaman laporan atribusi tambah penjelasan/demo "callback konversi" (opsional)
 
@@ -62,7 +62,7 @@
 - Modify: `service/plugin/ads-api/config/route.php` + controller
 
 ### Poin Desain
-- Data: erik_tenants tambah field quota atau tabel baru erik_tenant_quotas (plan/account_limit/campaign_limit/sync_quota)
+- Data: ads_tenants tambah field quota atau tabel baru ads_tenant_quotas (plan/account_limit/campaign_limit/sync_quota)
 - Titik validasi: jumlah pengikatan akun, jumlah pembuatan kampanye, jumlah sinkronisasi harian (periksa di pintu masuk AccountController/CampaignController/DataSyncTask)
 - Endpoint: `GET /api/tenant/quota` (penggunaan + kuota)
 - Frontend: halaman sistem tampilkan penggunaan kuota (opsional, MVP bisa hanya API)

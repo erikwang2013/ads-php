@@ -14,10 +14,10 @@
 
 | Subelemento candidato | Estado actual |
 |---|---|
-| Visualización del estado de sincronización | La tabla `erik_sync_errors` + `RetrySyncTask` (3 reintentos, retroceso 5^n minutos) ya existen; **sin página/API de frontend que muestre la tasa de fallos y la latencia de sincronización** |
-| Cierre del bucle de conversión | Las tablas `erik_conversions` + `erik_attribution_results` existen y el motor de atribución está implementado; **sin punto de entrada de recopilación de conversiones** (API de callback/rastreo) |
+| Visualización del estado de sincronización | La tabla `ads_sync_errors` + `RetrySyncTask` (3 reintentos, retroceso 5^n minutos) ya existen; **sin página/API de frontend que muestre la tasa de fallos y la latencia de sincronización** |
+| Cierre del bucle de conversión | Las tablas `ads_conversions` + `ads_attribution_results` existen y el motor de atribución está implementado; **sin punto de entrada de recopilación de conversiones** (API de callback/rastreo) |
 | CI de clientes móviles | `ci.yml` solo PHP syntax → PHPUnit → vue-tsc → Docker; **sin compilación/empaquetado de Flutter/HarmonyOS** |
-| SaaS multitenant | La tabla `erik_tenants` + middleware TenantIdentify ya existen; **sin facturación/cuotas/estadísticas de uso** |
+| SaaS multitenant | La tabla `ads_tenants` + middleware TenantIdentify ya existen; **sin facturación/cuotas/estadísticas de uso** |
 | Implantación de ES | scout.php configurado + dependencia webman-scout añadida; **docker-compose sin servicio ES** |
 | Integración real de 29 plataformas | Código completo de 29 adaptadores; **sin registros de integración con sandbox/credenciales** (requiere credenciales externas; marcado como elemento manual) |
 
@@ -31,7 +31,7 @@
 ### Puntos de diseño
 - Endpoints: `GET /api/sync/status` (por cuenta: last_sync_at, tasa de éxito, número de fallos de hoy, número de reintentos pendientes) + `GET /api/sync/errors` (lista de errores paginada, con last_error/retry_count/next_retry_at)
 - Frontend: página de estado de sincronización (tabla + tarjetas de resumen), solo en las líneas de versión Full/Standard
-- Fuente de datos: erik_platform_accounts (last_sync_at) + erik_sync_errors
+- Fuente de datos: ads_platform_accounts (last_sync_at) + ads_sync_errors
 
 ## Tarea 2: API de recopilación de datos de conversión
 
@@ -41,7 +41,7 @@
 
 ### Puntos de diseño
 - Endpoints: `POST /api/conversions` (las partes de negocio devuelven conversiones: platform/campaign_id/order_id/conversion_time/value/currency/channel) + `GET /api/conversions` (consulta)
-- Validación: campaign_id existe, importe no negativo, formato de hora; escritura en erik_conversions
+- Validación: campaign_id existe, importe no negativo, formato de hora; escritura en ads_conversions
 - Vinculación de atribución: tras la devolución puede activarse el recálculo de atribución (o indicarse que lo recalcula el AttributionEngine existente de forma programada/manual)
 - Frontend: la página de informes de atribución añade una explicación/demostración de "devolución de conversión" (opcional)
 
@@ -62,7 +62,7 @@
 - Modificar: `service/plugin/ads-api/config/route.php` + controller
 
 ### Puntos de diseño
-- Datos: añadir campo quota a erik_tenants o nueva tabla erik_tenant_quotas (plan/account_limit/campaign_limit/sync_quota)
+- Datos: añadir campo quota a ads_tenants o nueva tabla ads_tenant_quotas (plan/account_limit/campaign_limit/sync_quota)
 - Puntos de verificación: número de cuentas vinculadas, número de planes creados, número de sincronizaciones diarias (comprobar en las entradas de AccountController/CampaignController/DataSyncTask)
 - Endpoints: `GET /api/tenant/quota` (uso + cuota)
 - Frontend: la página del sistema muestra el uso de cuota (opcional; en MVP puede ser solo API)

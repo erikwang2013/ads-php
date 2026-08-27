@@ -32,7 +32,7 @@ class BidEngine
         $metricSql = self::METRIC_SQL[$rule->metric] ?? null;
         if (!$metricSql) return null;
 
-        $query = DB::table('erik_report_metrics')
+        $query = DB::table('ads_report_metrics')
             ->where('tenant_id', $rule->tenant_id)
             ->where('date', date('Y-m-d'));
 
@@ -81,7 +81,7 @@ class BidEngine
             return $this->executeForCampaign($rule, (int) $rule->campaign_id, $metricValue);
         }
 
-        $campaigns = DB::table('erik_campaigns')
+        $campaigns = DB::table('ads_campaigns')
             ->where('tenant_id', $rule->tenant_id)
             ->where('status', 'enabled')
             ->when($rule->scope === 'platform' && $rule->platform, fn($q) => $q->where('platform', $rule->platform))
@@ -97,7 +97,7 @@ class BidEngine
 
     protected function executeForCampaign(BidRule $rule, int $campaignId, float $metricValue): ?BidLog
     {
-        $campaign = DB::table('erik_campaigns')->find($campaignId);
+        $campaign = DB::table('ads_campaigns')->find($campaignId);
         if (!$campaign || $campaign->status !== 'enabled') return null;
 
         $account = PlatformAccount::find($campaign->platform_account_id);
@@ -145,7 +145,7 @@ class BidEngine
 
         $data = new CampaignData(name: $campaign->name, dailyBudget: $newBudget);
         $adapter->updateCampaign($account->access_token, $account->account_id_on_platform, $campaign->platform_campaign_id, $data);
-        DB::table('erik_campaigns')->where('id', $campaign->id)->update(['daily_budget' => $newBudget, 'updated_at' => now()]);
+        DB::table('ads_campaigns')->where('id', $campaign->id)->update(['daily_budget' => $newBudget, 'updated_at' => now()]);
 
         return BidLog::create(array_merge($logData, [
             'old_budget' => $currentBudget,
@@ -159,7 +159,7 @@ class BidEngine
         if ($campaign->status === $newStatus) return null;
 
         $adapter->toggleCampaign($account->access_token, $account->account_id_on_platform, $campaign->platform_campaign_id, $enabled);
-        DB::table('erik_campaigns')->where('id', $campaign->id)->update(['status' => $newStatus, 'updated_at' => now()]);
+        DB::table('ads_campaigns')->where('id', $campaign->id)->update(['status' => $newStatus, 'updated_at' => now()]);
 
         return BidLog::create(array_merge($logData, [
             'old_status' => $campaign->status,

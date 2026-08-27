@@ -6,7 +6,7 @@
 
 ## नियम
 
-1. **टेबल प्रीफ़िक्स**: सभी उपयोगकर्ता-मुखी टेबलों के लिए `erik_`, एडमिन पैनल टेबलों के लिए `admin_`
+1. **टेबल प्रीफ़िक्स**: सभी उपयोगकर्ता-मुखी टेबलों के लिए `ads_`, एडमिन पैनल टेबलों के लिए `admin_`
 2. **प्राइमरी की**: `BIGINT UNSIGNED PRIMARY KEY` — कोई AUTO_INCREMENT नहीं, Snowflake ID का उपयोग करें
 3. **इंजन**: `ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`
 4. **पैसा कॉलम**: fen (分) के लिए `BIGINT DEFAULT 0` — एकीकृत मॉडल के अनुरूप
@@ -17,7 +17,7 @@
 ## टेम्पलेट
 
 ```sql
-CREATE TABLE IF NOT EXISTS `erik_table_name` (
+CREATE TABLE IF NOT EXISTS `ads_table_name` (
     `id` BIGINT UNSIGNED PRIMARY KEY,
     `tenant_id` BIGINT UNSIGNED NOT NULL,
     `name` VARCHAR(100) NOT NULL,
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `erik_table_name` (
 ## सीड डेटा (वैकल्पिक)
 
 ```sql
-INSERT INTO erik_table_name (id, name) VALUES (1, '默认数据')
+INSERT INTO ads_table_name (id, name) VALUES (1, '默认数据')
 ON DUPLICATE KEY UPDATE name = VALUES(name);
 ```
 

@@ -6,7 +6,7 @@ Générer des fichiers de migration SQL en suivant les conventions du projet.
 
 ## Règles
 
-1. **Préfixe de table** : `erik_` pour toutes les tables destinées aux utilisateurs, `admin_` pour les tables du panneau d'administration
+1. **Préfixe de table** : `ads_` pour toutes les tables destinées aux utilisateurs, `admin_` pour les tables du panneau d'administration
 2. **Clé primaire** : `BIGINT UNSIGNED PRIMARY KEY` — PAS d'AUTO_INCREMENT, utiliser l'ID Snowflake
 3. **Moteur** : `ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`
 4. **Colonnes d'argent** : `BIGINT DEFAULT 0` pour les fen (分) — cohérent avec le modèle unifié
@@ -17,7 +17,7 @@ Générer des fichiers de migration SQL en suivant les conventions du projet.
 ## Modèle
 
 ```sql
-CREATE TABLE IF NOT EXISTS `erik_table_name` (
+CREATE TABLE IF NOT EXISTS `ads_table_name` (
     `id` BIGINT UNSIGNED PRIMARY KEY,
     `tenant_id` BIGINT UNSIGNED NOT NULL,
     `name` VARCHAR(100) NOT NULL,
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `erik_table_name` (
 ## Données de départ (optionnel)
 
 ```sql
-INSERT INTO erik_table_name (id, name) VALUES (1, '默认数据')
+INSERT INTO ads_table_name (id, name) VALUES (1, '默认数据')
 ON DUPLICATE KEY UPDATE name = VALUES(name);
 ```
 

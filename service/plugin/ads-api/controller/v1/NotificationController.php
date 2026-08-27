@@ -24,7 +24,7 @@ class NotificationController
     public function index(Request $request): \Webman\Http\Response
     {
         $tenantId = $this->tenantId($request);
-        $query = DB::table('erik_notifications')->where('tenant_id', $tenantId);
+        $query = DB::table('ads_notifications')->where('tenant_id', $tenantId);
 
         if (($type = $request->get('type')) !== null) {
             $query->where('type', $type);
@@ -47,7 +47,7 @@ class NotificationController
     public function unreadCount(Request $request): \Webman\Http\Response
     {
         $tenantId = $this->tenantId($request);
-        $count = DB::table('erik_notifications')
+        $count = DB::table('ads_notifications')
             ->where('tenant_id', $tenantId)
             ->where('is_read', 0)
             ->count();
@@ -64,7 +64,7 @@ class NotificationController
     public function markRead(Request $request, int $id): \Webman\Http\Response
     {
         $tenantId = $this->tenantId($request);
-        $updated = DB::table('erik_notifications')
+        $updated = DB::table('ads_notifications')
             ->where('id', $id)
             ->where('tenant_id', $tenantId)
             ->update(['is_read' => 1]);
@@ -85,7 +85,7 @@ class NotificationController
     public function markAllRead(Request $request): \Webman\Http\Response
     {
         $tenantId = $this->tenantId($request);
-        DB::table('erik_notifications')
+        DB::table('ads_notifications')
             ->where('tenant_id', $tenantId)
             ->where('is_read', 0)
             ->update(['is_read' => 1]);

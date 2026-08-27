@@ -6,7 +6,7 @@
 
 ## 규칙
 
-1. **테이블 접두사**: 모든 사용자 대상 테이블은 `erik_`, 관리자 패널 테이블은 `admin_`
+1. **테이블 접두사**: 모든 사용자 대상 테이블은 `ads_`, 관리자 패널 테이블은 `admin_`
 2. **기본 키**: `BIGINT UNSIGNED PRIMARY KEY` — AUTO_INCREMENT 없음, Snowflake ID 사용
 3. **엔진**: `ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`
 4. **금액 컬럼**: 분(分) 단위 `BIGINT DEFAULT 0` — 통일 모델과 일관성
@@ -17,7 +17,7 @@
 ## 템플릿
 
 ```sql
-CREATE TABLE IF NOT EXISTS `erik_table_name` (
+CREATE TABLE IF NOT EXISTS `ads_table_name` (
     `id` BIGINT UNSIGNED PRIMARY KEY,
     `tenant_id` BIGINT UNSIGNED NOT NULL,
     `name` VARCHAR(100) NOT NULL,
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `erik_table_name` (
 ## 시드 데이터 (선택 사항)
 
 ```sql
-INSERT INTO erik_table_name (id, name) VALUES (1, '默认数据')
+INSERT INTO ads_table_name (id, name) VALUES (1, '默认数据')
 ON DUPLICATE KEY UPDATE name = VALUES(name);
 ```
 

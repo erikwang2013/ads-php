@@ -4,7 +4,7 @@
  *
  * 数据库配置 — 支持读写分离 + 连接池
  *
- * 统一使用 erik_ 表前缀 + BIGINT snowflake 主键。
+ * 统一使用 ads_ 表前缀 + BIGINT snowflake 主键。
  * 中小租户共享数据库（tenant_id 隔离），大客户可路由到独立库。
  *
  * 读写分离：

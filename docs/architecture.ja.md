@@ -163,22 +163,22 @@ ads-php/
 
 | 分類 | テーブル名 | 主キー | 用途 |
 |------|------|------|------|
-| 基盤 | `erik_tenants` | BIGINT Snowflake | マルチテナント |
-| アカウント | `erik_platform_accounts`, `erik_auth_tokens` | BIGINT Snowflake | OAuth プラットフォームアカウント |
-| 配信階層 | `erik_campaigns`, `erik_ad_groups`, `erik_creatives` | BIGINT Snowflake | 広告配信 |
-| レポート | `erik_report_metrics`, `erik_report_extras` | BIGINT Snowflake | 統一指標 |
-| アラート | `erik_alert_rules`, `erik_alert_logs` | BIGINT Snowflake | 監視アラート |
-| 入札 | `erik_bid_rules`, `erik_bid_logs` | BIGINT Snowflake | 自動入札 |
-| ターゲティング | `erik_targeting_templates` | BIGINT Snowflake | オーディエンステンプレート |
-| 素材 | `erik_assets` | BIGINT Snowflake | クリエイティブ素材ライブラリ |
-| 通知 | `erik_notifications` | BIGINT Snowflake | サイト内通知 |
-| アトリビューション | `erik_conversions`, `erik_attribution_results` | BIGINT Snowflake | コンバージョントラッキング + アトリビューション |
-| システム | `erik_sync_errors` | BIGINT Snowflake | 同期エラー |
+| 基盤 | `ads_tenants` | BIGINT Snowflake | マルチテナント |
+| アカウント | `ads_platform_accounts`, `ads_auth_tokens` | BIGINT Snowflake | OAuth プラットフォームアカウント |
+| 配信階層 | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | BIGINT Snowflake | 広告配信 |
+| レポート | `ads_report_metrics`, `ads_report_extras` | BIGINT Snowflake | 統一指標 |
+| アラート | `ads_alert_rules`, `ads_alert_logs` | BIGINT Snowflake | 監視アラート |
+| 入札 | `ads_bid_rules`, `ads_bid_logs` | BIGINT Snowflake | 自動入札 |
+| ターゲティング | `ads_targeting_templates` | BIGINT Snowflake | オーディエンステンプレート |
+| 素材 | `ads_assets` | BIGINT Snowflake | クリエイティブ素材ライブラリ |
+| 通知 | `ads_notifications` | BIGINT Snowflake | サイト内通知 |
+| アトリビューション | `ads_conversions`, `ads_attribution_results` | BIGINT Snowflake | コンバージョントラッキング + アトリビューション |
+| システム | `ads_sync_errors` | BIGINT Snowflake | 同期エラー |
 | 管理 | `admin_users`, `admin_roles`, `admin_audit_logs` | BIGINT Snowflake | RBAC + 監査 |
 
 ### 5.2 命名規則
 
-- テーブルプレフィックス: `erik_`
+- テーブルプレフィックス: `ads_`
 - 主キー: `BIGINT UNSIGNED PRIMARY KEY` (オートインクリメントなし, Snowflake ID)
 - エンジン: InnoDB, 文字セット: utf8mb4
 - タイムスタンプ: `created_at`, `updated_at` (DATETIME)

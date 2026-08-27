@@ -4,11 +4,11 @@
  *
  * ConversionService — 转化数据采集（回传 API）核心逻辑。
  *
- * 金额口径：value 单位「分」（cents），与 erik_report_metrics.cost /
+ * 金额口径：value 单位「分」（cents），与 ads_report_metrics.cost /
  * CampaignData::$dailyBudget 等既有字段一致（Meta 等平台原生即 cents）。
- * 存储列 erik_conversions.value 为 DECIMAL(12,2)，此处按分原样入库。
+ * 存储列 ads_conversions.value 为 DECIMAL(12,2)，此处按分原样入库。
  *
- * 归因联动：回传成功仅写入 erik_conversions；归因结果由现有
+ * 归因联动：回传成功仅写入 ads_conversions；归因结果由现有
  * AttributionEngine（plugin\ads_report\service\AttributionEngine）定时/手动
  * 重算，本服务不自动触发，保持简单（Phase 10 Task 2 设计）。
  */
@@ -130,7 +130,7 @@ class ConversionService
         $data = static::validateAndNormalize($input);
 
         // campaign 必须存在且属于当前租户（tenant 匹配）
-        $campaign = DB::table('erik_campaigns')
+        $campaign = DB::table('ads_campaigns')
             ->where('id', $data['campaign_id'])
             ->where('tenant_id', $tenantId)
             ->first();
@@ -140,7 +140,7 @@ class ConversionService
 
         // 幂等防重：uk_order(tenant_id, platform, order_id) 唯一键的应用层预检，
         // 避免重复回传直接命中 DB 唯一键报 500。
-        $exists = DB::table('erik_conversions')
+        $exists = DB::table('ads_conversions')
             ->where('tenant_id', $tenantId)
             ->where('platform', $data['platform'])
             ->where('order_id', $data['order_id'])
@@ -180,7 +180,7 @@ class ConversionService
      */
     public function search(int $tenantId, array $filters, int $page, int $perPage): array
     {
-        $query = DB::table('erik_conversions')->where('tenant_id', $tenantId);
+        $query = DB::table('ads_conversions')->where('tenant_id', $tenantId);
 
         if (!empty($filters['platform'])) {
             $query->where('platform', (string) $filters['platform']);

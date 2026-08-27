@@ -96,7 +96,7 @@ Campaign (广告计划)
 
 ```
 遍历 enabled=1 的规则
-  → 查询 erik_report_metrics (今天数据, 按 scope 过滤)
+  → 查询 ads_report_metrics (今天数据, 按 scope 过滤)
   → compare(metric_value, threshold, condition)
   → 去重检查 (check_interval 内已有触发 → 跳过)
   → 创建 AlertLog (status=triggered)
@@ -107,7 +107,7 @@ Campaign (广告计划)
 
 | Канал | Статус | Реализация |
 |------|------|------|
-| web | ✅ | Запись в erik_notifications |
+| web | ✅ | Запись в ads_notifications |
 | email | Заглушка | echo-заглушка |
 | sms | Заглушка | echo-заглушка |
 | Redis pub/sub | ✅ | push JSON в канал `alert:new` |
@@ -131,7 +131,7 @@ Campaign (广告计划)
 
 ```
 遍历 enabled=1 的规则
-  → 查询 erik_report_metrics (今天数据, 按 scope 过滤)
+  → 查询 ads_report_metrics (今天数据, 按 scope 过滤)
   → compare(metric_value, threshold, condition)
   → 冷却检查 (cooldown_minutes 内是否有过操作)
   → 执行动作:
@@ -254,7 +254,7 @@ POST /api/ad-groups 支持 targeting_template_id
 - Трёхуровневые оповещения: yellow (≥50%), orange (≥80%), red (≥100%)
 - BudgetCheckTask выполняется каждые 15 минут
 - Дедупликация: одна кампания на одном уровне уведомляется не чаще раза в день
-- Запись в таблицу `erik_notifications`
+- Запись в таблицу `ads_notifications`
 
 Интерфейсы: Предупреждение о бюджете → [api.md модуль 7](api.ru.md#模块-7-报表)
 
@@ -283,16 +283,16 @@ POST /api/ad-groups 支持 targeting_template_id
 | position_based | Первые 40% + последние 40% + середина 20% |
 
 - Окно ретроспективы: 30 дней
-- Источник точек касания: `erik_report_metrics` (клики > 0)
-- Результаты записываются в `erik_attribution_results`
+- Источник точек касания: `ads_report_metrics` (клики > 0)
+- Результаты записываются в `ads_attribution_results`
 - Фронтенд: AttributionReport.vue переключение моделей + карточки статистики + столбчатая диаграмма ECharts + таблица деталей
 
 ### Таблицы данных
 
 | Таблица | Поля |
 |----|------|
-| `erik_conversions` | id, tenant_id, platform, campaign_id, order_id, conversion_time, value, currency, channel |
-| `erik_attribution_results` | id, tenant_id, conversion_id, model, campaign_id, credit |
+| `ads_conversions` | id, tenant_id, platform, campaign_id, order_id, conversion_time, value, currency, channel |
+| `ads_attribution_results` | id, tenant_id, conversion_id, model, campaign_id, credit |
 
 Интерфейсы: Атрибутивный анализ / Список моделей → [api.md модуль 7](api.ru.md#模块-7-报表)
 

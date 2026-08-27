@@ -59,7 +59,7 @@ Unified ad management across **29 advertising platforms**, with cross-platform r
 | Layer | Technology | Notes |
 |-------|-----------|-------|
 | Server | webman v2 + PHP 8.2+ | 7 plugins, 65+ API endpoints |
-| Database | MySQL 8.0 | 28 tables, `erik_` prefix, Snowflake BIGINT PK |
+| Database | MySQL 8.0 | 28 tables, `ads_` prefix, Snowflake BIGINT PK |
 | Cache | Redis 7 | 3-tier cache (L1 memory / L2 APCu / L3 Redis), rate limiting, Pub/Sub, message queue |
 | Search | Elasticsearch | webman-scout auto index sync (configured) |
 | Admin Panel | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP backend (port 8789), SPA calls business API directly (port 8788), 19 pages, ECharts |
@@ -329,21 +329,21 @@ ads-php/
 
 ## Database
 
-**Naming Convention**: Table prefix `erik_`, PK `BIGINT UNSIGNED PRIMARY KEY` (no auto-increment, Snowflake ID), engine InnoDB, charset utf8mb4
+**Naming Convention**: Table prefix `ads_`, PK `BIGINT UNSIGNED PRIMARY KEY` (no auto-increment, Snowflake ID), engine InnoDB, charset utf8mb4
 
 | Category | Tables | Purpose |
 |----------|--------|---------|
-| Foundation | `erik_tenants` | Multi-tenancy |
-| Accounts | `erik_platform_accounts`, `erik_auth_tokens` | OAuth platform accounts |
-| Campaigns | `erik_campaigns`, `erik_ad_groups`, `erik_creatives` | Ad delivery hierarchy |
-| Reporting | `erik_report_metrics`, `erik_report_extras` | Unified report metrics |
-| Assets | `erik_assets` | Creative asset library |
-| Targeting | `erik_targeting_templates` | Audience targeting templates |
-| Attribution | `erik_conversions`, `erik_attribution_results` | Conversion tracking + attribution |
-| Bidding | `erik_bid_rules`, `erik_bid_logs` | Auto-bid rules + history |
-| Alerts | `erik_alert_rules`, `erik_alert_logs` | Alert monitoring |
-| Notifications | `erik_notifications` | In-app notifications |
-| System | `erik_sync_errors`, `admin_users`, `admin_roles`, `admin_audit_logs` | Sync errors, RBAC, audit |
+| Foundation | `ads_tenants` | Multi-tenancy |
+| Accounts | `ads_platform_accounts`, `ads_auth_tokens` | OAuth platform accounts |
+| Campaigns | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | Ad delivery hierarchy |
+| Reporting | `ads_report_metrics`, `ads_report_extras` | Unified report metrics |
+| Assets | `ads_assets` | Creative asset library |
+| Targeting | `ads_targeting_templates` | Audience targeting templates |
+| Attribution | `ads_conversions`, `ads_attribution_results` | Conversion tracking + attribution |
+| Bidding | `ads_bid_rules`, `ads_bid_logs` | Auto-bid rules + history |
+| Alerts | `ads_alert_rules`, `ads_alert_logs` | Alert monitoring |
+| Notifications | `ads_notifications` | In-app notifications |
+| System | `ads_sync_errors`, `admin_users`, `admin_roles`, `admin_audit_logs` | Sync errors, RBAC, audit |
 
 ---
 
@@ -394,7 +394,7 @@ cd apps/flutter && dart analyze   # zero errors
 | Skill | Description |
 |-------|-------------|
 | `adapter-generator` | Generate new ad platform adapter (14-method template) |
-| `migration-generator` | Generate SQL migration (`erik_` prefix + BIGINT PK) |
+| `migration-generator` | Generate SQL migration (`ads_` prefix + BIGINT PK) |
 | `erik-stack` | Erik Stack 8-package integration guide |
 | `admin-page-generator` | Generate Vue 3 admin page |
 | `api-endpoint` | Add RESTful API endpoint |

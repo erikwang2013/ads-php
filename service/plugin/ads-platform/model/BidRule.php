@@ -11,7 +11,7 @@ class BidRule extends Model
 {
     use SnowflakeTrait;
 
-    protected $table = 'erik_bid_rules';
+    protected $table = 'ads_bid_rules';
     protected $guarded = ['id'];
     public $timestamps = false;
 

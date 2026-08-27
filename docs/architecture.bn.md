@@ -163,22 +163,22 @@ ads-php/
 
 | ক্যাটাগরি | টেবিল নাম | প্রাইমারি কী | ব্যবহার |
 |------|------|------|------|
-| বেসিক | `erik_tenants` | BIGINT Snowflake | মাল্টি-টেন্যান্সি |
-| অ্যাকাউন্ট | `erik_platform_accounts`, `erik_auth_tokens` | BIGINT Snowflake | OAuth প্ল্যাটফর্ম অ্যাকাউন্ট |
-| ডেলিভারি হায়ারার্কি | `erik_campaigns`, `erik_ad_groups`, `erik_creatives` | BIGINT Snowflake | বিজ্ঞাপন ডেলিভারি |
-| রিপোর্ট | `erik_report_metrics`, `erik_report_extras` | BIGINT Snowflake | ইউনিফাইড মেট্রিক |
-| অ্যালার্ট | `erik_alert_rules`, `erik_alert_logs` | BIGINT Snowflake | মনিটরিং অ্যালার্ট |
-| বিডিং | `erik_bid_rules`, `erik_bid_logs` | BIGINT Snowflake | অটো বিডিং |
-| টার্গেটিং | `erik_targeting_templates` | BIGINT Snowflake | অডিয়েন্স টেমপ্লেট |
-| অ্যাসেট | `erik_assets` | BIGINT Snowflake | ক্রিয়েটিভ অ্যাসেট লাইব্রেরি |
-| নোটিফিকেশন | `erik_notifications` | BIGINT Snowflake | সাইট-ইন নোটিফিকেশন |
-| অ্যাট্রিবিউশন | `erik_conversions`, `erik_attribution_results` | BIGINT Snowflake | কনভার্সন ট্র্যাকিং + অ্যাট্রিবিউশন |
-| সিস্টেম | `erik_sync_errors` | BIGINT Snowflake | সিঙ্ক এরর |
+| বেসিক | `ads_tenants` | BIGINT Snowflake | মাল্টি-টেন্যান্সি |
+| অ্যাকাউন্ট | `ads_platform_accounts`, `ads_auth_tokens` | BIGINT Snowflake | OAuth প্ল্যাটফর্ম অ্যাকাউন্ট |
+| ডেলিভারি হায়ারার্কি | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | BIGINT Snowflake | বিজ্ঞাপন ডেলিভারি |
+| রিপোর্ট | `ads_report_metrics`, `ads_report_extras` | BIGINT Snowflake | ইউনিফাইড মেট্রিক |
+| অ্যালার্ট | `ads_alert_rules`, `ads_alert_logs` | BIGINT Snowflake | মনিটরিং অ্যালার্ট |
+| বিডিং | `ads_bid_rules`, `ads_bid_logs` | BIGINT Snowflake | অটো বিডিং |
+| টার্গেটিং | `ads_targeting_templates` | BIGINT Snowflake | অডিয়েন্স টেমপ্লেট |
+| অ্যাসেট | `ads_assets` | BIGINT Snowflake | ক্রিয়েটিভ অ্যাসেট লাইব্রেরি |
+| নোটিফিকেশন | `ads_notifications` | BIGINT Snowflake | সাইট-ইন নোটিফিকেশন |
+| অ্যাট্রিবিউশন | `ads_conversions`, `ads_attribution_results` | BIGINT Snowflake | কনভার্সন ট্র্যাকিং + অ্যাট্রিবিউশন |
+| সিস্টেম | `ads_sync_errors` | BIGINT Snowflake | সিঙ্ক এরর |
 | ম্যানেজমেন্ট | `admin_users`, `admin_roles`, `admin_audit_logs` | BIGINT Snowflake | RBAC + অডিট |
 
 ### 5.2 নেমিং কনভেনশন
 
-- টেবিল প্রিফিক্স: `erik_`
+- টেবিল প্রিফিক্স: `ads_`
 - প্রাইমারি কী: `BIGINT UNSIGNED PRIMARY KEY` (নো অটো-ইনক্রিমেন্ট, Snowflake ID)
 - ইঞ্জিন: InnoDB, ক্যারেক্টার সেট: utf8mb4
 - টাইমস্ট্যাম্প: `created_at`, `updated_at` (DATETIME)

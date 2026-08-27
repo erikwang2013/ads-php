@@ -6,7 +6,7 @@
 
 ## Rules
 
-1. **Table prefix**: ユーザー向けテーブルはすべて `erik_`、管理パネルのテーブルは `admin_`
+1. **Table prefix**: ユーザー向けテーブルはすべて `ads_`、管理パネルのテーブルは `admin_`
 2. **Primary key**: `BIGINT UNSIGNED PRIMARY KEY` — AUTO_INCREMENT なし、Snowflake ID を使用
 3. **Engine**: `ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`
 4. **Money columns**: 分 (fen) 単位は `BIGINT DEFAULT 0` — 統一モデルと一致
@@ -17,7 +17,7 @@
 ## Template
 
 ```sql
-CREATE TABLE IF NOT EXISTS `erik_table_name` (
+CREATE TABLE IF NOT EXISTS `ads_table_name` (
     `id` BIGINT UNSIGNED PRIMARY KEY,
     `tenant_id` BIGINT UNSIGNED NOT NULL,
     `name` VARCHAR(100) NOT NULL,
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `erik_table_name` (
 ## Seed data (任意)
 
 ```sql
-INSERT INTO erik_table_name (id, name) VALUES (1, '默认数据')
+INSERT INTO ads_table_name (id, name) VALUES (1, '默认数据')
 ON DUPLICATE KEY UPDATE name = VALUES(name);
 ```
 

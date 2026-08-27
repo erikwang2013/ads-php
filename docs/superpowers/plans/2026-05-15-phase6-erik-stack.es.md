@@ -8,7 +8,7 @@
 
 | # | Cambio | Paquete | Alcance de impacto |
 |---|------|----|---------|
-| 1 | Prefijo de tabla `erik_` | — | Todos los archivos SQL/migración |
+| 1 | Prefijo de tabla `ads_` | — | Todos los archivos SQL/migración |
 | 2 | ID Snowflake como clave primaria (sin autoincremento) | erikwang2013/snowflake-php | Todos los Model + SQL |
 | 3 | Cifrado/descifrado hashids de IDs de API | erikwang2013/hashids | Todas las respuestas de Controller |
 | 4 | Cambio de autenticación JWT | erikwang2013/jwt-webman | AuthMiddleware + AuthController |
@@ -29,7 +29,7 @@
 
 **Batch A: Infraestructura (dependencias + ID + cifrado)**
 - Actualizar composer.json añadiendo 6 paquetes erikwang2013
-- Reescribir todos los archivos SQL de migración (prefijo erik_ + bigint sin autoincremento)
+- Reescribir todos los archivos SQL de migración (prefijo ads_ + bigint sin autoincremento)
 - Crear trait de ID Snowflake
 - Actualizar todos los Model (usando SnowflakeTrait)
 - Configurar middleware hashids

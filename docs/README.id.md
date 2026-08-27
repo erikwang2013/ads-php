@@ -59,7 +59,7 @@ Terhubung dengan **29 platform iklan**, mengelola penayangan iklan dan laporan d
 | Lapisan | Teknologi | Keterangan |
 |----|------|------|
 | Server | webman v2 + PHP 8.2+ | 7 plugin, 65+ endpoint API |
-| Database | MySQL 8.0 | 28 tabel, prefiks erik_, primary key Snowflake BIGINT |
+| Database | MySQL 8.0 | 28 tabel, prefiks ads_, primary key Snowflake BIGINT |
 | Cache | Redis 7 | Cache tiga tingkat (L1 memori/L2 APCu/L3 Redis), penghitung pembatasan, Pub/Sub, antrean pesan |
 | Pencarian | Elasticsearch | Sinkronisasi indeks otomatis webman-scout (sudah dikonfigurasi) |
 | Panel Admin | webman-admin v2 + Vue 3 + TypeScript + Element Plus | Backend PHP (port 8789), SPA terhubung langsung ke API bisnis (port 8788), 19 halaman, visualisasi ECharts |
@@ -329,21 +329,21 @@ ads-php/
 
 ## Database
 
-**Konvensi penamaan**: prefiks tabel `erik_`, primary key `BIGINT UNSIGNED PRIMARY KEY`（tanpa auto-increment, Snowflake ID）, engine InnoDB, charset utf8mb4
+**Konvensi penamaan**: prefiks tabel `ads_`, primary key `BIGINT UNSIGNED PRIMARY KEY`（tanpa auto-increment, Snowflake ID）, engine InnoDB, charset utf8mb4
 
 | Kategori | Nama tabel | Kegunaan |
 |------|------|------|
-| Dasar | `erik_tenants` | Multi-tenant |
-| Akun | `erik_platform_accounts`, `erik_auth_tokens` | Akun platform OAuth |
-| Penayangan | `erik_campaigns`, `erik_ad_groups`, `erik_creatives` | Hierarki penayangan iklan |
-| Laporan | `erik_report_metrics`, `erik_report_extras` | Metrik laporan terpadu |
-| Materi | `erik_assets` | Pustaka materi kreatif |
-| Penargetan | `erik_targeting_templates` | Template penargetan audiens |
-| Atribusi | `erik_conversions`, `erik_attribution_results` | Pelacakan konversi + hasil atribusi |
-| Penawaran | `erik_bid_rules`, `erik_bid_logs` | Aturan penawaran otomatis + riwayat |
-| Peringatan | `erik_alert_rules`, `erik_alert_logs` | Pemantauan peringatan |
-| Notifikasi | `erik_notifications` | Notifikasi dalam aplikasi |
-| Sistem | `erik_sync_errors`, `admin_users`, `admin_roles`, `admin_audit_logs` | Error sinkronisasi, RBAC, audit |
+| Dasar | `ads_tenants` | Multi-tenant |
+| Akun | `ads_platform_accounts`, `ads_auth_tokens` | Akun platform OAuth |
+| Penayangan | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | Hierarki penayangan iklan |
+| Laporan | `ads_report_metrics`, `ads_report_extras` | Metrik laporan terpadu |
+| Materi | `ads_assets` | Pustaka materi kreatif |
+| Penargetan | `ads_targeting_templates` | Template penargetan audiens |
+| Atribusi | `ads_conversions`, `ads_attribution_results` | Pelacakan konversi + hasil atribusi |
+| Penawaran | `ads_bid_rules`, `ads_bid_logs` | Aturan penawaran otomatis + riwayat |
+| Peringatan | `ads_alert_rules`, `ads_alert_logs` | Pemantauan peringatan |
+| Notifikasi | `ads_notifications` | Notifikasi dalam aplikasi |
+| Sistem | `ads_sync_errors`, `admin_users`, `admin_roles`, `admin_audit_logs` | Error sinkronisasi, RBAC, audit |
 
 ---
 
@@ -394,7 +394,7 @@ cd apps/flutter && dart analyze   # Nol error
 | Skill | Keterangan |
 |------|------|
 | `adapter-generator` | Menghasilkan adaptor platform iklan baru (template 14 metode) |
-| `migration-generator` | Menghasilkan file migrasi SQL (prefiks erik_ + PK BIGINT) |
+| `migration-generator` | Menghasilkan file migrasi SQL (prefiks ads_ + PK BIGINT) |
 | `erik-stack` | Panduan integrasi 8 paket Erik Stack |
 | `admin-page-generator` | Menghasilkan halaman panel admin Vue3 |
 | `api-endpoint` | Menambahkan endpoint RESTful API |

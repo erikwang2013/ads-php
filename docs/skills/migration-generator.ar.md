@@ -6,7 +6,7 @@
 
 ## القواعد
 
-1. **بادئة الجداول**: `erik_` لجميع الجداول الموجهة للمستخدمين، و`admin_` لجداول لوحة الإدارة
+1. **بادئة الجداول**: `ads_` لجميع الجداول الموجهة للمستخدمين، و`admin_` لجداول لوحة الإدارة
 2. **المفتاح الأساسي**: `BIGINT UNSIGNED PRIMARY KEY` — بدون AUTO_INCREMENT، استخدم معرّف Snowflake
 3. **محرك التخزين**: `ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`
 4. **أعمدة المال**: `BIGINT DEFAULT 0` للفين (分) — بما يتوافق مع النموذج الموحد
@@ -17,7 +17,7 @@
 ## القالب
 
 ```sql
-CREATE TABLE IF NOT EXISTS `erik_table_name` (
+CREATE TABLE IF NOT EXISTS `ads_table_name` (
     `id` BIGINT UNSIGNED PRIMARY KEY,
     `tenant_id` BIGINT UNSIGNED NOT NULL,
     `name` VARCHAR(100) NOT NULL,
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `erik_table_name` (
 ## بيانات البذور (اختياري)
 
 ```sql
-INSERT INTO erik_table_name (id, name) VALUES (1, '默认数据')
+INSERT INTO ads_table_name (id, name) VALUES (1, '默认数据')
 ON DUPLICATE KEY UPDATE name = VALUES(name);
 ```
 

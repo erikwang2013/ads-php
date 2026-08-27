@@ -96,7 +96,7 @@ Campaign (广告计划)
 
 ```
 遍历 enabled=1 的规则
-  → 查询 erik_report_metrics (今天数据, 按 scope 过滤)
+  → 查询 ads_report_metrics (今天数据, 按 scope 过滤)
   → compare(metric_value, threshold, condition)
   → 去重检查 (check_interval 内已有触发 → 跳过)
   → 创建 AlertLog (status=triggered)
@@ -107,7 +107,7 @@ Campaign (广告计划)
 
 | चैनल | स्थिति | कार्यान्वयन |
 |------|------|------|
-| web | ✅ | `erik_notifications` में लिखें |
+| web | ✅ | `ads_notifications` में लिखें |
 | email | प्लेसहोल्डर | echo स्टब |
 | sms | प्लेसहोल्डर | echo स्टब |
 | Redis pub/sub | ✅ | `alert:new` चैनल पर JSON पुश |
@@ -131,7 +131,7 @@ Campaign (广告计划)
 
 ```
 遍历 enabled=1 的规则
-  → 查询 erik_report_metrics (今天数据, 按 scope 过滤)
+  → 查询 ads_report_metrics (今天数据, 按 scope 过滤)
   → compare(metric_value, threshold, condition)
   → 冷却检查 (cooldown_minutes 内是否有过操作)
   → 执行动作:
@@ -254,7 +254,7 @@ POST /api/ad-groups 支持 targeting_template_id
 - तीन-स्तरीय अलर्ट: yellow (≥50%), orange (≥80%), red (≥100%)
 - BudgetCheckTask हर 15 मिनट चलता है
 - डी-डुप्लिकेशन: एक ही अभियान एक ही स्तर पर दिन में केवल एक बार नोटिफ़ाई
-- `erik_notifications` टेबल में लिखें
+- `ads_notifications` टेबल में लिखें
 
 इंटरफ़ेस: बजट अलर्ट → [api.hi.md मॉड्यूल 7](api.hi.md#模块-7-报表)
 
@@ -283,16 +283,16 @@ POST /api/ad-groups 支持 targeting_template_id
 | position_based | पहला 40% + अंतिम 40% + मध्य 20% |
 
 - रिट्रोस्पेक्ट विंडो: 30 दिन
-- टचपॉइंट स्रोत: `erik_report_metrics` (क्लिक > 0)
-- परिणाम `erik_attribution_results` में लिखे जाते हैं
+- टचपॉइंट स्रोत: `ads_report_metrics` (क्लिक > 0)
+- परिणाम `ads_attribution_results` में लिखे जाते हैं
 - फ्रंटएंड: AttributionReport.vue मॉडल स्विचिंग + स्टैटिस्टिक कार्ड + ECharts बार चार्ट + विवरण तालिका
 
 ### डेटा टेबल
 
 | टेबल | फ़ील्ड |
 |----|------|
-| `erik_conversions` | id, tenant_id, platform, campaign_id, order_id, conversion_time, value, currency, channel |
-| `erik_attribution_results` | id, tenant_id, conversion_id, model, campaign_id, credit |
+| `ads_conversions` | id, tenant_id, platform, campaign_id, order_id, conversion_time, value, currency, channel |
+| `ads_attribution_results` | id, tenant_id, conversion_id, model, campaign_id, credit |
 
 इंटरफ़ेस: एट्रिब्यूशन विश्लेषण / मॉडल सूची → [api.hi.md मॉड्यूल 7](api.hi.md#模块-7-报表)
 

@@ -80,7 +80,7 @@ class AlertEngine
     public function buildMetricQuery(AlertRule $rule): QueryBuilder
     {
         $selectRaw = self::METRIC_SQL[$rule->metric] . ' as metric_value';
-        $query = DB::table('erik_report_metrics')->selectRaw($selectRaw);
+        $query = DB::table('ads_report_metrics')->selectRaw($selectRaw);
 
         // Scope filter
         switch ($rule->scope) {

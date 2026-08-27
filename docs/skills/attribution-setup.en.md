@@ -9,12 +9,12 @@ Set up and use the attribution engine to analyze conversion sources.
 1. Create the conversion event table:
 
 ```sql
--- erik_conversions: 转化事件
-INSERT INTO erik_conversions (id, tenant_id, platform, campaign_id, conversion_time, value, order_id)
+-- ads_conversions: 转化事件
+INSERT INTO ads_conversions (id, tenant_id, platform, campaign_id, conversion_time, value, order_id)
 VALUES (snowflake_id(), 1, 'juliang', 1, NOW(), 299.00, 'ORD-001');
 ```
 
-2. Touchpoint data comes from `erik_report_metrics` (records with clicks > 0 act as touchpoints).
+2. Touchpoint data comes from `ads_report_metrics` (records with clicks > 0 act as touchpoints).
 
 ## Attribution Models
 

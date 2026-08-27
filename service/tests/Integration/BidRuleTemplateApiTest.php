@@ -66,7 +66,7 @@ class BidRuleTemplateApiTest extends ApiTestCase
         $id = $this->json($created)['data']['id'];
 
         $this->assertSuccess((new BidRuleController())->destroy($id));
-        $this->assertEquals(0, DB::table('erik_bid_rules')->count());
+        $this->assertEquals(0, DB::table('ads_bid_rules')->count());
     }
 
     public function testBidRuleLogsEmpty(): void
@@ -105,7 +105,7 @@ class BidRuleTemplateApiTest extends ApiTestCase
 
         // 删除
         $this->assertSuccess($controller->destroy($id));
-        $this->assertEquals(0, DB::table('erik_targeting_templates')->count());
+        $this->assertEquals(0, DB::table('ads_targeting_templates')->count());
     }
 
     public function testTemplateShowNotFound(): void

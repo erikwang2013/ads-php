@@ -270,7 +270,7 @@ protected array $fieldMap = [
 ## 3. 데이터베이스 설계
 
 ### 네이밍 규칙
-- 테이블 접두사: `erik_`
+- 테이블 접두사: `ads_`
 - 기본 키: `BIGINT UNSIGNED PRIMARY KEY` (자동 증가 없음, Snowflake ID 생성)
 - 엔진: InnoDB, 문자셋: utf8mb4
 
@@ -278,7 +278,7 @@ protected array $fieldMap = [
 
 ```sql
 -- 테넌트
-CREATE TABLE erik_tenants (
+CREATE TABLE ads_tenants (
     id BIGINT UNSIGNED PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     domain VARCHAR(255) DEFAULT NULL,
@@ -292,7 +292,7 @@ CREATE TABLE erik_tenants (
 );
 
 -- 플랫폼 계정 (access_token/refresh_token은 encryptable이 자동 암복호화)
-CREATE TABLE erik_platform_accounts (
+CREATE TABLE ads_platform_accounts (
     id BIGINT UNSIGNED PRIMARY KEY,
     tenant_id BIGINT UNSIGNED NOT NULL,
     platform VARCHAR(32) NOT NULL,
@@ -311,7 +311,7 @@ CREATE TABLE erik_platform_accounts (
 );
 
 -- OAuth 상태 Token
-CREATE TABLE erik_auth_tokens (
+CREATE TABLE ads_auth_tokens (
     id BIGINT UNSIGNED PRIMARY KEY,
     tenant_id BIGINT UNSIGNED NOT NULL,
     platform VARCHAR(32) NOT NULL,
@@ -323,7 +323,7 @@ CREATE TABLE erik_auth_tokens (
 );
 
 -- 통일 광고 캠페인
-CREATE TABLE erik_campaigns (
+CREATE TABLE ads_campaigns (
     id BIGINT UNSIGNED PRIMARY KEY,
     tenant_id BIGINT UNSIGNED NOT NULL,
     platform_account_id BIGINT UNSIGNED NOT NULL,
@@ -344,7 +344,7 @@ CREATE TABLE erik_campaigns (
 );
 
 -- 통일 광고 그룹
-CREATE TABLE erik_ad_groups (
+CREATE TABLE ads_ad_groups (
     id BIGINT UNSIGNED PRIMARY KEY,
     campaign_id BIGINT UNSIGNED NOT NULL,
     platform_adgroup_id VARCHAR(128) NOT NULL,
@@ -360,7 +360,7 @@ CREATE TABLE erik_ad_groups (
 );
 
 -- 통일 소재
-CREATE TABLE erik_creatives (
+CREATE TABLE ads_creatives (
     id BIGINT UNSIGNED PRIMARY KEY,
     ad_group_id BIGINT UNSIGNED NOT NULL,
     platform_creative_id VARCHAR(128) NOT NULL,
@@ -376,7 +376,7 @@ CREATE TABLE erik_creatives (
 );
 
 -- 보고서 핵심 지표
-CREATE TABLE erik_report_metrics (
+CREATE TABLE ads_report_metrics (
     id BIGINT UNSIGNED PRIMARY KEY,
     tenant_id BIGINT UNSIGNED NOT NULL,
     platform_account_id BIGINT UNSIGNED NOT NULL,
@@ -402,16 +402,16 @@ CREATE TABLE erik_report_metrics (
 );
 
 -- 보고서 확장 데이터
-CREATE TABLE erik_report_extras (
+CREATE TABLE ads_report_extras (
     id BIGINT UNSIGNED PRIMARY KEY,
     report_metric_id BIGINT UNSIGNED NOT NULL,
     platform VARCHAR(32) NOT NULL,
     extra JSON,
-    FOREIGN KEY (report_metric_id) REFERENCES erik_report_metrics(id) ON DELETE CASCADE
+    FOREIGN KEY (report_metric_id) REFERENCES ads_report_metrics(id) ON DELETE CASCADE
 );
 
 -- 경보 규칙
-CREATE TABLE erik_alert_rules (
+CREATE TABLE ads_alert_rules (
     id BIGINT UNSIGNED PRIMARY KEY,
     tenant_id BIGINT UNSIGNED NOT NULL,
     name VARCHAR(100) NOT NULL,
@@ -430,7 +430,7 @@ CREATE TABLE erik_alert_rules (
 );
 
 -- 경보 기록
-CREATE TABLE erik_alert_logs (
+CREATE TABLE ads_alert_logs (
     id BIGINT UNSIGNED PRIMARY KEY,
     tenant_id BIGINT UNSIGNED NOT NULL,
     rule_id BIGINT UNSIGNED NOT NULL,
@@ -840,7 +840,7 @@ webman/crontab 사용, Redis 캐시로 가속.
 | TokenRefreshTask | 55분마다 | 만료 Token 스캔, 자동 갱신 |
 | DataSyncTask | 10분마다 | 각 플랫폼 캠페인+최근 2일 보고서 수집, 동기화 후 대시보드 캐시 삭제 |
 | AlertCheckTask | 5분마다 | 활성 규칙 순회, 임계값 평가, 푸시 트리거 |
-| RetrySyncTask | 3분마다 | 실패 동기화 재시도 (erik_sync_errors 테이블, 최대 3회, 지수 백오프) |
+| RetrySyncTask | 3분마다 | 실패 동기화 재시도 (ads_sync_errors 테이블, 최대 3회, 지수 백오프) |
 
 동기화 전략: 어댑터 Generator 스트리밍 처리, 커서/페이징으로 누락 방지, 실패 자동 재시도, curl_errno 검사, 플랫폼별 QPS 속도 제한.
 
@@ -877,7 +877,7 @@ webman/crontab 사용, Redis 캐시로 가속.
               v            v            v
         ┌─────────┐ ┌──────────┐ ┌──────────┐
         │MySQL 8.0│ │ Redis 7  │ │ ES 9200  │
-        │erik_*   │ │ cache,   │ │ search   │
+        │ads_*   │ │ cache,   │ │ search   │
         │admin_*  │ │ queue    │ │          │
         └─────────┘ └──────────┘ └──────────┘
 ```
@@ -931,7 +931,7 @@ make admin-dev                # 프론트엔드 개발 모드
 | Phase 7 | Docker 배포 + 보안 강화 (RateLimit/CORS/SQLGuard) + 캐시 계층 + README | ✅ |
 | Phase 8 | 디렉터리 재구성 (apps/) + Admin 독립 webman-admin v2 (PHP 백엔드+ServiceProxy) + RBAC + 감사 로그 | ✅ |
 | Phase 9 | API 문서 + 플랫폼 속도 제한 + 동기화 재시도 큐 + PHPUnit 20테스트 + GitHub Actions CI/CD | ✅ |
-| Phase 10 | 설정 파일 중국어 주석 + .env 주석 + 플랫폼 자격 증명 문서 + erik_ 테이블 접두사 재작성 + BIGINT PK | ✅ |
+| Phase 10 | 설정 파일 중국어 주석 + .env 주석 + 플랫폼 자격 증명 문서 + ads_ 테이블 접두사 재작성 + BIGINT PK | ✅ |
 | Phase 11 | 국제화 (vue-i18n + I18n.php + Flutter + HarmonyOS) + 슬라이더 캡차 (poster-php) | ✅ |
 | Phase 12 | 이중 확인 (입력하여 확인) — 해제/삭제/일괄 작업 모두 대상 이름 입력 후 실행 가능 | ✅ |
 

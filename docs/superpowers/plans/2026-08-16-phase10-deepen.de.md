@@ -14,10 +14,10 @@
 
 | Kandidaten-Unterpunkt | Ist-Zustand |
 |---|---|
-| Synchronisierungsstatus-Visualisierung | Tabelle `erik_sync_errors` + `RetrySyncTask` (3 Wiederholungen, Backoff 5^n Minuten) existiert; **keine Frontend-Seite/API zur Anzeige von Sync-Fehlerquote und Latenz** |
-| Conversion-Daten-Loop | Tabellen `erik_conversions` + `erik_attribution_results` existieren, Attributions-Engine implementiert; **kein Erfassungs-Einstieg für Conversion-Daten** (Callback-/Event-Tracking-API) |
+| Synchronisierungsstatus-Visualisierung | Tabelle `ads_sync_errors` + `RetrySyncTask` (3 Wiederholungen, Backoff 5^n Minuten) existiert; **keine Frontend-Seite/API zur Anzeige von Sync-Fehlerquote und Latenz** |
+| Conversion-Daten-Loop | Tabellen `ads_conversions` + `ads_attribution_results` existieren, Attributions-Engine implementiert; **kein Erfassungs-Einstieg für Conversion-Daten** (Callback-/Event-Tracking-API) |
 | Mobile-CI | `ci.yml` nur PHP-Syntax→PHPUnit→vue-tsc→Docker; **kein Flutter/HarmonyOS-Build-Paket** |
-| Multi-Tenant-SaaS | Tabelle `erik_tenants` + TenantIdentify-Middleware existieren; **keine Abrechnung/Kontingente/Verbrauchsstatistik** |
+| Multi-Tenant-SaaS | Tabelle `ads_tenants` + TenantIdentify-Middleware existieren; **keine Abrechnung/Kontingente/Verbrauchsstatistik** |
 | ES-Umsetzung | scout.php konfiguriert + webman-scout-Abhängigkeit eingeführt; **docker-compose ohne ES-Dienst** |
 | 29 Plattformen echte Integration | Code für 29 Adapter vollständig; **keine Sandbox-/Credential-Integrationsaufzeichnung** (externe Credentials nötig, als manueller Posten markiert) |
 
@@ -31,7 +31,7 @@
 ### Design-Highlights
 - Endpunkte: `GET /api/sync/status` (Konto-Ebene: last_sync_at, Erfolgsquote, heutige Fehlerzahl, anstehende Wiederholungen) + `GET /api/sync/errors` (paginierte Fehlerliste, mit last_error/retry_count/next_retry_at)
 - Frontend: Synchronisierungsstatus-Seite (Tabelle + Zusammenfassungskarten), nur Full/Standard-Versionslinie
-- Datenquellen: erik_platform_accounts (last_sync_at) + erik_sync_errors
+- Datenquellen: ads_platform_accounts (last_sync_at) + ads_sync_errors
 
 ## Task 2: Conversion-Daten-Erfassungs-API
 
@@ -41,7 +41,7 @@
 
 ### Design-Highlights
 - Endpunkte: `POST /api/conversions` (Businessseite meldet Conversion zurück: platform/campaign_id/order_id/conversion_time/value/currency/channel) + `GET /api/conversions` (Abfrage)
-- Validierung: campaign_id existiert, Betrag nicht negativ, Zeitformat; Schreiben in erik_conversions
+- Validierung: campaign_id existiert, Betrag nicht negativ, Zeitformat; Schreiben in ads_conversions
 - Attributions-Verknüpfung: Nach Rückmeldung kann Neuberechnung der Attribution ausgelöst werden (oder Hinweis, dass die bestehende AttributionEngine zeitgesteuert/manuell neu berechnet)
 - Frontend: Attributionsbericht-Seite um Erläuterung/Demo „Conversion-Rückmeldung" ergänzen (optional)
 
@@ -62,7 +62,7 @@
 - Ändern: `service/plugin/ads-api/config/route.php` + controller
 
 ### Design-Highlights
-- Daten: erik_tenants um quota-Feld erweitern oder neue Tabelle erik_tenant_quotas (plan/account_limit/campaign_limit/sync_quota)
+- Daten: ads_tenants um quota-Feld erweitern oder neue Tabelle ads_tenant_quotas (plan/account_limit/campaign_limit/sync_quota)
 - Prüfpunkte: Zahl der gebundenen Konten, Zahl der erstellten Pläne, tägliche Synchronisierungsanzahl (an den Einstiegen von AccountController/CampaignController/DataSyncTask prüfen)
 - Endpunkt: `GET /api/tenant/quota` (Verbrauch + Kontingent)
 - Frontend: Systemseite zeigt Kontingentverbrauch (optional, MVP kann reine API sein)

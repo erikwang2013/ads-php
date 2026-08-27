@@ -14,7 +14,7 @@
 
 | コンポーネント | ステータス |
 |---|---|
-| `NotificationService::send()` | `match ($channel)` で web/email/sms を振り分け；web は実で `erik_notifications` に書き込み、email/sms は echo スタブ |
+| `NotificationService::send()` | `match ($channel)` で web/email/sms を振り分け；web は実で `ads_notifications` に書き込み、email/sms は echo スタブ |
 | `AlertRule.channels` | JSON フィールド + Eloquent cast array、フロントエンドは既に `['web','email','sms']` を送信 |
 | Admin AlertRuleList.vue | チャネル選択 UI は既存（web はロック、email/sms は選択可能） |
 | Redis pub/sub | `alert:new` チャネルへのプッシュは実装済み |

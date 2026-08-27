@@ -8,7 +8,7 @@
 
 | # | 变更 | 包 | 影响范围 |
 |---|------|----|---------|
-| 1 | 数据库表前缀 `erik_` | — | 所有 SQL/迁移文件 |
+| 1 | 数据库表前缀 `ads_` | — | 所有 SQL/迁移文件 |
 | 2 | 主键 Snowflake ID (无自增) | erikwang2013/snowflake-php | 所有 Model + SQL |
 | 3 | API ID hashids 加解密 | erikwang2013/hashids | 所有 Controller 响应 |
 | 4 | JWT 认证切换 | erikwang2013/jwt-webman | AuthMiddleware + AuthController |
@@ -29,7 +29,7 @@
 
 **Batch A: 基础设施（依赖 + ID + 加密）**
 - 更新 composer.json 添加 6 个 erikwang2013 包
-- 重写所有 SQL 迁移文件（erik_ 前缀 + bigint 无自增）
+- 重写所有 SQL 迁移文件（ads_ 前缀 + bigint 无自增）
 - 创建 Snowflake ID trait
 - 更新所有 Model（使用 SnowflakeTrait）
 - 配置 hashids 中间件

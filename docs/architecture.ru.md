@@ -163,22 +163,22 @@ ads-php/
 
 | Категория | Таблица | Первичный ключ | Назначение |
 |------|------|------|------|
-| Базовые | `erik_tenants` | BIGINT Snowflake | Мультитенантность |
-| Аккаунты | `erik_platform_accounts`, `erik_auth_tokens` | BIGINT Snowflake | OAuth-аккаунты платформ |
-| Иерархия кампаний | `erik_campaigns`, `erik_ad_groups`, `erik_creatives` | BIGINT Snowflake | Рекламные кампании |
-| Отчеты | `erik_report_metrics`, `erik_report_extras` | BIGINT Snowflake | Унифицированные метрики |
-| Оповещения | `erik_alert_rules`, `erik_alert_logs` | BIGINT Snowflake | Мониторинг и оповещения |
-| Ставки | `erik_bid_rules`, `erik_bid_logs` | BIGINT Snowflake | Автоматические ставки |
-| Таргетинг | `erik_targeting_templates` | BIGINT Snowflake | Шаблоны аудитории |
-| Материалы | `erik_assets` | BIGINT Snowflake | Библиотека креативов |
-| Уведомления | `erik_notifications` | BIGINT Snowflake | Внутренние уведомления |
-| Атрибуция | `erik_conversions`, `erik_attribution_results` | BIGINT Snowflake | Отслеживание конверсий + атрибуция |
-| Системные | `erik_sync_errors` | BIGINT Snowflake | Ошибки синхронизации |
+| Базовые | `ads_tenants` | BIGINT Snowflake | Мультитенантность |
+| Аккаунты | `ads_platform_accounts`, `ads_auth_tokens` | BIGINT Snowflake | OAuth-аккаунты платформ |
+| Иерархия кампаний | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | BIGINT Snowflake | Рекламные кампании |
+| Отчеты | `ads_report_metrics`, `ads_report_extras` | BIGINT Snowflake | Унифицированные метрики |
+| Оповещения | `ads_alert_rules`, `ads_alert_logs` | BIGINT Snowflake | Мониторинг и оповещения |
+| Ставки | `ads_bid_rules`, `ads_bid_logs` | BIGINT Snowflake | Автоматические ставки |
+| Таргетинг | `ads_targeting_templates` | BIGINT Snowflake | Шаблоны аудитории |
+| Материалы | `ads_assets` | BIGINT Snowflake | Библиотека креативов |
+| Уведомления | `ads_notifications` | BIGINT Snowflake | Внутренние уведомления |
+| Атрибуция | `ads_conversions`, `ads_attribution_results` | BIGINT Snowflake | Отслеживание конверсий + атрибуция |
+| Системные | `ads_sync_errors` | BIGINT Snowflake | Ошибки синхронизации |
 | Управление | `admin_users`, `admin_roles`, `admin_audit_logs` | BIGINT Snowflake | RBAC + аудит |
 
 ### 5.2 Правила именования
 
-- Префикс таблиц: `erik_`
+- Префикс таблиц: `ads_`
 - Первичный ключ: `BIGINT UNSIGNED PRIMARY KEY` (без автоинкремента, Snowflake ID)
 - Движок: InnoDB, кодировка: utf8mb4
 - Метки времени: `created_at`, `updated_at` (DATETIME)

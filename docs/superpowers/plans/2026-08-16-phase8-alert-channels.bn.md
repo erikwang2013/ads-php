@@ -14,7 +14,7 @@
 
 | কম্পোনেন্ট | অবস্থা |
 |---|---|
-| `NotificationService::send()` | `match ($channel)` দিয়ে web/email/sms ডিসপ্যাচ; web বাস্তবে `erik_notifications`-এ লেখে, email/sms echo স্টাব |
+| `NotificationService::send()` | `match ($channel)` দিয়ে web/email/sms ডিসপ্যাচ; web বাস্তবে `ads_notifications`-এ লেখে, email/sms echo স্টাব |
 | `AlertRule.channels` | JSON ফিল্ড + Eloquent cast array, ফ্রন্টএন্ড `['web','email','sms']` সাবমিট করে |
 | Admin AlertRuleList.vue | চ্যানেল চেকবক্স UI আছে (web লকড, email/sms ঐচ্ছিক) |
 | Redis pub/sub | `alert:new` চ্যানেলে পুশ বাস্তবায়িত |

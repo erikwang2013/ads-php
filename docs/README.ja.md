@@ -59,7 +59,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | レイヤー | 技術 | 説明 |
 |----|------|------|
 | サーバー側 | webman v2 + PHP 8.2+ | 7 プラグイン、65+ API エンドポイント |
-| データベース | MySQL 8.0 | 28 テーブル、erik_ プレフィックス、Snowflake BIGINT 主キー |
+| データベース | MySQL 8.0 | 28 テーブル、ads_ プレフィックス、Snowflake BIGINT 主キー |
 | キャッシュ | Redis 7 | 3 段キャッシュ (L1メモリ/L2 APCu/L3 Redis)、レート制限カウント、Pub/Sub、メッセージキュー |
 | 検索 | Elasticsearch | webman-scout 自動インデックス同期（設定済み） |
 | 管理バックエンド | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP バックエンド(ポート 8789)、SPA は業務 API(ポート 8788)に直結、19 ページ、ECharts ビジュアライゼーション |
@@ -329,21 +329,21 @@ ads-php/
 
 ## データベース
 
-**命名規則**: テーブルプレフィックス `erik_`、主キー `BIGINT UNSIGNED PRIMARY KEY`（オートインクリメントなし、Snowflake ID）、エンジン InnoDB、文字セット utf8mb4
+**命名規則**: テーブルプレフィックス `ads_`、主キー `BIGINT UNSIGNED PRIMARY KEY`（オートインクリメントなし、Snowflake ID）、エンジン InnoDB、文字セット utf8mb4
 
 | 分類 | テーブル名 | 用途 |
 |------|------|------|
-| 基盤 | `erik_tenants` | マルチテナント |
-| アカウント | `erik_platform_accounts`, `erik_auth_tokens` | OAuth プラットフォームアカウント |
-| 配信 | `erik_campaigns`, `erik_ad_groups`, `erik_creatives` | 広告配信階層 |
-| レポート | `erik_report_metrics`, `erik_report_extras` | 統一レポート指標 |
-| 素材 | `erik_assets` | クリエイティブ素材ライブラリ |
-| ターゲティング | `erik_targeting_templates` | オーディエンスターゲティングテンプレート |
-| アトリビューション | `erik_conversions`, `erik_attribution_results` | コンバージョントラッキング + アトリビューション結果 |
-| 入札 | `erik_bid_rules`, `erik_bid_logs` | 自動入札ルール + 履歴 |
-| アラート | `erik_alert_rules`, `erik_alert_logs` | アラート監視 |
-| 通知 | `erik_notifications` | サイト内通知 |
-| システム | `erik_sync_errors`, `admin_users`, `admin_roles`, `admin_audit_logs` | 同期エラー、RBAC、監査 |
+| 基盤 | `ads_tenants` | マルチテナント |
+| アカウント | `ads_platform_accounts`, `ads_auth_tokens` | OAuth プラットフォームアカウント |
+| 配信 | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | 広告配信階層 |
+| レポート | `ads_report_metrics`, `ads_report_extras` | 統一レポート指標 |
+| 素材 | `ads_assets` | クリエイティブ素材ライブラリ |
+| ターゲティング | `ads_targeting_templates` | オーディエンスターゲティングテンプレート |
+| アトリビューション | `ads_conversions`, `ads_attribution_results` | コンバージョントラッキング + アトリビューション結果 |
+| 入札 | `ads_bid_rules`, `ads_bid_logs` | 自動入札ルール + 履歴 |
+| アラート | `ads_alert_rules`, `ads_alert_logs` | アラート監視 |
+| 通知 | `ads_notifications` | サイト内通知 |
+| システム | `ads_sync_errors`, `admin_users`, `admin_roles`, `admin_audit_logs` | 同期エラー、RBAC、監査 |
 
 ---
 
@@ -394,7 +394,7 @@ cd apps/flutter && dart analyze   # エラーゼロ
 | Skill | 説明 |
 |------|------|
 | `adapter-generator` | 新しい広告プラットフォームアダプターを生成（14 メソッドテンプレート） |
-| `migration-generator` | SQL マイグレーションファイルを生成（erik_ プレフィックス + BIGINT PK） |
+| `migration-generator` | SQL マイグレーションファイルを生成（ads_ プレフィックス + BIGINT PK） |
 | `erik-stack` | Erik Stack 8 パッケージ統合ガイド |
 | `admin-page-generator` | Vue3 管理バックエンドページを生成 |
 | `api-endpoint` | RESTful API エンドポイントを追加 |

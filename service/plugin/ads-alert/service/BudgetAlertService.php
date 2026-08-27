@@ -15,13 +15,13 @@ class BudgetAlertService
     public function checkAll(): array
     {
         $alerts = [];
-        $campaigns = DB::table('erik_campaigns')
+        $campaigns = DB::table('ads_campaigns')
             ->where('status', 'enabled')
             ->where('daily_budget', '>', 0)
             ->get();
 
         foreach ($campaigns as $campaign) {
-            $spent = (int) DB::table('erik_report_metrics')
+            $spent = (int) DB::table('ads_report_metrics')
                 ->where('campaign_id', $campaign->id)
                 ->where('date', date('Y-m-d'))
                 ->sum('cost');

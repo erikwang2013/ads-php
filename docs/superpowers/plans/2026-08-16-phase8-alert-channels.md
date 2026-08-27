@@ -14,7 +14,7 @@
 
 | 组件 | 状态 |
 |---|---|
-| `NotificationService::send()` | `match ($channel)` 分发 web/email/sms；web 真实写入 `erik_notifications`，email/sms 为 echo 存根 |
+| `NotificationService::send()` | `match ($channel)` 分发 web/email/sms；web 真实写入 `ads_notifications`，email/sms 为 echo 存根 |
 | `AlertRule.channels` | JSON 字段 + Eloquent cast array，前端已提交 `['web','email','sms']` |
 | Admin AlertRuleList.vue | 已有渠道勾选 UI（web 锁定、email/sms 可选） |
 | Redis pub/sub | `alert:new` 频道推送已实现 |

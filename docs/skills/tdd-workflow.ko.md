@@ -79,6 +79,6 @@ git add service/tests/ service/plugin/ && git commit -m "feat: add feature X wit
 - [ ] `find service -name "*.php" -not -path "*/vendor/*" -exec php -l {} \;` 통과
 - [ ] 모든 새 파일에 Copyright 헤더
 - [ ] `getenv()` 금지 — `env()` 사용
-- [ ] 테이블 이름은 `erik_` 접두사
+- [ ] 테이블 이름은 `ads_` 접두사
 - [ ] 전역 클래스에 앞 `\` 없음
 - [ ] 네임스페이스 파일에 `use Throwable;` / `use RuntimeException;` / `use InvalidArgumentException;`

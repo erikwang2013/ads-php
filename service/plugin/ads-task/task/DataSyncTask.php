@@ -30,7 +30,7 @@ class DataSyncTask
 
                 // Sync campaigns
                 foreach ($adapter->fetchCampaigns($account->access_token, $account->account_id_on_platform) as $row) {
-                    DB::table('erik_campaigns')->updateOrInsert(
+                    DB::table('ads_campaigns')->updateOrInsert(
                         [
                             'platform_account_id'  => $account->id,
                             'platform_campaign_id' => $row['platform_campaign_id'],
@@ -49,12 +49,12 @@ class DataSyncTask
                 }
 
                 // Sync ad groups
-                $campaigns = DB::table('erik_campaigns')
+                $campaigns = DB::table('ads_campaigns')
                     ->where('platform_account_id', $account->id)
                     ->get();
                 foreach ($campaigns as $campaign) {
                     foreach ($adapter->fetchAdGroups($account->access_token, $account->account_id_on_platform, $campaign->platform_campaign_id) as $row) {
-                        DB::table('erik_ad_groups')->updateOrInsert(
+                        DB::table('ads_ad_groups')->updateOrInsert(
                             [
                                 'campaign_id'         => $campaign->id,
                                 'platform_adgroup_id' => $row['platform_adgroup_id'],
@@ -73,12 +73,12 @@ class DataSyncTask
                 }
 
                 // Sync creatives
-                $adGroups = DB::table('erik_ad_groups')
+                $adGroups = DB::table('ads_ad_groups')
                     ->whereIn('campaign_id', $campaigns->pluck('id')->toArray())
                     ->get();
                 foreach ($adGroups as $adGroup) {
                     foreach ($adapter->fetchCreatives($account->access_token, $account->account_id_on_platform, $adGroup->platform_adgroup_id) as $row) {
-                        DB::table('erik_creatives')->updateOrInsert(
+                        DB::table('ads_creatives')->updateOrInsert(
                             [
                                 'ad_group_id'         => $adGroup->id,
                                 'platform_creative_id' => $row['platform_creative_id'],
@@ -107,14 +107,14 @@ class DataSyncTask
                 foreach ($adapter->fetchReports($account->access_token, $account->account_id_on_platform, $req) as $row) {
                     $campaignId = null;
                     if (!empty($row['platform_campaign_id'])) {
-                        $campaign = DB::table('erik_campaigns')
+                        $campaign = DB::table('ads_campaigns')
                             ->where('platform_campaign_id', $row['platform_campaign_id'])
                             ->where('platform_account_id', $account->id)
                             ->first();
                         $campaignId = $campaign->id ?? null;
                     }
 
-                    DB::table('erik_report_metrics')->updateOrInsert(
+                    DB::table('ads_report_metrics')->updateOrInsert(
                         [
                             'tenant_id'           => $account->tenant_id,
                             'platform'            => $account->platform,
@@ -143,7 +143,7 @@ class DataSyncTask
                 echo "  Done.\n";
 
             } catch (Throwable $e) {
-                DB::table('erik_sync_errors')->insert([
+                DB::table('ads_sync_errors')->insert([
                     'platform_account_id' => $account->id,
                     'platform'            => $account->platform,
                     'error_message'       => $e->getMessage(),
@@ -171,7 +171,7 @@ class DataSyncTask
 
         // Sync campaigns
         foreach ($adapter->fetchCampaigns($account->access_token, $account->account_id_on_platform) as $row) {
-            DB::table('erik_campaigns')->updateOrInsert(
+            DB::table('ads_campaigns')->updateOrInsert(
                 [
                     'platform_account_id'  => $account->id,
                     'platform_campaign_id' => $row['platform_campaign_id'],
@@ -190,12 +190,12 @@ class DataSyncTask
         }
 
         // Sync ad groups
-        $campaigns = DB::table('erik_campaigns')
+        $campaigns = DB::table('ads_campaigns')
             ->where('platform_account_id', $account->id)
             ->get();
         foreach ($campaigns as $campaign) {
             foreach ($adapter->fetchAdGroups($account->access_token, $account->account_id_on_platform, $campaign->platform_campaign_id) as $row) {
-                DB::table('erik_ad_groups')->updateOrInsert(
+                DB::table('ads_ad_groups')->updateOrInsert(
                     [
                         'campaign_id'         => $campaign->id,
                         'platform_adgroup_id' => $row['platform_adgroup_id'],
@@ -214,12 +214,12 @@ class DataSyncTask
         }
 
         // Sync creatives
-        $adGroups = DB::table('erik_ad_groups')
+        $adGroups = DB::table('ads_ad_groups')
             ->whereIn('campaign_id', $campaigns->pluck('id')->toArray())
             ->get();
         foreach ($adGroups as $adGroup) {
             foreach ($adapter->fetchCreatives($account->access_token, $account->account_id_on_platform, $adGroup->platform_adgroup_id) as $row) {
-                DB::table('erik_creatives')->updateOrInsert(
+                DB::table('ads_creatives')->updateOrInsert(
                     [
                         'ad_group_id'         => $adGroup->id,
                         'platform_creative_id' => $row['platform_creative_id'],
@@ -248,14 +248,14 @@ class DataSyncTask
         foreach ($adapter->fetchReports($account->access_token, $account->account_id_on_platform, $req) as $row) {
             $campaignId = null;
             if (!empty($row['platform_campaign_id'])) {
-                $campaign = DB::table('erik_campaigns')
+                $campaign = DB::table('ads_campaigns')
                     ->where('platform_campaign_id', $row['platform_campaign_id'])
                     ->where('platform_account_id', $account->id)
                     ->first();
                 $campaignId = $campaign->id ?? null;
             }
 
-            DB::table('erik_report_metrics')->updateOrInsert(
+            DB::table('ads_report_metrics')->updateOrInsert(
                 [
                     'tenant_id'           => $account->tenant_id,
                     'platform'            => $account->platform,

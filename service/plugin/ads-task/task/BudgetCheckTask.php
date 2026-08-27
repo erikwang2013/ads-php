@@ -17,7 +17,7 @@ class BudgetCheckTask
 
         foreach ($alerts as $alert) {
             // Skip if already notified for this campaign today at same level
-            $exists = DB::table('erik_notifications')
+            $exists = DB::table('ads_notifications')
                 ->where('tenant_id', $alert['tenant_id'])
                 ->where('title', 'like', "%预算{$alert['level']}%")
                 ->where('created_at', '>=', date('Y-m-d 00:00:00'))
@@ -29,7 +29,7 @@ class BudgetCheckTask
             $labels = ['yellow' => '⚠️', 'orange' => '🔶', 'red' => '🔴'];
             $emoji = $labels[$alert['level']] ?? '⚠️';
 
-            DB::table('erik_notifications')->insert([
+            DB::table('ads_notifications')->insert([
                 'id'         => snowflake_id(),
                 'tenant_id'  => $alert['tenant_id'],
                 'type'       => 'alert',

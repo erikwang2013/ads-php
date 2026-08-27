@@ -9,12 +9,12 @@
 1. 创建转化事件表：
 
 ```sql
--- erik_conversions: 转化事件
-INSERT INTO erik_conversions (id, tenant_id, platform, campaign_id, conversion_time, value, order_id)
+-- ads_conversions: 转化事件
+INSERT INTO ads_conversions (id, tenant_id, platform, campaign_id, conversion_time, value, order_id)
 VALUES (snowflake_id(), 1, 'juliang', 1, NOW(), 299.00, 'ORD-001');
 ```
 
-2. 触点数据来自 `erik_report_metrics`（clicks > 0 的记录作为触点）。
+2. 触点数据来自 `ads_report_metrics`（clicks > 0 的记录作为触点）。
 
 ## 归因模型
 

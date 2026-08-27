@@ -14,7 +14,7 @@
 
 | Komponente | Status |
 |---|---|
-| `NotificationService::send()` | `match ($channel)` verteilt web/email/sms; web schreibt real in `erik_notifications`, email/sms sind echo-Stubs |
+| `NotificationService::send()` | `match ($channel)` verteilt web/email/sms; web schreibt real in `ads_notifications`, email/sms sind echo-Stubs |
 | `AlertRule.channels` | JSON-Feld + Eloquent cast array, Frontend sendet bereits `['web','email','sms']` |
 | Admin AlertRuleList.vue | Kanal-Auswahl-UI vorhanden (web gesperrt, email/sms wählbar) |
 | Redis pub/sub | Push über Kanal `alert:new` implementiert |

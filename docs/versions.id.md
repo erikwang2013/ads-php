@@ -135,24 +135,24 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 | Kategori | Nama tabel | Lite | Standard | Full |
 |------|------|:---:|:---:|:---:|
-| Dasar | erik_tenants | ✅ | ✅ | ✅ |
-| Akun | erik_platform_accounts | ✅ | ✅ | ✅ |
-| | erik_auth_tokens | ✅ | ✅ | ✅ |
-| Penayangan | erik_campaigns | ✅ | ✅ | ✅ |
-| | erik_report_metrics | ✅ | ✅ | ✅ |
-| | erik_report_extras | ✅ | ✅ | ✅ |
-| | erik_ad_groups | — | ✅ | ✅ |
-| | erik_creatives | — | ✅ | ✅ |
-| Peringatan | erik_alert_rules | — | ✅ | ✅ |
-| | erik_alert_logs | — | ✅ | ✅ |
-| Notifikasi | erik_notifications | — | ✅ | ✅ |
-| Penawaran | erik_bid_rules | — | — | ✅ |
-| | erik_bid_logs | — | — | ✅ |
-| Penargetan | erik_targeting_templates | — | — | ✅ |
-| Materi | erik_assets | — | — | ✅ |
-| Atribusi | erik_conversions | — | — | ✅ |
-| | erik_attribution_results | — | — | ✅ |
-| Sistem | erik_sync_errors | ✅ | ✅ | ✅ |
+| Dasar | ads_tenants | ✅ | ✅ | ✅ |
+| Akun | ads_platform_accounts | ✅ | ✅ | ✅ |
+| | ads_auth_tokens | ✅ | ✅ | ✅ |
+| Penayangan | ads_campaigns | ✅ | ✅ | ✅ |
+| | ads_report_metrics | ✅ | ✅ | ✅ |
+| | ads_report_extras | ✅ | ✅ | ✅ |
+| | ads_ad_groups | — | ✅ | ✅ |
+| | ads_creatives | — | ✅ | ✅ |
+| Peringatan | ads_alert_rules | — | ✅ | ✅ |
+| | ads_alert_logs | — | ✅ | ✅ |
+| Notifikasi | ads_notifications | — | ✅ | ✅ |
+| Penawaran | ads_bid_rules | — | — | ✅ |
+| | ads_bid_logs | — | — | ✅ |
+| Penargetan | ads_targeting_templates | — | — | ✅ |
+| Materi | ads_assets | — | — | ✅ |
+| Atribusi | ads_conversions | — | — | ✅ |
+| | ads_attribution_results | — | — | ✅ |
+| Sistem | ads_sync_errors | ✅ | ✅ | ✅ |
 | Manajemen | admin_users/roles/audit_logs | ✅ | ✅ | ✅ |
 | **Total** | | **8** | **13** | **18** |
 

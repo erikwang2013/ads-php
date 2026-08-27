@@ -14,10 +14,10 @@
 
 | 후보 하위 항목 | 현황 |
 |---|---|
-| 동기화 상태 시각화 | `erik_sync_errors` 테이블 + `RetrySyncTask`(재시도 3회, 백오프 5^n분) 이미 존재; **동기화 실패율과 지연을 보여주는 프론트엔드 페이지/API 없음** |
-| 전환 데이터 루프 클로즈 | `erik_conversions` + `erik_attribution_results` 테이블 존재, 기여도 엔진 구현 완료; **전환 데이터 수집 진입점 없음**(콜백/추적 API) |
+| 동기화 상태 시각화 | `ads_sync_errors` 테이블 + `RetrySyncTask`(재시도 3회, 백오프 5^n분) 이미 존재; **동기화 실패율과 지연을 보여주는 프론트엔드 페이지/API 없음** |
+| 전환 데이터 루프 클로즈 | `ads_conversions` + `ads_attribution_results` 테이블 존재, 기여도 엔진 구현 완료; **전환 데이터 수집 진입점 없음**(콜백/추적 API) |
 | 모바일 CI | `ci.yml`은 PHP 문법→PHPUnit→vue-tsc→Docker만; **Flutter/HarmonyOS 빌드 패키징 없음** |
-| 멀티 테넌트 SaaS | `erik_tenants` 테이블 + TenantIdentify 미들웨어 존재; **과금/할당량/사용량 통계 없음** |
+| 멀티 테넌트 SaaS | `ads_tenants` 테이블 + TenantIdentify 미들웨어 존재; **과금/할당량/사용량 통계 없음** |
 | ES 구축 | scout.php 구성 + webman-scout 의존성 도입 완료; **docker-compose에 ES 서비스 없음** |
 | 29 플랫폼 실제 연동 | 29 어댑터 코드 완비; **샌드박스/자격 증명 연동 기록 없음**(외부 자격 증명 필요, 수동 항목으로 표시) |
 
@@ -31,7 +31,7 @@
 ### 설계 요점
 - 엔드포인트: `GET /api/sync/status`(계정 차원: last_sync_at, 성공률, 오늘 실패 수, pending 재시도 수) + `GET /api/sync/errors`(페이지네이션 오류 목록, last_error/retry_count/next_retry_at 포함)
 - 프론트엔드: 동기화 상태 페이지(테이블 + 요약 카드), Full/Standard 버전 라인만
-- 데이터 소스: erik_platform_accounts(last_sync_at) + erik_sync_errors
+- 데이터 소스: ads_platform_accounts(last_sync_at) + ads_sync_errors
 
 ## Task 2: 전환 데이터 수집 API
 
@@ -41,7 +41,7 @@
 
 ### 설계 요점
 - 엔드포인트: `POST /api/conversions`(비즈니스 측 전환 콜백: platform/campaign_id/order_id/conversion_time/value/currency/channel) + `GET /api/conversions`(조회)
-- 검증: campaign_id 존재, 금액 비음수, 시간 형식; erik_conversions에 기록
+- 검증: campaign_id 존재, 금액 비음수, 시간 형식; ads_conversions에 기록
 - 기여도 연동: 콜백 후 기여도 재계산 트리거 가능(또는 기존 AttributionEngine이 정기/수동 재계산한다는 설명)
 - 프론트엔드: 기여도 보고서 페이지에 "전환 콜백" 설명/데모 추가(선택)
 
@@ -62,7 +62,7 @@
 - 수정: `service/plugin/ads-api/config/route.php` + controller
 
 ### 설계 요점
-- 데이터: erik_tenants에 quota 필드 추가 또는 신규 테이블 erik_tenant_quotas(plan/account_limit/campaign_limit/sync_quota)
+- 데이터: ads_tenants에 quota 필드 추가 또는 신규 테이블 ads_tenant_quotas(plan/account_limit/campaign_limit/sync_quota)
 - 검증 지점: 계정 바인딩 수, 계획 생성 수, 일일 동기화 횟수(AccountController/CampaignController/DataSyncTask 진입점에서 검사)
 - 엔드포인트: `GET /api/tenant/quota`(사용량 + 할당량)
 - 프론트엔드: 시스템 페이지에 할당량 사용량 표시(선택, MVP는 API만 가능)

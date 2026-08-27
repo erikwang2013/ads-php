@@ -14,10 +14,10 @@
 
 | প্রার্থী সাব-আইটেম | বর্তমান অবস্থা |
 |---|---|
-| সিঙ্ক স্ট্যাটাস ভিজুয়ালাইজেশন | `erik_sync_errors` টেবিল + `RetrySyncTask` (3 বার রিট্রাই, 5^n মিনিট ব্যাকঅফ) আছে; **সিঙ্ক ফেইলিউর রেট ও লেটেন্সি দেখানোর ফ্রন্টএন্ড পেজ/API নেই** |
-| কনভার্সন ডেটা ক্লোজড-লুপ | `erik_conversions` + `erik_attribution_results` টেবিল আছে, অ্যাট্রিবিউশন ইঞ্জিন বাস্তবায়িত; **কনভার্সন ডেটা সংগ্রহ এন্ট্রি নেই** (রিটার্ন/ট্র্যাকিং API) |
+| সিঙ্ক স্ট্যাটাস ভিজুয়ালাইজেশন | `ads_sync_errors` টেবিল + `RetrySyncTask` (3 বার রিট্রাই, 5^n মিনিট ব্যাকঅফ) আছে; **সিঙ্ক ফেইলিউর রেট ও লেটেন্সি দেখানোর ফ্রন্টএন্ড পেজ/API নেই** |
+| কনভার্সন ডেটা ক্লোজড-লুপ | `ads_conversions` + `ads_attribution_results` টেবিল আছে, অ্যাট্রিবিউশন ইঞ্জিন বাস্তবায়িত; **কনভার্সন ডেটা সংগ্রহ এন্ট্রি নেই** (রিটার্ন/ট্র্যাকিং API) |
 | মোবাইল CI | `ci.yml` শুধু PHP সিনট্যাক্স→PHPUnit→vue-tsc→Docker; **Flutter/HarmonyOS বিল্ড প্যাকেজিং নেই** |
-| মাল্টি-টেন্যান্ট SaaS | `erik_tenants` টেবিল + TenantIdentify মিডলওয়্যার আছে; **বিলিং/কোটা/ইউসেজ স্ট্যাটস নেই** |
+| মাল্টি-টেন্যান্ট SaaS | `ads_tenants` টেবিল + TenantIdentify মিডলওয়্যার আছে; **বিলিং/কোটা/ইউসেজ স্ট্যাটস নেই** |
 | ES বাস্তবায়ন | scout.php কনফিগারড + webman-scout ডিপেন্ডেন্সি যুক্ত; **docker-compose-এ ES সার্ভিস নেই** |
 | 29 প্ল্যাটফর্ম বাস্তব ইন্টিগ্রেশন | 29টি অ্যাডাপ্টার কোড সম্পূর্ণ; **স্যান্ডবক্স/ক্রেডেনশিয়াল ইন্টিগ্রেশন রেকর্ড নেই** (বহিরাগত ক্রেডেনশিয়াল প্রয়োজন, ম্যানুয়াল আইটেম হিসেবে চিহ্নিত) |
 
@@ -31,7 +31,7 @@
 ### ডিজাইন পয়েন্ট
 - এন্ডপয়েন্ট: `GET /api/sync/status` (অ্যাকাউন্ট মাত্রা: last_sync_at, সফলতার হার, আজকের ব্যর্থ সংখ্যা, pending রিট্রাই সংখ্যা) + `GET /api/sync/errors` (পেজিনেটেড এরর লিস্ট, last_error/retry_count/next_retry_at সহ)
 - ফ্রন্টএন্ড: সিঙ্ক স্ট্যাটাস পেজ (টেবিল + সামারি কার্ড), শুধুমাত্র Full/Standard ভার্সন লাইন
-- ডেটা উৎস: erik_platform_accounts (last_sync_at) + erik_sync_errors
+- ডেটা উৎস: ads_platform_accounts (last_sync_at) + ads_sync_errors
 
 ## Task 2: কনভার্সন ডেটা সংগ্রহ API
 
@@ -41,7 +41,7 @@
 
 ### ডিজাইন পয়েন্ট
 - এন্ডপয়েন্ট: `POST /api/conversions` (ব্যবসায়িক পক্ষ কনভার্সন রিটার্ন: platform/campaign_id/order_id/conversion_time/value/currency/channel) + `GET /api/conversions` (কোয়েরি)
-- ভ্যালিডেশন: campaign_id অস্তিত্ব, টাকা অ-নেগেটিভ, সময় ফরম্যাট; erik_conversions-এ লেখা
+- ভ্যালিডেশন: campaign_id অস্তিত্ব, টাকা অ-নেগেটিভ, সময় ফরম্যাট; ads_conversions-এ লেখা
 - অ্যাট্রিবিউশন লিংকেজ: রিটার্নের পর অ্যাট্রিবিউশন রিক্যালকুলেশন ট্রিগার করা যায় (বা বিদ্যমান AttributionEngine-এর সময়সূচি/ম্যানুয়াল রিক্যালকুলেশন উল্লেখ)
 - ফ্রন্টএন্ড: অ্যাট্রিবিউশন রিপোর্ট পেজে "কনভার্সন রিটার্ন" ব্যাখ্যা/ডেমো (ঐচ্ছিক)
 
@@ -62,7 +62,7 @@
 - Modify: `service/plugin/ads-api/config/route.php` + controller
 
 ### ডিজাইন পয়েন্ট
-- ডেটা: erik_tenants-এ quota ফিল্ড বা নতুন টেবিল erik_tenant_quotas (plan/account_limit/campaign_limit/sync_quota)
+- ডেটা: ads_tenants-এ quota ফিল্ড বা নতুন টেবিল ads_tenant_quotas (plan/account_limit/campaign_limit/sync_quota)
 - ভ্যালিডেশন পয়েন্ট: অ্যাকাউন্ট বাইন্ডিং সংখ্যা, প্ল্যান তৈরি সংখ্যা, দৈনিক সিঙ্ক সংখ্যা (AccountController/CampaignController/DataSyncTask এন্ট্রিতে চেক)
 - এন্ডপয়েন্ট: `GET /api/tenant/quota` (ইউসেজ + কোটা)
 - ফ্রন্টএন্ড: সিস্টেম পেজে কোটা ইউসেজ দেখানো (ঐচ্ছিক, MVP-তে শুধু API হতে পারে)

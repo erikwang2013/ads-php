@@ -16,7 +16,7 @@ class PlatformAccount extends Model
 
     protected array $encryptable = ['access_token', 'refresh_token'];
 
-    protected $table = 'erik_platform_accounts';
+    protected $table = 'ads_platform_accounts';
     protected $guarded = ['id'];
     protected $casts = [
         'sync_enabled' => 'boolean',

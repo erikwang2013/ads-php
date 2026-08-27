@@ -9,12 +9,12 @@
 1. 전환 이벤트 테이블 생성:
 
 ```sql
--- erik_conversions: 转化事件
-INSERT INTO erik_conversions (id, tenant_id, platform, campaign_id, conversion_time, value, order_id)
+-- ads_conversions: 转化事件
+INSERT INTO ads_conversions (id, tenant_id, platform, campaign_id, conversion_time, value, order_id)
 VALUES (snowflake_id(), 1, 'juliang', 1, NOW(), 299.00, 'ORD-001');
 ```
 
-2. 터치포인트 데이터는 `erik_report_metrics`에서 옵니다（clicks > 0 기록을 터치포인트로 사용）.
+2. 터치포인트 데이터는 `ads_report_metrics`에서 옵니다（clicks > 0 기록을 터치포인트로 사용）.
 
 ## 기여도 모델
 

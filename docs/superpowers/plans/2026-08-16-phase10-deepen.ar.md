@@ -14,10 +14,10 @@
 
 | البند الفرعي المرشح | الوضع الحالي |
 |---|---|
-| تصور حالة المزامنة | جدول `erik_sync_errors` + `RetrySyncTask` (إعادة محاولة 3 مرات، تراجع 5^n دقيقة) موجودان؛ **لا توجد صفحة أمامية/API تعرض معدل فشل المزامنة والتأخير** |
-| إغلاق حلقة بيانات التحويل | جدولا `erik_conversions` + `erik_attribution_results` موجودان ومحرك الإسناد منفذ؛ **لا يوجد مدخل لجمع بيانات التحويل** (API للإرجاع/التتبع) |
+| تصور حالة المزامنة | جدول `ads_sync_errors` + `RetrySyncTask` (إعادة محاولة 3 مرات، تراجع 5^n دقيقة) موجودان؛ **لا توجد صفحة أمامية/API تعرض معدل فشل المزامنة والتأخير** |
+| إغلاق حلقة بيانات التحويل | جدولا `ads_conversions` + `ads_attribution_results` موجودان ومحرك الإسناد منفذ؛ **لا يوجد مدخل لجمع بيانات التحويل** (API للإرجاع/التتبع) |
 | CI للجوال | `ci.yml` فقط PHP syntax→PHPUnit→vue-tsc→Docker؛ **لا بناء/تعبئة Flutter أو HarmonyOS** |
-| SaaS متعدد المستأجرين | جدول `erik_tenants` + وسيط TenantIdentify موجودان؛ **لا فوترة/حصص/إحصاءات استخدام** |
+| SaaS متعدد المستأجرين | جدول `ads_tenants` + وسيط TenantIdentify موجودان؛ **لا فوترة/حصص/إحصاءات استخدام** |
 | تنفيذ ES | scout.php مُهيأ + تبعية webman-scout مضافة؛ **لا خدمة ES في docker-compose** |
 | الربط الفعلي لـ 29 منصة | أكواد المحولات الـ 29 كاملة؛ **لا سجل ربط ببيئات تجريبية/بيانات اعتماد** (يتطلب بيانات اعتماد خارجية، يُعلَّم كبند يدوي) |
 
@@ -31,7 +31,7 @@
 ### نقاط التصميم
 - نقطة النهاية: `GET /api/sync/status` (ببعد الحساب: last_sync_at، معدل النجاح، عدد فشل اليوم، عدد إعادة المحاولة المعلقة) + `GET /api/sync/errors` (قائمة أخطاء بترقيم الصفحات، مع last_error/retry_count/next_retry_at)
 - الواجهة الأمامية: صفحة حالة المزامنة (جدول + بطاقات ملخص)، في خطي إصدار Full/Standard فقط
-- مصدر البيانات: erik_platform_accounts (last_sync_at) + erik_sync_errors
+- مصدر البيانات: ads_platform_accounts (last_sync_at) + ads_sync_errors
 
 ## المهمة 2: API جمع بيانات التحويل
 
@@ -41,7 +41,7 @@
 
 ### نقاط التصميم
 - نقطة النهاية: `POST /api/conversions` (إرجاع التحويلات من جهة الأعمال: platform/campaign_id/order_id/conversion_time/value/currency/channel) + `GET /api/conversions` (استعلام)
-- التحقق: وجود campaign_id، مبلغ غير سالب، تنسيق الوقت؛ الكتابة إلى erik_conversions
+- التحقق: وجود campaign_id، مبلغ غير سالب، تنسيق الوقت؛ الكتابة إلى ads_conversions
 - الترابط مع الإسناد: بعد الإرجاع يمكن تشغيل إعادة حساب الإسناد (أو توضيح إعادة الحساب الدورية/اليدوية بواسطة AttributionEngine الحالي)
 - الواجهة الأمامية: إضافة شرح/عرض "إرجاع التحويلات" في صفحة تقرير الإسناد (اختياري)
 
@@ -62,7 +62,7 @@
 - تعديل: `service/plugin/ads-api/config/route.php` + وحدة تحكم
 
 ### نقاط التصميم
-- البيانات: إضافة حقل quota إلى erik_tenants أو جدول جديد erik_tenant_quotas (plan/account_limit/campaign_limit/sync_quota)
+- البيانات: إضافة حقل quota إلى ads_tenants أو جدول جديد ads_tenant_quotas (plan/account_limit/campaign_limit/sync_quota)
 - نقاط التحقق: عدد الحسابات المرتبطة، عدد الخطط المنشأة، عدد المزامنات اليومية (الفحص عند مداخل AccountController/CampaignController/DataSyncTask)
 - نقطة النهاية: `GET /api/tenant/quota` (الاستخدام + الحصة)
 - الواجهة الأمامية: عرض استخدام الحصة في صفحة النظام (اختياري، MVP قد يكتفي بـ API)

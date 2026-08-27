@@ -6,7 +6,7 @@ Buat file migrasi SQL mengikuti konvensi proyek.
 
 ## Aturan
 
-1. **Prefiks tabel**: `erik_` untuk semua tabel yang menghadap pengguna, `admin_` untuk tabel panel admin
+1. **Prefiks tabel**: `ads_` untuk semua tabel yang menghadap pengguna, `admin_` untuk tabel panel admin
 2. **Primary key**: `BIGINT UNSIGNED PRIMARY KEY` — TANPA AUTO_INCREMENT, gunakan Snowflake ID
 3. **Engine**: `ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`
 4. **Kolom uang**: `BIGINT DEFAULT 0` untuk sen (分) — konsisten dengan model terpadu
@@ -17,7 +17,7 @@ Buat file migrasi SQL mengikuti konvensi proyek.
 ## Template
 
 ```sql
-CREATE TABLE IF NOT EXISTS `erik_table_name` (
+CREATE TABLE IF NOT EXISTS `ads_table_name` (
     `id` BIGINT UNSIGNED PRIMARY KEY,
     `tenant_id` BIGINT UNSIGNED NOT NULL,
     `name` VARCHAR(100) NOT NULL,
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `erik_table_name` (
 ## Data Seed (opsional)
 
 ```sql
-INSERT INTO erik_table_name (id, name) VALUES (1, '默认数据')
+INSERT INTO ads_table_name (id, name) VALUES (1, '默认数据')
 ON DUPLICATE KEY UPDATE name = VALUES(name);
 ```
 

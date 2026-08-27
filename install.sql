@@ -9,7 +9,7 @@
 -- 1. 租户系统 (ads-tenant)
 -- ============================================================================
 
-CREATE TABLE IF NOT EXISTS `erik_tenants` (
+CREATE TABLE IF NOT EXISTS `ads_tenants` (
     `id` BIGINT UNSIGNED PRIMARY KEY,
     `name` VARCHAR(100) NOT NULL,
     `domain` VARCHAR(255) DEFAULT NULL,
@@ -22,14 +22,14 @@ CREATE TABLE IF NOT EXISTS `erik_tenants` (
     `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `erik_tenants` (`id`, `name`, `plan`) VALUES (1, '默认租户', 'enterprise')
+INSERT INTO `ads_tenants` (`id`, `name`, `plan`) VALUES (1, '默认租户', 'enterprise')
 ON DUPLICATE KEY UPDATE `name` = VALUES(`name`);
 
 -- ============================================================================
 -- 2. 平台账号 (ads-account)
 -- ============================================================================
 
-CREATE TABLE IF NOT EXISTS `erik_platform_accounts` (
+CREATE TABLE IF NOT EXISTS `ads_platform_accounts` (
     `id` BIGINT UNSIGNED PRIMARY KEY,
     `tenant_id` BIGINT UNSIGNED NOT NULL,
     `platform` VARCHAR(32) NOT NULL,
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS `erik_platform_accounts` (
     INDEX `idx_tenant_platform` (`tenant_id`, `platform`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS `erik_auth_tokens` (
+CREATE TABLE IF NOT EXISTS `ads_auth_tokens` (
     `id` BIGINT UNSIGNED PRIMARY KEY,
     `tenant_id` BIGINT UNSIGNED NOT NULL,
     `platform` VARCHAR(32) NOT NULL,
@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS `erik_auth_tokens` (
 -- 3. 广告投放核心表 (ads-platform / campaigns)
 -- ============================================================================
 
-CREATE TABLE IF NOT EXISTS `erik_campaigns` (
+CREATE TABLE IF NOT EXISTS `ads_campaigns` (
     `id` BIGINT UNSIGNED PRIMARY KEY,
     `tenant_id` BIGINT UNSIGNED NOT NULL,
     `platform_account_id` BIGINT UNSIGNED NOT NULL,
@@ -82,7 +82,7 @@ CREATE TABLE IF NOT EXISTS `erik_campaigns` (
     INDEX `idx_tenant` (`tenant_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS `erik_ad_groups` (
+CREATE TABLE IF NOT EXISTS `ads_ad_groups` (
     `id` BIGINT UNSIGNED PRIMARY KEY,
     `campaign_id` BIGINT UNSIGNED NOT NULL,
     `platform_adgroup_id` VARCHAR(128) NOT NULL,
@@ -97,7 +97,7 @@ CREATE TABLE IF NOT EXISTS `erik_ad_groups` (
     UNIQUE KEY `uk_platform_adgroup` (`campaign_id`, `platform_adgroup_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS `erik_creatives` (
+CREATE TABLE IF NOT EXISTS `ads_creatives` (
     `id` BIGINT UNSIGNED PRIMARY KEY,
     `ad_group_id` BIGINT UNSIGNED NOT NULL,
     `platform_creative_id` VARCHAR(128) NOT NULL,
@@ -112,7 +112,7 @@ CREATE TABLE IF NOT EXISTS `erik_creatives` (
     UNIQUE KEY `uk_platform_creative` (`ad_group_id`, `platform_creative_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS `erik_report_metrics` (
+CREATE TABLE IF NOT EXISTS `ads_report_metrics` (
     `id` BIGINT UNSIGNED PRIMARY KEY,
     `tenant_id` BIGINT UNSIGNED NOT NULL,
     `platform_account_id` BIGINT UNSIGNED NOT NULL,
@@ -136,19 +136,19 @@ CREATE TABLE IF NOT EXISTS `erik_report_metrics` (
     INDEX `idx_campaign_date` (`campaign_id`, `date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS `erik_report_extras` (
+CREATE TABLE IF NOT EXISTS `ads_report_extras` (
     `id` BIGINT UNSIGNED PRIMARY KEY,
     `report_metric_id` BIGINT UNSIGNED NOT NULL,
     `platform` VARCHAR(32) NOT NULL,
     `extra` JSON NULL,
-    FOREIGN KEY (`report_metric_id`) REFERENCES `erik_report_metrics`(`id`) ON DELETE CASCADE
+    FOREIGN KEY (`report_metric_id`) REFERENCES `ads_report_metrics`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ============================================================================
 -- 4. 素材库 (ads-platform / assets)
 -- ============================================================================
 
-CREATE TABLE IF NOT EXISTS `erik_assets` (
+CREATE TABLE IF NOT EXISTS `ads_assets` (
     `id` BIGINT UNSIGNED PRIMARY KEY,
     `tenant_id` BIGINT UNSIGNED NOT NULL,
     `type` VARCHAR(16) NOT NULL DEFAULT 'image',
@@ -168,7 +168,7 @@ CREATE TABLE IF NOT EXISTS `erik_assets` (
 -- 5. 定向模板 (ads-platform / targeting)
 -- ============================================================================
 
-CREATE TABLE IF NOT EXISTS `erik_targeting_templates` (
+CREATE TABLE IF NOT EXISTS `ads_targeting_templates` (
     `id` BIGINT UNSIGNED PRIMARY KEY,
     `tenant_id` BIGINT UNSIGNED NOT NULL,
     `name` VARCHAR(100) NOT NULL,
@@ -184,11 +184,11 @@ CREATE TABLE IF NOT EXISTS `erik_targeting_templates` (
 -- 6. 转化追踪与归因 (ads-report / conversions)
 -- ============================================================================
 
-CREATE TABLE IF NOT EXISTS `erik_conversions` (
+CREATE TABLE IF NOT EXISTS `ads_conversions` (
     `id` BIGINT UNSIGNED PRIMARY KEY,
     `tenant_id` BIGINT UNSIGNED NOT NULL,
     `platform` VARCHAR(32) NOT NULL,
-    `campaign_id` BIGINT UNSIGNED NULL COMMENT '关联 erik_campaigns.id（转化回传 API 必填）',
+    `campaign_id` BIGINT UNSIGNED NULL COMMENT '关联 ads_campaigns.id（转化回传 API 必填）',
     `order_id` VARCHAR(128) NOT NULL,
     `value` DECIMAL(12,2) DEFAULT 0 COMMENT '金额，单位：分（与 cost 口径一致）',
     `currency` VARCHAR(8) DEFAULT 'CNY',
@@ -202,7 +202,7 @@ CREATE TABLE IF NOT EXISTS `erik_conversions` (
     INDEX `idx_campaign` (`campaign_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS `erik_attribution_results` (
+CREATE TABLE IF NOT EXISTS `ads_attribution_results` (
     `id` BIGINT UNSIGNED PRIMARY KEY,
     `tenant_id` BIGINT UNSIGNED NOT NULL,
     `conversion_id` BIGINT UNSIGNED NOT NULL,
@@ -218,7 +218,7 @@ CREATE TABLE IF NOT EXISTS `erik_attribution_results` (
 -- 7. 自动竞价规则 (ads-platform / bid rules)
 -- ============================================================================
 
-CREATE TABLE IF NOT EXISTS `erik_bid_rules` (
+CREATE TABLE IF NOT EXISTS `ads_bid_rules` (
     `id` BIGINT UNSIGNED PRIMARY KEY,
     `tenant_id` BIGINT UNSIGNED NOT NULL,
     `name` VARCHAR(100) NOT NULL,
@@ -239,7 +239,7 @@ CREATE TABLE IF NOT EXISTS `erik_bid_rules` (
     INDEX `idx_tenant_enabled` (`tenant_id`, `enabled`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS `erik_bid_logs` (
+CREATE TABLE IF NOT EXISTS `ads_bid_logs` (
     `id` BIGINT UNSIGNED PRIMARY KEY,
     `rule_id` BIGINT UNSIGNED NOT NULL,
     `tenant_id` BIGINT UNSIGNED NOT NULL,
@@ -260,7 +260,7 @@ CREATE TABLE IF NOT EXISTS `erik_bid_logs` (
 -- 8. 告警系统 (ads-alert)
 -- ============================================================================
 
-CREATE TABLE IF NOT EXISTS `erik_alert_rules` (
+CREATE TABLE IF NOT EXISTS `ads_alert_rules` (
     `id` BIGINT UNSIGNED PRIMARY KEY,
     `tenant_id` BIGINT UNSIGNED NOT NULL,
     `name` VARCHAR(100) NOT NULL,
@@ -279,7 +279,7 @@ CREATE TABLE IF NOT EXISTS `erik_alert_rules` (
     INDEX `idx_tenant_enabled` (`tenant_id`, `enabled`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS `erik_alert_logs` (
+CREATE TABLE IF NOT EXISTS `ads_alert_logs` (
     `id` BIGINT UNSIGNED PRIMARY KEY,
     `tenant_id` BIGINT UNSIGNED NOT NULL,
     `rule_id` BIGINT UNSIGNED NOT NULL,
@@ -295,7 +295,7 @@ CREATE TABLE IF NOT EXISTS `erik_alert_logs` (
     INDEX `idx_rule` (`rule_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS `erik_notifications` (
+CREATE TABLE IF NOT EXISTS `ads_notifications` (
     `id` BIGINT UNSIGNED PRIMARY KEY,
     `tenant_id` BIGINT UNSIGNED NOT NULL DEFAULT 1,
     `type` VARCHAR(32) NOT NULL DEFAULT 'alert',
@@ -313,7 +313,7 @@ CREATE TABLE IF NOT EXISTS `erik_notifications` (
 -- 9. 同步错误 (ads-task)
 -- ============================================================================
 
-CREATE TABLE IF NOT EXISTS `erik_sync_errors` (
+CREATE TABLE IF NOT EXISTS `ads_sync_errors` (
     `id` BIGINT UNSIGNED PRIMARY KEY,
     `platform_account_id` BIGINT UNSIGNED NOT NULL,
     `platform` VARCHAR(32) NOT NULL,
@@ -515,9 +515,9 @@ ON DUPLICATE KEY UPDATE `name` = VALUES(`name`);
 -- 12. 性能索引（在表创建完成后执行，使用存储过程保证幂等）
 -- ============================================================================
 
-DROP PROCEDURE IF EXISTS erik_add_index;
+DROP PROCEDURE IF EXISTS ads_add_index;
 DELIMITER //
-CREATE PROCEDURE erik_add_index(IN tbl VARCHAR(64), IN idx VARCHAR(64), IN cols VARCHAR(255))
+CREATE PROCEDURE ads_add_index(IN tbl VARCHAR(64), IN idx VARCHAR(64), IN cols VARCHAR(255))
 BEGIN
     SET @s = CONCAT('ALTER TABLE `', tbl, '` ADD INDEX `', idx, '` (', cols, ')');
     IF NOT EXISTS (
@@ -531,11 +531,11 @@ BEGIN
 END //
 DELIMITER ;
 
-CALL erik_add_index('erik_campaigns', 'idx_tenant_platform', 'tenant_id, platform');
-CALL erik_add_index('erik_ad_groups', 'idx_campaign_status', 'campaign_id, status');
-CALL erik_add_index('erik_creatives', 'idx_adgroup_media', 'ad_group_id, media_type');
-CALL erik_add_index('erik_report_metrics', 'idx_tenant_date', 'tenant_id, date');
-CALL erik_add_index('erik_alert_rules', 'idx_tenant_platform', 'tenant_id, platform');
-CALL erik_add_index('erik_alert_logs', 'idx_tenant_rule', 'tenant_id, rule_id');
+CALL ads_add_index('ads_campaigns', 'idx_tenant_platform', 'tenant_id, platform');
+CALL ads_add_index('ads_ad_groups', 'idx_campaign_status', 'campaign_id, status');
+CALL ads_add_index('ads_creatives', 'idx_adgroup_media', 'ad_group_id, media_type');
+CALL ads_add_index('ads_report_metrics', 'idx_tenant_date', 'tenant_id, date');
+CALL ads_add_index('ads_alert_rules', 'idx_tenant_platform', 'tenant_id, platform');
+CALL ads_add_index('ads_alert_logs', 'idx_tenant_rule', 'tenant_id, rule_id');
 
-DROP PROCEDURE IF EXISTS erik_add_index;
+DROP PROCEDURE IF EXISTS ads_add_index;

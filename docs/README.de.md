@@ -59,7 +59,7 @@ Anbindung an **29 Werbeplattformen**, einheitliche Verwaltung von Werbeschaltung
 | Ebene | Technologie | Beschreibung |
 |----|------|------|
 | Server | webman v2 + PHP 8.2+ | 7 Plugins, 65+ API-Endpunkte |
-| Datenbank | MySQL 8.0 | 28 Tabellen, erik_-Präfix, Snowflake-BIGINT-Primärschlüssel |
+| Datenbank | MySQL 8.0 | 28 Tabellen, ads_-Präfix, Snowflake-BIGINT-Primärschlüssel |
 | Cache | Redis 7 | Drei-Stufen-Cache (L1 Speicher/L2 APCu/L3 Redis), Ratenbegrenzungszähler, Pub/Sub, Nachrichtenwarteschlange |
 | Suche | Elasticsearch | webman-scout automatische Indexsynchronisierung (konfiguriert) |
 | Verwaltungs-Backend | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP-Backend (Port 8789), SPA-Direktverbindung zur Geschäfts-API (Port 8788), 19 Seiten, ECharts-Visualisierung |
@@ -329,21 +329,21 @@ ads-php/
 
 ## Datenbank
 
-**Namenskonvention**: Tabellenpräfix `erik_`, Primärschlüssel `BIGINT UNSIGNED PRIMARY KEY` (ohne Auto-Increment, Snowflake-ID), Engine InnoDB, Zeichensatz utf8mb4
+**Namenskonvention**: Tabellenpräfix `ads_`, Primärschlüssel `BIGINT UNSIGNED PRIMARY KEY` (ohne Auto-Increment, Snowflake-ID), Engine InnoDB, Zeichensatz utf8mb4
 
 | Kategorie | Tabellenname | Verwendung |
 |------|------|------|
-| Basis | `erik_tenants` | Multi-Tenant |
-| Konten | `erik_platform_accounts`, `erik_auth_tokens` | OAuth-Plattformkonten |
-| Schaltung | `erik_campaigns`, `erik_ad_groups`, `erik_creatives` | Werbeschaltungs-Hierarchie |
-| Berichte | `erik_report_metrics`, `erik_report_extras` | Einheitliche Berichtskennzahlen |
-| Material | `erik_assets` | Kreativ-Materialbibliothek |
-| Targeting | `erik_targeting_templates` | Zielgruppen-Targeting-Vorlagen |
-| Attribution | `erik_conversions`, `erik_attribution_results` | Conversion-Tracking + Attributionsergebnisse |
-| Gebote | `erik_bid_rules`, `erik_bid_logs` | Automatische Gebotsregeln + Historie |
-| Alarm | `erik_alert_rules`, `erik_alert_logs` | Alarmüberwachung |
-| Benachrichtigungen | `erik_notifications` | In-Site-Benachrichtigungen |
-| System | `erik_sync_errors`, `admin_users`, `admin_roles`, `admin_audit_logs` | Synchronisierungsfehler, RBAC, Audit |
+| Basis | `ads_tenants` | Multi-Tenant |
+| Konten | `ads_platform_accounts`, `ads_auth_tokens` | OAuth-Plattformkonten |
+| Schaltung | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | Werbeschaltungs-Hierarchie |
+| Berichte | `ads_report_metrics`, `ads_report_extras` | Einheitliche Berichtskennzahlen |
+| Material | `ads_assets` | Kreativ-Materialbibliothek |
+| Targeting | `ads_targeting_templates` | Zielgruppen-Targeting-Vorlagen |
+| Attribution | `ads_conversions`, `ads_attribution_results` | Conversion-Tracking + Attributionsergebnisse |
+| Gebote | `ads_bid_rules`, `ads_bid_logs` | Automatische Gebotsregeln + Historie |
+| Alarm | `ads_alert_rules`, `ads_alert_logs` | Alarmüberwachung |
+| Benachrichtigungen | `ads_notifications` | In-Site-Benachrichtigungen |
+| System | `ads_sync_errors`, `admin_users`, `admin_roles`, `admin_audit_logs` | Synchronisierungsfehler, RBAC, Audit |
 
 ---
 
@@ -394,7 +394,7 @@ cd apps/flutter && dart analyze   # null Fehler
 | Skill | Beschreibung |
 |------|------|
 | `adapter-generator` | Neue Werbeplattform-Adapter generieren (14-Methoden-Vorlage) |
-| `migration-generator` | SQL-Migrationsdateien generieren (erik_-Präfix + BIGINT-PK) |
+| `migration-generator` | SQL-Migrationsdateien generieren (ads_-Präfix + BIGINT-PK) |
 | `erik-stack` | Integrationsleitfaden für die 8 Erik-Stack-Pakete |
 | `admin-page-generator` | Vue3-Verwaltungs-Backend-Seiten generieren |
 | `api-endpoint` | RESTful-API-Endpunkte hinzufügen |

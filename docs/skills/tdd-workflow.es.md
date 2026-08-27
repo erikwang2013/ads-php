@@ -79,6 +79,6 @@ git add service/tests/ service/plugin/ && git commit -m "feat: add feature X wit
 - [ ] `find service -name "*.php" -not -path "*/vendor/*" -exec php -l {} \;` pasa
 - [ ] Cabecera de Copyright en todos los archivos nuevos
 - [ ] Sin `getenv()` — usa `env()` en su lugar
-- [ ] Los nombres de tabla usan el prefijo `erik_`
+- [ ] Los nombres de tabla usan el prefijo `ads_`
 - [ ] Sin `\` inicial en las clases globales
 - [ ] `use Throwable;` / `use RuntimeException;` / `use InvalidArgumentException;` en archivos con namespace

@@ -25,32 +25,32 @@ class CreativeController
     {
         $tenantId = $this->tenantId($request);
 
-        $query = DB::table('erik_creatives')
-            ->join('erik_ad_groups', 'erik_creatives.ad_group_id', '=', 'erik_ad_groups.id')
-            ->join('erik_campaigns', 'erik_ad_groups.campaign_id', '=', 'erik_campaigns.id')
-            ->where('erik_campaigns.tenant_id', $tenantId)
+        $query = DB::table('ads_creatives')
+            ->join('ads_ad_groups', 'ads_creatives.ad_group_id', '=', 'ads_ad_groups.id')
+            ->join('ads_campaigns', 'ads_ad_groups.campaign_id', '=', 'ads_campaigns.id')
+            ->where('ads_campaigns.tenant_id', $tenantId)
             ->select(
-                'erik_creatives.*',
-                'erik_ad_groups.name as ad_group_name',
-                'erik_campaigns.platform',
-                'erik_campaigns.name as campaign_name'
+                'ads_creatives.*',
+                'ads_ad_groups.name as ad_group_name',
+                'ads_campaigns.platform',
+                'ads_campaigns.name as campaign_name'
             );
 
         if ($platform = $request->get('platform')) {
-            $query->where('erik_campaigns.platform', $platform);
+            $query->where('ads_campaigns.platform', $platform);
         }
         if ($adGroupId = $request->get('ad_group_id')) {
-            $query->where('erik_creatives.ad_group_id', (int) $adGroupId);
+            $query->where('ads_creatives.ad_group_id', (int) $adGroupId);
         }
         if ($campaignId = $request->get('campaign_id')) {
-            $query->where('erik_ad_groups.campaign_id', (int) $campaignId);
+            $query->where('ads_ad_groups.campaign_id', (int) $campaignId);
         }
         if ($mediaType = $request->get('media_type')) {
-            $query->where('erik_creatives.media_type', $mediaType);
+            $query->where('ads_creatives.media_type', $mediaType);
         }
 
         $this->allowedSorts = ['id', 'title', 'media_type', 'created_at', 'updated_at'];
-        [$items, $total, $page, $perPage] = $this->paginate($request, $query, 'erik_creatives');
+        [$items, $total, $page, $perPage] = $this->paginate($request, $query, 'ads_creatives');
 
         return ApiResponse::paginated(
             $items,
@@ -66,15 +66,15 @@ class CreativeController
      */
     public function show(int $id): \Webman\Http\Response
     {
-        $creative = DB::table('erik_creatives')
-            ->join('erik_ad_groups', 'erik_creatives.ad_group_id', '=', 'erik_ad_groups.id')
-            ->join('erik_campaigns', 'erik_ad_groups.campaign_id', '=', 'erik_campaigns.id')
-            ->where('erik_creatives.id', $id)
+        $creative = DB::table('ads_creatives')
+            ->join('ads_ad_groups', 'ads_creatives.ad_group_id', '=', 'ads_ad_groups.id')
+            ->join('ads_campaigns', 'ads_ad_groups.campaign_id', '=', 'ads_campaigns.id')
+            ->where('ads_creatives.id', $id)
             ->select(
-                'erik_creatives.*',
-                'erik_ad_groups.name as ad_group_name',
-                'erik_campaigns.platform',
-                'erik_campaigns.name as campaign_name'
+                'ads_creatives.*',
+                'ads_ad_groups.name as ad_group_name',
+                'ads_campaigns.platform',
+                'ads_campaigns.name as campaign_name'
             )
             ->first();
 
@@ -82,7 +82,7 @@ class CreativeController
             return ApiResponse::error('Creative not found');
         }
 
-        $todayMetrics = DB::table('erik_report_metrics')
+        $todayMetrics = DB::table('ads_report_metrics')
             ->where('creative_id', $id)
             ->where('date', date('Y-m-d'))
             ->first();

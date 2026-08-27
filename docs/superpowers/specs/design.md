@@ -270,7 +270,7 @@ protected array $fieldMap = [
 ## 三、数据库设计
 
 ### 命名规范
-- 表前缀: `erik_`
+- 表前缀: `ads_`
 - 主键: `BIGINT UNSIGNED PRIMARY KEY` (无自增，Snowflake ID 生成)
 - 引擎: InnoDB，字符集: utf8mb4
 
@@ -278,7 +278,7 @@ protected array $fieldMap = [
 
 ```sql
 -- 租户
-CREATE TABLE erik_tenants (
+CREATE TABLE ads_tenants (
     id BIGINT UNSIGNED PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     domain VARCHAR(255) DEFAULT NULL,
@@ -292,7 +292,7 @@ CREATE TABLE erik_tenants (
 );
 
 -- 平台账户 (access_token/refresh_token 由 encryptable 自动加解密)
-CREATE TABLE erik_platform_accounts (
+CREATE TABLE ads_platform_accounts (
     id BIGINT UNSIGNED PRIMARY KEY,
     tenant_id BIGINT UNSIGNED NOT NULL,
     platform VARCHAR(32) NOT NULL,
@@ -311,7 +311,7 @@ CREATE TABLE erik_platform_accounts (
 );
 
 -- OAuth 状态 Token
-CREATE TABLE erik_auth_tokens (
+CREATE TABLE ads_auth_tokens (
     id BIGINT UNSIGNED PRIMARY KEY,
     tenant_id BIGINT UNSIGNED NOT NULL,
     platform VARCHAR(32) NOT NULL,
@@ -323,7 +323,7 @@ CREATE TABLE erik_auth_tokens (
 );
 
 -- 统一广告计划
-CREATE TABLE erik_campaigns (
+CREATE TABLE ads_campaigns (
     id BIGINT UNSIGNED PRIMARY KEY,
     tenant_id BIGINT UNSIGNED NOT NULL,
     platform_account_id BIGINT UNSIGNED NOT NULL,
@@ -344,7 +344,7 @@ CREATE TABLE erik_campaigns (
 );
 
 -- 统一广告组
-CREATE TABLE erik_ad_groups (
+CREATE TABLE ads_ad_groups (
     id BIGINT UNSIGNED PRIMARY KEY,
     campaign_id BIGINT UNSIGNED NOT NULL,
     platform_adgroup_id VARCHAR(128) NOT NULL,
@@ -360,7 +360,7 @@ CREATE TABLE erik_ad_groups (
 );
 
 -- 统一创意
-CREATE TABLE erik_creatives (
+CREATE TABLE ads_creatives (
     id BIGINT UNSIGNED PRIMARY KEY,
     ad_group_id BIGINT UNSIGNED NOT NULL,
     platform_creative_id VARCHAR(128) NOT NULL,
@@ -376,7 +376,7 @@ CREATE TABLE erik_creatives (
 );
 
 -- 报表核心指标
-CREATE TABLE erik_report_metrics (
+CREATE TABLE ads_report_metrics (
     id BIGINT UNSIGNED PRIMARY KEY,
     tenant_id BIGINT UNSIGNED NOT NULL,
     platform_account_id BIGINT UNSIGNED NOT NULL,
@@ -402,16 +402,16 @@ CREATE TABLE erik_report_metrics (
 );
 
 -- 报表扩展数据
-CREATE TABLE erik_report_extras (
+CREATE TABLE ads_report_extras (
     id BIGINT UNSIGNED PRIMARY KEY,
     report_metric_id BIGINT UNSIGNED NOT NULL,
     platform VARCHAR(32) NOT NULL,
     extra JSON,
-    FOREIGN KEY (report_metric_id) REFERENCES erik_report_metrics(id) ON DELETE CASCADE
+    FOREIGN KEY (report_metric_id) REFERENCES ads_report_metrics(id) ON DELETE CASCADE
 );
 
 -- 告警规则
-CREATE TABLE erik_alert_rules (
+CREATE TABLE ads_alert_rules (
     id BIGINT UNSIGNED PRIMARY KEY,
     tenant_id BIGINT UNSIGNED NOT NULL,
     name VARCHAR(100) NOT NULL,
@@ -430,7 +430,7 @@ CREATE TABLE erik_alert_rules (
 );
 
 -- 告警记录
-CREATE TABLE erik_alert_logs (
+CREATE TABLE ads_alert_logs (
     id BIGINT UNSIGNED PRIMARY KEY,
     tenant_id BIGINT UNSIGNED NOT NULL,
     rule_id BIGINT UNSIGNED NOT NULL,
@@ -840,7 +840,7 @@ GET    /api/v1/alerts/unread-count
 | TokenRefreshTask | 每 55 分钟 | 扫描过期 Token，自动刷新 |
 | DataSyncTask | 每 10 分钟 | 拉取各平台计划+近2日报表，同步后清仪表盘缓存 |
 | AlertCheckTask | 每 5 分钟 | 遍历启用规则，评估阈值，触发推送 |
-| RetrySyncTask | 每 3 分钟 | 重试失败同步（erik_sync_errors 表，最多3次，指数退避） |
+| RetrySyncTask | 每 3 分钟 | 重试失败同步（ads_sync_errors 表，最多3次，指数退避） |
 
 同步策略：适配器 Generator 流式处理，游标/分页防漏，失败自动重试，curl_errno 检查，平台级 QPS 限流。
 
@@ -877,7 +877,7 @@ GET    /api/v1/alerts/unread-count
               v            v            v
         ┌─────────┐ ┌──────────┐ ┌──────────┐
         │MySQL 8.0│ │ Redis 7  │ │ ES 9200  │
-        │erik_*   │ │ cache,   │ │ search   │
+        │ads_*   │ │ cache,   │ │ search   │
         │admin_*  │ │ queue    │ │          │
         └─────────┘ └──────────┘ └──────────┘
 ```
@@ -931,7 +931,7 @@ make admin-dev                # 前端开发模式
 | Phase 7 | Docker 部署 + 安全加固 (RateLimit/CORS/SQLGuard) + 缓存层 + README | ✅ |
 | Phase 8 | 目录重组 (apps/) + Admin 独立 webman-admin v2 (PHP后端+ServiceProxy) + RBAC + 审计日志 | ✅ |
 | Phase 9 | API 文档 + 平台速率限制 + 同步重试队列 + PHPUnit 20测试 + GitHub Actions CI/CD | ✅ |
-| Phase 10 | 配置文件中文注释 + .env 注释 + 平台凭据文档 + erik_ 表前缀重写 + BIGINT PK | ✅ |
+| Phase 10 | 配置文件中文注释 + .env 注释 + 平台凭据文档 + ads_ 表前缀重写 + BIGINT PK | ✅ |
 | Phase 11 | 国际化 (vue-i18n + I18n.php + Flutter + HarmonyOS) + 滑块验证码 (poster-php) | ✅ |
 | Phase 12 | 二次确认（输入以确认）— 解绑/删除/批量操作均需键入目标名称方可执行 | ✅ |
 

@@ -33,7 +33,7 @@ graph TB
     end
 
     subgraph DataLayer["数据层"]
-        MySQL["MySQL 8.0<br/>28 表 · erik_ 前缀<br/>Snowflake BIGINT PK<br/>读写分离"]
+        MySQL["MySQL 8.0<br/>28 表 · ads_ 前缀<br/>Snowflake BIGINT PK<br/>读写分离"]
         Redis["Redis 7<br/>三级缓存 L1/L2/L3<br/>滑动窗口限流<br/>Pub/Sub · 消息队列"]
         ES["Elasticsearch<br/>webman-scout<br/>自动索引同步"]
     end

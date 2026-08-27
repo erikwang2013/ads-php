@@ -135,24 +135,24 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 | 分類 | テーブル名 | Lite | Standard | Full |
 |------|------|:---:|:---:|:---:|
-| 基盤 | erik_tenants | ✅ | ✅ | ✅ |
-| アカウント | erik_platform_accounts | ✅ | ✅ | ✅ |
-| | erik_auth_tokens | ✅ | ✅ | ✅ |
-| 配信 | erik_campaigns | ✅ | ✅ | ✅ |
-| | erik_report_metrics | ✅ | ✅ | ✅ |
-| | erik_report_extras | ✅ | ✅ | ✅ |
-| | erik_ad_groups | — | ✅ | ✅ |
-| | erik_creatives | — | ✅ | ✅ |
-| アラート | erik_alert_rules | — | ✅ | ✅ |
-| | erik_alert_logs | — | ✅ | ✅ |
-| 通知 | erik_notifications | — | ✅ | ✅ |
-| 入札 | erik_bid_rules | — | — | ✅ |
-| | erik_bid_logs | — | — | ✅ |
-| ターゲティング | erik_targeting_templates | — | — | ✅ |
-| 素材 | erik_assets | — | — | ✅ |
-| アトリビューション | erik_conversions | — | — | ✅ |
-| | erik_attribution_results | — | — | ✅ |
-| システム | erik_sync_errors | ✅ | ✅ | ✅ |
+| 基盤 | ads_tenants | ✅ | ✅ | ✅ |
+| アカウント | ads_platform_accounts | ✅ | ✅ | ✅ |
+| | ads_auth_tokens | ✅ | ✅ | ✅ |
+| 配信 | ads_campaigns | ✅ | ✅ | ✅ |
+| | ads_report_metrics | ✅ | ✅ | ✅ |
+| | ads_report_extras | ✅ | ✅ | ✅ |
+| | ads_ad_groups | — | ✅ | ✅ |
+| | ads_creatives | — | ✅ | ✅ |
+| アラート | ads_alert_rules | — | ✅ | ✅ |
+| | ads_alert_logs | — | ✅ | ✅ |
+| 通知 | ads_notifications | — | ✅ | ✅ |
+| 入札 | ads_bid_rules | — | — | ✅ |
+| | ads_bid_logs | — | — | ✅ |
+| ターゲティング | ads_targeting_templates | — | — | ✅ |
+| 素材 | ads_assets | — | — | ✅ |
+| アトリビューション | ads_conversions | — | — | ✅ |
+| | ads_attribution_results | — | — | ✅ |
+| システム | ads_sync_errors | ✅ | ✅ | ✅ |
 | 管理 | admin_users/roles/audit_logs | ✅ | ✅ | ✅ |
 | **合計** | | **8** | **13** | **18** |
 

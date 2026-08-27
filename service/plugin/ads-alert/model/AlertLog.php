@@ -12,7 +12,7 @@ class AlertLog extends Model
 {
     use SnowflakeTrait;
 
-    protected $table = 'erik_alert_logs';
+    protected $table = 'ads_alert_logs';
     protected $guarded = ['id'];
     public $timestamps = false;
     protected $casts = [

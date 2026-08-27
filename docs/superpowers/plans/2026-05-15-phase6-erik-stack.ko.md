@@ -8,7 +8,7 @@
 
 | # | 변경 | 패키지 | 영향 범위 |
 |---|------|----|---------|
-| 1 | 데이터베이스 테이블 접두사 `erik_` | — | 모든 SQL/마이그레이션 파일 |
+| 1 | 데이터베이스 테이블 접두사 `ads_` | — | 모든 SQL/마이그레이션 파일 |
 | 2 | 기본 키 Snowflake ID (자동 증가 없음) | erikwang2013/snowflake-php | 모든 Model + SQL |
 | 3 | API ID hashids 암복호화 | erikwang2013/hashids | 모든 Controller 응답 |
 | 4 | JWT 인증 전환 | erikwang2013/jwt-webman | AuthMiddleware + AuthController |
@@ -29,7 +29,7 @@
 
 **Batch A: 인프라 (의존성 + ID + 암호화)**
 - composer.json 업데이트하여 erikwang2013 패키지 6개 추가
-- 모든 SQL 마이그레이션 파일 재작성 (erik_ 접두사 + bigint 자동 증가 없음)
+- 모든 SQL 마이그레이션 파일 재작성 (ads_ 접두사 + bigint 자동 증가 없음)
 - Snowflake ID trait 생성
 - 모든 Model 업데이트 (SnowflakeTrait 사용)
 - hashids 미들웨어 구성

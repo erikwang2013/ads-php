@@ -17,8 +17,8 @@ class ReportApiTest extends ApiTestCase
     protected function seedMetrics(array $overrides = []): void
     {
         $campaignId = $this->seedCampaign();
-        $accountId = DB::table('erik_campaigns')->find($campaignId)->platform_account_id;
-        DB::table('erik_report_metrics')->insert(array_merge([
+        $accountId = DB::table('ads_campaigns')->find($campaignId)->platform_account_id;
+        DB::table('ads_report_metrics')->insert(array_merge([
             'id'                   => $this->nextId(),
             'tenant_id'            => $this->tenantId,
             'platform_account_id'  => $accountId,
@@ -126,7 +126,7 @@ class ReportApiTest extends ApiTestCase
 
     protected function seedConversion(array $overrides = []): void
     {
-        DB::table('erik_conversions')->insert(array_merge([
+        DB::table('ads_conversions')->insert(array_merge([
             'id'              => $this->nextId(),
             'tenant_id'       => $this->tenantId,
             'platform'        => 'mock',

@@ -9,12 +9,12 @@
 1. কনভার্সন ইভেন্ট টেবিল তৈরি করুন:
 
 ```sql
--- erik_conversions: 转化事件
-INSERT INTO erik_conversions (id, tenant_id, platform, campaign_id, conversion_time, value, order_id)
+-- ads_conversions: 转化事件
+INSERT INTO ads_conversions (id, tenant_id, platform, campaign_id, conversion_time, value, order_id)
 VALUES (snowflake_id(), 1, 'juliang', 1, NOW(), 299.00, 'ORD-001');
 ```
 
-2. টাচপয়েন্ট ডেটা `erik_report_metrics` থেকে আসে (clicks > 0 রেকর্ডগুলো টাচপয়েন্ট হিসেবে)।
+2. টাচপয়েন্ট ডেটা `ads_report_metrics` থেকে আসে (clicks > 0 রেকর্ডগুলো টাচপয়েন্ট হিসেবে)।
 
 ## অ্যাট্রিবিউশন মডেল
 

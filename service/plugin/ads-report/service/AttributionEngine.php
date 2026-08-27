@@ -27,7 +27,7 @@ class AttributionEngine
 
     public function compute(int $tenantId, string $dateStart, string $dateEnd, string $model): array
     {
-        $conversions = DB::table('erik_conversions')
+        $conversions = DB::table('ads_conversions')
             ->where('tenant_id', $tenantId)
             ->whereBetween('conversion_time', [$dateStart . ' 00:00:00', $dateEnd . ' 23:59:59'])
             ->get();
@@ -37,7 +37,7 @@ class AttributionEngine
         foreach ($conversions as $conv) {
             $lookbackStart = date('Y-m-d', strtotime($conv->conversion_time) - $this->lookbackDays * 86400);
 
-            $touchpoints = DB::table('erik_report_metrics')
+            $touchpoints = DB::table('ads_report_metrics')
                 ->where('campaign_id', '>', 0)
                 ->where('date', '>=', $lookbackStart)
                 ->where('date', '<=', date('Y-m-d', strtotime($conv->conversion_time)))
@@ -61,13 +61,13 @@ class AttributionEngine
 
             $credits = $this->distribute($touchpoints, $model, strtotime($conv->conversion_time));
 
-            DB::table('erik_attribution_results')
+            DB::table('ads_attribution_results')
                 ->where('conversion_id', $conv->id)
                 ->where('model', $model)
                 ->delete();
 
             foreach ($credits as $tp) {
-                DB::table('erik_attribution_results')->insert([
+                DB::table('ads_attribution_results')->insert([
                     'id'            => snowflake_id(),
                     'tenant_id'     => $tenantId,
                     'conversion_id' => $conv->id,

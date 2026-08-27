@@ -270,7 +270,7 @@ protected array $fieldMap = [
 ## 三、データベース設計
 
 ### 命名規則
-- テーブルプレフィックス: `erik_`
+- テーブルプレフィックス: `ads_`
 - 主キー: `BIGINT UNSIGNED PRIMARY KEY` (オートインクリメントなし、Snowflake ID 生成)
 - エンジン: InnoDB、文字セット: utf8mb4
 
@@ -278,7 +278,7 @@ protected array $fieldMap = [
 
 ```sql
 -- 租户
-CREATE TABLE erik_tenants (
+CREATE TABLE ads_tenants (
     id BIGINT UNSIGNED PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     domain VARCHAR(255) DEFAULT NULL,
@@ -292,7 +292,7 @@ CREATE TABLE erik_tenants (
 );
 
 -- 平台账户 (access_token/refresh_token 由 encryptable 自动加解密)
-CREATE TABLE erik_platform_accounts (
+CREATE TABLE ads_platform_accounts (
     id BIGINT UNSIGNED PRIMARY KEY,
     tenant_id BIGINT UNSIGNED NOT NULL,
     platform VARCHAR(32) NOT NULL,
@@ -311,7 +311,7 @@ CREATE TABLE erik_platform_accounts (
 );
 
 -- OAuth 状态 Token
-CREATE TABLE erik_auth_tokens (
+CREATE TABLE ads_auth_tokens (
     id BIGINT UNSIGNED PRIMARY KEY,
     tenant_id BIGINT UNSIGNED NOT NULL,
     platform VARCHAR(32) NOT NULL,
@@ -323,7 +323,7 @@ CREATE TABLE erik_auth_tokens (
 );
 
 -- 统一广告计划
-CREATE TABLE erik_campaigns (
+CREATE TABLE ads_campaigns (
     id BIGINT UNSIGNED PRIMARY KEY,
     tenant_id BIGINT UNSIGNED NOT NULL,
     platform_account_id BIGINT UNSIGNED NOT NULL,
@@ -344,7 +344,7 @@ CREATE TABLE erik_campaigns (
 );
 
 -- 统一广告组
-CREATE TABLE erik_ad_groups (
+CREATE TABLE ads_ad_groups (
     id BIGINT UNSIGNED PRIMARY KEY,
     campaign_id BIGINT UNSIGNED NOT NULL,
     platform_adgroup_id VARCHAR(128) NOT NULL,
@@ -360,7 +360,7 @@ CREATE TABLE erik_ad_groups (
 );
 
 -- 统一创意
-CREATE TABLE erik_creatives (
+CREATE TABLE ads_creatives (
     id BIGINT UNSIGNED PRIMARY KEY,
     ad_group_id BIGINT UNSIGNED NOT NULL,
     platform_creative_id VARCHAR(128) NOT NULL,
@@ -376,7 +376,7 @@ CREATE TABLE erik_creatives (
 );
 
 -- 报表核心指标
-CREATE TABLE erik_report_metrics (
+CREATE TABLE ads_report_metrics (
     id BIGINT UNSIGNED PRIMARY KEY,
     tenant_id BIGINT UNSIGNED NOT NULL,
     platform_account_id BIGINT UNSIGNED NOT NULL,
@@ -402,16 +402,16 @@ CREATE TABLE erik_report_metrics (
 );
 
 -- 报表扩展数据
-CREATE TABLE erik_report_extras (
+CREATE TABLE ads_report_extras (
     id BIGINT UNSIGNED PRIMARY KEY,
     report_metric_id BIGINT UNSIGNED NOT NULL,
     platform VARCHAR(32) NOT NULL,
     extra JSON,
-    FOREIGN KEY (report_metric_id) REFERENCES erik_report_metrics(id) ON DELETE CASCADE
+    FOREIGN KEY (report_metric_id) REFERENCES ads_report_metrics(id) ON DELETE CASCADE
 );
 
 -- 告警规则
-CREATE TABLE erik_alert_rules (
+CREATE TABLE ads_alert_rules (
     id BIGINT UNSIGNED PRIMARY KEY,
     tenant_id BIGINT UNSIGNED NOT NULL,
     name VARCHAR(100) NOT NULL,
@@ -430,7 +430,7 @@ CREATE TABLE erik_alert_rules (
 );
 
 -- 告警记录
-CREATE TABLE erik_alert_logs (
+CREATE TABLE ads_alert_logs (
     id BIGINT UNSIGNED PRIMARY KEY,
     tenant_id BIGINT UNSIGNED NOT NULL,
     rule_id BIGINT UNSIGNED NOT NULL,
@@ -840,7 +840,7 @@ webman/crontab を使用し、Redis キャッシュで高速化。
 | TokenRefreshTask | 55 分ごと | 期限切れ Token をスキャンし自動リフレッシュ |
 | DataSyncTask | 10 分ごと | 各プラットフォームのプラン+直近 2 日分のレポートを取得、同期後にダッシュボードキャッシュをクリア |
 | AlertCheckTask | 5 分ごと | 有効ルールを走査、しきい値を評価、プッシュをトリガー |
-| RetrySyncTask | 3 分ごと | 失敗した同期を再試行（erik_sync_errors テーブル、最大 3 回、指数バックオフ） |
+| RetrySyncTask | 3 分ごと | 失敗した同期を再試行（ads_sync_errors テーブル、最大 3 回、指数バックオフ） |
 
 同期戦略：アダプターは Generator ストリーム処理、カーソル/ページングで取りこぼし防止、失敗は自動再試行、curl_errno チェック、プラットフォーム単位の QPS レート制限。
 
@@ -877,7 +877,7 @@ webman/crontab を使用し、Redis キャッシュで高速化。
               v            v            v
         ┌─────────┐ ┌──────────┐ ┌──────────┐
         │MySQL 8.0│ │ Redis 7  │ │ ES 9200  │
-        │erik_*   │ │ cache,   │ │ search   │
+        │ads_*   │ │ cache,   │ │ search   │
         │admin_*  │ │ queue    │ │          │
         └─────────┘ └──────────┘ └──────────┘
 ```
@@ -931,7 +931,7 @@ make admin-dev                # 前端开发模式
 | Phase 7 | Docker デプロイ + セキュリティ強化 (RateLimit/CORS/SQLGuard) + キャッシュ層 + README | ✅ |
 | Phase 8 | ディレクトリ再編 (apps/) + Admin 独立 webman-admin v2 (PHPバックエンド+ServiceProxy) + RBAC + 監査ログ | ✅ |
 | Phase 9 | API ドキュメント + プラットフォームレート制限 + 同期リトライキュー + PHPUnit 20テスト + GitHub Actions CI/CD | ✅ |
-| Phase 10 | 設定ファイルの中国語コメント + .env コメント + プラットフォーム認証情報ドキュメント + erik_ テーブルプレフィックス書き換え + BIGINT PK | ✅ |
+| Phase 10 | 設定ファイルの中国語コメント + .env コメント + プラットフォーム認証情報ドキュメント + ads_ テーブルプレフィックス書き換え + BIGINT PK | ✅ |
 | Phase 11 | 国際化 (vue-i18n + I18n.php + Flutter + HarmonyOS) + スライダー認証コード (poster-php) | ✅ |
 | Phase 12 | 再確認（入力による確認）— 解除/削除/一括操作は対象名の入力が必須 | ✅ |
 

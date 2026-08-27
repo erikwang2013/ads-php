@@ -135,24 +135,24 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 | श्रेणी | टेबल नाम | Lite | Standard | Full |
 |------|------|:---:|:---:|:---:|
-| बेसिक | erik_tenants | ✅ | ✅ | ✅ |
-| खाता | erik_platform_accounts | ✅ | ✅ | ✅ |
-| | erik_auth_tokens | ✅ | ✅ | ✅ |
-| डिलीवरी | erik_campaigns | ✅ | ✅ | ✅ |
-| | erik_report_metrics | ✅ | ✅ | ✅ |
-| | erik_report_extras | ✅ | ✅ | ✅ |
-| | erik_ad_groups | — | ✅ | ✅ |
-| | erik_creatives | — | ✅ | ✅ |
-| अलर्ट | erik_alert_rules | — | ✅ | ✅ |
-| | erik_alert_logs | — | ✅ | ✅ |
-| नोटिफिकेशन | erik_notifications | — | ✅ | ✅ |
-| बिडिंग | erik_bid_rules | — | — | ✅ |
-| | erik_bid_logs | — | — | ✅ |
-| टार्गेटिंग | erik_targeting_templates | — | — | ✅ |
-| एसेट | erik_assets | — | — | ✅ |
-| एट्रिब्यूशन | erik_conversions | — | — | ✅ |
-| | erik_attribution_results | — | — | ✅ |
-| सिस्टम | erik_sync_errors | ✅ | ✅ | ✅ |
+| बेसिक | ads_tenants | ✅ | ✅ | ✅ |
+| खाता | ads_platform_accounts | ✅ | ✅ | ✅ |
+| | ads_auth_tokens | ✅ | ✅ | ✅ |
+| डिलीवरी | ads_campaigns | ✅ | ✅ | ✅ |
+| | ads_report_metrics | ✅ | ✅ | ✅ |
+| | ads_report_extras | ✅ | ✅ | ✅ |
+| | ads_ad_groups | — | ✅ | ✅ |
+| | ads_creatives | — | ✅ | ✅ |
+| अलर्ट | ads_alert_rules | — | ✅ | ✅ |
+| | ads_alert_logs | — | ✅ | ✅ |
+| नोटिफिकेशन | ads_notifications | — | ✅ | ✅ |
+| बिडिंग | ads_bid_rules | — | — | ✅ |
+| | ads_bid_logs | — | — | ✅ |
+| टार्गेटिंग | ads_targeting_templates | — | — | ✅ |
+| एसेट | ads_assets | — | — | ✅ |
+| एट्रिब्यूशन | ads_conversions | — | — | ✅ |
+| | ads_attribution_results | — | — | ✅ |
+| सिस्टम | ads_sync_errors | ✅ | ✅ | ✅ |
 | प्रशासन | admin_users/roles/audit_logs | ✅ | ✅ | ✅ |
 | **कुल** | | **8** | **13** | **18** |
 

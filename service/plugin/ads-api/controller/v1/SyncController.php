@@ -21,14 +21,14 @@ class SyncController
      * @Method("GET")
      *
      * 账户维度同步状态 + 整体摘要。
-     * 数据源：erik_platform_accounts（last_sync_at / sync_enabled）+ erik_sync_errors。
+     * 数据源：ads_platform_accounts（last_sync_at / sync_enabled）+ ads_sync_errors。
      */
     public function status(Request $request): \Webman\Http\Response
     {
         $tenantId = $request->tenantId ?? 1;
         $now = now();
 
-        $accounts = DB::table('erik_platform_accounts')
+        $accounts = DB::table('ads_platform_accounts')
             ->where('tenant_id', $tenantId)
             ->where('sync_enabled', 1)
             ->orderBy('id')
@@ -41,7 +41,7 @@ class SyncController
 
         $accountIds = $accounts->pluck('id')->all();
         if ($accountIds) {
-            $errorCounts = DB::table('erik_sync_errors')
+            $errorCounts = DB::table('ads_sync_errors')
                 ->whereIn('platform_account_id', $accountIds)
                 ->where('created_at', '>=', $sevenDaysAgo)
                 ->groupBy('platform_account_id')
@@ -50,7 +50,7 @@ class SyncController
                 ->map(fn ($v) => (int) $v)
                 ->all();
 
-            $pendingCounts = DB::table('erik_sync_errors')
+            $pendingCounts = DB::table('ads_sync_errors')
                 ->whereIn('platform_account_id', $accountIds)
                 ->where('retry_count', '<', 3)
                 ->where('next_retry_at', '<=', $now)
@@ -96,7 +96,7 @@ class SyncController
      * @Url("/api/sync/errors")
      * @Method("GET")
      *
-     * 分页返回 erik_sync_errors，join erik_platform_accounts 取 account_name，
+     * 分页返回 ads_sync_errors，join ads_platform_accounts 取 account_name，
      * 并按账户 tenant_id 隔离。
      */
     public function errors(Request $request): \Webman\Http\Response
@@ -104,26 +104,26 @@ class SyncController
         $tenantId = $request->tenantId ?? 1;
         $this->allowedSorts = ['id', 'retry_count', 'next_retry_at', 'created_at'];
 
-        $query = DB::table('erik_sync_errors')
-            ->join('erik_platform_accounts as a', 'a.id', '=', 'erik_sync_errors.platform_account_id')
+        $query = DB::table('ads_sync_errors')
+            ->join('ads_platform_accounts as a', 'a.id', '=', 'ads_sync_errors.platform_account_id')
             ->where('a.tenant_id', $tenantId)
             ->select(
-                'erik_sync_errors.id',
-                'erik_sync_errors.platform_account_id',
-                'erik_sync_errors.platform',
-                'erik_sync_errors.error_message',
-                'erik_sync_errors.retry_count',
-                'erik_sync_errors.last_error',
-                'erik_sync_errors.next_retry_at',
-                'erik_sync_errors.created_at',
+                'ads_sync_errors.id',
+                'ads_sync_errors.platform_account_id',
+                'ads_sync_errors.platform',
+                'ads_sync_errors.error_message',
+                'ads_sync_errors.retry_count',
+                'ads_sync_errors.last_error',
+                'ads_sync_errors.next_retry_at',
+                'ads_sync_errors.created_at',
                 'a.account_name',
             );
 
         if ($platform = $request->get('platform')) {
-            $query->where('erik_sync_errors.platform', $platform);
+            $query->where('ads_sync_errors.platform', $platform);
         }
 
-        [$items, $total, $page, $perPage] = $this->paginate($request, $query, 'erik_sync_errors');
+        [$items, $total, $page, $perPage] = $this->paginate($request, $query, 'ads_sync_errors');
 
         return ApiResponse::paginated($items, $total, $page, $perPage);
     }
