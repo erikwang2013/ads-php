@@ -27,6 +27,7 @@ graph TB
     end
     subgraph RateLimit["频率控制"]
         RL["滑动窗口限流<br/>60次/60s<br/>Redis实现"]
+        CB["平台调用熔断<br/>5次失败→OPEN<br/>30s半开探活"]
     end
     subgraph Encryption["数据加密"]
         TransEnc["传输加密<br/>X-Encrypted AES<br/>EncryptionMiddleware"]
@@ -41,5 +42,6 @@ graph TB
     Gate --> AuthN
     AuthN --> Validation
     Validation --> RateLimit
-    RateLimit --> Encryption
+    RateLimit --> CB
+    CB --> Encryption
     Encryption --> Audit

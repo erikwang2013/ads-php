@@ -300,3 +300,37 @@ API: Attribution analysis / model list → [api.md Module 7](api.en.md#模块-7-
 ```json
 { "status": "healthy", "timestamp": "2026-05-21T...", "checks": { "database": "ok", "redis": "ok" } }
 ```
+
+---
+
+## Module 18: Platform Call Resilience (Circuit Breaker / Degradation)
+
+### Circuit Breaker State Machine
+
+`CircuitBreaker` (service/plugin/ads-platform/src/CircuitBreaker.php) — per-platform state machine:
+
+| State | Trigger | Behavior |
+|-------|---------|----------|
+| CLOSED | Normal | Calls pass through |
+| OPEN | 5 consecutive failures | Fast-fail, skip this platform |
+| HALF_OPEN | After 30s cooldown | Allow one probe request |
+| CLOSED | Probe succeeds | Recovered, counter reset |
+| OPEN | Probe fails again | Re-trip the breaker |
+
+### GuardedAdapter Proxy
+
+- `AdapterRegistry::get()` returns a GuardedAdapter proxy; 14 call sites, zero changes
+- When OPEN, throws `CircuitBreakerOpenException` (fast-fail); task layer catches and absorbs it = per-platform degradation skip
+- Generator method: full iteration records success / interruption records failure
+
+### Timeout Audit
+
+- All 29 adapters include CURLOPT_TIMEOUT (30/60s) + CURLOPT_CONNECTTIMEOUT (10s)
+
+### Test Coverage
+
+- CircuitBreakerTest 8 cases + GuardedAdapterTest 13 cases
+
+### Known Limitation
+
+- Single-node in-memory state; multi-node deployments need Redis shared state

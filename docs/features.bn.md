@@ -300,3 +300,37 @@ POST /api/ad-groups 支持 targeting_template_id
 ```json
 { "status": "healthy", "timestamp": "2026-05-21T...", "checks": { "database": "ok", "redis": "ok" } }
 ```
+
+---
+
+## মডিউল 18: প্ল্যাটফর্ম কল রেজিলিয়েন্স (সার্কিট ব্রেকার / ডিগ্রেডেশন)
+
+### সার্কিট ব্রেকার স্টেট মেশিন
+
+`CircuitBreaker` (service/plugin/ads-platform/src/CircuitBreaker.php) — প্রতি-প্ল্যাটফর্ম স্টেট মেশিন:
+
+| অবস্থা | ট্রিগার | আচরণ |
+|--------|---------|------|
+| CLOSED | স্বাভাবিক | কল পাস |
+| OPEN | পরপর 5 ব্যর্থতা | ফাস্ট-ফেল, প্ল্যাটফর্ম বাদ |
+| HALF_OPEN | 30s কুলডাউনের পরে | একটি প্রোব অনুরোধ |
+| CLOSED | প্রোব সফল | পুনরুদ্ধার, কাউন্টার রিসেট |
+| OPEN | প্রোব আবার ব্যর্থ | আবার ভাঙা |
+
+### GuardedAdapter প্রক্সি
+
+- `AdapterRegistry::get()` GuardedAdapter প্রক্সি ফেরত দেয়; 14 কল সাইট, শূন্য পরিবর্তন
+- OPEN হলে `CircuitBreakerOpenException` (ফাস্ট-ফেল) ছোড়ে; টাস্ক লেয়ার ক্যাচ করে শোষণ = প্রতি-প্ল্যাটফর্ম ডিগ্রেডেশন
+- Generator মেথড: সম্পূর্ণ ইটারেশন → success, বাধা → failure
+
+### টাইমআউট যাচাই
+
+- 29টি অ্যাডাপ্টারেই CURLOPT_TIMEOUT (30/60s) + CURLOPT_CONNECTTIMEOUT (10s)
+
+### টেস্ট কভারেজ
+
+- CircuitBreakerTest 8 কেস + GuardedAdapterTest 13 কেস
+
+### পরিচিত সীমাবদ্ধতা
+
+- একক-নোড ইন-মেমোরি স্টেট; মাল্টি-নোড ডিপ্লয়মেন্টে Redis শেয়ার্ড স্টেট প্রয়োজন

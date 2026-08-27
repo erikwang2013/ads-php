@@ -300,3 +300,37 @@ sync_enabled=1 계정 순회
 ```json
 { "status": "healthy", "timestamp": "2026-05-21T...", "checks": { "database": "ok", "redis": "ok" } }
 ```
+
+---
+
+## 모듈 18: 플랫폼 호출 탄력성 (차단기/장애 조치)
+
+### 차단기 상태 머신
+
+`CircuitBreaker` (service/plugin/ads-platform/src/CircuitBreaker.php) — 플랫폼별 상태 머신:
+
+| 상태 | 트리거 | 동작 |
+|------|--------|------|
+| CLOSED | 정상 | 호출 허용 |
+| OPEN | 연속 5회 실패 | 빠른 실패, 해당 플랫폼 건너뜀 |
+| HALF_OPEN | 30초 냉각 후 | 탐지 요청 1회 허용 |
+| CLOSED | 탐지 성공 | 복구, 카운터 초기화 |
+| OPEN | 탐지 재실패 | 다시 차단 |
+
+### GuardedAdapter 프록시
+
+- `AdapterRegistry::get()`은 GuardedAdapter 프록시를 반환, 14개 호출 지점 변경 없음
+- OPEN 시 `CircuitBreakerOpenException` 빠른 실패, 작업 계층이 catch하여 흡수 = 플랫폼별 장애 조치 건너뜀
+- Generator 메서드: 전체 반복 완료 시 success / 중단 시 failure 기록
+
+### 타임아웃 점검
+
+- 29개 어댑터 모두 CURLOPT_TIMEOUT (30/60초) + CURLOPT_CONNECTTIMEOUT (10초) 포함
+
+### 테스트 커버리지
+
+- CircuitBreakerTest 8건 + GuardedAdapterTest 13건
+
+### 알려진 한계
+
+- 단일 노드 인메모리 상태, 다중 노드 배포 시 Redis 공유 상태 필요

@@ -27,6 +27,7 @@ graph TB
     end
     subgraph RateLimit["Контроль частоты"]
         RL["Скользящее окно<br/>60/60с<br/>Реализация Redis"]
+        CB["Предохранитель вызовов платформы<br/>5 сбоев → OPEN<br/>30 с полуоткрытая проба"]
     end
     subgraph Encryption["Шифрование данных"]
         TransEnc["Шифрование передачи<br/>X-Encrypted AES<br/>EncryptionMiddleware"]
@@ -41,5 +42,6 @@ graph TB
     Gate --> AuthN
     AuthN --> Validation
     Validation --> RateLimit
-    RateLimit --> Encryption
+    RateLimit --> CB
+    CB --> Encryption
     Encryption --> Audit

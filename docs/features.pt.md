@@ -301,3 +301,36 @@ Interfaces: análise de atribuição / lista de modelos → [módulo 7 do api.md
 { "status": "healthy", "timestamp": "2026-05-21T...", "checks": { "database": "ok", "redis": "ok" } }
 ```
 
+---
+
+## Módulo 18: Resiliência de chamadas de plataforma (disjuntor / degradação)
+
+### Máquina de estados do disjuntor
+
+`CircuitBreaker` (service/plugin/ads-platform/src/CircuitBreaker.php) — estado por plataforma:
+
+| Estado | Gatilho | Comportamento |
+|--------|---------|---------------|
+| CLOSED | Normal | Chamadas liberadas |
+| OPEN | 5 falhas consecutivas | Falha rápida, pula a plataforma |
+| HALF_OPEN | Após 30s de resfriamento | Uma chamada de sonda liberada |
+| CLOSED | Sonda bem-sucedida | Recuperado, contador zerado |
+| OPEN | Nova falha na sonda | Reabre o disjuntor |
+
+### Proxy GuardedAdapter
+
+- `AdapterRegistry::get()` retorna um proxy GuardedAdapter; 14 pontos de chamada sem alteração
+- Em OPEN lança `CircuitBreakerOpenException` (falha rápida); a camada de tarefas captura e absorve = degradação pulando a plataforma
+- Método Generator: iteração completa → success, interrupção → failure
+
+### Verificação de timeouts
+
+- Os 29 adaptadores incluem CURLOPT_TIMEOUT (30/60s) + CURLOPT_CONNECTTIMEOUT (10s)
+
+### Cobertura de testes
+
+- CircuitBreakerTest 8 casos + GuardedAdapterTest 13 casos
+
+### Limitação conhecida
+
+- Estado em memória de um nó; implantação multinó requer estado compartilhado em Redis

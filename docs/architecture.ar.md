@@ -203,6 +203,7 @@ ads-php/
 | الجلسات | SessionLimit (بحد أقصى 3 رموز نشطة) + قائمة الحظر | Service |
 | التشفير | EncryptionMiddleware (النقل) + Encryptable (التخزين) | Service |
 | إعادة التشغيل | ReplayGuard (Nonce+Timestamp ±5د، لغير المتصفحات) | Service + العميل |
+| المرونة | CircuitBreaker (لكل منصة: 5 إخفاقات → OPEN → 30 ثانية نصف مفتوح) + GuardedAdapter (فشل سريع عند التدهور) | Service |
 | التدقيق | مسار العمليات (IP/UA/المنصة) | Admin |
 | الإخفاء | إخفاء الحقول الحساسة في السجلات (password/token/secret → ***) | Service |
 

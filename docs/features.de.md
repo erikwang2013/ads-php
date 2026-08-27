@@ -300,3 +300,37 @@ Schnittstellen: Attributionsanalyse / Modellliste → [api.md Modul 7](api.de.md
 ```json
 { "status": "healthy", "timestamp": "2026-05-21T...", "checks": { "database": "ok", "redis": "ok" } }
 ```
+
+---
+
+## Modul 18: Plattform-Aufruf-Resilienz (Circuit Breaker / Degradierung)
+
+### Zustandsmaschine des Circuit Breakers
+
+`CircuitBreaker` (service/plugin/ads-platform/src/CircuitBreaker.php) — Zustand pro Plattform:
+
+| Zustand | Auslöser | Verhalten |
+|---------|----------|-----------|
+| CLOSED | Normal | Aufrufe passieren |
+| OPEN | 5 aufeinanderfolgende Fehler | Fast-Fail, Plattform überspringen |
+| HALF_OPEN | Nach 30s Abkühlung | Ein Probe-Request erlaubt |
+| CLOSED | Probe erfolgreich | Wiederhergestellt, Zähler zurückgesetzt |
+| OPEN | Probe erneut fehlgeschlagen | Erneut auslösen |
+
+### GuardedAdapter-Proxy
+
+- `AdapterRegistry::get()` gibt einen GuardedAdapter-Proxy zurück; 14 Aufrufstellen ohne Änderung
+- Bei OPEN wird `CircuitBreakerOpenException` geworfen (Fast-Fail); Task-Ebene fängt und absorbiert = plattformweises Degradieren
+- Generator-Methode: vollständige Iteration → success, Abbruch → failure
+
+### Timeout-Prüfung
+
+- Alle 29 Adapter enthalten CURLOPT_TIMEOUT (30/60s) + CURLOPT_CONNECTTIMEOUT (10s)
+
+### Testabdeckung
+
+- CircuitBreakerTest 8 Fälle + GuardedAdapterTest 13 Fälle
+
+### Bekannte Einschränkung
+
+- In-Memory-Zustand auf einem Knoten; Multi-Node-Betrieb benötigt Redis-Shared-State

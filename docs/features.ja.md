@@ -300,3 +300,37 @@ sync_enabled=1 のアカウントを走査
 ```json
 { "status": "healthy", "timestamp": "2026-05-21T...", "checks": { "database": "ok", "redis": "ok" } }
 ```
+
+---
+
+## モジュール 18: プラットフォーム呼び出し弾力性（サーキットブレーカー/降級）
+
+### サーキットブレーカー状態遷移
+
+`CircuitBreaker` (service/plugin/ads-platform/src/CircuitBreaker.php) — プラットフォーム別状態遷移:
+
+| 状態 | トリガー | 動作 |
+|------|----------|------|
+| CLOSED | 正常 | 呼び出し許可 |
+| OPEN | 連続5回失敗 | 即時失敗（fast-fail）、該当プラットフォームをスキップ |
+| HALF_OPEN | 30秒クールダウン後 | プローブを1回許可 |
+| CLOSED | プローブ成功 | 回復、カウンタリセット |
+| OPEN | プローブ再失敗 | 再遮断 |
+
+### GuardedAdapter プロキシ
+
+- `AdapterRegistry::get()` が GuardedAdapter プロキシを返却、14 箇所の呼び出し点は無変更
+- OPEN 時は `CircuitBreakerOpenException` を送出（fast-fail）、タスク層が catch して吸収 = プラットフォーム単位の降級スキップ
+- Generator メソッド: 反復完了で success / 中断で failure を記録
+
+### タイムアウト確認
+
+- 29 アダプターすべてに CURLOPT_TIMEOUT (30/60秒) + CURLOPT_CONNECTTIMEOUT (10秒)
+
+### テストカバレッジ
+
+- CircuitBreakerTest 8 件 + GuardedAdapterTest 13 件
+
+### 既知の制限
+
+- 単一ノードの静的メモリ実装、マルチノード展開では Redis 共有状態が必要

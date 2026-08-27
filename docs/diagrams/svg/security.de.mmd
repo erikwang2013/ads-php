@@ -27,6 +27,7 @@ graph TB
     end
     subgraph RateLimit["Frequenzkontrolle"]
         RL["Sliding Window<br/>60/60s<br/>Redis-basiert"]
+        CB["Plattform-Aufruf-Circuit-Breaker<br/>5 Fehler → OPEN<br/>30s halboffener Test"]
     end
     subgraph Encryption["Datenverschlüsselung"]
         TransEnc["Transportverschlüsselung<br/>X-Encrypted AES<br/>EncryptionMiddleware"]
@@ -41,5 +42,6 @@ graph TB
     Gate --> AuthN
     AuthN --> Validation
     Validation --> RateLimit
-    RateLimit --> Encryption
+    RateLimit --> CB
+    CB --> Encryption
     Encryption --> Audit

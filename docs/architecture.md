@@ -203,6 +203,7 @@ ads-php/
 | 会话 | SessionLimit (最大3个活跃Token) + 黑名单 | Service |
 | 加密 | EncryptionMiddleware (传输) + Encryptable (存储) | Service |
 | 重放 | ReplayGuard (Nonce+Timestamp ±5min, 非浏览器端) | Service + 客户端 |
+| 弹性 | CircuitBreaker (per-platform 熔断: 5次失败→OPEN→30s半开探活) + GuardedAdapter (降级 fast-fail) | Service |
 | 审计 | 操作轨迹 (IP/UA/平台) | Admin |
 | 脱敏 | 日志敏感字段遮蔽 (password/token/secret → ***) | Service |
 

@@ -300,3 +300,37 @@ Antarmuka: Analisis atribusi / daftar model → [api.id.md modul 7](api.id.md#�
 ```json
 { "status": "healthy", "timestamp": "2026-05-21T...", "checks": { "database": "ok", "redis": "ok" } }
 ```
+
+---
+
+## Modul 18: Ketahanan Panggilan Platform (Circuit Breaker / Degradasi)
+
+### State Machine Circuit Breaker
+
+`CircuitBreaker` (service/plugin/ads-platform/src/CircuitBreaker.php) — state machine per-platform:
+
+| State | Pemicu | Perilaku |
+|-------|--------|----------|
+| CLOSED | Normal | Panggilan diloloskan |
+| OPEN | 5 kegagalan beruntun | Fast-fail, lewati platform |
+| HALF_OPEN | Setelah 30s cooldown | Satu permintaan probe |
+| CLOSED | Probe berhasil | Pulih, penghitung direset |
+| OPEN | Probe gagal lagi | Putus lagi |
+
+### Proxy GuardedAdapter
+
+- `AdapterRegistry::get()` mengembalikan proxy GuardedAdapter; 14 titik panggilan tanpa perubahan
+- Saat OPEN melempar `CircuitBreakerOpenException` (fast-fail); lapisan tugas menangkap dan menyerap = degradasi melewati platform
+- Metode Generator: iterasi lengkap → success, terputus → failure
+
+### Verifikasi Timeout
+
+- 29 adaptor semuanya memuat CURLOPT_TIMEOUT (30/60s) + CURLOPT_CONNECTTIMEOUT (10s)
+
+### Cakupan Pengujian
+
+- CircuitBreakerTest 8 kasus + GuardedAdapterTest 13 kasus
+
+### Keterbatasan Diketahui
+
+- State in-memory satu node; deployment multi-node memerlukan shared state Redis

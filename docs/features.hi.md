@@ -300,3 +300,37 @@ POST /api/ad-groups 支持 targeting_template_id
 ```json
 { "status": "healthy", "timestamp": "2026-05-21T...", "checks": { "database": "ok", "redis": "ok" } }
 ```
+
+---
+
+## मॉड्यूल 18: प्लेटफ़ॉर्म कॉल रेज़िलिएंस (सर्किट ब्रेकर / डिग्रेडेशन)
+
+### सर्किट ब्रेकर स्टेट मशीन
+
+`CircuitBreaker` (service/plugin/ads-platform/src/CircuitBreaker.php) — प्रति-प्लेटफ़ॉर्म स्टेट मशीन:
+
+| स्थिति | ट्रिगर | व्यवहार |
+|--------|---------|----------|
+| CLOSED | सामान्य | कॉल पास |
+| OPEN | लगातार 5 विफलताएँ | फ़ास्ट-फ़ेल, प्लेटफ़ॉर्म छोड़ें |
+| HALF_OPEN | 30s कूलडाउन के बाद | एक प्रोब अनुरोध |
+| CLOSED | प्रोब सफल | पुनर्स्थापित, काउंटर रीसेट |
+| OPEN | प्रोब फिर विफल | फिर से तोड़ें |
+
+### GuardedAdapter प्रॉक्सी
+
+- `AdapterRegistry::get()` GuardedAdapter प्रॉक्सी लौटाता है; 14 कॉल साइट, शून्य बदलाव
+- OPEN होने पर `CircuitBreakerOpenException` (फ़ास्ट-फ़ेल) फेंकता है; टास्क लेयर कैच कर अवशोषित करती है = प्रति-प्लेटफ़ॉर्म डिग्रेडेशन
+- Generator विधि: पूर्ण इटरेशन → success, रुकावट → failure
+
+### टाइमआउट जाँच
+
+- सभी 29 एडेप्टर में CURLOPT_TIMEOUT (30/60s) + CURLOPT_CONNECTTIMEOUT (10s)
+
+### टेस्ट कवरेज
+
+- CircuitBreakerTest 8 मामले + GuardedAdapterTest 13 मामले
+
+### ज्ञात सीमा
+
+- एकल-नोड इन-मेमोरी स्टेट; मल्टी-नोड के लिए Redis साझा स्टेट चाहिए

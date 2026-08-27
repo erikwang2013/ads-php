@@ -203,6 +203,7 @@ ads-php/
 | সেশন | SessionLimit (সর্বোচ্চ 3টি অ্যাক্টিভ Token) + ব্ল্যাকলিস্ট | Service |
 | এনক্রিপশন | EncryptionMiddleware (ট্রান্সমিশন) + Encryptable (স্টোরেজ) | Service |
 | রিপ্লে | ReplayGuard (Nonce+Timestamp ±5min, নন-ব্রাউজার এন্ড) | Service + ক্লায়েন্ট |
+| স্থিতিস্থাপকতা | CircuitBreaker (প্রতি-প্ল্যাটফর্ম: 5 ব্যর্থতা → OPEN → 30s হাফ-ওপেন) + GuardedAdapter (ডিগ্রেডেশন fast-fail) | Service |
 | অডিট | অপারেশন ট্রেইল (IP/UA/প্ল্যাটফর্ম) | Admin |
 | ডিসেনসিটাইজেশন | লগ সেনসিটিভ ফিল্ড মাস্কিং (password/token/secret → ***) | Service |
 

@@ -203,6 +203,7 @@ ads-php/
 | Sesi | SessionLimit (maks 3 Token aktif) + blacklist | Service |
 | Enkripsi | EncryptionMiddleware (transmisi) + Encryptable (penyimpanan) | Service |
 | Replay | ReplayGuard (Nonce+Timestamp ±5min, sisi non-browser) | Service + klien |
+| Ketahanan | CircuitBreaker (per-platform: 5 gagal → OPEN → 30s setengah terbuka) + GuardedAdapter (degradasi fast-fail) | Service |
 | Audit | Jejak operasi (IP/UA/platform) | Admin |
 | Desensitisasi | Penutupan field sensitif log (password/token/secret → ***) | Service |
 

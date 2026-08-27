@@ -27,6 +27,7 @@ graph TB
     end
     subgraph RateLimit["التحكم بالمعدل"]
         RL["نافذة منزلقة<br/>60/60ث<br/>تنفيذ Redis"]
+        CB["قاطع دائرة استدعاء المنصة<br/>5 إخفاقات → OPEN<br/>30 ثانية فحص نصف مفتوح"]
     end
     subgraph Encryption["تشفير البيانات"]
         TransEnc["تشفير النقل<br/>X-Encrypted AES<br/>EncryptionMiddleware"]
@@ -41,5 +42,6 @@ graph TB
     Gate --> AuthN
     AuthN --> Validation
     Validation --> RateLimit
-    RateLimit --> Encryption
+    RateLimit --> CB
+    CB --> Encryption
     Encryption --> Audit

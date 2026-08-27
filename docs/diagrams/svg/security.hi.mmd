@@ -27,6 +27,7 @@ graph TB
     end
     subgraph RateLimit["दर नियंत्रण"]
         RL["स्लाइडिंग विंडो<br/>60/60s<br/>Redis-आधारित"]
+        CB["प्लेटफ़ॉर्म कॉल सर्किट ब्रेकर<br/>5 विफलताएँ → OPEN<br/>30s हाफ-ओपन प्रोब"]
     end
     subgraph Encryption["डेटा एन्क्रिप्शन"]
         TransEnc["ट्रांसपोर्ट एन्क्रिप्शन<br/>X-Encrypted AES<br/>EncryptionMiddleware"]
@@ -41,5 +42,6 @@ graph TB
     Gate --> AuthN
     AuthN --> Validation
     Validation --> RateLimit
-    RateLimit --> Encryption
+    RateLimit --> CB
+    CB --> Encryption
     Encryption --> Audit

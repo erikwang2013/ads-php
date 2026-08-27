@@ -300,3 +300,37 @@ POST /api/ad-groups 支持 targeting_template_id
 ```json
 { "status": "healthy", "timestamp": "2026-05-21T...", "checks": { "database": "ok", "redis": "ok" } }
 ```
+
+---
+
+## 模块 18: 平台调用弹性（熔断/降级）
+
+### 熔断状态机
+
+`CircuitBreaker` (service/plugin/ads-platform/src/CircuitBreaker.php) — per-platform 状态机:
+
+| 状态 | 触发条件 | 行为 |
+|------|----------|------|
+| CLOSED | 正常 | 调用放行 |
+| OPEN | 连续 5 次失败 | 快速失败 (fast-fail), 跳过该平台 |
+| HALF_OPEN | 冷却 30s 后 | 放行一次探活请求 |
+| CLOSED | 探活成功 | 恢复, 计数清零 |
+| OPEN | 探活再失败 | 重新熔断 |
+
+### GuardedAdapter 代理
+
+- `AdapterRegistry::get()` 返回 GuardedAdapter 代理, 14 个调用点零改动
+- OPEN 时抛 `CircuitBreakerOpenException` 快速失败, 任务层 catch 吸收 = 逐平台降级跳过
+- Generator 方法: 迭代完整完成记 success / 中断记 failure
+
+### 超时核查
+
+- 29 个适配器均含 CURLOPT_TIMEOUT (30/60s) + CURLOPT_CONNECTTIMEOUT (10s)
+
+### 测试覆盖
+
+- CircuitBreakerTest 8 例 + GuardedAdapterTest 13 例
+
+### 已知局限
+
+- 单节点静态内存实现, 多节点部署需切换 Redis 共享状态

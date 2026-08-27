@@ -300,3 +300,39 @@ POST /api/ad-groups 支持 targeting_template_id
 ```json
 { "status": "healthy", "timestamp": "2026-05-21T...", "checks": { "database": "ok", "redis": "ok" } }
 ```
+
+---
+
+## الوحدة 18: مرونة استدعاء المنصات (قاطع الدائرة / التدهور)
+
+### آلة حالات قاطع الدائرة
+
+`CircuitBreaker` (service/plugin/ads-platform/src/CircuitBreaker.php) — حالة لكل منصة:
+
+| الحالة | المُشغّل | السلوك |
+|--------|----------|--------|
+| CLOSED | طبيعي | تمرير الاستدعاءات |
+| OPEN | 5 إخفاقات متتالية | فشل سريع، تخطي المنصة |
+| HALF_OPEN | بعد 30 ثانية من التهدئة | السماح بطلب فحص واحد |
+| CLOSED | نجاح الفحص | استعادة، تصفير العداد |
+| OPEN | فشل الفحص مجددًا | إعادة القطع |
+
+### وكيل GuardedAdapter
+
+- `AdapterRegistry::get()` يُرجع وكيل GuardedAdapter؛ 14 نقطة استدعاء بدون تغيير
+- عند OPEN يرمي `CircuitBreakerOpenException` (فشل سريع)؛ طبقة المهام تلتقطه وتمتصّه = تدهور مع تخطي المنصة
+- طريقة Generator: الاكتمال → success، الانقطاع → failure
+
+### فحص المهلات
+
+- جميع الـ 29 محولًا تتضمن CURLOPT_TIMEOUT (30/60 ث) + CURLOPT_CONNECTTIMEOUT (10 ث)
+
+### تغطية الاختبارات
+
+- CircuitBreakerTest 8 حالات + GuardedAdapterTest 13 حالة
+
+### قيد معروف
+
+- حالة في ذاكرة عقدة واحدة؛ النشر متعدد العقد يتطلب حالة Redis مشتركة
+
+---

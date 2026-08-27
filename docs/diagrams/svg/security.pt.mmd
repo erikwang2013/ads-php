@@ -27,6 +27,7 @@ graph TB
     end
     subgraph RateLimit["Controle de frequência"]
         RL["Janela deslizante<br/>60/60s<br/>Implementação Redis"]
+        CB["Disjuntor de chamadas de plataforma<br/>5 falhas → OPEN<br/>30s semiaberto"]
     end
     subgraph Encryption["Criptografia de dados"]
         TransEnc["Criptografia de transporte<br/>X-Encrypted AES<br/>EncryptionMiddleware"]
@@ -41,5 +42,6 @@ graph TB
     Gate --> AuthN
     AuthN --> Validation
     Validation --> RateLimit
-    RateLimit --> Encryption
+    RateLimit --> CB
+    CB --> Encryption
     Encryption --> Audit

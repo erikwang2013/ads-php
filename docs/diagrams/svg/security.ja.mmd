@@ -27,6 +27,7 @@ graph TB
     end
     subgraph RateLimit["頻度制御"]
         RL["スライディングウィンドウ<br/>60回/60秒<br/>Redis実装"]
+        CB["プラットフォーム呼び出しサーキットブレーカー<br/>5回失敗→OPEN<br/>30秒ハーフオープン"]
     end
     subgraph Encryption["データ暗号化"]
         TransEnc["転送暗号化<br/>X-Encrypted AES<br/>EncryptionMiddleware"]
@@ -41,5 +42,6 @@ graph TB
     Gate --> AuthN
     AuthN --> Validation
     Validation --> RateLimit
-    RateLimit --> Encryption
+    RateLimit --> CB
+    CB --> Encryption
     Encryption --> Audit

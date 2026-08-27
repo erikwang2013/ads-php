@@ -203,6 +203,7 @@ ads-php/
 | Sesión | SessionLimit (máximo 3 tokens activos) + lista negra | Service |
 | Cifrado | EncryptionMiddleware (transmisión) + Encryptable (almacenamiento) | Service |
 | Replay | ReplayGuard (Nonce+Timestamp ±5min, lado no navegador) | Service + clientes |
+| Resiliencia | CircuitBreaker (por plataforma: 5 fallos → OPEN → 30s semiabierto) + GuardedAdapter (fast-fail de degradación) | Service |
 | Auditoría | Trazabilidad de operaciones (IP/UA/plataforma) | Admin |
 | Enmascaramiento | Ocultación de campos sensibles en logs (password/token/secret → ***) | Service |
 

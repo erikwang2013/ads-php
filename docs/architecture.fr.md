@@ -203,6 +203,7 @@ ads-php/
 | Session | SessionLimit (max 3 jetons actifs) + liste noire | Service |
 | Chiffrement | EncryptionMiddleware (transport) + Encryptable (stockage) | Service |
 | Rejeu | ReplayGuard (Nonce+Timestamp ±5 min, côté non-navigateur) | Service + clients |
+| Résilience | CircuitBreaker (par plateforme : 5 échecs → OPEN → 30 s semi-ouvert) + GuardedAdapter (échec rapide en dégradation) | Service |
 | Audit | Traces d'opérations (IP/UA/plateforme) | Admin |
 | Masquage | Masquage des champs sensibles des journaux (password/token/secret → ***) | Service |
 

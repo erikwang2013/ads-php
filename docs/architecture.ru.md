@@ -203,6 +203,7 @@ ads-php/
 | Сессии | SessionLimit (максимум 3 активных токена) + черный список | Service |
 | Шифрование | EncryptionMiddleware (передача) + Encryptable (хранение) | Service |
 | Повторные атаки | ReplayGuard (Nonce+Timestamp ±5мин, не для браузерных клиентов) | Service + клиенты |
+| Отказоустойчивость | CircuitBreaker (на платформу: 5 сбоев → OPEN → 30 с полуоткрытое) + GuardedAdapter (fast-fail при деградации) | Service |
 | Аудит | Траектория операций (IP/UA/платформа) | Admin |
 | Маскирование | Маскирование чувствительных полей в логах (password/token/secret → ***) | Service |
 

@@ -203,6 +203,7 @@ ads-php/
 | セッション | SessionLimit (最大3つの有効Token) + ブラックリスト | Service |
 | 暗号化 | EncryptionMiddleware (転送) + Encryptable (保存) | Service |
 | リプレイ | ReplayGuard (Nonce+Timestamp ±5min, 非ブラウザー側) | Service + クライアント |
+| 弾力性 | CircuitBreaker (プラットフォーム別: 5回失敗→OPEN→30秒ハーフオープン) + GuardedAdapter (降級 fast-fail) | Service |
 | 監査 | 操作トレース (IP/UA/プラットフォーム) | Admin |
 | 難読化 | ログの機密フィールド遮蔽 (password/token/secret → ***) | Service |
 

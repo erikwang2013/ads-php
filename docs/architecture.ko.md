@@ -203,6 +203,7 @@ ads-php/
 | 세션 | SessionLimit (최대 3개 활성 Token) + 블랙리스트 | Service |
 | 암호화 | EncryptionMiddleware (전송) + Encryptable (저장) | Service |
 | 리플레이 | ReplayGuard (Nonce+Timestamp ±5min, 비브라우저 측) | Service + 클라이언트 |
+| 탄력성 | CircuitBreaker (플랫폼별: 5회 실패 → OPEN → 30초 반개 프로브) + GuardedAdapter (장애 시 fast-fail) | Service |
 | 감사 | 작업 추적 (IP/UA/플랫폼) | Admin |
 | 마스킹 | 로그 민감 필드 마스킹 (password/token/secret → ***) | Service |
 

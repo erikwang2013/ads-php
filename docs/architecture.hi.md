@@ -203,6 +203,7 @@ ads-php/
 | सत्र | SessionLimit (अधिकतम 3 सक्रिय Token) + ब्लैकलिस्ट | Service |
 | एन्क्रिप्शन | EncryptionMiddleware (ट्रांसमिशन) + Encryptable (स्टोरेज) | Service |
 | रिप्ले | ReplayGuard (Nonce+Timestamp ±5min, गैर-ब्राउज़र साइड) | Service + क्लाइंट |
+| लचीलापन | CircuitBreaker (प्रति-प्लेटफ़ॉर्म: 5 विफलताएँ → OPEN → 30s हाफ-ओपन) + GuardedAdapter (डिग्रेडेशन fast-fail) | Service |
 | ऑडिट | ऑपरेशन ट्रेस (IP/UA/प्लेटफ़ॉर्म) | Admin |
 | डी-सेंसिटाइज़ेशन | लॉग संवेदनशील फ़ील्ड मास्किंग (password/token/secret → ***) | Service |
 

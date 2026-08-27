@@ -39,6 +39,7 @@ graph TB
     subgraph RateLimit["频率控制层"]
         RL["滑动窗口限流<br/>60次/60s<br/>Redis Sorted Set<br/>RateLimitMiddleware"]
         RT["响应时间监控<br/>X-Response-Time<br/>慢请求日志 >1s<br/>ResponseTimeMiddleware"]
+        CB["平台调用熔断<br/>5次失败→OPEN<br/>30s半开探活<br/>CircuitBreaker"]
     end
     subgraph Encryption["数据加密层"]
         TransEnc["传输加密<br/>X-Encrypted AES<br/>EncryptionMiddleware<br/>请求解密·响应加密"]
@@ -54,7 +55,8 @@ graph TB
     Gate --> AuthN
     AuthN --> Validation
     Validation --> RateLimit
-    RateLimit --> Encryption
+    RateLimit --> CB
+    CB --> Encryption
     Encryption --> Audit
 ```
 
@@ -100,6 +102,7 @@ graph LR
 | 认证 | AuthMiddleware / AuthCheck | ✅ | ✅ | JWT · Session双通道 · IP/UA绑定 |
 | 审计 | AuditService | — | ✅ | 操作轨迹记录 |
 | 确认 | GlobalConfirm | ✅ | ✅ | 输入确认词模式 |
+| 弹性 | CircuitBreaker + GuardedAdapter | ✅ | — | 5次失败→OPEN, 30s半开, per-platform 降级 |
 
 ## 22 项防护能力总览
 

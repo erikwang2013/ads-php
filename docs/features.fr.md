@@ -300,3 +300,37 @@ Interface : Analyse d'attribution / Liste des modèles → [api.fr.md module 7](
 ```json
 { "status": "healthy", "timestamp": "2026-05-21T...", "checks": { "database": "ok", "redis": "ok" } }
 ```
+
+---
+
+## Module 18 : Résilience des appels plateforme (disjoncteur / dégradation)
+
+### Machine à états du disjoncteur
+
+`CircuitBreaker` (service/plugin/ads-platform/src/CircuitBreaker.php) — état par plateforme :
+
+| État | Déclencheur | Comportement |
+|------|-------------|--------------|
+| CLOSED | Normal | Appels autorisés |
+| OPEN | 5 échecs consécutifs | Échec rapide, plateforme ignorée |
+| HALF_OPEN | Après 30s de refroidissement | Un appel de sonde autorisé |
+| CLOSED | Sonde réussie | Rétabli, compteur remis à zéro |
+| OPEN | Nouvel échec de sonde | Disjonction à nouveau |
+
+### Proxy GuardedAdapter
+
+- `AdapterRegistry::get()` renvoie un proxy GuardedAdapter ; 14 points d'appel sans modification
+- En OPEN, lève `CircuitBreakerOpenException` (échec rapide) ; la couche de tâches l'absorbe = dégradation en ignorant la plateforme
+- Méthode Generator : itération complète → success, interruption → failure
+
+### Vérification des délais
+
+- Les 29 adaptateurs incluent CURLOPT_TIMEOUT (30/60s) + CURLOPT_CONNECTTIMEOUT (10s)
+
+### Couverture de tests
+
+- CircuitBreakerTest 8 cas + GuardedAdapterTest 13 cas
+
+### Limite connue
+
+- État en mémoire sur un nœud ; le multi-nœuds nécessite un état Redis partagé

@@ -27,6 +27,7 @@ graph TB
     end
     subgraph RateLimit["Kontrol Frekuensi"]
         RL["Jendela Geser<br/>60/60d<br/>Berbasis Redis"]
+        CB["Pemutus sirkuit panggilan platform<br/>5 gagal → OPEN<br/>30s setengah terbuka"]
     end
     subgraph Encryption["Enkripsi Data"]
         TransEnc["Enkripsi Transport<br/>X-Encrypted AES<br/>EncryptionMiddleware"]
@@ -41,5 +42,6 @@ graph TB
     Gate --> AuthN
     AuthN --> Validation
     Validation --> RateLimit
-    RateLimit --> Encryption
+    RateLimit --> CB
+    CB --> Encryption
     Encryption --> Audit
