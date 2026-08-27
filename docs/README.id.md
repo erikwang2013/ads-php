@@ -6,7 +6,15 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 ## Ringkasan
 
-Terhubung dengan **29 platform iklan**, mengelola penayangan iklan dan laporan data lintas-platform secara terpadu, mendukung pemantauan peringatan, penawaran otomatis, dan akses multi-perangkat.
+**Ads Platform** adalah sistem manajemen iklan multi-platform yang mengintegrasikan **29 platform iklan** (16 dalam negeri + 13 internasional), dengan pengelolaan penayangan iklan dan laporan data lintas-platform yang terpadu.
+
+- **Manajemen Kampanye** — otorisasi akun OAuth, pengelolaan terpadu kampanye/grup iklan/kreatif lintas platform
+- **Laporan** — agregasi metrik lintas platform, ekspor CSV/Excel/PDF, atribusi 5 model
+- **Penayangan Cerdas** — penawaran otomatis, peringatan anggaran, kalender kampanye (Gantt), pustaka aset
+- **Pemantauan & Peringatan** — mesin aturan peringatan, push multi-kanal, sinkronisasi otomatis terjadwal
+- **Akses Multi-Perangkat** — admin web (Vue 3), Flutter PC/Mobile, HarmonyOS
+- **Stabilitas & Keandalan** — circuit breaker/degradasi/timeout panggilan platform, cache 3 tingkat, optimasi konkurensi tinggi, 22 perlindungan keamanan
+- **Internasionalisasi** — dokumentasi 12 bahasa, UI bilingual (ZH/EN)
 
 > Desain arsitektur → [docs/architecture.id.md](docs/architecture.id.md)  
 > Modul fitur → [docs/features.id.md](docs/features.id.md)  

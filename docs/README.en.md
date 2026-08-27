@@ -6,7 +6,15 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 ## Overview
 
-Unified ad management across **29 advertising platforms**, with cross-platform reporting, alert monitoring, auto-bidding, and multi-device access.
+**Ads Platform** is a multi-platform ad management system integrating **29 advertising platforms** (16 domestic + 13 international), providing unified ad delivery management and cross-platform reporting.
+
+- **Campaign Management** — OAuth account authorization, unified management of campaigns/ad groups/creatives across platforms
+- **Reporting** — cross-platform metric aggregation, CSV/Excel/PDF export, 5-model cross-platform attribution
+- **Smart Delivery** — auto-bidding, budget alerts, campaign calendar (Gantt), asset library
+- **Monitoring & Alerts** — alert rule engine, multi-channel push, scheduled auto-sync
+- **Multi-Device Access** — Web admin (Vue 3), Flutter PC/Mobile, HarmonyOS
+- **Stability & Reliability** — platform call circuit breaker/degradation/timeout, 3-tier cache, high-concurrency optimizations, 22 security protections
+- **Internationalization** — 12-language docs, bilingual UI (ZH/EN)
 
 > Architecture → [docs/architecture.en.md](docs/architecture.en.md)  
 > Features → [docs/features.en.md](docs/features.en.md)  

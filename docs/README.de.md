@@ -6,7 +6,15 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 ## Übersicht
 
-Anbindung an **29 Werbeplattformen**, einheitliche Verwaltung von Werbeschaltung und plattformübergreifenden Datenberichten, mit Alarmüberwachung, automatischem Gebot und Zugriff über mehrere Endgeräte.
+**Ads Platform** ist ein Multi-Plattform-Werbesystem, das **29 Werbeplattformen** (16 inländische + 13 internationale) anbindet und Werbeschaltung sowie plattformübergreifende Datenberichte einheitlich verwaltet.
+
+- **Kampagnenverwaltung** — OAuth-Kontoauthorisierung, einheitliche Verwaltung von Kampagnen/Anzeigengruppen/Anzeigen über Plattformen hinweg
+- **Berichte** — plattformübergreifende Metrikaggregation, CSV/Excel/PDF-Export, 5-Modell-Attribution
+- **Intelligente Auslieferung** — automatisches Gebot, Budgetwarnungen, Werbekalender (Gantt), Asset-Bibliothek
+- **Überwachung & Warnungen** — Warnregel-Engine, Mehrkanal-Push, geplante automatische Synchronisierung
+- **Multi-Geräte-Zugriff** — Web-Admin (Vue 3), Flutter PC/Mobile, HarmonyOS
+- **Stabilität & Zuverlässigkeit** — Circuit Breaker/Degradierung/Timeout für Plattformaufrufe, 3-stufiger Cache, Hochparallelitäts-Optimierungen, 22 Sicherheitsmaßnahmen
+- **Internationalisierung** — Dokumentation in 12 Sprachen, zweisprachige Oberfläche (ZH/EN)
 
 > Architekturentwurf → [docs/architecture.md](docs/architecture.de.md)  
 > Funktionsmodule → [docs/features.md](docs/features.de.md)  
