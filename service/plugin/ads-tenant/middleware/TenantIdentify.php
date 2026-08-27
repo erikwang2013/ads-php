@@ -16,7 +16,7 @@ class TenantIdentify implements MiddlewareInterface
     public function process(Request $request, callable $handler): Response
     {
         $tenantId = $request->header('X-Tenant-Id')
-            ?? $request->sessionGet('tenant_id');
+            ?? $request->session()?->get('tenant_id');
 
         if ($tenantId) {
             $tenant = Tenant::find($tenantId);

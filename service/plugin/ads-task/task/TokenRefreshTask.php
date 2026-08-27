@@ -16,11 +16,12 @@ class TokenRefreshTask
         $accounts = PlatformAccount::query()
             ->where('status', 1)
             ->whereNotNull('refresh_token')
-            ->where('refresh_token', '!=', '')
             ->get();
 
         $refreshed = 0;
         foreach ($accounts as $account) {
+            // Encryptable cast 使 SQL 层 `!= ''` 失效（空串被加密），须在解密后过滤
+            if ($account->refresh_token === '') continue;
             if (!$account->isTokenExpired()) continue;
             try {
                 $adapter = AdapterRegistry::get($account->platform);
