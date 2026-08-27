@@ -6,7 +6,7 @@
 
 ## 结果
 
-**244 tests / 654 assertions 全部通过，1 skipped**（Integration 101 tests / 321 assertions，Unit 143 tests / 333 assertions）
+**265 tests / 717 assertions 全部通过，0 skipped**（Integration 101 tests / 327 assertions，Unit 164 tests / 390 assertions）
 
 ## 端点覆盖（66 条路由，认证 + 公开端点全覆盖）
 

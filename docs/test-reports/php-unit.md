@@ -6,7 +6,7 @@
 
 ## 结果
 
-**Unit 套件：143 tests / 333 assertions 全部通过**（全套件 244 tests / 654 assertions，含 API 集成测试，1 skipped）
+**Unit 套件：164 tests / 390 assertions 全部通过**（全套件 265 tests / 717 assertions，含 API 集成测试）
 
 ## 模块覆盖（7 插件 + 中间件，新增文件位于 `service/tests/Unit/`）
 
@@ -18,6 +18,7 @@
 | ads-platform | 20 | BidEngine、FieldMapping、HashidsService、CampaignData |
 | ads-account | 10 | OAuthService、AdapterRegistry |
 | ads-task | 7 | TokenRefreshTask、DataSyncTask |
+| 熔断机制 | 21 | CircuitBreaker 状态机（阈值/冷却/半开/恢复）、GuardedAdapter 代理（透传/快失败/计数/Generator） |
 
 ## 发现的 Bug
 

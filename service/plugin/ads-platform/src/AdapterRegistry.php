@@ -14,9 +14,14 @@ class AdapterRegistry
         static::$adapters[$adapter->code()] = $adapter;
     }
 
-    public static function get(string $code): ?PlatformAdapter
+    /**
+     * @return PlatformAdapter|GuardedAdapter|null — real adapters come back
+     *         wrapped in GuardedAdapter (circuit breaker + fast-fail).
+     */
+    public static function get(string $code)
     {
-        return static::$adapters[$code] ?? null;
+        $adapter = static::$adapters[$code] ?? null;
+        return $adapter === null ? null : new GuardedAdapter($adapter);
     }
 
     public static function all(): array

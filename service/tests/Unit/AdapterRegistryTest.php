@@ -5,6 +5,7 @@
 namespace Tests\Unit;
 
 use plugin\ads_platform\src\AdapterRegistry;
+use plugin\ads_platform\src\GuardedAdapter;
 use plugin\ads_platform\src\PlatformAdapter;
 use plugin\ads_platform\src\CampaignData;
 use plugin\ads_platform\src\ReportRequest;
@@ -44,7 +45,9 @@ class AdapterRegistryTest extends TestCase
     {
         $adapter = new MockAdapter();
         AdapterRegistry::register($adapter);
-        $this->assertSame($adapter, AdapterRegistry::get('mock'));
+        $proxy = AdapterRegistry::get('mock');
+        $this->assertInstanceOf(GuardedAdapter::class, $proxy);
+        $this->assertSame('mock', $proxy->code());
     }
 
     public function testHas(): void
