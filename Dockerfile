@@ -6,7 +6,11 @@ RUN apk add --no-cache \
     curl git unzip \
     mysql-client redis \
     libpq-dev \
-    && docker-php-ext-install pdo pdo_mysql pcntl
+    libpng-dev libjpeg-turbo-dev \
+    $PHPIZE_DEPS \
+    && docker-php-ext-install pdo pdo_mysql pcntl gd \
+    && pecl install redis \
+    && docker-php-ext-enable redis
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
