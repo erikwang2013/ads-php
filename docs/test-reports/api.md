@@ -1,14 +1,14 @@
 # API 自动化测试报告
 
-- 日期：2026-08-27
+- 日期：2026-08-29
 - 执行：`cd service && ECC_GATEGUARD=off DB_PASSWORD='' vendor/bin/phpunit`
 - 基类：`service/tests/Integration/ApiTestCase.php`（mock 适配器 + 种子数据）
 
 ## 结果
 
-**265 tests / 717 assertions 全部通过，0 skipped**（Integration 101 tests / 327 assertions，Unit 164 tests / 390 assertions）
+**288 tests / 862 assertions**（含 API 集成测试；CDN 新增 21 用例：CdnProviderApiTest 14 + AssetStorageTest 6 + AlibabaCdnSignatureTest 1。全量跑批存在顺序相关偶发失败，单测隔离运行全部通过，详见 [php-unit.md](php-unit.md)）
 
-## 端点覆盖（66 条路由，认证 + 公开端点全覆盖）
+## 端点覆盖（76 条路由，认证 + 公开端点全覆盖）
 
 | 模块 | 用例数 | 覆盖内容 |
 |------|--------|----------|

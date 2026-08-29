@@ -150,11 +150,12 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | | ads_bid_logs | — | — | ✅ |
 | টার্গেটিং | ads_targeting_templates | — | — | ✅ |
 | অ্যাসেট | ads_assets | — | — | ✅ |
+| CDN | ads_cdn_providers | — | — | ✅ |
 | অ্যাট্রিবিউশন | ads_conversions | — | — | ✅ |
 | | ads_attribution_results | — | — | ✅ |
 | সিস্টেম | ads_sync_errors | ✅ | ✅ | ✅ |
 | ম্যানেজমেন্ট | admin_users/roles/audit_logs | ✅ | ✅ | ✅ |
-| **মোট** | | **8** | **13** | **18** |
+| **মোট** | | **8** | **13** | **19** |
 
 ---
 
@@ -179,9 +180,10 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | নোটিফিকেশন সেন্টার | — | ✅ | ✅ |
 | অটো বিডিং | — | — | ✅ |
 | অ্যাসেট লাইব্রেরি | — | — | ✅ |
+| CDN প্রোভাইডার | — | — | ✅ |
 | ক্যাম্পেইন ক্যালেন্ডার | — | — | ✅ |
 | অ্যাট্রিবিউশন অ্যানালাইসিস | — | — | ✅ |
-| **মোট** | **7** | **13** | **17** |
+| **মোট** | **7** | **13** | **18** |
 
 ### Flutter
 
@@ -219,8 +221,9 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | নোটিফিকেশন (index/unread/read/readAll) | — | 4 | 4 |
 | অটো বিডিং (CRUD + logs) | — | — | 5 |
 | টার্গেটিং টেমপ্লেট (CRUD) | — | — | 5 |
-| অ্যাসেট লাইব্রেরি (index/upload/show/destroy) | — | — | 4 |
-| **মোট** | **26** | **44** | **62** |
+| অ্যাসেট লাইব্রেরি (index/upload/show/destroy/presign/register) | — | — | 6 |
+| CDN প্রোভাইডার (list/create/update/delete/default/toggle/test/purge) | — | — | 8 |
+| **মোট** | **26** | **44** | **70** |
 
 ---
 

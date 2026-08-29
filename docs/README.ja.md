@@ -11,6 +11,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 - **キャンペーン管理** — OAuth アカウント認可、キャンペーン/広告グループ/クリエイティブのプラットフォーム横断の一元管理
 - **レポート** — クロスプラットフォーム指標の集計、CSV/Excel/PDF エクスポート、5 モデルのアトリビューション分析
 - **スマート配信** — 自動入札、予算アラート、配信カレンダー (Gantt)、素材ライブラリ
+- **グローバルアクセラレーション** — 素材の CDN 配信 (マルチドライバー: ローカル / 阿里云 OSS / 腾讯云 COS / S3 互換、管理画面で複数プロバイダー設定)
 - **監視とアラート** — アラートルールエンジン、マルチチャネルプッシュ、スケジュール自動同期
 - **マルチ端末アクセス** — Web 管理画面 (Vue 3)、Flutter PC/Mobile、HarmonyOS
 - **安定性と信頼性** — プラットフォーム呼び出しのサーキットブレーカー/降格/タイムアウト、3 段キャッシュ、高並行最適化、22 のセキュリティ対策
@@ -66,8 +67,8 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 | レイヤー | 技術 | 説明 |
 |----|------|------|
-| サーバー側 | webman v2 + PHP 8.2+ | 7 プラグイン、65+ API エンドポイント |
-| データベース | MySQL 8.0 | 28 テーブル、ads_ プレフィックス、Snowflake BIGINT 主キー |
+| サーバー側 | webman v2 + PHP 8.2+ | 8 プラグイン、75+ API エンドポイント |
+| データベース | MySQL 8.0 | 29 テーブル、ads_ プレフィックス、Snowflake BIGINT 主キー |
 | キャッシュ | Redis 7 | 3 段キャッシュ (L1メモリ/L2 APCu/L3 Redis)、レート制限カウント、Pub/Sub、メッセージキュー |
 | 検索 | Elasticsearch | webman-scout 自動インデックス同期（設定済み） |
 | 管理バックエンド | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP バックエンド(ポート 8789)、SPA は業務 API(ポート 8788)に直結、19 ページ、ECharts ビジュアライゼーション |
@@ -189,6 +190,7 @@ CORS → SecurityHeaders → AttackGuard → ClientPlatform → Version → Rate
 | 配信カレンダー | クロスプラットフォーム Gantt 図、月/週ビュー、プラットフォーム別配色 | CalendarService + Vue Gantt |
 | クロスプラットフォームアトリビューション | 5 モデルアトリビューション (first/last/linear/time_decay/position_based)、30 日遡及 | AttributionEngine + ECharts |
 | プラットフォーム呼び出しの弾力性 | プラットフォーム別サーキットブレーカー状態機械 (5 回失敗 → OPEN → 30 秒ハーフオープン探知)、降格 fast-fail、29 アダプターのタイムアウト監査 | CircuitBreaker + GuardedAdapter |
+| CDN 素材高速化 | オブジェクトストレージのマルチドライバー (local/oss/cos/s3)、管理画面での CDN プロバイダー管理、事前署名ダイレクトアップロード、削除時の自動キャッシュパージ | ads-storage プラグイン + CdnProviderController |
 
 ---
 
@@ -225,7 +227,7 @@ cd admin && composer install && php start.php start
 1. **データベース接続** — MySQL ホスト、ポート、データベース名、ユーザー名・パスワードを入力。接続テスト対応
 2. **Redis 設定** — Redis 接続情報を入力（任意）
 3. **管理者アカウント** — バックエンドのログインユーザー名、パスワード、表示名を設定
-4. **ワンクリックインストール** — 自動でデータベースを作成し、`install.sql` を実行して 28 テーブルを作成、シードデータを投入、管理者パスワードを更新
+4. **ワンクリックインストール** — 自動でデータベースを作成し、`install.sql` を実行して 29 テーブルを作成、シードデータを投入、管理者パスワードを更新
 
 インストール完了後、`/` にアクセスして管理バックエンドに入り、設定したユーザー名とパスワードでログインします。
 
@@ -286,7 +288,9 @@ ads-php/
 │   │   ├── ads-task/                  # 定期タスクスケジューリング (6 cron)
 │   │   ├── ads-alert/                 # アラート監視エンジン + 予算警告
 │   │   ├── ads-report/                # レポートエンジン (CSV/Excel/PDF) + アトリビューションエンジン + 配信カレンダー
-│   │   └── ads-tenant/                # マルチテナント管理
+│   │   ├── ads-tenant/                # マルチテナント管理
+│   │   └── ads-storage/               # ストレージ抽象層 (local/OSS/COS/S3) + CDN プロバイダー
+│   ├── scripts/backfill-assets.php    # 既存素材をオブジェクトストレージへバックフィル
 │   ├── support/                       # Erik Stack ユーティリティクラス
 │   │   ├── ControllerTrait.php        # コントローラー共通 trait
 │   │   ├── JwtService.php             # JWT ラッパークラス
@@ -294,7 +298,7 @@ ads-php/
 │   │   ├── ExceptionHandler.php       # API 例外ハンドラー
 │   │   └── ApiResponse.php            # 統一レスポンス形式
 │   ├── config/                        # グローバル設定 (DB/Redis/Log/Middleware)
-│   ├── tests/                         # PHPUnit テスト (265 tests)
+│   ├── tests/                         # PHPUnit テスト (288 tests)
 │   │   ├── Unit/                      # ユニットテスト (Middleware, Task)
 │   │   └── Integration/               # 統合テスト (Auth, Health)
 │   └── start.php                      # サービスエントリ
@@ -347,6 +351,7 @@ ads-php/
 | 配信 | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | 広告配信階層 |
 | レポート | `ads_report_metrics`, `ads_report_extras` | 統一レポート指標 |
 | 素材 | `ads_assets` | クリエイティブ素材ライブラリ |
+| CDN | `ads_cdn_providers` | CDN プロバイダー設定 (認証情報は暗号化保存) |
 | ターゲティング | `ads_targeting_templates` | オーディエンスターゲティングテンプレート |
 | アトリビューション | `ads_conversions`, `ads_attribution_results` | コンバージョントラッキング + アトリビューション結果 |
 | 入札 | `ads_bid_rules`, `ads_bid_logs` | 自動入札ルール + 履歴 |
@@ -373,10 +378,10 @@ ads-php/
 
 ```bash
 cd service && ./vendor/bin/phpunit
-# 265 テスト / 717 アサーション
+# 288 テスト / 862 アサーション
 ```
 
-**カバー範囲**: ミドルウェア (Version/SQLGuard/SecurityHeaders) · データオブジェクト (CampaignData/FieldMapping/Hashids) · エンジン (ReportBuilder/AdapterRegistry) · 統合テスト (Auth/Health)
+**カバー範囲**: 14 ミドルウェア · 8 プラグイン業務層 (アカウント/アラート/プラットフォーム/レポート/タスク/テナント/ストレージ) · エンジン (Bid/Alert/Attribution/Report) · API 統合テスト (76 ルート) · UI E2E (18 ページ)
 
 ```bash
 # TypeScript チェック
@@ -443,6 +448,23 @@ cd apps/flutter && dart analyze   # エラーゼロ
 >
 > - **港元、人民币及美元**：Citibank N.A. Hong Kong — SWIFT `CITIHKHXXXX` · 银行编号 006 · Hong Kong Branch（分行编号 391）· Citibank Tower, Citibank Plaza, 3 Garden Road, Central, Hong Kong
 > - **其他币种**：THE BANK OF NEW YORK MELLON — SWIFT `IRVTUS3NXXX` · 240 GREENWICH STREET, NEW YORK, United States
+
+### 仮想通貨の寄付 (Crypto Donation)
+
+このプロジェクトがお役に立ったら、QRコードをスキャンして寄付してください。ありがとうございます！
+
+| ネットワーク (Network) | QRコード (QR Code) | ウォレットアドレス (Wallet Address) |
+|---|---|---|
+| BNB Smart Chain (BEP20) | [<img src="./coin/1.jpg" width="150" alt="BNB Smart Chain (BEP20)">](./coin/1.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Tron (TRC20) | [<img src="./coin/2.jpg" width="150" alt="Tron (TRC20)">](./coin/2.jpg) | `TEdDHWLajt1XvqtPDWmQctdrJaC3pzZZzz` |
+| Ethereum (ERC20) | [<img src="./coin/3.jpg" width="150" alt="Ethereum (ERC20)">](./coin/3.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Aptos | [<img src="./coin/4.jpg" width="150" alt="Aptos">](./coin/4.jpg) | `0x836e3780edfc3f7b2372b39e2a1a3a5d7adfaccd96c726f21cfde1b50dd68030` |
+| Plasma | [<img src="./coin/5.jpg" width="150" alt="Plasma">](./coin/5.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Polygon POS | [<img src="./coin/6.jpg" width="150" alt="Polygon POS">](./coin/6.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Solana | [<img src="./coin/7.jpg" width="150" alt="Solana">](./coin/7.jpg) | `2hfhboHdmdrYsY25XfQSsEWxq5ip4EQsR7f4AzSRMUyr` |
+| The Open Network (TON) | [<img src="./coin/8.jpg" width="150" alt="The Open Network (TON)">](./coin/8.jpg) | `UQB9kFQohzmXUir9QSSZq01iwl9aQZIDdBpNmDklljRtCoGK` |
+| Arbitrum One | [<img src="./coin/9.jpg" width="150" alt="Arbitrum One">](./coin/9.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| AVAX C-Chain | [<img src="./coin/10.jpg" width="150" alt="AVAX C-Chain">](./coin/10.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
 
 ---
 

@@ -122,7 +122,8 @@ ads-php/
 │   │   ├── ads-task/                      # 5 の cron タスク
 │   │   ├── ads-alert/                     # アラートエンジン + 通知
 │   │   ├── ads-report/                    # レポートエンジン (CSV/Excel/PDF)
-│   │   └── ads-tenant/                    # マルチテナント
+│   │   ├── ads-tenant/                    # マルチテナント
+│   │   └── ads-storage/                   # ストレージ抽象化 (local/OSS/COS/S3) + CDN プロバイダー
 │   ├── tests/                             # PHPUnit
 │   │   ├── Unit/Middleware/               # ミドルウェアテスト
 │   │   ├── Unit/Task/                     # タスクテスト (計画)
@@ -171,6 +172,7 @@ ads-php/
 | 入札 | `ads_bid_rules`, `ads_bid_logs` | BIGINT Snowflake | 自動入札 |
 | ターゲティング | `ads_targeting_templates` | BIGINT Snowflake | オーディエンステンプレート |
 | 素材 | `ads_assets` | BIGINT Snowflake | クリエイティブ素材ライブラリ |
+| CDN | `ads_cdn_providers` | BIGINT Snowflake | CDN プロバイダー設定 (フィールド単位暗号化の認証情報) |
 | 通知 | `ads_notifications` | BIGINT Snowflake | サイト内通知 |
 | アトリビューション | `ads_conversions`, `ads_attribution_results` | BIGINT Snowflake | コンバージョントラッキング + アトリビューション |
 | システム | `ads_sync_errors` | BIGINT Snowflake | 同期エラー |
@@ -324,6 +326,10 @@ HTTP Request → Controller → AsyncJobService::dispatch()
 - `gzip_static on` — js/css ファイルの事前圧縮
 - 本番環境は CDN に接続 (CloudFront/Aliyun CDN)
 
+### 10.6 素材 CDN 高速化
+
+素材 URL の組み立て・キャッシュ・パージ戦略は [第 12 章 素材ストレージと CDN 高速化](#12-素材ストレージと-cdn-高速化) を参照。
+
 ---
 
 ## 11. デプロイと CI/CD
@@ -342,3 +348,56 @@ HTTP Request → Controller → AsyncJobService::dispatch()
 
 - **CI** (`.github/workflows/ci.yml`): PHP Syntax → PHPUnit → TypeScript → Docker Build
 - **CD** (`.github/workflows/deploy.yml`): Docker Buildx → GHCR Push (service/admin/admin-php) → Deploy
+
+---
+
+## 12. 素材ストレージと CDN 高速化
+
+### 12.1 ストレージ抽象層
+
+`service/plugin/ads-storage/` は統一 `Storage` ファサード + `StorageDriver` インターフェース (put/delete/signedUrl/publicUrl/putFile/deleteUrl/purge) を提供し、driver ごとに実装を切り替えます:
+
+| driver | 実装 | 用途 |
+|--------|------|------|
+| `local` | LocalStorage | デフォルト、ローカル `public/uploads/assets/` |
+| `oss` | AlibabaOssStorage | 阿里云 OSS |
+| `cos` | TencentCosStorage | 腾讯云 COS (S3 プロトコル) |
+| `s3` | S3CompatibleStorage | S3 互換: AWS S3 / Cloudflare R2 / MinIO |
+
+配信時は DB のデフォルトプロバイダー (管理画面で設定) を優先し、なければ env/local にフォールバックします。
+
+### 12.2 CDN プロバイダー管理
+
+新テーブル `ads_cdn_providers` (name/driver/bucket/region/endpoint/access_key/secret_key/cdn_domain/cdn_driver/cdn_token/enabled/is_default/status):
+
+- 認証情報 (access_key/secret_key/cdn_token) は `Erikwang2013\Encryptable` でフィールド単位暗号化して保存。API レスポンスはマスク済みフィールドのみ
+- 管理できるのはプラットフォームのマスターテナント (tenantId=1) のみ (AdminMiddleware)。`/api/admin/cdn/providers` の 8 エンドポイント: 一覧/作成/更新/削除/デフォルト設定/有効・無効切替/接続テスト/キャッシュパージ
+- purge は現状 `aliyun` cdn_driver で実装済み (OpenAPI 署名)。cloudflare/cloudfront は今後拡張
+
+### 12.3 URL 組み立て戦略
+
+`ads_assets.url` は常に相対パス (`/uploads/assets/...`) を保存し、読み出し時にデフォルトプロバイダーの `cdn_domain` を先頭に付けて完全な HTTPS URL (`https://{cdn_domain}/{url}`) を返します。CDN 未設定時はそのまま返します。
+
+### 12.4 キャッシュ戦略
+
+| 種別 | 戦略 |
+|------|------|
+| 画像 | `immutable` 長期キャッシュ (ファイル名ランダム・URL 一意で安全) |
+| 動画 | 短期キャッシュ + Range 対応 (分割再生) |
+
+素材削除時はその URL を CDN キャッシュから自動パージします。
+
+### 12.5 マルチテナントのパス分離
+
+素材 key はテナント分離プレフィックスを持ち、tenant_id ごとにグループ化。異なるテナントの素材は互いに見えません。
+
+### 12.6 事前署名ダイレクトアップロードとバックフィル
+
+- `POST /api/assets/presign`: 事前署名アップロード URL を取得 (50 MiB 動画などクライアントがオブジェクトストレージへ直接アップロード)。`key` 形式: `Ymd/32hex.拡張子`
+- `POST /api/assets/register`: 直接アップロード済み素材を登録。key 形式を厳格検証しパストラバーサルを防止
+- `local` driver では presign 非対応 (オブジェクトストレージ署名機能なし)
+- `service/scripts/backfill-assets.php`: 既存のローカル素材をオブジェクトストレージへコピー (`--dry-run` プレビュー)。`url` カラムは不変
+
+### 12.7 オリジンパス
+
+`service/config/static.php` で webman の静的ファイル配信を有効化。`/uploads/assets` は 8788 で HTTP 直接配信され、CDN のオリジンパスになります。

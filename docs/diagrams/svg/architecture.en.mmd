@@ -10,11 +10,11 @@ graph TB
     end
     subgraph AppLayer["Application Layer"]
         Admin["Admin :8789<br/>webman-admin v2<br/>RBAC · Audit"]
-        Service["Service :8788<br/>webman v2 API<br/>7 Plugins · 29 Adapters"]
+        Service["Service :8788<br/>webman v2 API<br/>8 Plugins · 29 Adapters"]
         ServiceProxy["ServiceProxy<br/>cURL HTTP + JWT"]
     end
     subgraph DataLayer["Data Layer"]
-        MySQL[("MySQL 8.0<br/>28 Tables · Snowflake PK")]
+        MySQL[("MySQL 8.0<br/>29 Tables · Snowflake PK")]
         Redis[("Redis 7<br/>3-level Cache · Queue")]
         ES[("Elasticsearch<br/>Full-text Search")]
     end
@@ -22,6 +22,13 @@ graph TB
         Domestic["16 Domestic Platforms<br/>Juchuan·Baidu·Tencent·Kuaishou"]
         International["13 International Platforms<br/>Google·Meta·TikTok"]
     end
+    subgraph StorageCDN["Storage & CDN"]
+        OSS[("Object Storage<br/>local/OSS/COS/S3 multi-driver")]
+        CDN["CDN Acceleration<br/>cdn_domain assembly · cache purge"]
+    end
+    Service --> OSS
+    OSS --> CDN
+    CDN --> Clients
     Clients --> Nginx
     Nginx -->|"/"| Admin
     Nginx -->|"/api/"| Service

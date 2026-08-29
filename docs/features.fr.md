@@ -25,7 +25,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 11 | Modèles de ciblage | TargetingTemplateController | 5 | — |
 | 12 | Administration système | AdminUserController, AuditLogController | 5 | UserManage, AuditLog |
 | 13 | Synchronisation des données | DataSyncTask, TokenRefreshTask, RetrySyncTask | — | — |
-| 14 | Bibliothèque de ressources | AssetController | 4 | AssetGallery |
+| 14 | Bibliothèque de ressources | AssetController | 6 | AssetGallery |
 | 15 | Alerte de budget | BudgetAlertService + BudgetCheckTask | 1 | — |
 | 16 | Calendrier de diffusion | CalendarService | 1 | CampaignCalendar |
 | 17 | Attribution inter-plateformes | AttributionEngine | 2 | AttributionReport |
@@ -33,7 +33,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 19 | Captcha | CaptchaController | 2 | — |
 | 20 | Documentation API | DocController | 1 | — |
 
-**Total** : 20 modules, 65+ routes, 18 pages Vue
+**Total** : 21 modules, 75+ routes, 19 pages Vue
 
 ---
 
@@ -242,10 +242,13 @@ Interface : Gestion des utilisateurs / Journaux d'audit / Rôles → [points de 
 ## Module 14 : Bibliothèque de ressources publicitaires
 
 - Types pris en charge : image/jpeg, image/png, image/gif, image/webp, video/mp4
-- Stockage des fichiers : `public/uploads/assets/`
+- Stockage des fichiers : `public/uploads/assets/` (local par défaut), multi-driver de stockage objet (local/oss/cos/s3)
+- Avec un fournisseur CDN par défaut configuré, les URLs des ressources sont assemblées avec cdn_domain pour la diffusion CDN
+- Téléversement direct pré-signé : `POST /api/assets/presign` fournit l'URL, `POST /api/assets/register` enregistre le fichier téléversé (indisponible sur le driver local)
+- La suppression d'une ressource purge automatiquement le cache CDN (purge)
 - Frontend : galerie en grille + upload par glisser-déposer + aperçu d'image + lecture vidéo + copie d'URL
 
-Interface : Upload / Liste / Détail / Suppression → [api.fr.md module 12](api.fr.md#模块-12-素材库)
+Interface : Upload / Liste / Détail / Suppression / Pré-signature / Enregistrement → [api.fr.md module 12](api.fr.md#模块-12-素材库)
 
 ---
 
@@ -334,3 +337,15 @@ Interface : Analyse d'attribution / Liste des modèles → [api.fr.md module 7](
 ### Limite connue
 
 - État en mémoire sur un nœud ; le multi-nœuds nécessite un état Redis partagé
+---
+
+## Module 21 : Gestion des fournisseurs CDN
+
+- Gérable uniquement par le locataire principal de la plateforme (tenant 1), validé par AdminMiddleware
+- Drivers : local / oss (Aliyun) / cos (Tencent Cloud) / s3 (AWS S3 / Cloudflare R2 / MinIO)
+- Identifiants (access_key / secret_key / cdn_token) chiffrés au niveau champ (Erikwang2013\Encryptable), l'API ne renvoie que des champs masqués
+- Prend en charge : fournisseur par défaut / activation-désactivation / test de connectivité / purge du cache
+- Table : `ads_cdn_providers`
+- Frontend : CdnProviderList.vue (menu système)
+
+Interface : Liste / Créer / Modifier / Supprimer / Défaut / Toggle / Test / Purge → [api.md Fournisseurs CDN](api.fr.md#gestion-des-fournisseurs-cdn-locataire-principal-uniquement-tenant-1-adminmiddleware)

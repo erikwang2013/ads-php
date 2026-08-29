@@ -6,14 +6,14 @@
 docs/
 ├── index.md                                # 本ファイル
 ├── architecture.md                         # アーキテクチャ設計ドキュメント (デプロイ/セキュリティ/構成/データモデル)
-├── features.md                             # 機能設計ドキュメント (20 モジュール/業務フロー)
+├── features.md                             # 機能設計ドキュメント (21 モジュール/業務フロー)
 ├── api.md                                  # API インターフェースドキュメント (インターフェース定義はここに一元化)
 ├── versions.md                             # 3 バージョン比較
 ├── apidoc-header.md                        # hg/apidoc 共通仕様ヘッダー
 ├── diagrams/                               # Mermaid 可視化チャート (5 個)
 │   ├── architecture.md                     #   システムアーキテクチャ図 (C4 コンテナレベルトポロジ)
 │   ├── request-flow.md                     #   リクエストフロー図 (15+10 層ミドルウェアパイプライン)
-│   ├── functional-modules.md               #   機能モジュール図 (20 モジュール依存関係+データフロー)
+│   ├── functional-modules.md               #   機能モジュール図 (21 モジュール依存関係+データフロー)
 │   ├── data-lifecycle.md                   #   データライフサイクル図 (6 段階+ガントチャート+キャッシュ状態遷移図)
 │   └── security.md                         #   セキュリティアーキテクチャ図
 ├── skills/                                 # 再利用可能なプロジェクトスキル (11 個)

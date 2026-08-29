@@ -122,7 +122,8 @@ ads-php/
 │   │   ├── ads-task/                      # 5 个 cron 任务
 │   │   ├── ads-alert/                     # 告警引擎 + 通知
 │   │   ├── ads-report/                    # 报表引擎 (CSV/Excel/PDF)
-│   │   └── ads-tenant/                    # 多租户
+│   │   ├── ads-tenant/                    # 多租户
+│   │   └── ads-storage/                   # স্টোরেজ অ্যাবস্ট্রাকশন (local/OSS/COS/S3) + CDN প্রোভাইডার
 │   ├── tests/                             # PHPUnit
 │   │   ├── Unit/Middleware/               # 中间件测试
 │   │   ├── Unit/Task/                     # 任务测试 (规划)
@@ -171,6 +172,7 @@ ads-php/
 | বিডিং | `ads_bid_rules`, `ads_bid_logs` | BIGINT Snowflake | অটো বিডিং |
 | টার্গেটিং | `ads_targeting_templates` | BIGINT Snowflake | অডিয়েন্স টেমপ্লেট |
 | অ্যাসেট | `ads_assets` | BIGINT Snowflake | ক্রিয়েটিভ অ্যাসেট লাইব্রেরি |
+| CDN | `ads_cdn_providers` | BIGINT Snowflake | CDN প্রোভাইডার কনফিগ (ফিল্ড-লেভেল এনক্রিপ্টেড ক্রেডেনশিয়াল) |
 | নোটিফিকেশন | `ads_notifications` | BIGINT Snowflake | সাইট-ইন নোটিফিকেশন |
 | অ্যাট্রিবিউশন | `ads_conversions`, `ads_attribution_results` | BIGINT Snowflake | কনভার্সন ট্র্যাকিং + অ্যাট্রিবিউশন |
 | সিস্টেম | `ads_sync_errors` | BIGINT Snowflake | সিঙ্ক এরর |
@@ -324,6 +326,10 @@ HTTP Request → Controller → AsyncJobService::dispatch()
 - `gzip_static on` — প্রি-কমপ্রেসড js/css ফাইল
 - প্রোডাকশনে CDN ইন্টিগ্রেশন (CloudFront/Aliyun CDN)
 
+### 10.6 অ্যাসেট CDN অ্যাক্সিলারেশন
+
+অ্যাসেট URL জোড়া, ক্যাশ ও পার্জ কৌশল: [অধ্যায় 12 অ্যাসেট স্টোরেজ ও CDN অ্যাক্সিলারেশন](#12-অ্যাসেট-স্টোরেজ-ও-cdn-অ্যাক্সিলারেশন) দেখুন।
+
 ---
 
 ## 11. ডিপ্লয়মেন্ট ও CI/CD
@@ -342,3 +348,56 @@ HTTP Request → Controller → AsyncJobService::dispatch()
 
 - **CI** (`.github/workflows/ci.yml`): PHP Syntax → PHPUnit → TypeScript → Docker Build
 - **CD** (`.github/workflows/deploy.yml`): Docker Buildx → GHCR Push (service/admin/admin-php) → Deploy
+
+---
+
+## 12. অ্যাসেট স্টোরেজ ও CDN অ্যাক্সিলারেশন
+
+### 12.1 স্টোরেজ অ্যাবস্ট্রাকশন লেয়ার
+
+`service/plugin/ads-storage/` একটি ইউনিফাইড `Storage` ফ্যাসাড + `StorageDriver` ইন্টারফেস (put/delete/signedUrl/publicUrl/putFile/deleteUrl/purge) দেয়, driver অনুযায়ী ইমপ্লিমেন্টেশন বদলায়:
+
+| driver | ইমপ্লিমেন্টেশন | ব্যবহার |
+|--------|----------------|---------|
+| `local` | LocalStorage | ডিফল্ট, লোকাল `public/uploads/assets/` |
+| `oss` | AlibabaOssStorage | Alibaba Cloud OSS |
+| `cos` | TencentCosStorage | Tencent Cloud COS (S3 প্রোটোকল) |
+| `s3` | S3CompatibleStorage | S3-কমপ্যাটিবল: AWS S3 / Cloudflare R2 / MinIO |
+
+ডেলিভারিতে DB-র ডিফল্ট প্রোভাইডার (অ্যাডমিনে কনফিগারযোগ্য) অগ্রাধিকার পায়, না থাকলে env/local-এ ফলব্যাক।
+
+### 12.2 CDN প্রোভাইডার ম্যানেজমেন্ট
+
+নতুন টেবিল `ads_cdn_providers` (name/driver/bucket/region/endpoint/access_key/secret_key/cdn_domain/cdn_driver/cdn_token/enabled/is_default/status):
+
+- ক্রেডেনশিয়াল (access_key/secret_key/cdn_token) `Erikwang2013\Encryptable` দিয়ে ফিল্ড-লেভেলে এনক্রিপ্টেড; API রেসপন্সে শুধু মাস্ক করা ফিল্ড
+- শুধু প্ল্যাটফর্ম মাস্টার টেন্যান্ট (tenantId=1) ম্যানেজ করতে পারে (AdminMiddleware); `/api/admin/cdn/providers`-এ 8টি এন্ডপয়েন্ট: তালিকা/তৈরি/আপডেট/ডিলিট/ডিফল্ট/চালু-বন্ধ/কানেক্টিভিটি টেস্ট/ক্যাশ পার্জ
+- purge বর্তমানে `aliyun` cdn_driver-এর জন্য বাস্তব ইমপ্লিমেন্টেশন (OpenAPI সিগনিং); cloudflare/cloudfront পরে
+
+### 12.3 URL জোড়ার কৌশল
+
+`ads_assets.url` সবসময় রিলেটিভ পাথ (`/uploads/assets/...`) স্টোর করে; পড়ার সময় ডিফল্ট প্রোভাইডারের `cdn_domain` যোগ করে সম্পূর্ণ HTTPS URL (`https://{cdn_domain}/{url}`) হয়; CDN না থাকলে যেমন আছে তেমনই।
+
+### 12.4 ক্যাশ কৌশল
+
+| ধরন | কৌশল |
+|------|-------|
+| ছবি | `immutable` লং ক্যাশ (র্যান্ডম ফাইলনেম, ইউনিক URL — নিরাপদ) |
+| ভিডিও | শর্ট ক্যাশ + Range সাপোর্ট (সেগমেন্টেড প্লেব্যাক) |
+
+অ্যাসেট ডিলিট করলে তার URL CDN ক্যাশ থেকে অটো পার্জ হয়।
+
+### 12.5 মাল্টি-টেন্যান্ট পাথ আইসোলেশন
+
+অ্যাসেট key-তে টেন্যান্ট-আইসোলেটেড প্রিফিক্স থাকে এবং tenant_id অনুযায়ী গ্রুপ হয়; ভিন্ন টেন্যান্টের অ্যাসেট পরস্পরের অদৃশ্য।
+
+### 12.6 প্রিসাইন ডাইরেক্ট আপলোড ও ব্যাকফিল
+
+- `POST /api/assets/presign`: প্রিসাইন আপলোড URL পাওয়া (ক্লায়েন্ট সরাসরি অবজেক্ট স্টোরেজে আপলোড করে, যেমন 50 MiB ভিডিও); `key` ফরম্যাট `Ymd/32hex.এক্সটেনশন`
+- `POST /api/assets/register`: সরাসরি আপলোড করা অ্যাসেট নিবন্ধন; key ফরম্যাট কঠোরভাবে যাচাই (পাথ ট্রাভার্সাল প্রতিরোধ)
+- `local` driver-এ presign নেই (অবজেক্ট স্টোরেজ সিগনিং নেই)
+- `service/scripts/backfill-assets.php`: বিদ্যমান লোকাল অ্যাসেট অবজেক্ট স্টোরেজে কপি (`--dry-run` প্রিভিউ); `url` কলাম অপরিবর্তিত
+
+### 12.7 অরিজিন পাথ
+
+`service/config/static.php` webman স্ট্যাটিক ফাইল সার্ভিস চালু করে; `/uploads/assets` 8788-এ HTTP দিয়ে সরাসরি সerved হয় — CDN অরিজিন পাথ।

@@ -692,6 +692,25 @@ HTML 形式の API ドキュメントページを返す（認証不要）。
 
 **レスポンス**: `{ "code": 0, "data": { "id": "hashids", "url": "/uploads/assets/20260522/abc123.jpg", "type": "image" } }`
 
+- CDN 設定時、`url` はデフォルトプロバイダーの `cdn_domain` を付けて完全な HTTPS アドレスに組み立てられます
+
+### POST /api/assets/presign — 事前署名アップロード URL を取得
+
+**リクエスト**: `{ "filename": "demo.mp4", "mime_type": "video/mp4" }`
+
+**レスポンス**: `{ "code": 0, "data": { "key": "20260829/ab12...cd34.mp4", "upload_url": "https://signed-url", "expires_in": 3600, "url": "https://cdn.example.com/uploads/assets/..." } }`
+
+- `key` 形式: `Ymd/32hex.拡張子`。直接アップロード後 `/api/assets/register` に返却
+- 50 MiB までの動画はクライアントがオブジェクトストレージへ直接アップロード。`local` driver では利用不可
+
+### POST /api/assets/register — 直接アップロード済み素材を登録
+
+**リクエスト**: `{ "key": "20260829/ab12...cd34.mp4", "filename": "demo.mp4", "mime_type": "video/mp4", "size": 52428800 }`
+
+**レスポンス**: `{ "code": 0, "message": "Created", "data": { "id": "hashids", "url": "https://cdn.example.com/uploads/assets/...", "type": "video" } }`
+
+- `key` を厳格検証 (`^\d{8}/[0-9a-f]{32}\.[a-z0-9]{1,10}$`) — パストラバーサル防止
+
 ### GET /api/assets/:id — 素材詳細
 
 ### DELETE /api/assets/:id — 素材削除
@@ -730,6 +749,37 @@ HTML 形式の API ドキュメントページを返す（認証不要）。
 ### GET /api/admin/audit-logs — 監査ログ
 
 **パラメータ**: `user_id`, `action`, `date_from`, `date_to`, `page`, `per_page`
+
+---
+
+### CDN プロバイダー管理 (プラットフォームのマスターテナント tenant 1 のみ、AdminMiddleware 検証)
+
+### GET /api/admin/cdn/providers — プロバイダー一覧
+
+### POST /api/admin/cdn/providers — プロバイダー作成
+
+**リクエスト**: `{ "name": "Aliyun OSS", "driver": "oss", "bucket": "ads-assets", "region": "oss-cn-hangzhou", "endpoint": "https://oss-cn-hangzhou.aliyuncs.com", "access_key": "...", "secret_key": "...", "cdn_domain": "cdn.example.com", "cdn_driver": "aliyun", "cdn_token": "...", "is_default": 1 }`
+
+- `driver`: `local` / `oss` (阿里云 OSS) / `cos` (腾讯云 COS、S3 プロトコル) / `s3` (S3 互換: AWS S3 / Cloudflare R2 / MinIO)
+- 認証情報 (access_key/secret_key/cdn_token) は Encryptable でフィールド単位暗号化。レスポンスはマスク済みフィールドのみ
+
+### PUT /api/admin/cdn/providers/:id — プロバイダー更新
+
+### DELETE /api/admin/cdn/providers/:id — 削除 (デフォルトは次の enabled プロバイダーへ自動移行)
+
+### PUT /api/admin/cdn/providers/:id/default — デフォルトに設定
+
+### PUT /api/admin/cdn/providers/:id/toggle — 有効/無効切替 (デフォルト無効化時は自動移行)
+
+### POST /api/admin/cdn/providers/:id/test — 接続テスト
+
+**レスポンス**: `{ "code": 0, "data": { "ok": true, "driver": "oss", "status": "ok" } }`
+
+### POST /api/admin/cdn/providers/:id/purge — キャッシュパージ
+
+**リクエスト**: `{ "paths": ["/uploads/assets/20260829/xxx.mp4"] }`
+
+- `cdn_driver` と `cdn_domain` が必要。`aliyun` は実装済み (OpenAPI 署名)、cloudflare/cloudfront は今後拡張
 
 ---
 

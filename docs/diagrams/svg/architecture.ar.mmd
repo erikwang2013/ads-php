@@ -10,11 +10,11 @@ graph TB
     end
     subgraph AppLayer["طبقة التطبيقات"]
         Admin["Admin :8789<br/>webman-admin v2<br/>RBAC · التدقيق"]
-        Service["Service :8788<br/>webman v2 API<br/>7 إضافات · 29 محولات"]
+        Service["Service :8788<br/>webman v2 API<br/>8 إضافات · 29 محولات"]
         ServiceProxy["ServiceProxy<br/>cURL HTTP + JWT"]
     end
     subgraph DataLayer["طبقة البيانات"]
-        MySQL[("MySQL 8.0<br/>28 جدولاً · مفتاح Snowflake")]
+        MySQL[("MySQL 8.0<br/>29 جدولاً · مفتاح Snowflake")]
         Redis[("Redis 7<br/>ذاكرة تخزين 3 مستويات · قائمة انتظار")]
         ES[("Elasticsearch<br/>البحث النصي الكامل")]
     end
@@ -22,6 +22,13 @@ graph TB
         Domestic["16 منصة محلية<br/>Juchuan·Baidu·Tencent·Kuaishou"]
         International["13 منصة دولية<br/>Google·Meta·TikTok"]
     end
+    subgraph StorageCDN["التخزين و CDN"]
+        OSS[("التخزين الكائني<br/>local/OSS/COS/S3 متعدد المحركات")]
+        CDN["تسريع CDN<br/>تجميع cdn_domain · مسح الكاش"]
+    end
+    Service --> OSS
+    OSS --> CDN
+    CDN --> Clients
     Clients --> Nginx
     Nginx -->|"/"| Admin
     Nginx -->|"/api/"| Service

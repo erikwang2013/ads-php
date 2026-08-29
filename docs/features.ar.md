@@ -25,7 +25,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 11 | قوالب الاستهداف | TargetingTemplateController | 5 | — |
 | 12 | إدارة النظام | AdminUserController, AuditLogController | 5 | UserManage, AuditLog |
 | 13 | مزامنة البيانات | DataSyncTask, TokenRefreshTask, RetrySyncTask | — | — |
-| 14 | مكتبة المواد | AssetController | 4 | AssetGallery |
+| 14 | مكتبة المواد | AssetController | 6 | AssetGallery |
 | 15 | تنبيه الميزانية | BudgetAlertService + BudgetCheckTask | 1 | — |
 | 16 | تقويم النشر | CalendarService | 1 | CampaignCalendar |
 | 17 | الإسناد عبر المنصات | AttributionEngine | 2 | AttributionReport |
@@ -33,7 +33,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 19 | رمز التحقق | CaptchaController | 2 | — |
 | 20 | وثائق API | DocController | 1 | — |
 
-**الإجمالي**: 20 وحدة، 65+ مسارًا، 18 صفحة Vue
+**الإجمالي**: 21 وحدة، 75+ مسارًا، 19 صفحة Vue
 
 ---
 
@@ -242,10 +242,13 @@ POST /api/ad-groups 支持 targeting_template_id
 ## الوحدة 14: مكتبة المواد الإعلانية
 
 - الأنواع المدعومة: image/jpeg, image/png, image/gif, image/webp, video/mp4
-- تخزين الملفات: `public/uploads/assets/`
+- تخزين الملفات: `public/uploads/assets/` (محلي افتراضيًا)، متعدد محركات التخزين الكائني (local/oss/cos/s3)
+- عند تكوين مزود CDN افتراضي، تُجمَّع روابط المواد تلقائيًا مع cdn_domain للتوزيع عبر CDN
+- رفع مباشر بموقع مسبق التوقيع: `POST /api/assets/presign` يحصل على رابط الرفع، و`POST /api/assets/register` يسجّل المادة المرفوعة (غير متاح على المحرك المحلي)
+- حذف المادة يقوم تلقائيًا بمسح كاش CDN (purge)
 - الواجهة الأمامية: معرض شبكي + رفع بالسحب والإفلات + معاينة الصور + تشغيل الفيديو + نسخ URL
 
-الواجهات: الرفع / القائمة / التفاصيل / الحذف ← [api.ar.md الوحدة 12](api.ar.md#模块-12-素材库)
+الواجهات: الرفع / القائمة / التفاصيل / الحذف / التوقيع المسبق / التسجيل ← [api.ar.md الوحدة 12](api.ar.md#模块-12-素材库)
 
 ---
 
@@ -336,3 +339,15 @@ POST /api/ad-groups 支持 targeting_template_id
 - حالة في ذاكرة عقدة واحدة؛ النشر متعدد العقد يتطلب حالة Redis مشتركة
 
 ---
+---
+
+## الوحدة 21: إدارة مزودي CDN
+
+- الإدارة متاحة فقط للمستأجر الرئيسي للمنصة (tenant 1)، عبر AdminMiddleware
+- المحركات: local / oss (علي بابا) / cos (تينسنت) / s3 (AWS S3 / Cloudflare R2 / MinIO)
+- بيانات الاعتماد (access_key / secret_key / cdn_token) مشفرة على مستوى الحقل (Erikwang2013\Encryptable)، وتعيد API حقولًا مقنّعة فقط
+- دعم: المزود الافتراضي / التفعيل والإيقاف / اختبار الاتصال / مسح الكاش (purge)
+- الجدول: `ads_cdn_providers`
+- الواجهة الأمامية: CdnProviderList.vue (قائمة النظام)
+
+الواجهات: القائمة / الإنشاء / التحديث / الحذف / الافتراضي / التبديل / الاختبار / المسح ← [api.md مزودي CDN](api.ar.md#إدارة-مزودي-cdn-للمستأجر-الرئيسي-فقط-tenant-1-عبر-adminmiddleware)

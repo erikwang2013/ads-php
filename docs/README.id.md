@@ -11,6 +11,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 - **Manajemen Kampanye** — otorisasi akun OAuth, pengelolaan terpadu kampanye/grup iklan/kreatif lintas platform
 - **Laporan** — agregasi metrik lintas platform, ekspor CSV/Excel/PDF, atribusi 5 model
 - **Penayangan Cerdas** — penawaran otomatis, peringatan anggaran, kalender kampanye (Gantt), pustaka aset
+- **Akselerasi Global** — pengiriman aset via CDN (multi-driver: lokal / Alibaba Cloud OSS / Tencent Cloud COS / kompatibel S3, multi-provider dikonfigurasi di admin)
 - **Pemantauan & Peringatan** — mesin aturan peringatan, push multi-kanal, sinkronisasi otomatis terjadwal
 - **Akses Multi-Perangkat** — admin web (Vue 3), Flutter PC/Mobile, HarmonyOS
 - **Stabilitas & Keandalan** — circuit breaker/degradasi/timeout panggilan platform, cache 3 tingkat, optimasi konkurensi tinggi, 22 perlindungan keamanan
@@ -66,8 +67,8 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 | Lapisan | Teknologi | Keterangan |
 |----|------|------|
-| Server | webman v2 + PHP 8.2+ | 7 plugin, 65+ endpoint API |
-| Database | MySQL 8.0 | 28 tabel, prefiks ads_, primary key Snowflake BIGINT |
+| Server | webman v2 + PHP 8.2+ | 8 plugin, 75+ endpoint API |
+| Database | MySQL 8.0 | 29 tabel, prefiks ads_, primary key Snowflake BIGINT |
 | Cache | Redis 7 | Cache tiga tingkat (L1 memori/L2 APCu/L3 Redis), penghitung pembatasan, Pub/Sub, antrean pesan |
 | Pencarian | Elasticsearch | Sinkronisasi indeks otomatis webman-scout (sudah dikonfigurasi) |
 | Panel Admin | webman-admin v2 + Vue 3 + TypeScript + Element Plus | Backend PHP (port 8789), SPA terhubung langsung ke API bisnis (port 8788), 19 halaman, visualisasi ECharts |
@@ -189,6 +190,7 @@ CORS → SecurityHeaders → AttackGuard → ClientPlatform → Version → Rate
 | Kalender penayangan | Grafik Gantt lintas-platform, tampilan bulan/minggu, pewarnaan per platform | CalendarService + Gantt Vue |
 | Atribusi lintas-platform | 5 model atribusi (first/last/linear/time_decay/position_based), retrospektif 30 hari | AttributionEngine + ECharts |
 | Ketahanan panggilan platform | State machine circuit breaker per platform (5 kegagalan → OPEN → probe half-open 30 detik), degradasi fast-fail, audit timeout 29 adaptor | CircuitBreaker + GuardedAdapter |
+| Akselerasi Aset CDN | Multi-driver penyimpanan objek (local/oss/cos/s3), manajemen penyedia CDN di admin, unggah langsung presign, purge cache otomatis saat hapus | plugin ads-storage + CdnProviderController |
 
 ---
 
@@ -225,7 +227,7 @@ Wizard instalasi akan memandu Anda menyelesaikan di halaman web:
 1. **Koneksi database** — isi host MySQL, port, nama database, username/password, mendukung tes koneksi
 2. **Konfigurasi Redis** — isi informasi koneksi Redis (opsional)
 3. **Akun admin** — atur username login, password, nama tampilan panel
-4. **Instalasi satu klik** — otomatis buat database, jalankan `install.sql` untuk membuat 28 tabel dan menulis data seed, perbarui password admin
+4. **Instalasi satu klik** — otomatis buat database, jalankan `install.sql` untuk membuat 29 tabel dan menulis data seed, perbarui password admin
 
 Setelah instalasi selesai, akses `/` untuk masuk ke panel admin, login menggunakan username dan password yang diatur.
 
@@ -286,7 +288,9 @@ ads-php/
 │   │   ├── ads-task/                  # Penjadwalan tugas terjadwal (6 cron)
 │   │   ├── ads-alert/                 # Mesin pemantauan peringatan + peringatan anggaran
 │   │   ├── ads-report/                # Mesin laporan (CSV/Excel/PDF) + mesin atribusi + kalender penayangan
-│   │   └── ads-tenant/                # Manajemen multi-tenant
+│   │   ├── ads-tenant/                # Manajemen multi-tenant
+│   │   └── ads-storage/               # Lapisan abstraksi penyimpanan (local/OSS/COS/S3) + penyedia CDN
+│   ├── scripts/backfill-assets.php    # Backfill aset lama ke object storage
 │   ├── support/                       # Kelas utilitas Erik Stack
 │   │   ├── ControllerTrait.php        # Trait umum controller
 │   │   ├── JwtService.php             # Kelas pembungkus JWT
@@ -294,7 +298,7 @@ ads-php/
 │   │   ├── ExceptionHandler.php       # Penanganan exception API
 │   │   └── ApiResponse.php            # Format respons terpadu
 │   ├── config/                        # Konfigurasi global (DB/Redis/Log/Middleware)
-│   ├── tests/                         # Pengujian PHPUnit (265 tests)
+│   ├── tests/                         # Pengujian PHPUnit (288 tests)
 │   │   ├── Unit/                      # Unit test (Middleware, Task)
 │   │   └── Integration/               # Integration test (Auth, Health)
 │   └── start.php                      # Titik masuk layanan
@@ -347,6 +351,7 @@ ads-php/
 | Penayangan | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | Hierarki penayangan iklan |
 | Laporan | `ads_report_metrics`, `ads_report_extras` | Metrik laporan terpadu |
 | Materi | `ads_assets` | Pustaka materi kreatif |
+| CDN | `ads_cdn_providers` | Konfigurasi penyedia CDN (kredensial terenkripsi) |
 | Penargetan | `ads_targeting_templates` | Template penargetan audiens |
 | Atribusi | `ads_conversions`, `ads_attribution_results` | Pelacakan konversi + hasil atribusi |
 | Penawaran | `ads_bid_rules`, `ads_bid_logs` | Aturan penawaran otomatis + riwayat |
@@ -373,10 +378,10 @@ ads-php/
 
 ```bash
 cd service && ./vendor/bin/phpunit
-# 265 test / 717 assertion
+# 288 test / 862 assertion
 ```
 
-**Cakupan**: Middleware (Version/SQLGuard/SecurityHeaders) · Objek data (CampaignData/FieldMapping/Hashids) · Mesin (ReportBuilder/AdapterRegistry) · Integration test (Auth/Health)
+**Cakupan**: 14 middleware · 8 lapisan bisnis plugin (akun/alert/platform/laporan/tugas/tenant/penyimpanan) · mesin (Bid/Alert/Attribution/Report) · Integration test API (76 rute) · UI E2E (18 halaman)
 
 ```bash
 # Pemeriksaan TypeScript
@@ -443,6 +448,23 @@ cd apps/flutter && dart analyze   # Nol error
 >
 > - **港元、人民币及美元**：Citibank N.A. Hong Kong — SWIFT `CITIHKHXXXX` · 银行编号 006 · Hong Kong Branch（分行编号 391）· Citibank Tower, Citibank Plaza, 3 Garden Road, Central, Hong Kong
 > - **其他币种**：THE BANK OF NEW YORK MELLON — SWIFT `IRVTUS3NXXX` · 240 GREENWICH STREET, NEW YORK, United States
+
+### Donasi Kripto (Crypto Donation)
+
+Jika proyek ini membantu Anda, silakan pindai kode QR untuk berdonasi, terima kasih!
+
+| Jaringan (Network) | Kode QR (QR Code) | Alamat dompet (Wallet Address) |
+|---|---|---|
+| BNB Smart Chain (BEP20) | [<img src="./coin/1.jpg" width="150" alt="BNB Smart Chain (BEP20)">](./coin/1.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Tron (TRC20) | [<img src="./coin/2.jpg" width="150" alt="Tron (TRC20)">](./coin/2.jpg) | `TEdDHWLajt1XvqtPDWmQctdrJaC3pzZZzz` |
+| Ethereum (ERC20) | [<img src="./coin/3.jpg" width="150" alt="Ethereum (ERC20)">](./coin/3.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Aptos | [<img src="./coin/4.jpg" width="150" alt="Aptos">](./coin/4.jpg) | `0x836e3780edfc3f7b2372b39e2a1a3a5d7adfaccd96c726f21cfde1b50dd68030` |
+| Plasma | [<img src="./coin/5.jpg" width="150" alt="Plasma">](./coin/5.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Polygon POS | [<img src="./coin/6.jpg" width="150" alt="Polygon POS">](./coin/6.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Solana | [<img src="./coin/7.jpg" width="150" alt="Solana">](./coin/7.jpg) | `2hfhboHdmdrYsY25XfQSsEWxq5ip4EQsR7f4AzSRMUyr` |
+| The Open Network (TON) | [<img src="./coin/8.jpg" width="150" alt="The Open Network (TON)">](./coin/8.jpg) | `UQB9kFQohzmXUir9QSSZq01iwl9aQZIDdBpNmDklljRtCoGK` |
+| Arbitrum One | [<img src="./coin/9.jpg" width="150" alt="Arbitrum One">](./coin/9.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| AVAX C-Chain | [<img src="./coin/10.jpg" width="150" alt="AVAX C-Chain">](./coin/10.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
 
 ---
 

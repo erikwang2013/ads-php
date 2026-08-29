@@ -122,7 +122,8 @@ ads-php/
 │   │   ├── ads-task/                      # 5 个 cron 任务
 │   │   ├── ads-alert/                     # 告警引擎 + 通知
 │   │   ├── ads-report/                    # 报表引擎 (CSV/Excel/PDF)
-│   │   └── ads-tenant/                    # 多租户
+│   │   ├── ads-tenant/                    # 多租户
+│   │   └── ads-storage/                   # Абстракция хранилища (local/OSS/COS/S3) + CDN-провайдеры
 │   ├── tests/                             # PHPUnit
 │   │   ├── Unit/Middleware/               # 中间件测试
 │   │   ├── Unit/Task/                     # 任务测试 (规划)
@@ -171,6 +172,7 @@ ads-php/
 | Ставки | `ads_bid_rules`, `ads_bid_logs` | BIGINT Snowflake | Автоматические ставки |
 | Таргетинг | `ads_targeting_templates` | BIGINT Snowflake | Шаблоны аудитории |
 | Материалы | `ads_assets` | BIGINT Snowflake | Библиотека креативов |
+| CDN | `ads_cdn_providers` | BIGINT Snowflake | Конфигурация CDN-провайдера (учётные данные с шифрованием на уровне полей) |
 | Уведомления | `ads_notifications` | BIGINT Snowflake | Внутренние уведомления |
 | Атрибуция | `ads_conversions`, `ads_attribution_results` | BIGINT Snowflake | Отслеживание конверсий + атрибуция |
 | Системные | `ads_sync_errors` | BIGINT Snowflake | Ошибки синхронизации |
@@ -324,6 +326,10 @@ HTTP Request → Controller → AsyncJobService::dispatch()
 - `gzip_static on` — предварительно сжатые js/css файлы
 - В продакшене подключение CDN (CloudFront/Aliyun CDN)
 
+### 10.6 CDN-ускорение материалов
+
+Сборка URL материалов, стратегии кэша и очистки — см. [главу 12 «Хранилище материалов и CDN-ускорение»](#12-хранилище-материалов-и-cdn-ускорение).
+
 ---
 
 ## 11. Развертывание и CI/CD
@@ -342,3 +348,56 @@ HTTP Request → Controller → AsyncJobService::dispatch()
 
 - **CI** (`.github/workflows/ci.yml`): PHP Syntax → PHPUnit → TypeScript → Docker Build
 - **CD** (`.github/workflows/deploy.yml`): Docker Buildx → GHCR Push (service/admin/admin-php) → Deploy
+
+---
+
+## 12. Хранилище материалов и CDN-ускорение
+
+### 12.1 Слой абстракции хранилища
+
+`service/plugin/ads-storage/` предоставляет единый фасад `Storage` + интерфейс `StorageDriver` (put/delete/signedUrl/publicUrl/putFile/deleteUrl/purge) с переключением реализации по driver:
+
+| driver | реализация | применение |
+|--------|------------|------------|
+| `local` | LocalStorage | По умолчанию, локально `public/uploads/assets/` |
+| `oss` | AlibabaOssStorage | Alibaba Cloud OSS |
+| `cos` | TencentCosStorage | Tencent Cloud COS (по протоколу S3) |
+| `s3` | S3CompatibleStorage | S3-совместимые: AWS S3 / Cloudflare R2 / MinIO |
+
+При раздаче приоритет у провайдера по умолчанию из БД (настраивается в админке), при отсутствии — env/local.
+
+### 12.2 Управление CDN-провайдерами
+
+Новая таблица `ads_cdn_providers` (name/driver/bucket/region/endpoint/access_key/secret_key/cdn_domain/cdn_driver/cdn_token/enabled/is_default/status):
+
+- Учётные данные (access_key/secret_key/cdn_token) шифруются на уровне полей через `Erikwang2013\Encryptable`; API отвечает только маскированными полями
+- Управлять может только главный тенант платформы (tenantId=1, AdminMiddleware); 8 эндпоинтов `/api/admin/cdn/providers`: список/создание/обновление/удаление/по умолчанию/вкл-выкл/проверка связи/очистка кэша
+- purge реально реализован для `aliyun` cdn_driver (подпись OpenAPI); cloudflare/cloudfront — в планах
+
+### 12.3 Стратегия сборки URL
+
+`ads_assets.url` всегда хранит относительный путь (`/uploads/assets/...`); при чтении к нему подставляется `cdn_domain` провайдера по умолчанию — получается полный HTTPS URL (`https://{cdn_domain}/{url}`); без CDN возвращается как есть.
+
+### 12.4 Стратегия кэша
+
+| тип | стратегия |
+|-----|-----------|
+| изображения | `immutable` долгий кэш (случайные имена файлов, уникальные URL — безопасно) |
+| видео | короткий кэш + поддержка Range (сегментированное воспроизведение) |
+
+При удалении материала его URL автоматически очищается из кэша CDN.
+
+### 12.5 Изоляция путей между тенантами
+
+Ключи материалов содержат префикс изоляции тенанта и группируются по tenant_id; материалы разных тенантов невидимы друг для друга.
+
+### 12.6 Предподписанная прямая загрузка и перенос
+
+- `POST /api/assets/presign`: получение предподписанного URL загрузки (клиент грузит напрямую в объектное хранилище, напр. видео 50 МиБ); формат `key` — `Ymd/32hex.расширение`
+- `POST /api/assets/register`: регистрация загруженного напрямую материала; формат key строго проверяется от path traversal
+- presign недоступен на драйвере `local` (нет подписи объектного хранилища)
+- `service/scripts/backfill-assets.php`: переносит существующие локальные материалы в объектное хранилище (`--dry-run` предпросмотр); колонка `url` не меняется
+
+### 12.7 Путь источника
+
+`service/config/static.php` включает раздачу статики webman; `/uploads/assets` отдаётся напрямую по HTTP на 8788 и служит путём источника для CDN.

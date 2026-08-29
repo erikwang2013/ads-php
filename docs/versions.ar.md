@@ -150,11 +150,12 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | | ads_bid_logs | — | — | ✅ |
 | الاستهداف | ads_targeting_templates | — | — | ✅ |
 | المواد | ads_assets | — | — | ✅ |
+| CDN | ads_cdn_providers | — | — | ✅ |
 | الإسناد | ads_conversions | — | — | ✅ |
 | | ads_attribution_results | — | — | ✅ |
 | النظام | ads_sync_errors | ✅ | ✅ | ✅ |
 | الإدارة | admin_users/roles/audit_logs | ✅ | ✅ | ✅ |
-| **الإجمالي** | | **8** | **13** | **18** |
+| **الإجمالي** | | **8** | **13** | **19** |
 
 ---
 
@@ -179,9 +180,10 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | مركز الإشعارات | — | ✅ | ✅ |
 | المزايدة التلقائية | — | — | ✅ |
 | مكتبة المواد | — | — | ✅ |
+| مزودو CDN | — | — | ✅ |
 | تقويم النشر | — | — | ✅ |
 | تحليل الإسناد | — | — | ✅ |
-| **الإجمالي** | **7** | **13** | **17** |
+| **الإجمالي** | **7** | **13** | **18** |
 
 ### Flutter
 
@@ -219,8 +221,9 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | الإشعارات (index/unread/read/readAll) | — | 4 | 4 |
 | المزايدة التلقائية (CRUD + logs) | — | — | 5 |
 | قوالب الاستهداف (CRUD) | — | — | 5 |
-| مكتبة المواد (index/upload/show/destroy) | — | — | 4 |
-| **الإجمالي** | **26** | **44** | **62** |
+| مكتبة المواد (index/upload/show/destroy/presign/register) | — | — | 6 |
+| مزودو CDN (list/create/update/delete/default/toggle/test/purge) | — | — | 8 |
+| **الإجمالي** | **26** | **44** | **70** |
 
 ---
 

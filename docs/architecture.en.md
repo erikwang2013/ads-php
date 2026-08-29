@@ -122,7 +122,8 @@ ads-php/
 │   │   ├── ads-task/                      # 5 个 cron 任务
 │   │   ├── ads-alert/                     # 告警引擎 + 通知
 │   │   ├── ads-report/                    # 报表引擎 (CSV/Excel/PDF)
-│   │   └── ads-tenant/                    # 多租户
+│   │   ├── ads-tenant/                    # 多租户
+│   │   └── ads-storage/                   # Storage abstraction (local/OSS/COS/S3) + CDN providers
 │   ├── tests/                             # PHPUnit
 │   │   ├── Unit/Middleware/               # 中间件测试
 │   │   ├── Unit/Task/                     # 任务测试 (规划)
@@ -171,6 +172,7 @@ ads-php/
 | Bidding | `ads_bid_rules`, `ads_bid_logs` | BIGINT Snowflake | Auto-bidding |
 | Targeting | `ads_targeting_templates` | BIGINT Snowflake | Audience templates |
 | Assets | `ads_assets` | BIGINT Snowflake | Creative asset library |
+| CDN | `ads_cdn_providers` | BIGINT Snowflake | CDN provider config (field-level encrypted credentials) |
 | Notifications | `ads_notifications` | BIGINT Snowflake | In-app notifications |
 | Attribution | `ads_conversions`, `ads_attribution_results` | BIGINT Snowflake | Conversion tracking + attribution |
 | System | `ads_sync_errors` | BIGINT Snowflake | Sync errors |
@@ -324,6 +326,10 @@ HTTP Request → Controller → AsyncJobService::dispatch()
 - `gzip_static on` — pre-compressed js/css files
 - CDN in production (CloudFront/Aliyun CDN)
 
+### 10.6 Asset CDN Acceleration
+
+Asset URL assembly, caching and purge policies: see [Chapter 12 Asset Storage & CDN Acceleration](#12-asset-storage--cdn-acceleration).
+
 ---
 
 ## 11. Deployment & CI/CD
@@ -342,3 +348,56 @@ HTTP Request → Controller → AsyncJobService::dispatch()
 
 - **CI** (`.github/workflows/ci.yml`): PHP Syntax → PHPUnit → TypeScript → Docker Build
 - **CD** (`.github/workflows/deploy.yml`): Docker Buildx → GHCR Push (service/admin/admin-php) → Deploy
+
+---
+
+## 12. Asset Storage & CDN Acceleration
+
+### 12.1 Storage Abstraction Layer
+
+`service/plugin/ads-storage/` provides a unified `Storage` facade + `StorageDriver` interface (put/delete/signedUrl/publicUrl/putFile/deleteUrl/purge), switching implementations by driver:
+
+| driver | implementation | use case |
+|--------|----------------|----------|
+| `local` | LocalStorage | Default, local `public/uploads/assets/` |
+| `oss` | AlibabaOssStorage | Alibaba Cloud OSS |
+| `cos` | TencentCosStorage | Tencent Cloud COS (S3 protocol) |
+| `s3` | S3CompatibleStorage | S3-compatible: AWS S3 / Cloudflare R2 / MinIO |
+
+Delivery prefers the DB default provider (configurable in admin), falling back to env/local.
+
+### 12.2 CDN Provider Management
+
+New table `ads_cdn_providers` (name/driver/bucket/region/endpoint/access_key/secret_key/cdn_domain/cdn_driver/cdn_token/enabled/is_default/status):
+
+- Credentials (access_key/secret_key/cdn_token) encrypted at field level via `Erikwang2013\Encryptable`; API responses return masked fields only
+- Only the platform master tenant (tenantId=1) can manage (AdminMiddleware), 8 endpoints under `/api/admin/cdn/providers`: list/create/update/delete/set-default/toggle/connectivity test/cache purge
+- purge is really implemented for the `aliyun` cdn_driver (OpenAPI signing); cloudflare/cloudfront pending
+
+### 12.3 URL Assembly
+
+`ads_assets.url` always stores a relative path (`/uploads/assets/...`); at read time it is prefixed with the default provider's `cdn_domain` into a full HTTPS URL (`https://{cdn_domain}/{url}`), and returned as-is when no CDN is configured.
+
+### 12.4 Cache Policy
+
+| type | policy |
+|------|--------|
+| images | `immutable` long cache (random filenames, unique URLs, safe for long-lived caching) |
+| video | short cache + Range support (segmented playback) |
+
+Deleting an asset automatically purges its URL from the CDN cache.
+
+### 12.5 Multi-Tenant Path Isolation
+
+Asset keys carry a tenant-isolated prefix and are grouped by tenant_id; assets of different tenants are invisible to each other.
+
+### 12.6 Presigned Direct Upload & Backfill
+
+- `POST /api/assets/presign`: obtain a presigned upload URL (client direct upload to object storage, e.g. 50 MiB videos); `key` format `Ymd/32-hex.ext`
+- `POST /api/assets/register`: register a directly uploaded asset; key format strictly validated against path traversal
+- presign is unavailable under the `local` driver (no object-storage signing capability)
+- `service/scripts/backfill-assets.php`: copies existing local assets into object storage (`--dry-run` preview); the `url` column stays unchanged
+
+### 12.7 Origin Path
+
+`service/config/static.php` enables webman static file serving; `/uploads/assets` is directly served over HTTP on 8788 as the CDN origin path.

@@ -25,7 +25,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 11 | 타겟팅 템플릿 | TargetingTemplateController | 5 | — |
 | 12 | 시스템 관리 | AdminUserController, AuditLogController | 5 | UserManage, AuditLog |
 | 13 | 데이터 동기화 | DataSyncTask, TokenRefreshTask, RetrySyncTask | — | — |
-| 14 | 소재 라이브러리 | AssetController | 4 | AssetGallery |
+| 14 | 소재 라이브러리 | AssetController | 6 | AssetGallery |
 | 15 | 예산 경보 | BudgetAlertService + BudgetCheckTask | 1 | — |
 | 16 | 집행 캘린더 | CalendarService | 1 | CampaignCalendar |
 | 17 | 플랫폼 간 기여도 | AttributionEngine | 2 | AttributionReport |
@@ -33,7 +33,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 19 | 캡차 | CaptchaController | 2 | — |
 | 20 | API 문서 | DocController | 1 | — |
 
-**합계**: 20 모듈, 65+ 라우트, 18 Vue 페이지
+**합계**: 21 모듈, 75+ 라우트, 19 Vue 페이지
 
 ---
 
@@ -242,10 +242,13 @@ sync_enabled=1 계정 순회
 ## 모듈 14: 광고 소재 라이브러리
 
 - 지원 타입: image/jpeg, image/png, image/gif, image/webp, video/mp4
-- 파일 저장: `public/uploads/assets/`
+- 파일 저장: `public/uploads/assets/` (로컬 기본), 객체 스토리지 멀티 드라이버 (local/oss/cos/s3)
+- 기본 CDN 프로바이더 설정 시 애셋 URL에 cdn_domain 을 자동으로 조합해 CDN 배포
+- 프리사인드 직접 업로드: `POST /api/assets/presign` 으로 업로드 URL 발급, `POST /api/assets/register` 로 직접 업로드 자산 등록 (local 드라이버는 미지원)
+- 자산 삭제 시 CDN 캐시 자동 갱신 (purge)
 - 프론트엔드: 그리드 갤러리 + 드래그 앤 드롭 업로드 + 이미지 미리보기 + 영상 재생 + URL 복사
 
-인터페이스: 업로드 / 목록 / 상세 / 삭제 → [api.md 모듈 12](api.ko.md#模块-12-素材库)
+인터페이스: 업로드 / 목록 / 상세 / 삭제 / 프리사인 / 등록 → [api.md 모듈 12](api.ko.md#模块-12-素材库)
 
 ---
 
@@ -334,3 +337,15 @@ sync_enabled=1 계정 순회
 ### 알려진 한계
 
 - 단일 노드 인메모리 상태, 다중 노드 배포 시 Redis 공유 상태 필요
+---
+
+## 모듈 21: CDN 프로바이더 관리
+
+- 플랫폼 마스터 테넌트 (tenant 1)만 관리 가능, AdminMiddleware 검증
+- 드라이버: local / oss (알리바다) / cos (텐센트) / s3 (AWS S3 / Cloudflare R2 / MinIO)
+- 자격 증명 (access_key / secret_key / cdn_token) 필드 레벨 암호화 (Erikwang2013\Encryptable), API는 마스킹 필드만 반환
+- 기본 프로바이더 설정 / 활성화 토글 / 연결 테스트 / 캐시 갱신 (purge) 지원
+- 데이터 테이블: `ads_cdn_providers`
+- 프론트엔드: CdnProviderList.vue (시스템 메뉴)
+
+인터페이스: 목록 / 생성 / 수정 / 삭제 / 기본 / 활성화 / 테스트 / 갱신 → [api.md CDN 프로바이더](api.ko.md#cdn-프로바이더-관리-플랫폼-마스터-테넌트-tenant-1만-adminmiddleware-검증)

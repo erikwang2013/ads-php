@@ -692,6 +692,25 @@ GET /docs
 
 **响应**: `{ "code": 0, "data": { "id": "hashids", "url": "/uploads/assets/20260522/abc123.jpg", "type": "image" } }`
 
+- 配置 CDN 后 `url` 按默认 provider 的 `cdn_domain` 拼接为完整 HTTPS 地址
+
+### POST /api/assets/presign — 获取预签名上传地址
+
+**请求**: `{ "filename": "demo.mp4", "mime_type": "video/mp4" }`
+
+**响应**: `{ "code": 0, "data": { "key": "20260829/ab12...cd34.mp4", "upload_url": "https://signed-url", "expires_in": 3600, "url": "https://cdn.example.com/uploads/assets/..." } }`
+
+- `key` 格式 `Ymd/32位hex.扩展名`，直传完成后回传 `/api/assets/register` 登记
+- 视频 50 MiB 场景客户端直传对象存储；`local` 驱动下不可用
+
+### POST /api/assets/register — 登记直传素材
+
+**请求**: `{ "key": "20260829/ab12...cd34.mp4", "filename": "demo.mp4", "mime_type": "video/mp4", "size": 52428800 }`
+
+**响应**: `{ "code": 0, "message": "Created", "data": { "id": "hashids", "url": "https://cdn.example.com/uploads/assets/...", "type": "video" } }`
+
+- `key` 严格校验 `^\d{8}/[0-9a-f]{32}\.[a-z0-9]{1,10}$`，防路径穿越
+
 ### GET /api/assets/:id — 素材详情
 
 ### DELETE /api/assets/:id — 删除素材
@@ -730,6 +749,35 @@ GET /docs
 ### GET /api/admin/audit-logs — 审计日志
 
 **参数**: `user_id`, `action`, `date_from`, `date_to`, `page`, `per_page`
+
+### CDN 服务商管理（仅平台主租户 tenant 1，AdminMiddleware 校验）
+
+### GET /api/admin/cdn/providers — 服务商列表
+
+### POST /api/admin/cdn/providers — 创建服务商
+
+**请求**: `{ "name": "阿里云 OSS", "driver": "oss", "bucket": "ads-assets", "region": "oss-cn-hangzhou", "endpoint": "https://oss-cn-hangzhou.aliyuncs.com", "access_key": "...", "secret_key": "...", "cdn_domain": "cdn.example.com", "cdn_driver": "aliyun", "cdn_token": "...", "is_default": 1 }`
+
+- `driver`: `local` / `oss`（阿里云 OSS）/ `cos`（腾讯云 COS，S3 协议）/ `s3`（S3 兼容，覆盖 AWS S3/Cloudflare R2/MinIO）
+- 凭据字段（access_key/secret_key/cdn_token）经 Encryptable 加密落库，响应只返回脱敏字段
+
+### PUT /api/admin/cdn/providers/:id — 更新服务商
+
+### DELETE /api/admin/cdn/providers/:id — 删除服务商（默认自动转移给剩余 enabled 服务商）
+
+### PUT /api/admin/cdn/providers/:id/default — 设为默认
+
+### PUT /api/admin/cdn/providers/:id/toggle — 启用/停用（停用默认服务商自动转移）
+
+### POST /api/admin/cdn/providers/:id/test — 连通性测试
+
+**响应**: `{ "code": 0, "data": { "ok": true, "driver": "oss", "status": "ok" } }`
+
+### POST /api/admin/cdn/providers/:id/purge — 缓存刷新
+
+**请求**: `{ "paths": ["/uploads/assets/20260829/xxx.mp4"] }`
+
+- 需配置 `cdn_driver` 与 `cdn_domain`；目前 `aliyun` 真实实现（OpenAPI 签名），cloudflare/cloudfront 待扩展
 
 ---
 

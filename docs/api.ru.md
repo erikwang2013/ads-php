@@ -692,6 +692,25 @@ GET /docs
 
 **Ответ**: `{ "code": 0, "data": { "id": "hashids", "url": "/uploads/assets/20260522/abc123.jpg", "type": "image" } }`
 
+- При настроенном CDN `url` собирается с `cdn_domain` провайдера по умолчанию в полный HTTPS-адрес
+
+### POST /api/assets/presign — Получение предподписанного URL загрузки
+
+**Запрос**: `{ "filename": "demo.mp4", "mime_type": "video/mp4" }`
+
+**Ответ**: `{ "code": 0, "data": { "key": "20260829/ab12...cd34.mp4", "upload_url": "https://signed-url", "expires_in": 3600, "url": "https://cdn.example.com/uploads/assets/..." } }`
+
+- Формат `key`: `Ymd/32hex.расширение`; после прямой загрузки вернуть в `/api/assets/register`
+- Для видео до 50 МиБ клиент грузит напрямую в объектное хранилище; на драйвере `local` недоступно
+
+### POST /api/assets/register — Регистрация материала, загруженного напрямую
+
+**Запрос**: `{ "key": "20260829/ab12...cd34.mp4", "filename": "demo.mp4", "mime_type": "video/mp4", "size": 52428800 }`
+
+**Ответ**: `{ "code": 0, "message": "Created", "data": { "id": "hashids", "url": "https://cdn.example.com/uploads/assets/...", "type": "video" } }`
+
+- `key` строго проверяется (`^\d{8}/[0-9a-f]{32}\.[a-z0-9]{1,10}$`) — защита от path traversal
+
 ### GET /api/assets/:id — Детали материала
 
 ### DELETE /api/assets/:id — Удаление материала
@@ -730,6 +749,37 @@ GET /docs
 ### GET /api/admin/audit-logs — Журнал аудита
 
 **Параметры**: `user_id`, `action`, `date_from`, `date_to`, `page`, `per_page`
+
+---
+
+### Управление CDN-провайдерами (только главный тенант платформы tenant 1, AdminMiddleware)
+
+### GET /api/admin/cdn/providers — Список провайдеров
+
+### POST /api/admin/cdn/providers — Создать провайдера
+
+**Запрос**: `{ "name": "Aliyun OSS", "driver": "oss", "bucket": "ads-assets", "region": "oss-cn-hangzhou", "endpoint": "https://oss-cn-hangzhou.aliyuncs.com", "access_key": "...", "secret_key": "...", "cdn_domain": "cdn.example.com", "cdn_driver": "aliyun", "cdn_token": "...", "is_default": 1 }`
+
+- `driver`: `local` / `oss` (Alibaba Cloud OSS) / `cos` (Tencent Cloud COS, протокол S3) / `s3` (S3-совместимые: AWS S3 / Cloudflare R2 / MinIO)
+- Учётные данные (access_key/secret_key/cdn_token) шифруются по полям через Encryptable; в ответе только маскированные поля
+
+### PUT /api/admin/cdn/providers/:id — Обновить провайдера
+
+### DELETE /api/admin/cdn/providers/:id — Удалить (умолчание автоматически передаётся следующему enabled)
+
+### PUT /api/admin/cdn/providers/:id/default — Сделать провайдером по умолчанию
+
+### PUT /api/admin/cdn/providers/:id/toggle — Включить/отключить (при отключении умолчание передаётся автоматически)
+
+### POST /api/admin/cdn/providers/:id/test — Проверка связи
+
+**Ответ**: `{ "code": 0, "data": { "ok": true, "driver": "oss", "status": "ok" } }`
+
+### POST /api/admin/cdn/providers/:id/purge — Очистка кэша CDN
+
+**Запрос**: `{ "paths": ["/uploads/assets/20260829/xxx.mp4"] }`
+
+- Требуются `cdn_driver` и `cdn_domain`; для `aliyun` реализовано (подпись OpenAPI), cloudflare/cloudfront — в планах
 
 ---
 

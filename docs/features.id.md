@@ -25,7 +25,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 11 | Template penargetan | TargetingTemplateController | 5 | — |
 | 12 | Manajemen sistem | AdminUserController, AuditLogController | 5 | UserManage, AuditLog |
 | 13 | Sinkronisasi data | DataSyncTask, TokenRefreshTask, RetrySyncTask | — | — |
-| 14 | Pustaka materi | AssetController | 4 | AssetGallery |
+| 14 | Pustaka materi | AssetController | 6 | AssetGallery |
 | 15 | Peringatan anggaran | BudgetAlertService + BudgetCheckTask | 1 | — |
 | 16 | Kalender penayangan | CalendarService | 1 | CampaignCalendar |
 | 17 | Atribusi lintas-platform | AttributionEngine | 2 | AttributionReport |
@@ -33,7 +33,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 19 | Kode verifikasi | CaptchaController | 2 | — |
 | 20 | Dokumentasi API | DocController | 1 | — |
 
-**Total**: 20 modul, 65+ route, 18 halaman Vue
+**Total**: 21 modul, 75+ route, 19 halaman Vue
 
 ---
 
@@ -242,10 +242,13 @@ Antarmuka: Manajemen pengguna / log audit / peran → [api.id.md endpoint Admin]
 ## Modul 14: Pustaka Materi Iklan
 
 - Tipe yang didukung: image/jpeg, image/png, image/gif, image/webp, video/mp4
-- Penyimpanan file: `public/uploads/assets/`
+- Penyimpanan file: `public/uploads/assets/` (lokal bawaan), multi-driver penyimpanan objek (local/oss/cos/s3)
+- Dengan penyedia CDN default dikonfigurasi, URL materi dirangkai dengan cdn_domain untuk pengiriman CDN
+- Upload langsung presigned: `POST /api/assets/presign` mendapat URL upload, `POST /api/assets/register` mendaftarkan materi upload langsung (tidak tersedia di driver lokal)
+- Menghapus materi otomatis purge cache CDN (purge)
 - Frontend: galeri grid + unggah drag-drop + pratinjau gambar + pemutaran video + salin URL
 
-Antarmuka: Unggah / daftar / detail / hapus → [api.id.md modul 12](api.id.md#模块-12-素材库)
+Antarmuka: Unggah / daftar / detail / hapus / presign / daftarkan → [api.id.md modul 12](api.id.md#模块-12-素材库)
 
 ---
 
@@ -334,3 +337,15 @@ Antarmuka: Analisis atribusi / daftar model → [api.id.md modul 7](api.id.md#�
 ### Keterbatasan Diketahui
 
 - State in-memory satu node; deployment multi-node memerlukan shared state Redis
+---
+
+## Modul 21: Manajemen Penyedia CDN
+
+- Hanya tenant master platform (tenant 1) yang dapat mengelola, diverifikasi AdminMiddleware
+- Driver: local / oss (Aliyun) / cos (Tencent Cloud) / s3 (AWS S3 / Cloudflare R2 / MinIO)
+- Kredensial (access_key / secret_key / cdn_token) dienkripsi level field (Erikwang2013\Encryptable), API hanya mengembalikan field termask
+- Mendukung penyedia default / aktif-nonaktif / tes konektivitas / purge cache
+- Tabel: `ads_cdn_providers`
+- Frontend: CdnProviderList.vue (menu sistem)
+
+Antarmuka: Daftar / Buat / Perbarui / Hapus / Default / Toggle / Tes / Purge → [api.md Penyedia CDN](api.id.md#manajemen-penyedia-cdn-hanya-tenant-master-platform-tenant-1-adminmiddleware)

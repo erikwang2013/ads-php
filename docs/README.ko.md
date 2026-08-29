@@ -11,6 +11,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 - **캠페인 관리** — OAuth 계정 인증, 캠페인/광고그룹/크리에이티브 플랫폼 간 통합 관리
 - **리포트** — 플랫폼 간 지표 집계, CSV/Excel/PDF 내보내기, 5개 모델 기여도 분석
 - **스마트 집행** — 자동 입찰, 예산 경보, 집행 캘린더 (Gantt), 소재 라이브러리
+- **글로벌 가속** — CDN 소재 배포 (멀티 드라이버: 로컬 / Alibaba Cloud OSS / Tencent Cloud COS / S3 호환, 관리자에서 멀티 프로바이더 설정)
 - **모니터링 및 경보** — 경보 규칙 엔진, 다중 채널 푸시, 예약 자동 동기화
 - **다중 단말 접근** — 웹 관리자 (Vue 3), Flutter PC/Mobile, HarmonyOS
 - **안정성 및 신뢰성** — 플랫폼 호출 서킷 브레이커/다운그레이드/타임아웃, 3단계 캐시, 고동시성 최적화, 22개 보안 보호
@@ -66,8 +67,8 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 | 계층 | 기술 | 설명 |
 |----|------|------|
-| 서버 | webman v2 + PHP 8.2+ | 7개 플러그인, 65+ API 엔드포인트 |
-| 데이터베이스 | MySQL 8.0 | 28개 테이블, ads_ 접두사, Snowflake BIGINT 기본 키 |
+| 서버 | webman v2 + PHP 8.2+ | 8개 플러그인, 75+ API 엔드포인트 |
+| 데이터베이스 | MySQL 8.0 | 29개 테이블, ads_ 접두사, Snowflake BIGINT 기본 키 |
 | 캐시 | Redis 7 | 3단계 캐시 (L1 메모리/L2 APCu/L3 Redis), 속도 제한 카운터, Pub/Sub, 메시지 큐 |
 | 검색 | Elasticsearch | webman-scout 자동 인덱스 동기화 (구성됨) |
 | 관리 백엔드 | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP 백엔드(포트 8789), SPA에서 비즈니스 API 직접 호출(포트 8788), 19개 페이지, ECharts 시각화 |
@@ -189,6 +190,7 @@ CORS → SecurityHeaders → AttackGuard → ClientPlatform → Version → Rate
 | 집행 캘린더 | 플랫폼 간 Gantt 차트, 월/주 뷰, 플랫폼별 색상 | CalendarService + Vue Gantt |
 | 플랫폼 간 기여도 | 5개 모델 기여도 (first/last/linear/time_decay/position_based), 30일 소급 | AttributionEngine + ECharts |
 | 플래틴 호출 탄력성 | 플래틴별 서킷 브레이커 상태 머신 (5회 실패 → OPEN → 30초 half-open 프로브), 다운그레이드 fast-fail, 29개 어댑터 타임아웃 점검 | CircuitBreaker + GuardedAdapter |
+| CDN 소재 가속 | 객체 스토리지 멀티 드라이버 (local/oss/cos/s3), 관리자 CDN 프로바이더 관리, 프리사인 직접 업로드, 삭제 시 자동 캐시 퍼지 | ads-storage 플러그인 + CdnProviderController |
 
 ---
 
@@ -225,7 +227,7 @@ cd admin && composer install && php start.php start
 1. **데이터베이스 연결** — MySQL 호스트, 포트, 데이터베이스 이름, 사용자 이름/비밀번호 입력, 연결 테스트 지원
 2. **Redis 설정** — Redis 연결 정보 입력 (선택 사항)
 3. **관리자 계정** — 백엔드 로그인 사용자 이름, 비밀번호, 표시 이름 설정
-4. **원클릭 설치** — 자동 DB 생성, `install.sql` 실행으로 28개 테이블 생성 + 시드 데이터 작성, 관리자 비밀번호 업데이트
+4. **원클릭 설치** — 자동 DB 생성, `install.sql` 실행으로 29개 테이블 생성 + 시드 데이터 작성, 관리자 비밀번호 업데이트
 
 설치 완료 후 `/` 접속하여 관리 백엔드 진입, 설정한 사용자 이름과 비밀번호로 로그인.
 
@@ -286,7 +288,9 @@ ads-php/
 │   │   ├── ads-task/                  # 예약 작업 스케줄링 (6 cron)
 │   │   ├── ads-alert/                 # 경보 모니터링 엔진 + 예산 경보
 │   │   ├── ads-report/                # 보고서 엔진 (CSV/Excel/PDF) + 기여도 엔진 + 집행 캘린더
-│   │   └── ads-tenant/                # 멀티 테넌트 관리
+│   │   ├── ads-tenant/                # 멀티 테넌트 관리
+│   │   └── ads-storage/               # 스토리지 추상화 계층 (local/OSS/COS/S3) + CDN 프로바이더
+│   ├── scripts/backfill-assets.php    # 기존 소재를 객체 스토리지로 백필
 │   ├── support/                       # Erik Stack 유틸리티 클래스
 │   │   ├── ControllerTrait.php        # 컨트롤러 공용 trait
 │   │   ├── JwtService.php             # JWT 래퍼 클래스
@@ -294,7 +298,7 @@ ads-php/
 │   │   ├── ExceptionHandler.php       # API 예외 처리기
 │   │   └── ApiResponse.php            # 통일 응답 형식
 │   ├── config/                        # 전역 설정 (DB/Redis/Log/Middleware)
-│   ├── tests/                         # PHPUnit 테스트 (265 tests)
+│   ├── tests/                         # PHPUnit 테스트 (288 tests)
 │   │   ├── Unit/                      # 단위 테스트 (Middleware, Task)
 │   │   └── Integration/               # 통합 테스트 (Auth, Health)
 │   └── start.php                      # 서비스 진입점
@@ -347,6 +351,7 @@ ads-php/
 | 집행 | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | 광고 집행 계층 |
 | 보고서 | `ads_report_metrics`, `ads_report_extras` | 통일 보고서 지표 |
 | 소재 | `ads_assets` | 소재 라이브러리 |
+| CDN | `ads_cdn_providers` | CDN 프로바이더 설정 (자격 증명 암호화) |
 | 타겟팅 | `ads_targeting_templates` | 타겟팅 템플릿 |
 | 기여도 | `ads_conversions`, `ads_attribution_results` | 전환 추적 + 기여도 결과 |
 | 입찰 | `ads_bid_rules`, `ads_bid_logs` | 자동 입찰 규칙 + 이력 |
@@ -373,10 +378,10 @@ ads-php/
 
 ```bash
 cd service && ./vendor/bin/phpunit
-# 265 테스트 / 717 어서션
+# 288 테스트 / 862 어서션
 ```
 
-**커버리지 범위**: 미들웨어 (Version/SQLGuard/SecurityHeaders) · 데이터 객체 (CampaignData/FieldMapping/Hashids) · 엔진 (ReportBuilder/AdapterRegistry) · 통합 테스트 (Auth/Health)
+**커버리지 범위**: 미들웨어 14개 · 플러그인 비즈니스 레이어 8개 (계정/알림/플랫폼/리포트/태스크/테넌트/스토리지) · 엔진 (Bid/Alert/Attribution/Report) · API 통합 테스트 (76 라우트) · UI E2E (18 페이지)
 
 ```bash
 # TypeScript 검사
@@ -443,6 +448,23 @@ cd apps/flutter && dart analyze   # 오류 0개
 >
 > - **홍콩 달러, 위안화 및 미국 달러**: Citibank N.A. Hong Kong — SWIFT `CITIHKHXXXX` · 银行编号 006 · Hong Kong Branch（分行编号 391）· Citibank Tower, Citibank Plaza, 3 Garden Road, Central, Hong Kong
 > - **기타 통화**: THE BANK OF NEW YORK MELLON — SWIFT `IRVTUS3NXXX` · 240 GREENWICH STREET, NEW YORK, United States
+
+### 암호화폐 후원 (Crypto Donation)
+
+이 프로젝트가 도움이 되셨다면, QR 코드를 스캔하여 후원해 주세요. 감사합니다!
+
+| 네트워크 (Network) | QR 코드 (QR Code) | 지갑 주소 (Wallet Address) |
+|---|---|---|
+| BNB Smart Chain (BEP20) | [<img src="./coin/1.jpg" width="150" alt="BNB Smart Chain (BEP20)">](./coin/1.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Tron (TRC20) | [<img src="./coin/2.jpg" width="150" alt="Tron (TRC20)">](./coin/2.jpg) | `TEdDHWLajt1XvqtPDWmQctdrJaC3pzZZzz` |
+| Ethereum (ERC20) | [<img src="./coin/3.jpg" width="150" alt="Ethereum (ERC20)">](./coin/3.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Aptos | [<img src="./coin/4.jpg" width="150" alt="Aptos">](./coin/4.jpg) | `0x836e3780edfc3f7b2372b39e2a1a3a5d7adfaccd96c726f21cfde1b50dd68030` |
+| Plasma | [<img src="./coin/5.jpg" width="150" alt="Plasma">](./coin/5.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Polygon POS | [<img src="./coin/6.jpg" width="150" alt="Polygon POS">](./coin/6.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Solana | [<img src="./coin/7.jpg" width="150" alt="Solana">](./coin/7.jpg) | `2hfhboHdmdrYsY25XfQSsEWxq5ip4EQsR7f4AzSRMUyr` |
+| The Open Network (TON) | [<img src="./coin/8.jpg" width="150" alt="The Open Network (TON)">](./coin/8.jpg) | `UQB9kFQohzmXUir9QSSZq01iwl9aQZIDdBpNmDklljRtCoGK` |
+| Arbitrum One | [<img src="./coin/9.jpg" width="150" alt="Arbitrum One">](./coin/9.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| AVAX C-Chain | [<img src="./coin/10.jpg" width="150" alt="AVAX C-Chain">](./coin/10.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
 
 ---
 

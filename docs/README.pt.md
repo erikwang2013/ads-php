@@ -11,6 +11,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 - **Gerenciamento de campanhas** — autorização OAuth de contas, gerenciamento unificado de campanhas/grupos de anúncios/criativos entre plataformas
 - **Relatórios** — agregação de métricas entre plataformas, exportação CSV/Excel/PDF, atribuição entre plataformas com 5 modelos
 - **Veiculação inteligente** — lances automáticos, alertas de orçamento, calendário de campanhas (Gantt), biblioteca de criativos
+- **Aceleração global** — entrega de materiais via CDN (multidriver: local / Alibaba Cloud OSS / Tencent Cloud COS / compatível com S3, vários provedores configuráveis no painel)
 - **Monitoramento e alertas** — mecanismo de regras de alerta, push multicanal, sincronização automática agendada
 - **Acesso multidispositivo** — painel web (Vue 3), Flutter PC/Mobile, HarmonyOS
 - **Estabilidade e confiabilidade** — disjuntor/redução de capacidade/timeout em chamadas de plataforma, cache de 3 níveis, otimizações de alta concorrência, 22 proteções de segurança
@@ -66,8 +67,8 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 | Camada | Tecnologia | Descrição |
 |----|------|------|
-| Backend | webman v2 + PHP 8.2+ | 7 plugins, 65+ endpoints de API |
-| Banco de dados | MySQL 8.0 | 28 tabelas, prefixo ads_, chave primária Snowflake BIGINT |
+| Backend | webman v2 + PHP 8.2+ | 8 plugins, 75+ endpoints de API |
+| Banco de dados | MySQL 8.0 | 29 tabelas, prefixo ads_, chave primária Snowflake BIGINT |
 | Cache | Redis 7 | Cache de três níveis (L1 memória/L2 APCu/L3 Redis), contagem de rate limit, Pub/Sub, fila de mensagens |
 | Busca | Elasticsearch | Sincronização automática de índice webman-scout (configurado) |
 | Admin | webman-admin v2 + Vue 3 + TypeScript + Element Plus | Backend PHP (porta 8789), SPA conecta direto à API de negócio (porta 8788), 19 páginas, visualização ECharts |
@@ -189,6 +190,7 @@ CORS → SecurityHeaders → AttackGuard → ClientPlatform → Version → Rate
 | Calendário de veiculação | Gráfico Gantt entre plataformas, visões mensal/semanal, cores por plataforma | CalendarService + Gantt Vue |
 | Atribuição entre plataformas | Atribuição com 5 modelos (first/last/linear/time_decay/position_based), retrospectiva de 30 dias | AttributionEngine + ECharts |
 | Resiliência de chamadas de plataforma | Máquina de estados de disjuntor por plataforma (5 falhas → OPEN → sonda half-open 30 s), degradação fast-fail, auditoria de timeout de 29 adaptadores | CircuitBreaker + GuardedAdapter |
+| Aceleração de materiais CDN | Multidriver de armazenamento de objetos (local/oss/cos/s3), gestão de provedores CDN no painel, upload direto pré-assinado, purga automática de cache ao excluir | plugin ads-storage + CdnProviderController |
 
 ---
 
@@ -225,7 +227,7 @@ O assistente de instalação o guiará na página:
 1. **Conexão com o banco de dados** — preencha o host MySQL, porta, nome do banco, usuário e senha, com suporte a teste de conexão
 2. **Configuração Redis** — preencha as informações de conexão do Redis (opcional)
 3. **Conta de administrador** — defina usuário, senha e nome de exibição do login do painel
-4. **Instalação com um clique** — cria o banco automaticamente, executa o `install.sql` para criar 28 tabelas e inserir dados de seed, atualiza a senha do administrador
+4. **Instalação com um clique** — cria o banco automaticamente, executa o `install.sql` para criar 29 tabelas e inserir dados de seed, atualiza a senha do administrador
 
 Após a instalação, acesse `/` para entrar no painel administrativo e faça login com o usuário e a senha definidos.
 
@@ -286,7 +288,9 @@ ads-php/
 │   │   ├── ads-task/                  # 定时任务调度 (6 cron)
 │   │   ├── ads-alert/                 # 告警监控引擎 + 预算预警
 │   │   ├── ads-report/                # 报表引擎 (CSV/Excel/PDF) + 归因引擎 + 投放日历
-│   │   └── ads-tenant/                # 多租户管理
+│   │   ├── ads-tenant/                # 多租户管理
+│   │   └── ads-storage/               # Camada de abstração de armazenamento (local/OSS/COS/S3) + provedores CDN
+│   ├── scripts/backfill-assets.php    # Migrar materiais existentes para o armazenamento de objetos
 │   ├── support/                       # Erik Stack 工具类
 │   │   ├── ControllerTrait.php        # 控制器公共 trait
 │   │   ├── JwtService.php             # JWT 包装类
@@ -294,7 +298,7 @@ ads-php/
 │   │   ├── ExceptionHandler.php       # API 异常处理器
 │   │   └── ApiResponse.php            # 统一响应格式
 │   ├── config/                        # 全局配置 (DB/Redis/Log/Middleware)
-│   ├── tests/                         # PHPUnit 测试 (265 tests)
+│   ├── tests/                         # PHPUnit 测试 (288 tests)
 │   │   ├── Unit/                      # 单元测试 (Middleware, Task)
 │   │   └── Integration/               # 集成测试 (Auth, Health)
 │   └── start.php                      # 服务入口
@@ -347,6 +351,7 @@ ads-php/
 | Veiculação | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | Hierarquia de veiculação de anúncios |
 | Relatórios | `ads_report_metrics`, `ads_report_extras` | Métricas unificadas de relatórios |
 | Materiais | `ads_assets` | Biblioteca de materiais criativos |
+| CDN | `ads_cdn_providers` | Configuração de provedor CDN (credenciais criptografadas) |
 | Segmentação | `ads_targeting_templates` | Modelos de segmentação de público |
 | Atribuição | `ads_conversions`, `ads_attribution_results` | Rastreamento de conversões + resultados de atribuição |
 | Lances | `ads_bid_rules`, `ads_bid_logs` | Regras de lance automático + histórico |
@@ -373,10 +378,10 @@ ads-php/
 
 ```bash
 cd service && ./vendor/bin/phpunit
-# 265 测试 / 717 断言
+# 288 测试 / 862 断言
 ```
 
-**Cobertura**: middlewares (Version/SQLGuard/SecurityHeaders) · objetos de dados (CampaignData/FieldMapping/Hashids) · engines (ReportBuilder/AdapterRegistry) · testes de integração (Auth/Health)
+**Cobertura**: 14 middlewares · 8 camadas de negócio de plugins (conta/alerta/plataforma/relatório/tarefa/tenant/armazenamento) · engines (Bid/Alert/Attribution/Report) · testes de integração de API (76 rotas) · E2E de interface (18 páginas)
 
 ```bash
 # TypeScript 检查
@@ -443,6 +448,23 @@ cd apps/flutter && dart analyze   # 零错误
 >
 > - **Dólar de Hong Kong, RMB e dólar americano**: Citibank N.A. Hong Kong — SWIFT `CITIHKHXXXX` · código do banco 006 · Hong Kong Branch (código da filial 391) · Citibank Tower, Citibank Plaza, 3 Garden Road, Central, Hong Kong
 > - **Outras moedas**: THE BANK OF NEW YORK MELLON — SWIFT `IRVTUS3NXXX` · 240 GREENWICH STREET, NEW YORK, United States
+
+### Doação em criptomoedas (Crypto Donation)
+
+Se este projeto ajudar você, escaneie o código QR para doar, obrigado!
+
+| Rede (Network) | Código QR (QR Code) | Endereço da carteira (Wallet Address) |
+|---|---|---|
+| BNB Smart Chain (BEP20) | [<img src="./coin/1.jpg" width="150" alt="BNB Smart Chain (BEP20)">](./coin/1.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Tron (TRC20) | [<img src="./coin/2.jpg" width="150" alt="Tron (TRC20)">](./coin/2.jpg) | `TEdDHWLajt1XvqtPDWmQctdrJaC3pzZZzz` |
+| Ethereum (ERC20) | [<img src="./coin/3.jpg" width="150" alt="Ethereum (ERC20)">](./coin/3.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Aptos | [<img src="./coin/4.jpg" width="150" alt="Aptos">](./coin/4.jpg) | `0x836e3780edfc3f7b2372b39e2a1a3a5d7adfaccd96c726f21cfde1b50dd68030` |
+| Plasma | [<img src="./coin/5.jpg" width="150" alt="Plasma">](./coin/5.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Polygon POS | [<img src="./coin/6.jpg" width="150" alt="Polygon POS">](./coin/6.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Solana | [<img src="./coin/7.jpg" width="150" alt="Solana">](./coin/7.jpg) | `2hfhboHdmdrYsY25XfQSsEWxq5ip4EQsR7f4AzSRMUyr` |
+| The Open Network (TON) | [<img src="./coin/8.jpg" width="150" alt="The Open Network (TON)">](./coin/8.jpg) | `UQB9kFQohzmXUir9QSSZq01iwl9aQZIDdBpNmDklljRtCoGK` |
+| Arbitrum One | [<img src="./coin/9.jpg" width="150" alt="Arbitrum One">](./coin/9.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| AVAX C-Chain | [<img src="./coin/10.jpg" width="150" alt="AVAX C-Chain">](./coin/10.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
 
 ---
 

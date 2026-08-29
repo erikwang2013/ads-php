@@ -25,7 +25,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 11 | ターゲティングテンプレート | TargetingTemplateController | 5 | — |
 | 12 | システム管理 | AdminUserController, AuditLogController | 5 | UserManage, AuditLog |
 | 13 | データ同期 | DataSyncTask, TokenRefreshTask, RetrySyncTask | — | — |
-| 14 | 素材ライブラリ | AssetController | 4 | AssetGallery |
+| 14 | 素材ライブラリ | AssetController | 6 | AssetGallery |
 | 15 | 予算警告 | BudgetAlertService + BudgetCheckTask | 1 | — |
 | 16 | 配信カレンダー | CalendarService | 1 | CampaignCalendar |
 | 17 | クロスプラットフォームアトリビューション | AttributionEngine | 2 | AttributionReport |
@@ -33,7 +33,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 19 | 認証コード | CaptchaController | 2 | — |
 | 20 | API ドキュメント | DocController | 1 | — |
 
-**合計**: 20 モジュール, 65+ ルート, 18 Vue ページ
+**合計**: 21 モジュール, 75+ ルート, 19 Vue ページ
 
 ---
 
@@ -242,10 +242,13 @@ sync_enabled=1 のアカウントを走査
 ## モジュール 14: 広告素材ライブラリ
 
 - 対応タイプ: image/jpeg, image/png, image/gif, image/webp, video/mp4
-- ファイル保存先: `public/uploads/assets/`
+- ファイル保存先: `public/uploads/assets/`（ローカル既定）、オブジェクトストレージ マルチドライバー (local/oss/cos/s3)
+- 既定の CDN プロバイダー設定後、素材 URL は cdn_domain を組み合わせて CDN 配信される
+- 署名付き直接アップロード: `POST /api/assets/presign` でアップロード URL を取得、`POST /api/assets/register` で直接アップロードを登録（local ドライバーは非対応）
+- 素材削除時に CDN キャッシュを自動パージ (purge)
 - フロントエンド: グリッドギャラリー + ドラッグ&ドロップアップロード + 画像プレビュー + 動画再生 + URL コピー
 
-インターフェース: アップロード / リスト / 詳細 / 削除 → [api.ja.md モジュール 12](api.ja.md#模块-12-素材库)
+インターフェース: アップロード / リスト / 詳細 / 削除 / 署名付き / 登録 → [api.ja.md モジュール 12](api.ja.md#模块-12-素材库)
 
 ---
 
@@ -334,3 +337,15 @@ sync_enabled=1 のアカウントを走査
 ### 既知の制限
 
 - 単一ノードの静的メモリ実装、マルチノード展開では Redis 共有状態が必要
+---
+
+## モジュール 21: CDN プロバイダー管理
+
+- プラットフォームのマスターテナント (tenant 1) のみ管理可能、AdminMiddleware 検証
+- ドライバー: local / oss (阿里云) / cos (腾讯云) / s3 (AWS S3 / Cloudflare R2 / MinIO)
+- 資格情報 (access_key / secret_key / cdn_token) はフィールド単位で暗号化 (Erikwang2013\Encryptable)、API はマスク済みフィールドのみ返す
+- 既定プロバイダー設定 / 有効無効切替 / 接続テスト / キャッシュパージ (purge) 対応
+- テーブル: `ads_cdn_providers`
+- フロントエンド: CdnProviderList.vue（システムメニュー）
+
+インターフェース: 一覧 / 作成 / 更新 / 削除 / 既定 / 切替 / テスト / パージ → [api.md CDN プロバイダー](api.ja.md#cdn-プロバイダー管理-プラットフォームのマスターテナント-tenant-1-のみ-adminmiddleware-検証)

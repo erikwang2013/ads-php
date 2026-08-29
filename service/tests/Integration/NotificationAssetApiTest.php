@@ -123,25 +123,25 @@ class NotificationAssetApiTest extends ApiTestCase
     public function testAssetShow(): void
     {
         $id = $this->seedAsset();
-        $body = $this->assertSuccess((new AssetController())->show($id));
+        $body = $this->assertSuccess((new AssetController())->show($this->authedRequest('GET', "/api/assets/{$id}"), $id));
         $this->assertEquals('banner.png', $body['data']['filename']);
     }
 
     public function testAssetShowNotFound(): void
     {
-        $this->assertError((new AssetController())->show(999999), 1);
+        $this->assertError((new AssetController())->show($this->authedRequest('GET', '/api/assets/999999'), 999999), 1);
     }
 
     public function testAssetDestroy(): void
     {
         $id = $this->seedAsset();
-        $this->assertSuccess((new AssetController())->destroy($id));
+        $this->assertSuccess((new AssetController())->destroy($this->authedRequest('DELETE', "/api/assets/{$id}"), $id));
         $this->assertEquals(0, DB::table('ads_assets')->count());
     }
 
     public function testAssetDestroyNotFound(): void
     {
-        $this->assertError((new AssetController())->destroy(999999), 1);
+        $this->assertError((new AssetController())->destroy($this->authedRequest('DELETE', '/api/assets/999999'), 999999), 1);
     }
 
     public function testAssetUploadNoFile(): void

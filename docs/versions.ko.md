@@ -150,11 +150,12 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | | ads_bid_logs | — | — | ✅ |
 | 타겟팅 | ads_targeting_templates | — | — | ✅ |
 | 소재 | ads_assets | — | — | ✅ |
+| CDN | ads_cdn_providers | — | — | ✅ |
 | 기여도 | ads_conversions | — | — | ✅ |
 | | ads_attribution_results | — | — | ✅ |
 | 시스템 | ads_sync_errors | ✅ | ✅ | ✅ |
 | 관리 | admin_users/roles/audit_logs | ✅ | ✅ | ✅ |
-| **합계** | | **8** | **13** | **18** |
+| **합계** | | **8** | **13** | **19** |
 
 ---
 
@@ -179,9 +180,10 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 알림 센터 | — | ✅ | ✅ |
 | 자동 입찰 | — | — | ✅ |
 | 소재 라이브러리 | — | — | ✅ |
+| CDN 프로바이더 | — | — | ✅ |
 | 집행 캘린더 | — | — | ✅ |
 | 기여도 분석 | — | — | ✅ |
-| **합계** | **7** | **13** | **17** |
+| **합계** | **7** | **13** | **18** |
 
 ### Flutter
 
@@ -219,8 +221,9 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 알림 (index/unread/read/readAll) | — | 4 | 4 |
 | 자동 입찰 (CRUD + logs) | — | — | 5 |
 | 타겟팅 템플릿 (CRUD) | — | — | 5 |
-| 소재 라이브러리 (index/upload/show/destroy) | — | — | 4 |
-| **합계** | **26** | **44** | **62** |
+| 소재 라이브러리 (index/upload/show/destroy/presign/register) | — | — | 6 |
+| CDN 프로바이더 (list/create/update/delete/default/toggle/test/purge) | — | — | 8 |
+| **합계** | **26** | **44** | **70** |
 
 ---
 

@@ -25,7 +25,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 11 | Шаблоны таргетинга | TargetingTemplateController | 5 | — |
 | 12 | Системное управление | AdminUserController, AuditLogController | 5 | UserManage, AuditLog |
 | 13 | Синхронизация данных | DataSyncTask, TokenRefreshTask, RetrySyncTask | — | — |
-| 14 | Библиотека материалов | AssetController | 4 | AssetGallery |
+| 14 | Библиотека материалов | AssetController | 6 | AssetGallery |
 | 15 | Предупреждение о бюджете | BudgetAlertService + BudgetCheckTask | 1 | — |
 | 16 | Календарь кампаний | CalendarService | 1 | CampaignCalendar |
 | 17 | Кросс-платформенная атрибуция | AttributionEngine | 2 | AttributionReport |
@@ -33,7 +33,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 19 | Капча | CaptchaController | 2 | — |
 | 20 | API-документация | DocController | 1 | — |
 
-**Итого**: 20 модулей, 65+ маршрутов, 18 Vue-страниц
+**Итого**: 21 модуль, 75+ маршрутов, 19 Vue-страниц
 
 ---
 
@@ -242,10 +242,13 @@ POST /api/ad-groups 支持 targeting_template_id
 ## Модуль 14: Библиотека рекламных материалов
 
 - Поддерживаемые типы: image/jpeg, image/png, image/gif, image/webp, video/mp4
-- Хранение файлов: `public/uploads/assets/`
+- Хранение файлов: `public/uploads/assets/` (локально по умолчанию), мультидрайвер объектного хранилища (local/oss/cos/s3)
+- После настройки провайдера CDN по умолчанию URL ресурсов автоматически собираются с cdn_domain для ускорения доставки
+- Прямая загрузка по предварительно подписанному URL: `POST /api/assets/presign` выдаёт URL, `POST /api/assets/register` регистрирует загруженный файл (недоступно на локальном драйвере)
+- Удаление ресурса автоматически очищает кэш CDN (purge)
 - Фронтенд: сеточная галерея + загрузка перетаскиванием + предпросмотр изображений + воспроизведение видео + копирование URL
 
-Интерфейсы: Загрузка / Список / Детали / Удаление → [api.md модуль 12](api.ru.md#模块-12-素材库)
+Интерфейсы: Загрузка / Список / Детали / Удаление / Предподпись / Регистрация → [api.md модуль 12](api.ru.md#模块-12-素材库)
 
 ---
 
@@ -334,3 +337,15 @@ POST /api/ad-groups 支持 targeting_template_id
 ### Известное ограничение
 
 - Состояние в памяти одного узла; для многоузлового развёртывания нужен общий Redis
+---
+
+## Модуль 21: Управление CDN-провайдерами
+
+- Управление доступно только главному тенанту платформы (tenant 1), проверка AdminMiddleware
+- Драйверы: local / oss (Aliyun) / cos (Tencent Cloud) / s3 (AWS S3 / Cloudflare R2 / MinIO)
+- Учётные данные (access_key / secret_key / cdn_token) шифруются на уровне полей (Erikwang2013\Encryptable), API возвращает только маскированные поля
+- Поддержка: провайдер по умолчанию / вкл-выкл / проверка соединения / очистка кэша (purge)
+- Таблица: `ads_cdn_providers`
+- Фронтенд: CdnProviderList.vue (системное меню)
+
+Интерфейсы: Список / Создание / Обновление / Удаление / По умолчанию / Вкл-выкл / Тест / Очистка → [api.md CDN-провайдеры](api.ru.md#управление-cdn-провайдерами-только-главный-тенант-платформы-tenant-1-adminmiddleware)

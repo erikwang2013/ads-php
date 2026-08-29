@@ -10,11 +10,11 @@ graph TB
     end
     subgraph AppLayer["एप्लिकेशन परत"]
         Admin["Admin :8789<br/>webman-admin v2<br/>RBAC · ऑडिट"]
-        Service["Service :8788<br/>webman v2 API<br/>7 प्लगइन्स · 29 एडेप्टर"]
+        Service["Service :8788<br/>webman v2 API<br/>8 प्लगइन्स · 29 एडेप्टर"]
         ServiceProxy["ServiceProxy<br/>cURL HTTP + JWT"]
     end
     subgraph DataLayer["डेटा परत"]
-        MySQL[("MySQL 8.0<br/>28 टेबल्स · Snowflake PK")]
+        MySQL[("MySQL 8.0<br/>29 टेबल्स · Snowflake PK")]
         Redis[("Redis 7<br/>3-स्तरीय कैश · कतार")]
         ES[("Elasticsearch<br/>फुल-टेक्स्ट खोज")]
     end
@@ -22,6 +22,13 @@ graph TB
         Domestic["16 घरेलू प्लेटफ़ॉर्म<br/>Juchuan·Baidu·Tencent·Kuaishou"]
         International["13 अंतर्राष्ट्रीय प्लेटफ़ॉर्म<br/>Google·Meta·TikTok"]
     end
+    subgraph StorageCDN["स्टोरेज और CDN"]
+        OSS[("ऑब्जेक्ट स्टोरेज<br/>local/OSS/COS/S3 मल्टी-ड्राइवर")]
+        CDN["CDN त्वरण<br/>cdn_domain जोड़ · कैश purge"]
+    end
+    Service --> OSS
+    OSS --> CDN
+    CDN --> Clients
     Clients --> Nginx
     Nginx -->|"/"| Admin
     Nginx -->|"/api/"| Service

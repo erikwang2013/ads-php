@@ -122,7 +122,8 @@ ads-php/
 │   │   ├── ads-task/                      # 5 个 cron 任务
 │   │   ├── ads-alert/                     # 告警引擎 + 通知
 │   │   ├── ads-report/                    # 报表引擎 (CSV/Excel/PDF)
-│   │   └── ads-tenant/                    # 多租户
+│   │   ├── ads-tenant/                    # 多租户
+│   │   └── ads-storage/                   # 스토리지 추상화 (local/OSS/COS/S3) + CDN 프로바이더
 │   ├── tests/                             # PHPUnit
 │   │   ├── Unit/Middleware/               # 中间件测试
 │   │   ├── Unit/Task/                     # 任务测试 (规划)
@@ -171,6 +172,7 @@ ads-php/
 | 입찰 | `ads_bid_rules`, `ads_bid_logs` | BIGINT Snowflake | 자동 입찰 |
 | 타겟팅 | `ads_targeting_templates` | BIGINT Snowflake | 타겟팅 템플릿 |
 | 소재 | `ads_assets` | BIGINT Snowflake | 소재 라이브러리 |
+| CDN | `ads_cdn_providers` | BIGINT Snowflake | CDN 프로바이더 설정 (필드 단위 암호화 자격 증명) |
 | 알림 | `ads_notifications` | BIGINT Snowflake | 사내 알림 |
 | 기여도 | `ads_conversions`, `ads_attribution_results` | BIGINT Snowflake | 전환 추적 + 기여도 |
 | 시스템 | `ads_sync_errors` | BIGINT Snowflake | 동기화 오류 |
@@ -324,6 +326,10 @@ HTTP Request → Controller → AsyncJobService::dispatch()
 - `gzip_static on` — js/css 파일 사전 압축
 - 프로덕션 환경에서 CDN 연동 (CloudFront/Aliyun CDN)
 
+### 10.6 소재 CDN 가속
+
+소재 URL 조립·캐시·퍼지 전략은 [12장 소재 저장 및 CDN 가속](#12-소재-저장-및-cdn-가속) 참조.
+
 ---
 
 ## 11. 배포와 CI/CD
@@ -342,3 +348,56 @@ HTTP Request → Controller → AsyncJobService::dispatch()
 
 - **CI** (`.github/workflows/ci.yml`): PHP Syntax → PHPUnit → TypeScript → Docker Build
 - **CD** (`.github/workflows/deploy.yml`): Docker Buildx → GHCR Push (service/admin/admin-php) → Deploy
+
+---
+
+## 12. 소재 저장 및 CDN 가속
+
+### 12.1 스토리지 추상화 계층
+
+`service/plugin/ads-storage/`는 통일된 `Storage` 파사드 + `StorageDriver` 인터페이스(put/delete/signedUrl/publicUrl/putFile/deleteUrl/purge)를 제공하며 driver별로 구현을 전환합니다:
+
+| driver | 구현 | 용도 |
+|--------|------|------|
+| `local` | LocalStorage | 기본값, 로컬 `public/uploads/assets/` |
+| `oss` | AlibabaOssStorage | 알리바바 클라우드 OSS |
+| `cos` | TencentCosStorage | 텐센트 클라우드 COS (S3 프로토콜) |
+| `s3` | S3CompatibleStorage | S3 호환: AWS S3 / Cloudflare R2 / MinIO |
+
+배포 시 DB 기본 프로바이더(관리자에서 설정)를 우선 사용하고, 없으면 env/local로 폴백합니다.
+
+### 12.2 CDN 프로바이더 관리
+
+새 테이블 `ads_cdn_providers` (name/driver/bucket/region/endpoint/access_key/secret_key/cdn_domain/cdn_driver/cdn_token/enabled/is_default/status):
+
+- 자격 증명(access_key/secret_key/cdn_token)은 `Erikwang2013\Encryptable`로 필드 단위 암호화되어 저장되며, API 응답은 마스킹된 필드만 반환
+- 플랫폼 마스터 테넌트(tenantId=1)만 관리 가능(AdminMiddleware), `/api/admin/cdn/providers` 8개 엔드포인트: 목록/생성/수정/삭제/기본 설정/활성화·비활성화/연결 테스트/캐시 퍼지
+- purge는 현재 `aliyun` cdn_driver에 대해 실제 구현(OpenAPI 서명), cloudflare/cloudfront는 추후 확장
+
+### 12.3 URL 조립 전략
+
+`ads_assets.url`은 항상 상대 경로(`/uploads/assets/...`)를 저장하며, 조회 시 기본 프로바이더의 `cdn_domain`을 붙여 전체 HTTPS URL(`https://{cdn_domain}/{url}`)로 반환합니다. CDN 미설정 시 그대로 반환됩니다.
+
+### 12.4 캐시 전략
+
+| 유형 | 전략 |
+|------|------|
+| 이미지 | `immutable` 장기 캐시 (파일명 랜덤·URL 고유, 장기 캐시 안전) |
+| 비디오 | 단기 캐시 + Range 지원 (분할 재생) |
+
+소재 삭제 시 해당 URL을 CDN 캐시에서 자동 퍼지합니다.
+
+### 12.5 멀티 테넌트 경로 격리
+
+소재 key는 테넌트 격리 접두사를 가지며 tenant_id별로 분류되어, 서로 다른 테넌트의 소재는 서로 보이지 않습니다.
+
+### 12.6 프리사인 직접 업로드 및 백필
+
+- `POST /api/assets/presign`: 프리사인 업로드 URL 획득 (50 MiB 비디오 등 클라이언트가 객체 스토리지에 직접 업로드), `key` 형식 `Ymd/32hex.확장자`
+- `POST /api/assets/register`: 직접 업로드한 소재 등록, key 형식 엄격 검증으로 경로 탐색 방지
+- `local` driver에서는 presign 미지원 (객체 스토리지 서명 불가)
+- `service/scripts/backfill-assets.php`: 기존 로컬 소재를 객체 스토리지로 복사 (`--dry-run` 프리뷰), `url` 컬럼은 그대로 유지
+
+### 12.7 오리진 경로
+
+`service/config/static.php`에서 webman 정적 파일 서비스를 활성화하며, `/uploads/assets`는 8788 HTTP로 직접 제공되어 CDN 오리진 경로가 됩니다.

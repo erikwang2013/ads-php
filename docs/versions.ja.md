@@ -150,11 +150,12 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | | ads_bid_logs | — | — | ✅ |
 | ターゲティング | ads_targeting_templates | — | — | ✅ |
 | 素材 | ads_assets | — | — | ✅ |
+| CDN | ads_cdn_providers | — | — | ✅ |
 | アトリビューション | ads_conversions | — | — | ✅ |
 | | ads_attribution_results | — | — | ✅ |
 | システム | ads_sync_errors | ✅ | ✅ | ✅ |
 | 管理 | admin_users/roles/audit_logs | ✅ | ✅ | ✅ |
-| **合計** | | **8** | **13** | **18** |
+| **合計** | | **8** | **13** | **19** |
 
 ---
 
@@ -179,9 +180,10 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 通知センター | — | ✅ | ✅ |
 | 自動入札 | — | — | ✅ |
 | 素材ライブラリ | — | — | ✅ |
+| CDN プロバイダー | — | — | ✅ |
 | 配信カレンダー | — | — | ✅ |
 | アトリビューション分析 | — | — | ✅ |
-| **合計** | **7** | **13** | **17** |
+| **合計** | **7** | **13** | **18** |
 
 ### Flutter
 
@@ -219,8 +221,9 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 通知 (index/unread/read/readAll) | — | 4 | 4 |
 | 自動入札 (CRUD + logs) | — | — | 5 |
 | ターゲティングテンプレート (CRUD) | — | — | 5 |
-| 素材ライブラリ (index/upload/show/destroy) | — | — | 4 |
-| **合計** | **26** | **44** | **62** |
+| 素材ライブラリ (index/upload/show/destroy/presign/register) | — | — | 6 |
+| CDN プロバイダー (list/create/update/delete/default/toggle/test/purge) | — | — | 8 |
+| **合計** | **26** | **44** | **70** |
 
 ---
 

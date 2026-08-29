@@ -25,7 +25,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 11 | Targeting Templates | TargetingTemplateController | 5 | — |
 | 12 | System Management | AdminUserController, AuditLogController | 5 | UserManage, AuditLog |
 | 13 | Data Sync | DataSyncTask, TokenRefreshTask, RetrySyncTask | — | — |
-| 14 | Asset Library | AssetController | 4 | AssetGallery |
+| 14 | Asset Library | AssetController | 6 | AssetGallery |
 | 15 | Budget Alerts | BudgetAlertService + BudgetCheckTask | 1 | — |
 | 16 | Campaign Calendar | CalendarService | 1 | CampaignCalendar |
 | 17 | Cross-Platform Attribution | AttributionEngine | 2 | AttributionReport |
@@ -33,7 +33,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 19 | CAPTCHA | CaptchaController | 2 | — |
 | 20 | API Docs | DocController | 1 | — |
 
-**Total**: 20 modules, 65+ routes, 18 Vue pages
+**Total**: 21 modules, 75+ routes, 19 Vue pages
 
 ---
 
@@ -242,10 +242,13 @@ API: User management / audit logs / roles → [api.md Admin Endpoints](api.en.md
 ## Module 14: Ad Asset Library
 
 - Supported types: image/jpeg, image/png, image/gif, image/webp, video/mp4
-- File storage: `public/uploads/assets/`
+- File storage: `public/uploads/assets/` (local default), object storage multi-driver (local/oss/cos/s3)
+- With a default CDN provider configured, asset URLs are assembled with cdn_domain for CDN delivery
+- Presigned direct upload: `POST /api/assets/presign` obtains an upload URL, `POST /api/assets/register` registers the direct upload (not available on the local driver)
+- Deleting an asset auto-purges CDN cache (purge)
 - Frontend: grid gallery + drag-and-drop upload + image preview + video playback + copy URL
 
-API: Upload / list / detail / delete → [api.md Module 12](api.en.md#模块-12-素材库)
+API: Upload / list / detail / delete / presign / register → [api.md Module 12](api.en.md#模块-12-素材库)
 
 ---
 
@@ -334,3 +337,15 @@ API: Attribution analysis / model list → [api.md Module 7](api.en.md#模块-7-
 ### Known Limitation
 
 - Single-node in-memory state; multi-node deployments need Redis shared state
+---
+
+## Module 21: CDN Provider Management
+
+- Manageable only by the platform master tenant (tenant 1), AdminMiddleware enforced
+- Drivers: local / oss (Aliyun) / cos (Tencent Cloud) / s3 (AWS S3 / Cloudflare R2 / MinIO)
+- Credentials (access_key / secret_key / cdn_token) encrypted at field level (Erikwang2013\Encryptable), API returns masked fields only
+- Supports default provider / enable-toggle / connectivity test / cache purge
+- Table: `ads_cdn_providers`
+- Frontend: CdnProviderList.vue (system menu)
+
+API: List / create / update / delete / default / toggle / test / purge → [api.md CDN Providers](api.en.md#cdn-provider-management-platform-master-tenant-only-adminmiddleware)

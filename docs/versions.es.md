@@ -150,11 +150,12 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | | ads_bid_logs | — | — | ✅ |
 | Segmentación | ads_targeting_templates | — | — | ✅ |
 | Materiales | ads_assets | — | — | ✅ |
+| CDN | ads_cdn_providers | — | — | ✅ |
 | Atribución | ads_conversions | — | — | ✅ |
 | | ads_attribution_results | — | — | ✅ |
 | Sistema | ads_sync_errors | ✅ | ✅ | ✅ |
 | Administración | admin_users/roles/audit_logs | ✅ | ✅ | ✅ |
-| **Total** | | **8** | **13** | **18** |
+| **Total** | | **8** | **13** | **19** |
 
 ---
 
@@ -179,9 +180,10 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | Centro de notificaciones | — | ✅ | ✅ |
 | Ofertas automáticas | — | — | ✅ |
 | Biblioteca de materiales | — | — | ✅ |
+| Proveedores CDN | — | — | ✅ |
 | Calendario de campañas | — | — | ✅ |
 | Análisis de atribución | — | — | ✅ |
-| **Total** | **7** | **13** | **17** |
+| **Total** | **7** | **13** | **18** |
 
 ### Flutter
 
@@ -219,8 +221,9 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | Notificaciones (index/unread/read/readAll) | — | 4 | 4 |
 | Ofertas automáticas (CRUD + logs) | — | — | 5 |
 | Plantillas de segmentación (CRUD) | — | — | 5 |
-| Biblioteca de materiales (index/upload/show/destroy) | — | — | 4 |
-| **Total** | **26** | **44** | **62** |
+| Biblioteca de materiales (index/upload/show/destroy/presign/register) | — | — | 6 |
+| Proveedores CDN (list/create/update/delete/default/toggle/test/purge) | — | — | 8 |
+| **Total** | **26** | **44** | **70** |
 
 ---
 

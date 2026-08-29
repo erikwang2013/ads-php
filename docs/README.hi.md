@@ -11,6 +11,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 - **कैंपेन प्रबंधन** — OAuth खाता प्राधिकरण, कैंपेन/विज्ञापन समूह/क्रिएटिव का प्लेटफ़ॉर्म-वार एकीकृत प्रबंधन
 - **रिपोर्ट** — क्रॉस-प्लेटफ़ॉर्म मेट्रिक्स एकत्रीकरण, CSV/Excel/PDF निर्यात, 5-मॉडल एट्रिब्यूशन
 - **स्मार्ट डिलीवरी** — ऑटो-बिडिंग, बजट अलर्ट, कैंपेन कैलेंडर (Gantt), एसेट लाइब्रेरी
+- **ग्लोबल एक्सेलरेशन** — CDN से एसेट डिलीवरी (मल्टी-ड्राइवर: लोकल / Alibaba Cloud OSS / Tencent Cloud COS / S3-कंपैटिबल, एडमिन से मल्टी-प्रोवाइडर कॉन्फ़िग)
 - **मॉनिटरिंग और अलर्ट** — अलर्ट नियम इंजन, मल्टी-चैनल पुश, शेड्यूल्ड ऑटो-सिंक
 - **मल्टी-एंड एक्सेस** — वेब एडमिन (Vue 3), Flutter PC/Mobile, HarmonyOS
 - **स्थिरता और विश्वसनीयता** — प्लेटफ़ॉर्म कॉल सर्किट ब्रेकर/डिग्रेडेशन/टाइमआउट, 3-स्तरीय कैश, उच्च समवर्ती अनुकूलन, 22 सुरक्षा उपाय
@@ -66,8 +67,8 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 | परत | तकनीक | विवरण |
 |----|------|------|
-| सर्वर-साइड | webman v2 + PHP 8.2+ | 7 प्लगइन, 65+ API एंडपॉइंट |
-| डेटाबेस | MySQL 8.0 | 28 टेबल, ads_ प्रीफ़िक्स, Snowflake BIGINT प्राइमरी की |
+| सर्वर-साइड | webman v2 + PHP 8.2+ | 8 प्लगइन, 75+ API एंडपॉइंट |
+| डेटाबेस | MySQL 8.0 | 29 टेबल, ads_ प्रीफ़िक्स, Snowflake BIGINT प्राइमरी की |
 | कैश | Redis 7 | त्रि-स्तरीय कैश (L1 मेमोरी/L2 APCu/L3 Redis), रेट-लिमिट काउंटिंग, Pub/Sub, मैसेज क्यू |
 | सर्च | Elasticsearch | webman-scout स्वचालित इंडेक्स सिंक (कॉन्फ़िगर किया गया) |
 | एडमिन पैनल | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP बैकएंड (पोर्ट 8789), SPA सीधे बिज़नेस API से जुड़ता है (पोर्ट 8788), 19 पेज, ECharts विज़ुअलाइज़ेशन |
@@ -189,6 +190,7 @@ CORS → SecurityHeaders → AttackGuard → ClientPlatform → Version → Rate
 | डिलीवरी कैलेंडर | क्रॉस-प्लेटफ़ॉर्म Gantt चार्ट, मास/सप्ताह दृश्य, प्लेटफ़ॉर्म के अनुसार रंग | CalendarService + Vue Gantt |
 | क्रॉस-प्लेटफ़ॉर्म एट्रिब्यूशन | 5-मॉडल एट्रिब्यूशन (first/last/linear/time_decay/position_based), 30-दिन रिट्रोस्पेक्ट | AttributionEngine + ECharts |
 | प्लेटफ़ॉर्म कॉल रेज़िलिएंस | प्लेटफ़ॉर्म-वार सर्किट ब्रेकर स्टेट मशीन (5 विफलताएँ → OPEN → 30s हाफ-ओपन प्रोब), डिग्रेडेशन fast-fail, 29 एडेप्टर टाइमआउट ऑडिट | CircuitBreaker + GuardedAdapter |
+| CDN एसेट एक्सेलरेशन | ऑब्जेक्ट स्टोरेज मल्टी-ड्राइवर (local/oss/cos/s3), एडमिन में CDN प्रोवाइडर मैनेजमेंट, प्रीसाइन डायरेक्ट अपलोड, डिलीट पर ऑटो कैश पर्ज | ads-storage प्लगइन + CdnProviderController |
 
 ---
 
@@ -225,7 +227,7 @@ cd admin && composer install && php start.php start
 1. **डेटाबेस कनेक्शन** — MySQL होस्ट, पोर्ट, डेटाबेस नाम, उपयोगकर्ता नाम और पासवर्ड भरें, कनेक्शन टेस्ट का समर्थन करता है
 2. **Redis कॉन्फ़िगरेशन** — Redis कनेक्शन जानकारी भरें (वैकल्पिक)
 3. **एडमिन खाता** — बैकएंड लॉगिन उपयोगकर्ता नाम, पासवर्ड, प्रदर्शन नाम सेट करें
-4. **वन-क्लिक इंस्टॉलेशन** — स्वचालित रूप से डेटाबेस बनाता है, `install.sql` निष्पादित करके 28 टेबल बनाता है और सीड डेटा लिखता है, एडमिन पासवर्ड अपडेट करता है
+4. **वन-क्लिक इंस्टॉलेशन** — स्वचालित रूप से डेटाबेस बनाता है, `install.sql` निष्पादित करके 29 टेबल बनाता है और सीड डेटा लिखता है, एडमिन पासवर्ड अपडेट करता है
 
 इंस्टॉलेशन पूरा होने के बाद `/` पर जाकर एडमिन पैनल में प्रवेश करें, सेट किए गए उपयोगकर्ता नाम और पासवर्ड से लॉगिन करें।
 
@@ -286,7 +288,9 @@ ads-php/
 │   │   ├── ads-task/                  # 定时任务调度 (6 cron)
 │   │   ├── ads-alert/                 # 告警监控引擎 + 预算预警
 │   │   ├── ads-report/                # 报表引擎 (CSV/Excel/PDF) + 归因引擎 + 投放日历
-│   │   └── ads-tenant/                # 多租户管理
+│   │   ├── ads-tenant/                # 多租户管理
+│   │   └── ads-storage/               # स्टोरेज एब्स्ट्रैक्शन लेयर (local/OSS/COS/S3) + CDN प्रोवाइडर
+│   ├── scripts/backfill-assets.php    # मौजूदा एसेट को ऑब्जेक्ट स्टोरेज में बैकफ़िल करें
 │   ├── support/                       # Erik Stack 工具类
 │   │   ├── ControllerTrait.php        # 控制器公共 trait
 │   │   ├── JwtService.php             # JWT 包装类
@@ -294,7 +298,7 @@ ads-php/
 │   │   ├── ExceptionHandler.php       # API 异常处理器
 │   │   └── ApiResponse.php            # 统一响应格式
 │   ├── config/                        # 全局配置 (DB/Redis/Log/Middleware)
-│   ├── tests/                         # PHPUnit 测试 (265 tests)
+│   ├── tests/                         # PHPUnit 测试 (288 tests)
 │   │   ├── Unit/                      # 单元测试 (Middleware, Task)
 │   │   └── Integration/               # 集成测试 (Auth, Health)
 │   └── start.php                      # 服务入口
@@ -347,6 +351,7 @@ ads-php/
 | डिलीवरी | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | विज्ञापन डिलीवरी पदानुक्रम |
 | रिपोर्ट | `ads_report_metrics`, `ads_report_extras` | एकीकृत रिपोर्ट मेट्रिक्स |
 | एसेट | `ads_assets` | क्रिएटिव एसेट लाइब्रेरी |
+| CDN | `ads_cdn_providers` | CDN प्रोवाइडर कॉन्फ़िग (क्रेडेंशियल एन्क्रिप्टेड) |
 | टार्गेटिंग | `ads_targeting_templates` | ऑडियंस टार्गेटिंग टेम्पलेट |
 | एट्रिब्यूशन | `ads_conversions`, `ads_attribution_results` | कन्वर्ज़न ट्रैकिंग + एट्रिब्यूशन परिणाम |
 | बिडिंग | `ads_bid_rules`, `ads_bid_logs` | स्वचालित बिडिंग नियम + इतिहास |
@@ -373,10 +378,10 @@ ads-php/
 
 ```bash
 cd service && ./vendor/bin/phpunit
-# 265 测试 / 717 断言
+# 288 测试 / 862 断言
 ```
 
-**कवरेज**: मिडलवेयर (Version/SQLGuard/SecurityHeaders) · डेटा ऑब्जेक्ट (CampaignData/FieldMapping/Hashids) · इंजन (ReportBuilder/AdapterRegistry) · इंटीग्रेशन टेस्ट (Auth/Health)
+**कवरेज**: 14 मिडलवेयर · 8 प्लगइन बिज़नेस लेयर (अकाउंट/अलर्ट/प्लेटफ़ॉर्म/रिपोर्ट/टास्क/टेनेंट/स्टोरेज) · इंजन (Bid/Alert/Attribution/Report) · API इंटीग्रेशन टेस्ट (76 रूट्स) · UI E2E (18 पेज)
 
 ```bash
 # TypeScript 检查
@@ -443,6 +448,23 @@ cd apps/flutter && dart analyze   # 零错误
 >
 > - **港元、人民币及美元**：Citibank N.A. Hong Kong — SWIFT `CITIHKHXXXX` · 银行编号 006 · Hong Kong Branch（分行编号 391）· Citibank Tower, Citibank Plaza, 3 Garden Road, Central, Hong Kong
 > - **其他币种**：THE BANK OF NEW YORK MELLON — SWIFT `IRVTUS3NXXX` · 240 GREENWICH STREET, NEW YORK, United States
+
+### क्रिप्टो दान (Crypto Donation)
+
+यदि यह प्रोजेक्ट आपके काम आए, तो दान करने के लिए QR कोड स्कैन करें, धन्यवाद!
+
+| नेटवर्क (Network) | QR कोड (QR Code) | वॉलेट पता (Wallet Address) |
+|---|---|---|
+| BNB Smart Chain (BEP20) | [<img src="./coin/1.jpg" width="150" alt="BNB Smart Chain (BEP20)">](./coin/1.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Tron (TRC20) | [<img src="./coin/2.jpg" width="150" alt="Tron (TRC20)">](./coin/2.jpg) | `TEdDHWLajt1XvqtPDWmQctdrJaC3pzZZzz` |
+| Ethereum (ERC20) | [<img src="./coin/3.jpg" width="150" alt="Ethereum (ERC20)">](./coin/3.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Aptos | [<img src="./coin/4.jpg" width="150" alt="Aptos">](./coin/4.jpg) | `0x836e3780edfc3f7b2372b39e2a1a3a5d7adfaccd96c726f21cfde1b50dd68030` |
+| Plasma | [<img src="./coin/5.jpg" width="150" alt="Plasma">](./coin/5.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Polygon POS | [<img src="./coin/6.jpg" width="150" alt="Polygon POS">](./coin/6.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Solana | [<img src="./coin/7.jpg" width="150" alt="Solana">](./coin/7.jpg) | `2hfhboHdmdrYsY25XfQSsEWxq5ip4EQsR7f4AzSRMUyr` |
+| The Open Network (TON) | [<img src="./coin/8.jpg" width="150" alt="The Open Network (TON)">](./coin/8.jpg) | `UQB9kFQohzmXUir9QSSZq01iwl9aQZIDdBpNmDklljRtCoGK` |
+| Arbitrum One | [<img src="./coin/9.jpg" width="150" alt="Arbitrum One">](./coin/9.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| AVAX C-Chain | [<img src="./coin/10.jpg" width="150" alt="AVAX C-Chain">](./coin/10.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
 
 ---
 

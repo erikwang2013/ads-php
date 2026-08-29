@@ -692,6 +692,25 @@ HTML 형식의 API 문서 페이지 반환（인증 불필요）.
 
 **응답**: `{ "code": 0, "data": { "id": "hashids", "url": "/uploads/assets/20260522/abc123.jpg", "type": "image" } }`
 
+- CDN 설정 시 `url`은 기본 프로바이더의 `cdn_domain`을 붙여 완전한 HTTPS 주소로 조립됩니다
+
+### POST /api/assets/presign — 프리사인 업로드 URL 획득
+
+**요청**: `{ "filename": "demo.mp4", "mime_type": "video/mp4" }`
+
+**응답**: `{ "code": 0, "data": { "key": "20260829/ab12...cd34.mp4", "upload_url": "https://signed-url", "expires_in": 3600, "url": "https://cdn.example.com/uploads/assets/..." } }`
+
+- `key` 형식: `Ymd/32hex.확장자`, 직접 업로드 후 `/api/assets/register`에 회신
+- 50 MiB 비디오 등 클라이언트가 객체 스토리지에 직접 업로드; `local` driver에서는 미지원
+
+### POST /api/assets/register — 직접 업로드한 소재 등록
+
+**요청**: `{ "key": "20260829/ab12...cd34.mp4", "filename": "demo.mp4", "mime_type": "video/mp4", "size": 52428800 }`
+
+**응답**: `{ "code": 0, "message": "Created", "data": { "id": "hashids", "url": "https://cdn.example.com/uploads/assets/...", "type": "video" } }`
+
+- `key` 엄격 검증 (`^\d{8}/[0-9a-f]{32}\.[a-z0-9]{1,10}$`)으로 경로 탐색 방지
+
 ### GET /api/assets/:id — 소재 상세
 
 ### DELETE /api/assets/:id — 소재 삭제
@@ -730,6 +749,37 @@ HTML 형식의 API 문서 페이지 반환（인증 불필요）.
 ### GET /api/admin/audit-logs — 감사 로그
 
 **파라미터**: `user_id`, `action`, `date_from`, `date_to`, `page`, `per_page`
+
+---
+
+### CDN 프로바이더 관리 (플랫폼 마스터 테넌트 tenant 1만, AdminMiddleware 검증)
+
+### GET /api/admin/cdn/providers — 프로바이더 목록
+
+### POST /api/admin/cdn/providers — 프로바이더 생성
+
+**요청**: `{ "name": "Aliyun OSS", "driver": "oss", "bucket": "ads-assets", "region": "oss-cn-hangzhou", "endpoint": "https://oss-cn-hangzhou.aliyuncs.com", "access_key": "...", "secret_key": "...", "cdn_domain": "cdn.example.com", "cdn_driver": "aliyun", "cdn_token": "...", "is_default": 1 }`
+
+- `driver`: `local` / `oss`(알리바바 OSS) / `cos`(텐센트 COS, S3 프로토콜) / `s3`(S3 호환: AWS S3 / Cloudflare R2 / MinIO)
+- 자격 증명(access_key/secret_key/cdn_token)은 Encryptable로 필드 단위 암호화, 응답은 마스킹 필드만
+
+### PUT /api/admin/cdn/providers/:id — 프로바이더 수정
+
+### DELETE /api/admin/cdn/providers/:id — 프로바이더 삭제 (기본값은 남은 enabled 프로바이더로 자동 이관)
+
+### PUT /api/admin/cdn/providers/:id/default — 기본값 설정
+
+### PUT /api/admin/cdn/providers/:id/toggle — 활성화/비활성화 (기본값 비활성화 시 자동 이관)
+
+### POST /api/admin/cdn/providers/:id/test — 연결 테스트
+
+**응답**: `{ "code": 0, "data": { "ok": true, "driver": "oss", "status": "ok" } }`
+
+### POST /api/admin/cdn/providers/:id/purge — 캐시 퍼지
+
+**요청**: `{ "paths": ["/uploads/assets/20260829/xxx.mp4"] }`
+
+- `cdn_driver`와 `cdn_domain` 필요; 현재 `aliyun` 실제 구현(OpenAPI 서명), cloudflare/cloudfront는 추후 확장
 
 ---
 

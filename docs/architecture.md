@@ -122,7 +122,8 @@ ads-php/
 │   │   ├── ads-task/                      # 5 个 cron 任务
 │   │   ├── ads-alert/                     # 告警引擎 + 通知
 │   │   ├── ads-report/                    # 报表引擎 (CSV/Excel/PDF)
-│   │   └── ads-tenant/                    # 多租户
+│   │   ├── ads-tenant/                    # 多租户
+│   │   └── ads-storage/                   # 存储抽象层 (local/OSS/COS/S3) + CDN 服务商
 │   ├── tests/                             # PHPUnit
 │   │   ├── Unit/Middleware/               # 中间件测试
 │   │   ├── Unit/Task/                     # 任务测试 (规划)
@@ -171,6 +172,7 @@ ads-php/
 | 出价 | `ads_bid_rules`, `ads_bid_logs` | BIGINT Snowflake | 自动出价 |
 | 定向 | `ads_targeting_templates` | BIGINT Snowflake | 受众模板 |
 | 素材 | `ads_assets` | BIGINT Snowflake | 创意素材库 |
+| CDN | `ads_cdn_providers` | BIGINT Snowflake | CDN 服务商配置（凭据字段级加密） |
 | 通知 | `ads_notifications` | BIGINT Snowflake | 站内通知 |
 | 归因 | `ads_conversions`, `ads_attribution_results` | BIGINT Snowflake | 转化追踪 + 归因 |
 | 系统 | `ads_sync_errors` | BIGINT Snowflake | 同步错误 |
@@ -324,6 +326,10 @@ HTTP Request → Controller → AsyncJobService::dispatch()
 - `gzip_static on` — 预压缩 js/css 文件
 - 生产环境接入 CDN (CloudFront/Aliyun CDN)
 
+### 10.6 素材 CDN 加速
+
+素材 URL 拼接、缓存与刷新策略详见 [第 12 章 素材存储与 CDN 加速](#12-素材存储与-cdn-加速)。
+
 ---
 
 ## 11. 部署与 CI/CD
@@ -342,3 +348,56 @@ HTTP Request → Controller → AsyncJobService::dispatch()
 
 - **CI** (`.github/workflows/ci.yml`): PHP Syntax → PHPUnit → TypeScript → Docker Build
 - **CD** (`.github/workflows/deploy.yml`): Docker Buildx → GHCR Push (service/admin/admin-php) → Deploy
+
+---
+
+## 12. 素材存储与 CDN 加速
+
+### 12.1 存储抽象层
+
+`service/plugin/ads-storage/` 提供统一 `Storage` 门面 + `StorageDriver` 接口（put/delete/signedUrl/publicUrl/putFile/deleteUrl/purge），按 driver 切换实现：
+
+| driver | 实现 | 适用 |
+|--------|------|------|
+| `local` | LocalStorage | 默认，本地 `public/uploads/assets/` |
+| `oss` | AlibabaOssStorage | 阿里云 OSS |
+| `cos` | TencentCosStorage | 腾讯云 COS（走 S3 协议） |
+| `s3` | S3CompatibleStorage | AWS S3 / Cloudflare R2 / MinIO 等 S3 兼容存储 |
+
+分发时优先读取数据库默认 provider（管理端可配置），无配置则回退 env/local。
+
+### 12.2 CDN 服务商管理
+
+新表 `ads_cdn_providers`（name/driver/bucket/region/endpoint/access_key/secret_key/cdn_domain/cdn_driver/cdn_token/enabled/is_default/status）：
+
+- 凭据字段（access_key/secret_key/cdn_token）经 `Erikwang2013\Encryptable` 字段级加密落库，API 响应只返回脱敏字段
+- 仅平台主租户（tenantId=1）可管理（AdminMiddleware 校验），8 个 `/api/admin/cdn/providers` 端点：列表/创建/更新/删除/设默认/启停/连通性测试/缓存刷新
+- purge 目前对 `aliyun` cdn_driver 真实实现（OpenAPI 签名），cloudflare/cloudfront 待扩展
+
+### 12.3 URL 拼接策略
+
+`ads_assets.url` 始终存相对路径（`/uploads/assets/...`），读取时按默认 provider 的 `cdn_domain` 拼成完整 HTTPS URL（`https://{cdn_domain}/{url}`），未配置 CDN 时原样返回相对路径。
+
+### 12.4 缓存策略
+
+| 类型 | 策略 |
+|------|------|
+| 图片 | `immutable` 长缓存（文件名随机、URL 唯一，可安全长期缓存） |
+| 视频 | 短缓存 + Range 支持（分片播放） |
+
+素材删除时自动对 URL 执行 CDN purge。
+
+### 12.5 多租户路径隔离
+
+素材 key 含租户隔离前缀，按 tenant_id 归集，不同租户素材互不可见。
+
+### 12.6 预签名直传与回填
+
+- `POST /api/assets/presign`：获取预签名上传地址（视频 50 MiB 场景客户端直传对象存储），`key` 格式为 `Ymd/32位hex.扩展名`
+- `POST /api/assets/register`：登记直传完成的素材，严格校验 key 格式防路径穿越
+- `local` 驱动下 presign 不可用（无对象存储签名能力）
+- `service/scripts/backfill-assets.php`：存量本地素材拷入对象存储（`--dry-run` 预演），`url` 列保持不变
+
+### 12.7 源站路径
+
+`service/config/static.php` 开启 webman 静态文件服务，`/uploads/assets` 可经 8788 HTTP 直出，作为 CDN 回源路径。

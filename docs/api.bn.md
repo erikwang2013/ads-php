@@ -692,6 +692,25 @@ HTML ফরম্যাটে API ডকুমেন্টেশন পেজ �
 
 **রেসপন্স**: `{ "code": 0, "data": { "id": "hashids", "url": "/uploads/assets/20260522/abc123.jpg", "type": "image" } }`
 
+- CDN কনফিগার থাকলে `url` ডিফল্ট প্রোভাইডারের `cdn_domain` দিয়ে জোড়া লাগিয়ে সম্পূর্ণ HTTPS ঠিকানা হয়
+
+### POST /api/assets/presign — প্রিসাইন আপলোড URL নিন
+
+**অনুরোধ**: `{ "filename": "demo.mp4", "mime_type": "video/mp4" }`
+
+**রেসপন্স**: `{ "code": 0, "data": { "key": "20260829/ab12...cd34.mp4", "upload_url": "https://signed-url", "expires_in": 3600, "url": "https://cdn.example.com/uploads/assets/..." } }`
+
+- `key` ফরম্যাট `Ymd/32hex.এক্সটেনশন`; ডাইরেক্ট আপলোডের পর `/api/assets/register`-এ ফেরত দিন
+- 50 MiB পর্যন্ত ভিডিও ক্লায়েন্ট সরাসরি অবজেক্ট স্টোরেজে আপলোড করে; `local` driver-এ নেই
+
+### POST /api/assets/register — সরাসরি আপলোড করা অ্যাসেট নিবন্ধন
+
+**অনুরোধ**: `{ "key": "20260829/ab12...cd34.mp4", "filename": "demo.mp4", "mime_type": "video/mp4", "size": 52428800 }`
+
+**রেসপন্স**: `{ "code": 0, "message": "Created", "data": { "id": "hashids", "url": "https://cdn.example.com/uploads/assets/...", "type": "video" } }`
+
+- `key` কঠোরভাবে যাচাই (`^\d{8}/[0-9a-f]{32}\.[a-z0-9]{1,10}$`) — পাথ ট্রাভার্সাল প্রতিরোধ
+
 ### GET /api/assets/:id — অ্যাসেট ডিটেইল
 
 ### DELETE /api/assets/:id — অ্যাসেট ডিলিট
@@ -730,6 +749,37 @@ HTML ফরম্যাটে API ডকুমেন্টেশন পেজ �
 ### GET /api/admin/audit-logs — অডিট লগ
 
 **প্যারামিটার**: `user_id`, `action`, `date_from`, `date_to`, `page`, `per_page`
+
+---
+
+### CDN প্রোভাইডার ম্যানেজমেন্ট (শুধু প্ল্যাটফর্ম মাস্টার টেন্যান্ট tenant 1, AdminMiddleware)
+
+### GET /api/admin/cdn/providers — প্রোভাইডার তালিকা
+
+### POST /api/admin/cdn/providers — প্রোভাইডার তৈরি
+
+**অনুরোধ**: `{ "name": "Aliyun OSS", "driver": "oss", "bucket": "ads-assets", "region": "oss-cn-hangzhou", "endpoint": "https://oss-cn-hangzhou.aliyuncs.com", "access_key": "...", "secret_key": "...", "cdn_domain": "cdn.example.com", "cdn_driver": "aliyun", "cdn_token": "...", "is_default": 1 }`
+
+- `driver`: `local` / `oss` (Alibaba Cloud OSS) / `cos` (Tencent Cloud COS, S3 প্রোটোকল) / `s3` (S3-কমপ্যাটিবল: AWS S3 / Cloudflare R2 / MinIO)
+- ক্রেডেনশিয়াল (access_key/secret_key/cdn_token) Encryptable দিয়ে ফিল্ড-লেভেল এনক্রিপ্টেড; রেসপন্সে শুধু মাস্ক করা ফিল্ড
+
+### PUT /api/admin/cdn/providers/:id — প্রোভাইডার আপডেট
+
+### DELETE /api/admin/cdn/providers/:id — প্রোভাইডার ডিলিট (ডিফল্ট পরের enabled প্রোভাইডারে অটো স্থানান্তর)
+
+### PUT /api/admin/cdn/providers/:id/default — ডিফল্ট নির্ধারণ
+
+### PUT /api/admin/cdn/providers/:id/toggle — চালু/বন্ধ (ডিফল্ট বন্ধ করলে অটো স্থানান্তর)
+
+### POST /api/admin/cdn/providers/:id/test — কানেক্টিভিটি টেস্ট
+
+**রেসপন্স**: `{ "code": 0, "data": { "ok": true, "driver": "oss", "status": "ok" } }`
+
+### POST /api/admin/cdn/providers/:id/purge — ক্যাশ পার্জ
+
+**অনুরোধ**: `{ "paths": ["/uploads/assets/20260829/xxx.mp4"] }`
+
+- `cdn_driver` ও `cdn_domain` প্রয়োজন; `aliyun` বাস্তব ইমপ্লিমেন্টেশন (OpenAPI সিগনিং), cloudflare/cloudfront পরে
 
 ---
 

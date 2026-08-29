@@ -25,15 +25,16 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 11 | 定向模板 | TargetingTemplateController | 5 | — |
 | 12 | 系统管理 | AdminUserController, AuditLogController | 5 | UserManage, AuditLog |
 | 13 | 数据同步 | DataSyncTask, TokenRefreshTask, RetrySyncTask | — | — |
-| 14 | 素材库 | AssetController | 4 | AssetGallery |
+| 14 | 素材库 | AssetController | 6 | AssetGallery |
 | 15 | 预算预警 | BudgetAlertService + BudgetCheckTask | 1 | — |
 | 16 | 投放日历 | CalendarService | 1 | CampaignCalendar |
 | 17 | 跨平台归因 | AttributionEngine | 2 | AttributionReport |
 | 18 | 健康检查 | HealthController | 2 | — |
 | 19 | 验证码 | CaptchaController | 2 | — |
 | 20 | API 文档 | DocController | 1 | — |
+| 21 | CDN 服务商 | CdnProviderController | 8 | CdnProviderList |
 
-**合计**: 20 模块, 65+ 路由, 18 Vue 页面
+**合计**: 21 模块, 75+ 路由, 19 Vue 页面
 
 ---
 
@@ -242,10 +243,13 @@ POST /api/ad-groups 支持 targeting_template_id
 ## 模块 14: 广告素材库
 
 - 支持类型: image/jpeg, image/png, image/gif, image/webp, video/mp4
-- 文件存储: `public/uploads/assets/`
+- 文件存储: `public/uploads/assets/`（本地默认），支持对象存储多驱动 (local/oss/cos/s3)
+- 配置默认 CDN 服务商后，素材 URL 自动拼接 cdn_domain 加速分发
+- 预签名直传: `POST /api/assets/presign` 获取上传地址，`POST /api/assets/register` 登记直传素材（local 驱动不支持预签名）
+- 删除素材自动刷新 CDN 缓存 (purge)
 - 前端: 网格画廊 + 拖拽上传 + 图片预览 + 视频播放 + 复制 URL
 
-接口: 上传 / 列表 / 详情 / 删除 → [api.md 模块 12](api.md#模块-12-素材库)
+接口: 上传 / 列表 / 详情 / 删除 / 预签名 / 登记 → [api.md 模块 12](api.md#模块-12-素材库)
 
 ---
 
@@ -334,3 +338,16 @@ POST /api/ad-groups 支持 targeting_template_id
 ### 已知局限
 
 - 单节点静态内存实现, 多节点部署需切换 Redis 共享状态
+
+---
+
+## 模块 21: CDN 服务商管理
+
+- 仅平台主租户 (tenant 1) 可管理, AdminMiddleware 校验
+- 驱动: local / oss (阿里云) / cos (腾讯云) / s3 (AWS S3 / Cloudflare R2 / MinIO)
+- 凭据 (access_key / secret_key / cdn_token) 字段级加密存储 (Erikwang2013\Encryptable), API 仅返回掩码字段
+- 支持设置默认服务商 / 启停切换 / 连通性测试 / 缓存刷新 (purge)
+- 数据表: `ads_cdn_providers`
+- 前端: CdnProviderList.vue（系统菜单）
+
+接口: 列表 / 创建 / 更新 / 删除 / 默认 / 启停 / 测试 / 刷新 → [api.md CDN 服务商](api.md#cdn-服务商管理仅平台主租户-tenant-1adminmiddleware-校验)

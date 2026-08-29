@@ -122,7 +122,8 @@ ads-php/
 │   │   ├── ads-task/                      # 5 个 cron 任务
 │   │   ├── ads-alert/                     # 告警引擎 + 通知
 │   │   ├── ads-report/                    # 报表引擎 (CSV/Excel/PDF)
-│   │   └── ads-tenant/                    # 多租户
+│   │   ├── ads-tenant/                    # 多租户
+│   │   └── ads-storage/                   # طبقة تجريد التخزين (local/OSS/COS/S3) + مزودو CDN
 │   ├── tests/                             # PHPUnit
 │   │   ├── Unit/Middleware/               # 中间件测试
 │   │   ├── Unit/Task/                     # 任务测试 (规划)
@@ -171,6 +172,7 @@ ads-php/
 | المزايدة | `ads_bid_rules`, `ads_bid_logs` | BIGINT Snowflake | المزايدة التلقائية |
 | الاستهداف | `ads_targeting_templates` | BIGINT Snowflake | قوالب الجمهور |
 | المواد | `ads_assets` | BIGINT Snowflake | مكتبة المواد الإبداعية |
+| CDN | `ads_cdn_providers` | BIGINT Snowflake | إعداد مزود CDN (بيانات اعتماد مشفرة على مستوى الحقل) |
 | الإشعارات | `ads_notifications` | BIGINT Snowflake | إشعارات داخلية |
 | الإسناد | `ads_conversions`, `ads_attribution_results` | BIGINT Snowflake | تتبع التحويلات + الإسناد |
 | النظام | `ads_sync_errors` | BIGINT Snowflake | أخطاء المزامنة |
@@ -324,6 +326,10 @@ HTTP Request → Controller → AsyncJobService::dispatch()
 - `gzip_static on` — ضغط مسبق لملفات js/css
 - ربط بيئة الإنتاج بـ CDN (CloudFront/Aliyun CDN)
 
+### 10.6 تسريع المواد عبر CDN
+
+تجميع عناوين URL واستراتيجيات التخزين المؤقت والمسح — انظر [الفصل 12 تخزين المواد وتسريع CDN](#12-تخزين-المواد-وتسريع-cdn).
+
 ---
 
 ## 11. النشر و CI/CD
@@ -342,3 +348,56 @@ HTTP Request → Controller → AsyncJobService::dispatch()
 
 - **CI** (`.github/workflows/ci.yml`): PHP Syntax → PHPUnit → TypeScript → Docker Build
 - **CD** (`.github/workflows/deploy.yml`): Docker Buildx → GHCR Push (service/admin/admin-php) → Deploy
+
+---
+
+## 12. تخزين المواد وتسريع CDN
+
+### 12.1 طبقة تجريد التخزين
+
+توفر `service/plugin/ads-storage/` واجهة `Storage` موحدة + واجهة `StorageDriver` (put/delete/signedUrl/publicUrl/putFile/deleteUrl/purge)، مع تبديل التنفيذ حسب driver:
+
+| driver | التنفيذ | الاستخدام |
+|--------|---------|-----------|
+| `local` | LocalStorage | الافتراضي، محلي `public/uploads/assets/` |
+| `oss` | AlibabaOssStorage | Alibaba Cloud OSS |
+| `cos` | TencentCosStorage | Tencent Cloud COS (بروتوكول S3) |
+| `s3` | S3CompatibleStorage | متوافق مع S3: AWS S3 / Cloudflare R2 / MinIO |
+
+يفضّل التوزيع المزود الافتراضي في قاعدة البيانات (قابل للتهيئة من لوحة الإدارة)، وإلا يتراجع إلى env/local.
+
+### 12.2 إدارة مزودي CDN
+
+جدول جديد `ads_cdn_providers` (name/driver/bucket/region/endpoint/access_key/secret_key/cdn_domain/cdn_driver/cdn_token/enabled/is_default/status):
+
+- تُشفَّر بيانات الاعتماد (access_key/secret_key/cdn_token) على مستوى الحقل عبر `Erikwang2013\Encryptable`؛ تستجيب API بحقول مقنّعة فقط
+- الإدارة للمستأجر الرئيسي فقط (tenantId=1، عبر AdminMiddleware)؛ 8 نقاط نهاية تحت `/api/admin/cdn/providers`: قائمة/إنشاء/تحديث/حذف/افتراضي/تفعيل-تعطيل/اختبار الاتصال/مسح الكاش
+- purge مُنفَّذ فعليًا لـ cdn_driver `aliyun` (توقيع OpenAPI)؛ cloudflare/cloudfront قيد التوسيع
+
+### 12.3 استراتيجية تجميع URL
+
+يخزّن `ads_assets.url` دائمًا مسارًا نسبيًا (`/uploads/assets/...`)؛ عند القراءة يُسبق بـ `cdn_domain` للمزود الافتراضي ليكوّن URL HTTPS كاملًا (`https://{cdn_domain}/{url}`)؛ بدون CDN يُعاد كما هو.
+
+### 12.4 استراتيجية التخزين المؤقت
+
+| النوع | الاستراتيجية |
+|-------|--------------|
+| صور | كاش طويل `immutable` (أسماء ملفات عشوائية وعناوين فريدة — آمن) |
+| فيديو | كاش قصير + دعم Range (تشغيل مجزأ) |
+
+عند حذف مادة، يُمسح عنوانها تلقائيًا من كاش CDN.
+
+### 12.5 عزل المسارات بين المستأجرين
+
+تحمل مفاتيح المواد بادئة عزل للمستأجر وتُجمَّع حسب tenant_id؛ مواد المستأجرين المختلفين غير مرئية لبعضها.
+
+### 12.6 الرفع المباشر الموقّع مسبقًا والترحيل
+
+- `POST /api/assets/presign`: الحصول على عنوان رفع موقّع مسبقًا (يرفع العميل مباشرة إلى تخزين الكائنات، مثل فيديو 50 MiB)؛ صيغة `key`: `Ymd/32hex.الامتداد`
+- `POST /api/assets/register`: تسجيل مادة مرفوعة مباشرة؛ تُتحقق صيغة key بصرامة لمنع تجاوز المسار
+- presign غير متاح مع driver `local` (لا توقيع لتخزين الكائنات)
+- `service/scripts/backfill-assets.php`: نسخ المواد المحلية الموجودة إلى تخزين الكائنات (`--dry-run` للمعاينة)؛ عمود `url` يبقى دون تغيير
+
+### 12.7 مسار المنشأ
+
+يفعّل `service/config/static.php` خدمة الملفات الثابتة في webman؛ يُقدَّم `/uploads/assets` مباشرة عبر HTTP على المنفذ 8788 كمسار منشأ لـ CDN.

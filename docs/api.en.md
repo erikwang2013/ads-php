@@ -692,6 +692,25 @@ Cached for 30 seconds. Frontend polls every 30s.
 
 **Response**: `{ "code": 0, "data": { "id": "hashids", "url": "/uploads/assets/20260522/abc123.jpg", "type": "image" } }`
 
+- With CDN configured, `url` is assembled with the default provider's `cdn_domain` into a full HTTPS address
+
+### POST /api/assets/presign — Get Presigned Upload URL
+
+**Request**: `{ "filename": "demo.mp4", "mime_type": "video/mp4" }`
+
+**Response**: `{ "code": 0, "data": { "key": "20260829/ab12...cd34.mp4", "upload_url": "https://signed-url", "expires_in": 3600, "url": "https://cdn.example.com/uploads/assets/..." } }`
+
+- `key` format `Ymd/32-hex.ext`; pass it back to `/api/assets/register` after direct upload
+- For videos up to 50 MiB the client uploads directly to object storage; not available under the `local` driver
+
+### POST /api/assets/register — Register Directly Uploaded Asset
+
+**Request**: `{ "key": "20260829/ab12...cd34.mp4", "filename": "demo.mp4", "mime_type": "video/mp4", "size": 52428800 }`
+
+**Response**: `{ "code": 0, "message": "Created", "data": { "id": "hashids", "url": "https://cdn.example.com/uploads/assets/...", "type": "video" } }`
+
+- `key` strictly validated (`^\d{8}/[0-9a-f]{32}\.[a-z0-9]{1,10}$`) against path traversal
+
 ### GET /api/assets/:id — Asset Detail
 
 ### DELETE /api/assets/:id — Delete Asset
@@ -730,6 +749,37 @@ Cached for 30 seconds. Frontend polls every 30s.
 ### GET /api/admin/audit-logs — Audit Logs
 
 **Parameters**: `user_id`, `action`, `date_from`, `date_to`, `page`, `per_page`
+
+---
+
+### CDN Provider Management (platform master tenant only, AdminMiddleware)
+
+### GET /api/admin/cdn/providers — Provider List
+
+### POST /api/admin/cdn/providers — Create Provider
+
+**Request**: `{ "name": "Aliyun OSS", "driver": "oss", "bucket": "ads-assets", "region": "oss-cn-hangzhou", "endpoint": "https://oss-cn-hangzhou.aliyuncs.com", "access_key": "...", "secret_key": "...", "cdn_domain": "cdn.example.com", "cdn_driver": "aliyun", "cdn_token": "...", "is_default": 1 }`
+
+- `driver`: `local` / `oss` (Alibaba Cloud OSS) / `cos` (Tencent Cloud COS, S3 protocol) / `s3` (S3-compatible: AWS S3 / Cloudflare R2 / MinIO)
+- Credentials (access_key/secret_key/cdn_token) encrypted at field level via Encryptable; responses return masked fields only
+
+### PUT /api/admin/cdn/providers/:id — Update Provider
+
+### DELETE /api/admin/cdn/providers/:id — Delete Provider (default auto-transfers to the next enabled provider)
+
+### PUT /api/admin/cdn/providers/:id/default — Set as Default
+
+### PUT /api/admin/cdn/providers/:id/toggle — Enable/Disable (disabling the default transfers it automatically)
+
+### POST /api/admin/cdn/providers/:id/test — Connectivity Test
+
+**Response**: `{ "code": 0, "data": { "ok": true, "driver": "oss", "status": "ok" } }`
+
+### POST /api/admin/cdn/providers/:id/purge — Purge CDN Cache
+
+**Request**: `{ "paths": ["/uploads/assets/20260829/xxx.mp4"] }`
+
+- Requires `cdn_driver` and `cdn_domain`; `aliyun` is really implemented (OpenAPI signing), cloudflare/cloudfront pending
 
 ---
 

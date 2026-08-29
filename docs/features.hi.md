@@ -25,7 +25,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 11 | टार्गेटिंग टेम्पलेट | TargetingTemplateController | 5 | — |
 | 12 | सिस्टम प्रबंधन | AdminUserController, AuditLogController | 5 | UserManage, AuditLog |
 | 13 | डेटा सिंक | DataSyncTask, TokenRefreshTask, RetrySyncTask | — | — |
-| 14 | एसेट लाइब्रेरी | AssetController | 4 | AssetGallery |
+| 14 | एसेट लाइब्रेरी | AssetController | 6 | AssetGallery |
 | 15 | बजट अलर्ट | BudgetAlertService + BudgetCheckTask | 1 | — |
 | 16 | डिलीवरी कैलेंडर | CalendarService | 1 | CampaignCalendar |
 | 17 | क्रॉस-प्लेटफ़ॉर्म एट्रिब्यूशन | AttributionEngine | 2 | AttributionReport |
@@ -33,7 +33,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 19 | कैप्चा | CaptchaController | 2 | — |
 | 20 | API दस्तावेज़ | DocController | 1 | — |
 
-**कुल**: 20 मॉड्यूल, 65+ रूट, 18 Vue पेज
+**कुल**: 21 मॉड्यूल, 75+ रूट, 19 Vue पेज
 
 ---
 
@@ -242,10 +242,13 @@ POST /api/ad-groups 支持 targeting_template_id
 ## मॉड्यूल 14: विज्ञापन एसेट लाइब्रेरी
 
 - समर्थित प्रकार: image/jpeg, image/png, image/gif, image/webp, video/mp4
-- फ़ाइल स्टोरेज: `public/uploads/assets/`
+- फ़ाइल स्टोरेज: `public/uploads/assets/` (लोकल डिफ़ॉल्ट), ऑब्जेक्ट स्टोरेज मल्टी-ड्राइवर (local/oss/cos/s3)
+- डिफ़ॉल्ट CDN प्रोवाइडर कॉन्फ़िग होने पर एसेट URL में cdn_domain जुड़कर CDN डिलीवरी के लिए तैयार होता है
+- प्री-साइन्ड डायरेक्ट अपलोड: `POST /api/assets/presign` अपलोड URL देता है, `POST /api/assets/register` डायरेक्ट अपलोड को रजिस्टर करता है (लोकल ड्राइवर पर उपलब्ध नहीं)
+- एसेट डिलीट होने पर CDN कैश अपने आप purge होता है
 - फ्रंटएंड: ग्रिड गैलरी + ड्रैग-ड्रॉप अपलोड + छवि पूर्वावलोकन + वीडियो प्ले + URL कॉपी
 
-इंटरफ़ेस: अपलोड / सूची / विवरण / डिलीट → [api.hi.md मॉड्यूल 12](api.hi.md#模块-12-素材库)
+इंटरफ़ेस: अपलोड / सूची / विवरण / डिलीट / प्री-साइन / रजिस्टर → [api.hi.md मॉड्यूल 12](api.hi.md#模块-12-素材库)
 
 ---
 
@@ -334,3 +337,15 @@ POST /api/ad-groups 支持 targeting_template_id
 ### ज्ञात सीमा
 
 - एकल-नोड इन-मेमोरी स्टेट; मल्टी-नोड के लिए Redis साझा स्टेट चाहिए
+---
+
+## मॉड्यूल 21: CDN प्रोवाइडर प्रबंधन
+
+- केवल प्लेटफ़ॉर्म मास्टर टेनेंट (tenant 1) ही प्रबंधित कर सकता है, AdminMiddleware जाँच
+- ड्राइवर: local / oss (अलीबाबा) / cos (टेनसेंट) / s3 (AWS S3 / Cloudflare R2 / MinIO)
+- क्रेडेंशियल (access_key / secret_key / cdn_token) फ़ील्ड-लेवल एन्क्रिप्टेड (Erikwang2013\Encryptable), API केवल मास्क्ड फ़ील्ड देता है
+- डिफ़ॉल्ट प्रोवाइडर / चालू-बंद / कनेक्टिविटी टेस्ट / कैश purge सपोर्ट
+- टेबल: `ads_cdn_providers`
+- फ्रंटएंड: CdnProviderList.vue (सिस्टम मेनू)
+
+इंटरफ़ेस: सूची / बनाएँ / अपडेट / डिलीट / डिफ़ॉल्ट / टॉगल / टेस्ट / पर्ज → [api.md CDN प्रोवाइडर](api.hi.md#cdn-प्रोवाइडर-प्रबंधन-केवल-प्लेटफ़ॉर्म-मास्टर-टेनेंट-tenant-1-adminmiddleware)

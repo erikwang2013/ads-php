@@ -11,6 +11,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 - **ক্যাম্পেইন ব্যবস্থাপনা** — OAuth অ্যাকাউন্ট অনুমোদন, ক্যাম্পেইন/অ্যাড গ্রুপ/ক্রিয়েটিভের প্ল্যাটফর্ম জুড়ে একীভূত ব্যবস্থাপনা
 - **রিপোর্ট** — ক্রস-প্ল্যাটফর্ম মেট্রিক সমষ্টি, CSV/Excel/PDF রপ্তানি, 5 মডেল অ্যাট্রিবিউশন
 - **স্মার্ট ডেলিভারি** — অটো-বিডিং, বাজেট অ্যালার্ট, ক্যাম্পেইন ক্যালেন্ডার (Gantt), অ্যাসেট লাইব্রেরি
+- **গ্লোবাল অ্যাক্সিলারেশন** — CDN-এর মাধ্যমে অ্যাসেট ডেলিভারি (মাল্টি-ড্রাইভার: লোকাল / Alibaba Cloud OSS / Tencent Cloud COS / S3-কমপ্যাটিবল, অ্যাডমিন থেকে মাল্টি-প্রোভাইডার কনফিগ)
 - **মনিটরিং ও অ্যালার্ট** — অ্যালার্ট রুল ইঞ্জিন, মাল্টি-চ্যানেল পুশ, নির্ধারিত অটো-সিঙ্ক
 - **মাল্টি-এন্ড অ্যাক্সেস** — ওয়েব অ্যাডমিন (Vue 3), Flutter PC/Mobile, HarmonyOS
 - **স্থিতিশীলতা ও নির্ভরযোগ্যতা** — প্ল্যাটফর্ম কল সার্কিট ব্রেকার/ডিগ্রেডেশন/টাইমআউট, 3-স্তর ক্যাশ, উচ্চ সমবর্তী অপ্টিমাইজেশন, 22টি নিরাপত্তা সুরক্ষা
@@ -66,8 +67,8 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 | স্তর | প্রযুক্তি | বিবরণ |
 |----|------|------|
-| সার্ভার | webman v2 + PHP 8.2+ | 7টি প্লাগইন, 65+ API এন্ডপয়েন্ট |
-| ডেটাবেস | MySQL 8.0 | 28টি টেবিল, ads_ প্রিফিক্স, Snowflake BIGINT প্রাইমারি কী |
+| সার্ভার | webman v2 + PHP 8.2+ | 8টি প্লাগইন, 75+ API এন্ডপয়েন্ট |
+| ডেটাবেস | MySQL 8.0 | 29টি টেবিল, ads_ প্রিফিক্স, Snowflake BIGINT প্রাইমারি কী |
 | ক্যাশ | Redis 7 | থ্রি-লেভেল ক্যাশ (L1 মেমরি/L2 APCu/L3 Redis)、রেট লিমিট কাউন্টার、Pub/Sub、মেসেজ কিউ |
 | সার্চ | Elasticsearch | webman-scout অটো ইনডেক্স সিঙ্ক (কনফিগারড) |
 | অ্যাডমিন প্যানেল | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP ব্যাকএন্ড (পোর্ট 8789)、SPA সরাসরি বিজনেস API (পোর্ট 8788) সংযোগ, 19টি পেজ, ECharts ভিজুয়ালাইজেশন |
@@ -189,6 +190,7 @@ CORS → SecurityHeaders → AttackGuard → ClientPlatform → Version → Rate
 | ক্যাম্পেইন ক্যালেন্ডার | ক্রস-প্ল্যাটফর্ম Gantt চার্ট, মাস/সপ্তাহ ভিউ, প্ল্যাটফর্ম অনুযায়ী কালার | CalendarService + Vue Gantt |
 | ক্রস-প্ল্যাটফর্ম অ্যাট্রিবিউশন | 5 মডেল অ্যাট্রিবিউশন (first/last/linear/time_decay/position_based)、30 দিন লুকব্যাক | AttributionEngine + ECharts |
 | প্ল্যাটফর্ম কল রেজিলিয়েন্স | প্ল্যাটফর্ম-ভিত্তিক সার্কিট ব্রেকার স্টেট মশিন (5 ব্যর্থতা → OPEN → 30s হাফ-ওপন প্রোব), ডিগ্রেডেশন fast-fail, 29 অ্যাডাপ্টার টাইমআউট অডিট | CircuitBreaker + GuardedAdapter |
+| CDN অ্যাসেট অ্যাক্সিলারেশন | অবজেক্ট স্টোরেজ মাল্টি-ড্রাইভার (local/oss/cos/s3), অ্যাডমিনে CDN প্রোভাইডার ম্যানেজমেন্ট, প্রিসাইন ডাইরেক্ট আপলোড, ডিলিটে অটো ক্যাশ পার্জ | ads-storage প্লাগইন + CdnProviderController |
 
 ---
 
@@ -225,7 +227,7 @@ cd admin && composer install && php start.php start
 1. **ডেটাবেস কানেকশন** — MySQL হোস্ট、পোর্ট、ডেটাবেস নাম、ইউজারনেম/পাসওয়ার্ড填、কানেকশন টেস্ট সাপোর্ট
 2. **Redis কনফিগ** — Redis কানেকশন তথ্য填 (ঐচ্ছিক)
 3. **অ্যাডমিন অ্যাকাউন্ট** — ব্যাকএন্ড লগইন ইউজারনেম、পাসওয়ার্ড、ডিসপ্লে নাম সেট
-4. **ওয়ান-ক্লিক ইনস্টল** — অটো ডেটাবেস তৈরি、`install.sql` এক্সিকিউট করে 28টি টেবিল তৈরি ও সিড ডেটা লেখা、অ্যাডমিন পাসওয়ার্ড আপডেট
+4. **ওয়ান-ক্লিক ইনস্টল** — অটো ডেটাবেস তৈরি、`install.sql` এক্সিকিউট করে 29টি টেবিল তৈরি ও সিড ডেটা লেখা、অ্যাডমিন পাসওয়ার্ড আপডেট
 
 ইনস্টলেশন শেষে `/` খুলে অ্যাডমিন প্যানেলে যান, সেট করা ইউজারনেম ও পাসওয়ার্ড দিয়ে লগইন করুন।
 
@@ -286,7 +288,9 @@ ads-php/
 │   │   ├── ads-task/                  # 定时任务调度 (6 cron)
 │   │   ├── ads-alert/                 # 告警监控引擎 + 预算预警
 │   │   ├── ads-report/                # 报表引擎 (CSV/Excel/PDF) + 归因引擎 + 投放日历
-│   │   └── ads-tenant/                # 多租户管理
+│   │   ├── ads-tenant/                # 多租户管理
+│   │   └── ads-storage/               # 存储抽象层 (local/OSS/COS/S3) + CDN 服务商
+│   ├── scripts/backfill-assets.php    # 存量素材回填对象存储
 │   ├── support/                       # Erik Stack 工具类
 │   │   ├── ControllerTrait.php        # 控制器公共 trait
 │   │   ├── JwtService.php             # JWT 包装类
@@ -294,7 +298,7 @@ ads-php/
 │   │   ├── ExceptionHandler.php       # API 异常处理器
 │   │   └── ApiResponse.php            # 统一响应格式
 │   ├── config/                        # 全局配置 (DB/Redis/Log/Middleware)
-│   ├── tests/                         # PHPUnit 测试 (265 tests)
+│   ├── tests/                         # PHPUnit 测试 (288 tests)
 │   │   ├── Unit/                      # 单元测试 (Middleware, Task)
 │   │   └── Integration/               # 集成测试 (Auth, Health)
 │   └── start.php                      # 服务入口
@@ -347,6 +351,7 @@ ads-php/
 | ডেলিভারি | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | বিজ্ঞাপন ডেলিভারি হায়ারার্কি |
 | রিপোর্ট | `ads_report_metrics`, `ads_report_extras` | ইউনিফাইড রিপোর্ট মেট্রিক |
 | অ্যাসেট | `ads_assets` | ক্রিয়েটিভ অ্যাসেট লাইব্রেরি |
+| CDN | `ads_cdn_providers` | CDN প্রোভাইডার কনফিগ (ক্রেডেনশিয়াল এনক্রিপ্টেড) |
 | টার্গেটিং | `ads_targeting_templates` | অডিয়েন্স টার্গেটিং টেমপ্লেট |
 | অ্যাট্রিবিউশন | `ads_conversions`, `ads_attribution_results` | কনভার্সন ট্র্যাকিং + অ্যাট্রিবিউশন ফলাফল |
 | বিডিং | `ads_bid_rules`, `ads_bid_logs` | অটো বিডিং রুল + হিস্টোরি |
@@ -373,10 +378,10 @@ ads-php/
 
 ```bash
 cd service && ./vendor/bin/phpunit
-# 265 测试 / 717 断言
+# 288 测试 / 862 断言
 ```
 
-**কভারেজ রেঞ্জ**: মিডলওয়্যার (Version/SQLGuard/SecurityHeaders) · ডেটা অবজেক্ট (CampaignData/FieldMapping/Hashids) · ইঞ্জিন (ReportBuilder/AdapterRegistry) · ইন্টিগ্রেশন টেস্ট (Auth/Health)
+**কভারেজ রেঞ্জ**: 14 মিডলওয়্যার · 8 প্লাগইন বিজনেস লেয়ার (অ্যাকাউন্ট/অ্যালার্ট/প্ল্যাটফর্ম/রিপোর্ট/টাস্ক/টেন্যান্ট/স্টোরেজ) · ইঞ্জিন (Bid/Alert/Attribution/Report) · API ইন্টিগ্রেশন টেস্ট (76 রুট) · UI E2E (18 পেজ)
 
 ```bash
 # TypeScript 检查
@@ -443,6 +448,23 @@ cd apps/flutter && dart analyze   # 零错误
 >
 > - **港元、人民币及美元**：Citibank N.A. Hong Kong — SWIFT `CITIHKHXXXX` · 银行编号 006 · Hong Kong Branch（分行编号 391）· Citibank Tower, Citibank Plaza, 3 Garden Road, Central, Hong Kong
 > - **其他币种**：THE BANK OF NEW YORK MELLON — SWIFT `IRVTUS3NXXX` · 240 GREENWICH STREET, NEW YORK, United States
+
+### ক্রিপ্টো দান (Crypto Donation)
+
+এই প্রকল্পটি আপনার কাজে লাগলে, দান করতে QR কোড স্ক্যান করুন, ধন্যবাদ!
+
+| নেটওয়ার্ক (Network) | QR কোড (QR Code) | ওয়ালেট ঠিকানা (Wallet Address) |
+|---|---|---|
+| BNB Smart Chain (BEP20) | [<img src="./coin/1.jpg" width="150" alt="BNB Smart Chain (BEP20)">](./coin/1.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Tron (TRC20) | [<img src="./coin/2.jpg" width="150" alt="Tron (TRC20)">](./coin/2.jpg) | `TEdDHWLajt1XvqtPDWmQctdrJaC3pzZZzz` |
+| Ethereum (ERC20) | [<img src="./coin/3.jpg" width="150" alt="Ethereum (ERC20)">](./coin/3.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Aptos | [<img src="./coin/4.jpg" width="150" alt="Aptos">](./coin/4.jpg) | `0x836e3780edfc3f7b2372b39e2a1a3a5d7adfaccd96c726f21cfde1b50dd68030` |
+| Plasma | [<img src="./coin/5.jpg" width="150" alt="Plasma">](./coin/5.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Polygon POS | [<img src="./coin/6.jpg" width="150" alt="Polygon POS">](./coin/6.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Solana | [<img src="./coin/7.jpg" width="150" alt="Solana">](./coin/7.jpg) | `2hfhboHdmdrYsY25XfQSsEWxq5ip4EQsR7f4AzSRMUyr` |
+| The Open Network (TON) | [<img src="./coin/8.jpg" width="150" alt="The Open Network (TON)">](./coin/8.jpg) | `UQB9kFQohzmXUir9QSSZq01iwl9aQZIDdBpNmDklljRtCoGK` |
+| Arbitrum One | [<img src="./coin/9.jpg" width="150" alt="Arbitrum One">](./coin/9.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| AVAX C-Chain | [<img src="./coin/10.jpg" width="150" alt="AVAX C-Chain">](./coin/10.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
 
 ---
 

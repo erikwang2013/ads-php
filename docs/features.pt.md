@@ -25,7 +25,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 11 | Modelos de segmentação | TargetingTemplateController | 5 | — |
 | 12 | Administração do sistema | AdminUserController, AuditLogController | 5 | UserManage, AuditLog |
 | 13 | Sincronização de dados | DataSyncTask, TokenRefreshTask, RetrySyncTask | — | — |
-| 14 | Biblioteca de materiais | AssetController | 4 | AssetGallery |
+| 14 | Biblioteca de materiais | AssetController | 6 | AssetGallery |
 | 15 | Alerta de orçamento | BudgetAlertService + BudgetCheckTask | 1 | — |
 | 16 | Calendário de veiculação | CalendarService | 1 | CampaignCalendar |
 | 17 | Atribuição entre plataformas | AttributionEngine | 2 | AttributionReport |
@@ -33,7 +33,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 19 | Captcha | CaptchaController | 2 | — |
 | 20 | Documentação da API | DocController | 1 | — |
 
-**Total**: 20 módulos, 65+ rotas, 18 páginas Vue
+**Total**: 21 módulos, 75+ rotas, 19 páginas Vue
 
 ---
 
@@ -242,10 +242,13 @@ Interfaces: gerenciamento de usuários / logs de auditoria / papéis → [endpoi
 ## Módulo 14: Biblioteca de materiais de anúncios
 
 - Tipos suportados: image/jpeg, image/png, image/gif, image/webp, video/mp4
-- Armazenamento de arquivos: `public/uploads/assets/`
+- Armazenamento de arquivos: `public/uploads/assets/` (local por padrão), multidriver de armazenamento de objetos (local/oss/cos/s3)
+- Com um provedor CDN padrão configurado, as URLs dos assets são montadas com cdn_domain para entrega via CDN
+- Upload direto pré-assinado: `POST /api/assets/presign` obtém a URL de upload, `POST /api/assets/register` registra o asset enviado (indisponível no driver local)
+- Excluir um asset purga automaticamente o cache CDN (purge)
 - Frontend: galeria em grade + upload por arrastar e soltar + prévia de imagens + reprodução de vídeos + copiar URL
 
-Interfaces: upload / lista / detalhes / exclusão → [módulo 12 do api.md](api.pt.md#模块-12-素材库)
+Interfaces: upload / lista / detalhes / exclusão / presign / registro → [módulo 12 do api.md](api.pt.md#模块-12-素材库)
 
 ---
 
@@ -334,3 +337,15 @@ Interfaces: análise de atribuição / lista de modelos → [módulo 7 do api.md
 ### Limitação conhecida
 
 - Estado em memória de um nó; implantação multinó requer estado compartilhado em Redis
+---
+
+## Módulo 21: Gestão de provedores CDN
+
+- Apenas o tenant mestre da plataforma (tenant 1) gerencia, validado por AdminMiddleware
+- Drivers: local / oss (Aliyun) / cos (Tencent Cloud) / s3 (AWS S3 / Cloudflare R2 / MinIO)
+- Credenciais (access_key / secret_key / cdn_token) criptografadas em nível de campo (Erikwang2013\Encryptable), a API retorna apenas campos mascarados
+- Suporta provedor padrão / ativar-desativar / teste de conectividade / purga de cache
+- Tabela: `ads_cdn_providers`
+- Frontend: CdnProviderList.vue (menu do sistema)
+
+Interfaces: Lista / Criar / Atualizar / Excluir / Padrão / Toggle / Testar / Purgar → [api.md Provedores CDN](api.pt.md#gestão-de-provedores-cdn-somente-tenant-mestre-da-plataforma-tenant-1-adminmiddleware)

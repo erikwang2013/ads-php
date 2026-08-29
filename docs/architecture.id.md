@@ -122,7 +122,8 @@ ads-php/
 │   │   ├── ads-task/                      # 5 个 cron 任务
 │   │   ├── ads-alert/                     # 告警引擎 + 通知
 │   │   ├── ads-report/                    # 报表引擎 (CSV/Excel/PDF)
-│   │   └── ads-tenant/                    # 多租户
+│   │   ├── ads-tenant/                    # 多租户
+│   │   └── ads-storage/                   # Abstraksi penyimpanan (local/OSS/COS/S3) + penyedia CDN
 │   ├── tests/                             # PHPUnit
 │   │   ├── Unit/Middleware/               # 中间件测试
 │   │   ├── Unit/Task/                     # 任务测试 (规划)
@@ -171,6 +172,7 @@ ads-php/
 | Penawaran | `ads_bid_rules`, `ads_bid_logs` | BIGINT Snowflake | Penawaran otomatis |
 | Penargetan | `ads_targeting_templates` | BIGINT Snowflake | Template audiens |
 | Materi | `ads_assets` | BIGINT Snowflake | Pustaka materi kreatif |
+| CDN | `ads_cdn_providers` | BIGINT Snowflake | Konfigurasi penyedia CDN (kredensial terenkripsi per bidang) |
 | Notifikasi | `ads_notifications` | BIGINT Snowflake | Notifikasi dalam aplikasi |
 | Atribusi | `ads_conversions`, `ads_attribution_results` | BIGINT Snowflake | Pelacakan konversi + atribusi |
 | Sistem | `ads_sync_errors` | BIGINT Snowflake | Error sinkronisasi |
@@ -324,6 +326,10 @@ HTTP Request → Controller → AsyncJobService::dispatch()
 - `gzip_static on` — file js/css pra-kompresi
 - Integrasi CDN di lingkungan produksi (CloudFront/Aliyun CDN)
 
+### 10.6 Akselerasi Aset CDN
+
+Perakitan URL aset, strategi cache dan purge: lihat [Bab 12 Penyimpanan Aset & Akselerasi CDN](#12-penyimpanan-aset--akselerasi-cdn).
+
 ---
 
 ## 11. Deployment dan CI/CD
@@ -342,3 +348,56 @@ HTTP Request → Controller → AsyncJobService::dispatch()
 
 - **CI** (`.github/workflows/ci.yml`): PHP Syntax → PHPUnit → TypeScript → Docker Build
 - **CD** (`.github/workflows/deploy.yml`): Docker Buildx → GHCR Push (service/admin/admin-php) → Deploy
+
+---
+
+## 12. Penyimpanan Aset & Akselerasi CDN
+
+### 12.1 Lapisan Abstraksi Penyimpanan
+
+`service/plugin/ads-storage/` menyediakan fasad `Storage` terpadu + antarmuka `StorageDriver` (put/delete/signedUrl/publicUrl/putFile/deleteUrl/purge), berganti implementasi sesuai driver:
+
+| driver | implementasi | kegunaan |
+|--------|--------------|----------|
+| `local` | LocalStorage | Default, lokal `public/uploads/assets/` |
+| `oss` | AlibabaOssStorage | Alibaba Cloud OSS |
+| `cos` | TencentCosStorage | Tencent Cloud COS (protokol S3) |
+| `s3` | S3CompatibleStorage | Kompatibel S3: AWS S3 / Cloudflare R2 / MinIO |
+
+Distribusi mengutamakan penyedia default di DB (dikonfigurasi di admin), jika tidak ada kembali ke env/local.
+
+### 12.2 Manajemen Penyedia CDN
+
+Tabel baru `ads_cdn_providers` (name/driver/bucket/region/endpoint/access_key/secret_key/cdn_domain/cdn_driver/cdn_token/enabled/is_default/status):
+
+- Kredensial (access_key/secret_key/cdn_token) dienkripsi per bidang via `Erikwang2013\Encryptable`; respons API hanya mengembalikan bidang tersamar
+- Hanya tenant master platform (tenantId=1) yang dapat mengelola (AdminMiddleware); 8 endpoint di `/api/admin/cdn/providers`: daftar/buat/ubah/hapus/default/aktif-nonaktif/uji konektivitas/purge cache
+- purge diimplementasikan nyata untuk cdn_driver `aliyun` (penandatanganan OpenAPI); cloudflare/cloudfront menyusul
+
+### 12.3 Perakitan URL
+
+`ads_assets.url` selalu menyimpan jalur relatif (`/uploads/assets/...`); saat dibaca, `cdn_domain` penyedia default ditambahkan di depan menjadi URL HTTPS lengkap (`https://{cdn_domain}/{url}`); tanpa CDN dikembalikan apa adanya.
+
+### 12.4 Strategi Cache
+
+| tipe | strategi |
+|------|----------|
+| gambar | cache panjang `immutable` (nama file acak, URL unik — aman) |
+| video | cache pendek + dukungan Range (pemutaran bersegmen) |
+
+Saat aset dihapus, URL-nya otomatis di-purge dari cache CDN.
+
+### 12.5 Isolasi Jalur Multi-Tenant
+
+Key aset memuat prefiks isolasi tenant dan dikelompokkan berdasarkan tenant_id; aset antar tenant berbeda saling tak terlihat.
+
+### 12.6 Unggah Langsung Presign & Backfill
+
+- `POST /api/assets/presign`: dapatkan URL unggah presign (klien unggah langsung ke object storage, mis. video 50 MiB); format `key`: `Ymd/32hex.ekstensi`
+- `POST /api/assets/register`: mendaftarkan aset hasil unggah langsung; format key divalidasi ketat terhadap path traversal
+- presign tidak tersedia pada driver `local` (tanpa penandatanganan object storage)
+- `service/scripts/backfill-assets.php`: menyalin aset lokal yang ada ke object storage (`--dry-run` pratinjau); kolom `url` tetap
+
+### 12.7 Jalur Origin
+
+`service/config/static.php` mengaktifkan layanan file statis webman; `/uploads/assets` dilayani langsung via HTTP di 8788 sebagai jalur origin CDN.

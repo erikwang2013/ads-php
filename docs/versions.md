@@ -150,11 +150,12 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | | ads_bid_logs | — | — | ✅ |
 | 定向 | ads_targeting_templates | — | — | ✅ |
 | 素材 | ads_assets | — | — | ✅ |
+| CDN | ads_cdn_providers | — | — | ✅ |
 | 归因 | ads_conversions | — | — | ✅ |
 | | ads_attribution_results | — | — | ✅ |
 | 系统 | ads_sync_errors | ✅ | ✅ | ✅ |
 | 管理 | admin_users/roles/audit_logs | ✅ | ✅ | ✅ |
-| **合计** | | **8** | **13** | **18** |
+| **合计** | | **8** | **13** | **19** |
 
 ---
 
@@ -179,9 +180,10 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 通知中心 | — | ✅ | ✅ |
 | 自动出价 | — | — | ✅ |
 | 素材库 | — | — | ✅ |
+| CDN 服务商 | — | — | ✅ |
 | 投放日历 | — | — | ✅ |
 | 归因分析 | — | — | ✅ |
-| **合计** | **7** | **13** | **17** |
+| **合计** | **7** | **13** | **18** |
 
 ### Flutter
 
@@ -219,8 +221,9 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 通知 (index/unread/read/readAll) | — | 4 | 4 |
 | 自动出价 (CRUD + logs) | — | — | 5 |
 | 定向模板 (CRUD) | — | — | 5 |
-| 素材库 (index/upload/show/destroy) | — | — | 4 |
-| **合计** | **26** | **44** | **62** |
+| 素材库 (index/upload/show/destroy/presign/register) | — | — | 6 |
+| CDN 服务商 (list/create/update/delete/default/toggle/test/purge) | — | — | 8 |
+| **合计** | **26** | **44** | **70** |
 
 ---
 

@@ -122,7 +122,8 @@ ads-php/
 │   │   ├── ads-task/                      # 5 个 cron 任务
 │   │   ├── ads-alert/                     # 告警引擎 + 通知
 │   │   ├── ads-report/                    # 报表引擎 (CSV/Excel/PDF)
-│   │   └── ads-tenant/                    # 多租户
+│   │   ├── ads-tenant/                    # 多租户
+│   │   └── ads-storage/                   # Abstraction de stockage (local/OSS/COS/S3) + fournisseurs CDN
 │   ├── tests/                             # PHPUnit
 │   │   ├── Unit/Middleware/               # 中间件测试
 │   │   ├── Unit/Task/                     # 任务测试 (规划)
@@ -171,6 +172,7 @@ ads-php/
 | Enchères | `ads_bid_rules`, `ads_bid_logs` | BIGINT Snowflake | Enchères automatiques |
 | Ciblage | `ads_targeting_templates` | BIGINT Snowflake | Modèles d'audience |
 | Ressources | `ads_assets` | BIGINT Snowflake | Bibliothèque de ressources créatives |
+| CDN | `ads_cdn_providers` | BIGINT Snowflake | Configuration fournisseur CDN (identifiants chiffrés par champ) |
 | Notifications | `ads_notifications` | BIGINT Snowflake | Notifications internes |
 | Attribution | `ads_conversions`, `ads_attribution_results` | BIGINT Snowflake | Suivi des conversions + attribution |
 | Système | `ads_sync_errors` | BIGINT Snowflake | Erreurs de synchronisation |
@@ -324,6 +326,10 @@ HTTP Request → Controller → AsyncJobService::dispatch()
 - `gzip_static on` — fichiers js/css précompressés
 - Intégration CDN en production (CloudFront/Aliyun CDN)
 
+### 10.6 Accélération CDN des ressources
+
+Assemblage des URL, stratégies de cache et de purge : voir [chapitre 12 Stockage des ressources & accélération CDN](#12-stockage-des-ressources--accélération-cdn).
+
 ---
 
 ## 11. Déploiement et CI/CD
@@ -342,3 +348,56 @@ HTTP Request → Controller → AsyncJobService::dispatch()
 
 - **CI** (`.github/workflows/ci.yml`) : Syntaxe PHP → PHPUnit → TypeScript → Build Docker
 - **CD** (`.github/workflows/deploy.yml`) : Docker Buildx → Push GHCR (service/admin/admin-php) → Déploiement
+
+---
+
+## 12. Stockage des ressources & accélération CDN
+
+### 12.1 Couche d'abstraction de stockage
+
+`service/plugin/ads-storage/` fournit une façade `Storage` unifiée + une interface `StorageDriver` (put/delete/signedUrl/publicUrl/putFile/deleteUrl/purge), avec implémentation selon le driver :
+
+| driver | implémentation | usage |
+|--------|----------------|-------|
+| `local` | LocalStorage | Par défaut, local `public/uploads/assets/` |
+| `oss` | AlibabaOssStorage | Alibaba Cloud OSS |
+| `cos` | TencentCosStorage | Tencent Cloud COS (protocole S3) |
+| `s3` | S3CompatibleStorage | Compatible S3 : AWS S3 / Cloudflare R2 / MinIO |
+
+La diffusion privilégie le fournisseur par défaut en base (configurable dans l'admin), sinon repli sur env/local.
+
+### 12.2 Gestion des fournisseurs CDN
+
+Nouvelle table `ads_cdn_providers` (name/driver/bucket/region/endpoint/access_key/secret_key/cdn_domain/cdn_driver/cdn_token/enabled/is_default/status) :
+
+- Les identifiants (access_key/secret_key/cdn_token) sont chiffrés champ par champ via `Erikwang2013\Encryptable` ; l'API ne renvoie que des champs masqués
+- Seul le locataire principal de la plateforme (tenantId=1) peut gérer (AdminMiddleware) ; 8 points de terminaison `/api/admin/cdn/providers` : liste/création/modification/suppression/défaut/activer-désactiver/test de connectivité/purge du cache
+- purge est réellement implémenté pour le cdn_driver `aliyun` (signature OpenAPI) ; cloudflare/cloudfront à venir
+
+### 12.3 Assemblage des URL
+
+`ads_assets.url` stocke toujours un chemin relatif (`/uploads/assets/...`) ; à la lecture, le `cdn_domain` du fournisseur par défaut est préfixé pour former une URL HTTPS complète (`https://{cdn_domain}/{url}`) ; sans CDN, renvoyé tel quel.
+
+### 12.4 Stratégie de cache
+
+| type | stratégie |
+|------|-----------|
+| images | cache long `immutable` (noms de fichiers aléatoires, URL uniques — sûr) |
+| vidéo | cache court + support Range (lecture segmentée) |
+
+La suppression d'une ressource purge automatiquement son URL du cache CDN.
+
+### 12.5 Isolation des chemins multi-locataires
+
+Les clés de ressources portent un préfixe d'isolation par locataire et sont groupées par tenant_id ; les ressources de locataires différents sont mutuellement invisibles.
+
+### 12.6 Téléversement direct pré-signé & backfill
+
+- `POST /api/assets/presign` : obtention d'une URL de téléversement pré-signée (le client téléverse directement dans le stockage objet, ex. vidéos de 50 Mio) ; format de `key` : `Ymd/32hex.extension`
+- `POST /api/assets/register` : enregistrement d'une ressource téléversée directement ; format de key strictement validé contre le path traversal
+- presign indisponible avec le driver `local` (pas de signature de stockage objet)
+- `service/scripts/backfill-assets.php` : copie les ressources locales existantes vers le stockage objet (`--dry-run` pour prévisualiser) ; la colonne `url` reste inchangée
+
+### 12.7 Chemin d'origine
+
+`service/config/static.php` active le service de fichiers statiques webman ; `/uploads/assets` est servi directement en HTTP sur 8788 comme chemin d'origine CDN.

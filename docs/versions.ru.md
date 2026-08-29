@@ -150,11 +150,12 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | | ads_bid_logs | — | — | ✅ |
 | Таргетинг | ads_targeting_templates | — | — | ✅ |
 | Материалы | ads_assets | — | — | ✅ |
+| CDN | ads_cdn_providers | — | — | ✅ |
 | Атрибуция | ads_conversions | — | — | ✅ |
 | | ads_attribution_results | — | — | ✅ |
 | Системные | ads_sync_errors | ✅ | ✅ | ✅ |
 | Управление | admin_users/roles/audit_logs | ✅ | ✅ | ✅ |
-| **Итого** | | **8** | **13** | **18** |
+| **Итого** | | **8** | **13** | **19** |
 
 ---
 
@@ -179,9 +180,10 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | Центр уведомлений | — | ✅ | ✅ |
 | Автоматические ставки | — | — | ✅ |
 | Библиотека материалов | — | — | ✅ |
+| CDN-провайдеры | — | — | ✅ |
 | Календарь кампаний | — | — | ✅ |
 | Атрибутивный анализ | — | — | ✅ |
-| **Итого** | **7** | **13** | **17** |
+| **Итого** | **7** | **13** | **18** |
 
 ### Flutter
 
@@ -219,8 +221,9 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | Уведомления (index/unread/read/readAll) | — | 4 | 4 |
 | Автоматические ставки (CRUD + logs) | — | — | 5 |
 | Шаблоны таргетинга (CRUD) | — | — | 5 |
-| Библиотека материалов (index/upload/show/destroy) | — | — | 4 |
-| **Итого** | **26** | **44** | **62** |
+| Библиотека материалов (index/upload/show/destroy/presign/register) | — | — | 6 |
+| CDN-провайдеры (list/create/update/delete/default/toggle/test/purge) | — | — | 8 |
+| **Итого** | **26** | **44** | **70** |
 
 ---
 

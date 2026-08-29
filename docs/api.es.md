@@ -692,6 +692,25 @@ Caché de 30 segundos. El frontend consulta cada 30s.
 
 **Respuesta**: `{ "code": 0, "data": { "id": "hashids", "url": "/uploads/assets/20260522/abc123.jpg", "type": "image" } }`
 
+- Con CDN configurado, `url` se ensambla con el `cdn_domain` del proveedor predeterminado formando una dirección HTTPS completa
+
+### POST /api/assets/presign — Obtener URL de carga pre-firmada
+
+**Solicitud**: `{ "filename": "demo.mp4", "mime_type": "video/mp4" }`
+
+**Respuesta**: `{ "code": 0, "data": { "key": "20260829/ab12...cd34.mp4", "upload_url": "https://signed-url", "expires_in": 3600, "url": "https://cdn.example.com/uploads/assets/..." } }`
+
+- Formato de `key`: `Ymd/32hex.extensión`; devolverlo a `/api/assets/register` tras la carga directa
+- Para vídeos de hasta 50 MiB el cliente sube directo al almacenamiento de objetos; no disponible con el driver `local`
+
+### POST /api/assets/register — Registrar material subido directamente
+
+**Solicitud**: `{ "key": "20260829/ab12...cd34.mp4", "filename": "demo.mp4", "mime_type": "video/mp4", "size": 52428800 }`
+
+**Respuesta**: `{ "code": 0, "message": "Created", "data": { "id": "hashids", "url": "https://cdn.example.com/uploads/assets/...", "type": "video" } }`
+
+- `key` validado estrictamente (`^\d{8}/[0-9a-f]{32}\.[a-z0-9]{1,10}$`) contra path traversal
+
 ### GET /api/assets/:id — Detalle de material
 
 ### DELETE /api/assets/:id — Eliminar material
@@ -730,6 +749,37 @@ En la respuesta, `id` y `role_id` están codificados con hashids.
 ### GET /api/admin/audit-logs — Logs de auditoría
 
 **Parámetros**: `user_id`, `action`, `date_from`, `date_to`, `page`, `per_page`
+
+---
+
+### Gestión de proveedores CDN (solo tenant principal de la plataforma tenant 1, AdminMiddleware)
+
+### GET /api/admin/cdn/providers — Lista de proveedores
+
+### POST /api/admin/cdn/providers — Crear proveedor
+
+**Solicitud**: `{ "name": "Aliyun OSS", "driver": "oss", "bucket": "ads-assets", "region": "oss-cn-hangzhou", "endpoint": "https://oss-cn-hangzhou.aliyuncs.com", "access_key": "...", "secret_key": "...", "cdn_domain": "cdn.example.com", "cdn_driver": "aliyun", "cdn_token": "...", "is_default": 1 }`
+
+- `driver`: `local` / `oss` (Alibaba Cloud OSS) / `cos` (Tencent Cloud COS, protocolo S3) / `s3` (compatible S3: AWS S3 / Cloudflare R2 / MinIO)
+- Credenciales (access_key/secret_key/cdn_token) cifradas por campo con Encryptable; las respuestas solo devuelven campos enmascarados
+
+### PUT /api/admin/cdn/providers/:id — Actualizar proveedor
+
+### DELETE /api/admin/cdn/providers/:id — Eliminar (el predeterminado pasa automáticamente al siguiente enabled)
+
+### PUT /api/admin/cdn/providers/:id/default — Establecer como predeterminado
+
+### PUT /api/admin/cdn/providers/:id/toggle — Activar/Desactivar (al desactivar el predeterminado se transfiere automáticamente)
+
+### POST /api/admin/cdn/providers/:id/test — Prueba de conectividad
+
+**Respuesta**: `{ "code": 0, "data": { "ok": true, "driver": "oss", "status": "ok" } }`
+
+### POST /api/admin/cdn/providers/:id/purge — Purga de caché CDN
+
+**Solicitud**: `{ "paths": ["/uploads/assets/20260829/xxx.mp4"] }`
+
+- Requiere `cdn_driver` y `cdn_domain`; `aliyun` realmente implementado (firma OpenAPI), cloudflare/cloudfront pendientes
 
 ---
 

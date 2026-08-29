@@ -5,6 +5,27 @@
         "phpunit/phpunit": "^10.0",
         "hg/apidoc": "^5.3"
     },
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "aliyun/aliyun-oss-php-sdk",
+                "version": "2.6.0",
+                "dist": {
+                    "url": "https://codeload.github.com/aliyun/aliyun-oss-php-sdk/tar.gz/refs/tags/v2.6.0",
+                    "type": "tar"
+                },
+                "autoload": {
+                    "psr-4": {
+                        "OSS\\": "src/OSS"
+                    }
+                },
+                "require": {
+                    "php": ">=7.4"
+                }
+            }
+        }
+    ],
     "require": {
         "php": ">=8.2",
         "workerman/webman-framework": "^2.0",
@@ -24,7 +45,9 @@
         "erikwang2013/webman-scout": "^2.0",
         "erikwang2013/season": "^2.0",
         "erikwang2013/poster-php": "^1.0",
-        "webman/redis": "^2.1"
+        "webman/redis": "^2.1",
+        "aliyun/aliyun-oss-php-sdk": "^2.6",
+        "aws/aws-sdk-php": "^3.300"
     },
     "autoload": {
         "psr-4": {
@@ -36,7 +59,8 @@
             "plugin\\ads_tenant\\": "plugin/ads-tenant/",
             "plugin\\ads_report\\": "plugin/ads-report/",
             "plugin\\ads_alert\\": "plugin/ads-alert/",
-            "plugin\\ads_task\\": "plugin/ads-task/"
+            "plugin\\ads_task\\": "plugin/ads-task/",
+            "plugin\\ads_storage\\": "plugin/ads-storage/"
         }
     },
     "autoload-dev": {

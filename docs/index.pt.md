@@ -6,14 +6,14 @@
 docs/
 ├── index.md                                # 本文件
 ├── architecture.md                         # 架构设计文档 (部署/安全/目录/数据模型)
-├── features.md                             # 功能设计文档 (20 模块/业务流程)
+├── features.md                             # 功能设计文档 (21 模块/业务流程)
 ├── api.md                                  # API 接口文档 (接口定义已统一移至此)
 ├── versions.md                             # 三版本对比
 ├── apidoc-header.md                        # hg/apidoc 通用规范头部
 ├── diagrams/                               # Mermaid 可视化图表 (5 个)
 │   ├── architecture.md                     #   系统架构图 (C4 容器级拓扑)
 │   ├── request-flow.md                     #   请求流程图 (15+10 层中间件管道)
-│   ├── functional-modules.md               #   功能模块图 (20 模块依赖+数据流)
+│   ├── functional-modules.md               #   功能模块图 (21 模块依赖+数据流)
 │   ├── data-lifecycle.md                   #   数据生命周期图 (6 阶段+甘特图+缓存状态机)
 │   └── security.md                         #   安全架构图
 ├── skills/                                 # 可复用项目技能 (11 个)

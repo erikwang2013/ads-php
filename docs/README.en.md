@@ -11,6 +11,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 - **Campaign Management** — OAuth account authorization, unified management of campaigns/ad groups/creatives across platforms
 - **Reporting** — cross-platform metric aggregation, CSV/Excel/PDF export, 5-model cross-platform attribution
 - **Smart Delivery** — auto-bidding, budget alerts, campaign calendar (Gantt), asset library
+- **Global Acceleration** — asset CDN delivery (local / Alibaba Cloud OSS / Tencent Cloud COS / S3-compatible multi-driver, multi-provider config in admin)
 - **Monitoring & Alerts** — alert rule engine, multi-channel push, scheduled auto-sync
 - **Multi-Device Access** — Web admin (Vue 3), Flutter PC/Mobile, HarmonyOS
 - **Stability & Reliability** — platform call circuit breaker/degradation/timeout, 3-tier cache, high-concurrency optimizations, 22 security protections
@@ -66,8 +67,8 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 | Layer | Technology | Notes |
 |-------|-----------|-------|
-| Server | webman v2 + PHP 8.2+ | 7 plugins, 65+ API endpoints |
-| Database | MySQL 8.0 | 28 tables, `ads_` prefix, Snowflake BIGINT PK |
+| Server | webman v2 + PHP 8.2+ | 8 plugins, 75+ API endpoints |
+| Database | MySQL 8.0 | 29 tables, `ads_` prefix, Snowflake BIGINT PK |
 | Cache | Redis 7 | 3-tier cache (L1 memory / L2 APCu / L3 Redis), rate limiting, Pub/Sub, message queue |
 | Search | Elasticsearch | webman-scout auto index sync (configured) |
 | Admin Panel | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP backend (port 8789), SPA calls business API directly (port 8788), 19 pages, ECharts |
@@ -189,6 +190,7 @@ CORS → SecurityHeaders → AttackGuard → ClientPlatform → Version → Rate
 | Campaign Calendar | Cross-platform Gantt chart, month/week views, color-coded | CalendarService + Vue Gantt |
 | Cross-Platform Attribution | 5 attribution models (first/last/linear/time_decay/position_based), 30-day lookback | AttributionEngine + ECharts |
 | Platform Call Resilience | Per-platform circuit breaker state machine (5 failures → OPEN → 30s half-open probe), degradation fast-fail, 29 adapter timeout audit | CircuitBreaker + GuardedAdapter |
+| CDN Asset Acceleration | Object storage multi-driver (local/oss/cos/s3), admin CDN provider management, presigned direct upload, auto cache purge on delete | ads-storage plugin + CdnProviderController |
 
 ---
 
@@ -225,7 +227,7 @@ The wizard guides you through:
 1. **Database Connection** — MySQL host, port, database name, credentials, with connection test
 2. **Redis Configuration** — Redis connection settings (optional)
 3. **Admin Account** — Backend login username, password, display name
-4. **One-Click Install** — Auto-create database, run `install.sql` to create 28 tables with seed data, set admin password
+4. **One-Click Install** — Auto-create database, run `install.sql` to create 29 tables with seed data, set admin password
 
 After installation, visit `/` and log in with your configured credentials.
 
@@ -286,7 +288,9 @@ ads-php/
 │   │   ├── ads-task/                  # Scheduled tasks (6 cron jobs)
 │   │   ├── ads-alert/                 # Alert monitoring engine + budget alerts
 │   │   ├── ads-report/                # Reporting engine (CSV/Excel/PDF) + attribution + calendar
-│   │   └── ads-tenant/                # Multi-tenant management
+│   │   ├── ads-tenant/                # Multi-tenant management
+│   │   └── ads-storage/               # Storage abstraction (local/OSS/COS/S3) + CDN providers
+│   ├── scripts/backfill-assets.php    # Backfill existing assets to object storage
 │   ├── support/                       # Erik Stack utilities
 │   │   ├── ControllerTrait.php        # Controller shared trait
 │   │   ├── JwtService.php             # JWT wrapper
@@ -294,7 +298,7 @@ ads-php/
 │   │   ├── ExceptionHandler.php       # API exception handler
 │   │   └── ApiResponse.php            # Unified response format
 │   ├── config/                        # Global config (DB/Redis/Log/Middleware)
-│   ├── tests/                         # PHPUnit tests (265 tests)
+│   ├── tests/                         # PHPUnit tests (288 tests)
 │   │   ├── Unit/                      # Unit tests (Middleware, Task)
 │   │   └── Integration/               # Integration tests (Auth, Health)
 │   └── start.php                      # Service entry point
@@ -347,6 +351,7 @@ ads-php/
 | Campaigns | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | Ad delivery hierarchy |
 | Reporting | `ads_report_metrics`, `ads_report_extras` | Unified report metrics |
 | Assets | `ads_assets` | Creative asset library |
+| CDN | `ads_cdn_providers` | CDN provider config (credentials encrypted) |
 | Targeting | `ads_targeting_templates` | Audience targeting templates |
 | Attribution | `ads_conversions`, `ads_attribution_results` | Conversion tracking + attribution |
 | Bidding | `ads_bid_rules`, `ads_bid_logs` | Auto-bid rules + history |
@@ -373,10 +378,10 @@ ads-php/
 
 ```bash
 cd service && ./vendor/bin/phpunit
-# 265 tests / 717 assertions
+# 288 tests / 862 assertions
 ```
 
-**Coverage**: Middleware (Version/SQLGuard/SecurityHeaders) · Data objects (CampaignData/FieldMapping/Hashids) · Engines (ReportBuilder/AdapterRegistry) · Integration (Auth/Health)
+**Coverage**: 14 middleware · 8 plugin business layers (account/alert/platform/report/task/tenant/storage) · engines (Bid/Alert/Attribution/Report) · API integration tests (76 routes) · UI E2E (18 pages)
 
 ```bash
 # TypeScript Check
@@ -444,6 +449,23 @@ cd apps/flutter && dart analyze   # zero errors
 >
 > - **HKD, CNY & USD**: Citibank N.A. Hong Kong — SWIFT `CITIHKHXXXX` · Bank Code 006 · Hong Kong Branch (Branch 391) · Citibank Tower, Citibank Plaza, 3 Garden Road, Central, Hong Kong
 > - **Other currencies**: THE BANK OF NEW YORK MELLON — SWIFT `IRVTUS3NXXX` · 240 GREENWICH STREET, NEW YORK, United States
+
+### Crypto Donation
+
+If this project helps you, scan the QR code to donate, thank you!
+
+| Network | QR Code | Wallet Address |
+|---|---|---|
+| BNB Smart Chain (BEP20) | [<img src="./coin/1.jpg" width="150" alt="BNB Smart Chain (BEP20)">](./coin/1.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Tron (TRC20) | [<img src="./coin/2.jpg" width="150" alt="Tron (TRC20)">](./coin/2.jpg) | `TEdDHWLajt1XvqtPDWmQctdrJaC3pzZZzz` |
+| Ethereum (ERC20) | [<img src="./coin/3.jpg" width="150" alt="Ethereum (ERC20)">](./coin/3.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Aptos | [<img src="./coin/4.jpg" width="150" alt="Aptos">](./coin/4.jpg) | `0x836e3780edfc3f7b2372b39e2a1a3a5d7adfaccd96c726f21cfde1b50dd68030` |
+| Plasma | [<img src="./coin/5.jpg" width="150" alt="Plasma">](./coin/5.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Polygon POS | [<img src="./coin/6.jpg" width="150" alt="Polygon POS">](./coin/6.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Solana | [<img src="./coin/7.jpg" width="150" alt="Solana">](./coin/7.jpg) | `2hfhboHdmdrYsY25XfQSsEWxq5ip4EQsR7f4AzSRMUyr` |
+| The Open Network (TON) | [<img src="./coin/8.jpg" width="150" alt="The Open Network (TON)">](./coin/8.jpg) | `UQB9kFQohzmXUir9QSSZq01iwl9aQZIDdBpNmDklljRtCoGK` |
+| Arbitrum One | [<img src="./coin/9.jpg" width="150" alt="Arbitrum One">](./coin/9.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| AVAX C-Chain | [<img src="./coin/10.jpg" width="150" alt="AVAX C-Chain">](./coin/10.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
 
 ## License
 

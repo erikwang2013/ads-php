@@ -11,6 +11,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 - **إدارة الحملات** — تفويض حسابات OAuth، إدارة موحّدة للحملات/مجموعات الإعلانات/الإبداعات عبر المنصات
 - **التقارير** — تجميع المقاييس عبر المنصات، تصدير CSV/Excel/PDF، إسناد بـ 5 نماذج
 - **النشر الذكي** — المزايدة التلقائية، تنبيهات الميزانية، تقويم النشر (Gantt)، مكتبة الإبداعات
+- **التسريع العالمي** — توزيع المواد عبر CDN (محركات متعددة: محلي / Alibaba Cloud OSS / Tencent Cloud COS / متوافق مع S3، إعداد مزودين متعددين من لوحة الإدارة)
 - **المراقبة والتنبيهات** — محرك قواعد التنبيه، إشعارات متعددة القنوات، مزامنة تلقائية مجدولة
 - **الوصول متعدد الأطراف** — لوحة تحكم ويب (Vue 3)، Flutter PC/Mobile، HarmonyOS
 - **الاستقرار والموثوقية** — قاطع الدائرة/التدهور/المهلة لاستدعاءات المنصة، تخزين مؤقت 3 مستويات، تحسينات التزامن العالي، 22 حماية أمنية
@@ -66,8 +67,8 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 | الطبقة | التقنية | الوصف |
 |----|------|------|
-| الخادم | webman v2 + PHP 8.2+ | 7 إضافات، 65+ نقطة نهاية API |
-| قاعدة البيانات | MySQL 8.0 | 28 جدولًا، بادئة ads_، مفاتيح رئيسية Snowflake BIGINT |
+| الخادم | webman v2 + PHP 8.2+ | 8 إضافات، 75+ نقطة نهاية API |
+| قاعدة البيانات | MySQL 8.0 | 29 جدولًا، بادئة ads_، مفاتيح رئيسية Snowflake BIGINT |
 | التخزين المؤقت | Redis 7 | تخزين مؤقت ثلاثي المستويات (L1 ذاكرة/L2 APCu/L3 Redis)、عدادات تحديد المعدل وPub/Sub وقائمة انتظار الرسائل |
 | البحث | Elasticsearch | مزامنة فهرسة تلقائية عبر webman-scout (مُهيأ) |
 | لوحة الإدارة | webman-admin v2 + Vue 3 + TypeScript + Element Plus | خلفية PHP (المنفذ 8789)، SPA يتصل مباشرة بـ API الأعمال (المنفذ 8788)، 19 صفحة، تصوير ECharts |
@@ -189,6 +190,7 @@ CORS → SecurityHeaders → AttackGuard → ClientPlatform → Version → Rate
 | تقويم النشر | مخطط Gantt عبر المنصات، عرض شهري/أسبوعي، تلوين حسب المنصة | CalendarService + Vue Gantt |
 | الإسناد عبر المنصات | إسناد بـ 5 نماذج (first/last/linear/time_decay/position_based)، رجوع 30 يومًا | AttributionEngine + ECharts |
 | مرونة استدعاء المنصة | آلة حالة قاطع الدائرة لكل منصة (5 إخفاقات → OPEN → اختبار نصف مفتوح 30 ثانية)، تدهور fast-fail، تدقيق مهلة 29 محولًا | CircuitBreaker + GuardedAdapter |
+| تسريع المواد عبر CDN | محركات تخزين كائنات متعددة (local/oss/cos/s3)، إدارة مزودي CDN من لوحة الإدارة، رفع مباشر بتوقيع مسبق، مسح تلقائي للذاكرة عند الحذف | إضافة ads-storage + CdnProviderController |
 
 ---
 
@@ -225,7 +227,7 @@ cd admin && composer install && php start.php start
 1. **اتصال قاعدة البيانات** — أدخل مضيف MySQL والمنفذ واسم قاعدة البيانات واسم المستخدم وكلمة المرور، مع دعم اختبار الاتصال
 2. **إعداد Redis** — أدخل معلومات اتصال Redis (اختياري)
 3. **حساب المسؤول** — عيّن اسم مستخدم وكلمة مرور واسمًا ظاهرًا لتسجيل دخول لوحة الإدارة
-4. **تثبيت بنقرة واحدة** — إنشاء قاعدة البيانات تلقائيًا، وتنفيذ `install.sql` لإنشاء 28 جدولًا وكتابة بيانات أولية، وتحديث كلمة مرور المسؤول
+4. **تثبيت بنقرة واحدة** — إنشاء قاعدة البيانات تلقائيًا، وتنفيذ `install.sql` لإنشاء 29 جدولًا وكتابة بيانات أولية، وتحديث كلمة مرور المسؤول
 
 بعد اكتمال التثبيت، افتح `/` للدخول إلى لوحة الإدارة وسجّل الدخول باسم المستخدم وكلمة المرور اللذين عيّنتهما.
 
@@ -286,7 +288,9 @@ ads-php/
 │   │   ├── ads-task/                  # 定时任务调度 (6 cron)
 │   │   ├── ads-alert/                 # 告警监控引擎 + 预算预警
 │   │   ├── ads-report/                # 报表引擎 (CSV/Excel/PDF) + 归因引擎 + 投放日历
-│   │   └── ads-tenant/                # 多租户管理
+│   │   ├── ads-tenant/                # 多租户管理
+│   │   └── ads-storage/               # 存储抽象层 (local/OSS/COS/S3) + CDN 服务商
+│   ├── scripts/backfill-assets.php    # 存量素材回填对象存储
 │   ├── support/                       # Erik Stack 工具类
 │   │   ├── ControllerTrait.php        # 控制器公共 trait
 │   │   ├── JwtService.php             # JWT 包装类
@@ -294,7 +298,7 @@ ads-php/
 │   │   ├── ExceptionHandler.php       # API 异常处理器
 │   │   └── ApiResponse.php            # 统一响应格式
 │   ├── config/                        # 全局配置 (DB/Redis/Log/Middleware)
-│   ├── tests/                         # PHPUnit 测试 (265 tests)
+│   ├── tests/                         # PHPUnit 测试 (288 tests)
 │   │   ├── Unit/                      # 单元测试 (Middleware, Task)
 │   │   └── Integration/               # 集成测试 (Auth, Health)
 │   └── start.php                      # 服务入口
@@ -347,6 +351,7 @@ ads-php/
 | النشر | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | مستويات نشر الإعلانات |
 | التقارير | `ads_report_metrics`, `ads_report_extras` | مقاييس تقارير موحدة |
 | المواد | `ads_assets` | مكتبة المواد الإبداعية |
+| CDN | `ads_cdn_providers` | إعداد مزود CDN (بيانات الاعتماد مشفرة) |
 | الاستهداف | `ads_targeting_templates` | قوالب استهداف الجمهور |
 | الإسناد | `ads_conversions`, `ads_attribution_results` | تتبع التحويلات + نتائج الإسناد |
 | المزايدة | `ads_bid_rules`, `ads_bid_logs` | قواعد المزايدة التلقائية + السجل |
@@ -373,10 +378,10 @@ ads-php/
 
 ```bash
 cd service && ./vendor/bin/phpunit
-# 265 测试 / 717 断言
+# 288 测试 / 862 断言
 ```
 
-**نطاق التغطية**: الوسائط الوسطية (Version/SQLGuard/SecurityHeaders) · كائنات البيانات (CampaignData/FieldMapping/Hashids) · المحركات (ReportBuilder/AdapterRegistry) · اختبارات التكامل (Auth/Health)
+**نطاق التغطية**: 14 وسيطًا · 8 طبقات أعمال الإضافات (حساب/تنبيه/منصة/تقرير/مهمة/مستأجر/تخزين) · المحركات (Bid/Alert/Attribution/Report) · اختبارات تكامل API (76 مسارًا) · E2E للواجهة (18 صفحة)
 
 ```bash
 # TypeScript 检查
@@ -443,6 +448,23 @@ cd apps/flutter && dart analyze   # 零错误
 >
 > - **دولار هونغ كونغ واليوان الصيني والدولار الأمريكي**: Citibank N.A. Hong Kong — SWIFT `CITIHKHXXXX` · البنك رقم 006 · فرع هونغ كونغ (رقم الفرع 391) · Citibank Tower, Citibank Plaza, 3 Garden Road, Central, Hong Kong
 > - **العملات الأخرى**: THE BANK OF NEW YORK MELLON — SWIFT `IRVTUS3NXXX` · 240 GREENWICH STREET, NEW YORK, United States
+
+### التبرع بالعملات الرقمية (Crypto Donation)
+
+إذا كان هذا المشروع مفيدًا لك، فمرحبًا بمسح رمز الاستجابة السريعة للتبرع، شكرًا لك!
+
+| الشبكة (Network) | رمز QR (QR Code) | عنوان المحفظة (Wallet Address) |
+|---|---|---|
+| BNB Smart Chain (BEP20) | [<img src="./coin/1.jpg" width="150" alt="BNB Smart Chain (BEP20)">](./coin/1.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Tron (TRC20) | [<img src="./coin/2.jpg" width="150" alt="Tron (TRC20)">](./coin/2.jpg) | `TEdDHWLajt1XvqtPDWmQctdrJaC3pzZZzz` |
+| Ethereum (ERC20) | [<img src="./coin/3.jpg" width="150" alt="Ethereum (ERC20)">](./coin/3.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Aptos | [<img src="./coin/4.jpg" width="150" alt="Aptos">](./coin/4.jpg) | `0x836e3780edfc3f7b2372b39e2a1a3a5d7adfaccd96c726f21cfde1b50dd68030` |
+| Plasma | [<img src="./coin/5.jpg" width="150" alt="Plasma">](./coin/5.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Polygon POS | [<img src="./coin/6.jpg" width="150" alt="Polygon POS">](./coin/6.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Solana | [<img src="./coin/7.jpg" width="150" alt="Solana">](./coin/7.jpg) | `2hfhboHdmdrYsY25XfQSsEWxq5ip4EQsR7f4AzSRMUyr` |
+| The Open Network (TON) | [<img src="./coin/8.jpg" width="150" alt="The Open Network (TON)">](./coin/8.jpg) | `UQB9kFQohzmXUir9QSSZq01iwl9aQZIDdBpNmDklljRtCoGK` |
+| Arbitrum One | [<img src="./coin/9.jpg" width="150" alt="Arbitrum One">](./coin/9.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| AVAX C-Chain | [<img src="./coin/10.jpg" width="150" alt="AVAX C-Chain">](./coin/10.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
 
 ---
 

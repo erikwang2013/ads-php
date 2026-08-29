@@ -4,6 +4,7 @@
  */
 
 use plugin\ads_api\middleware\AuthMiddleware;
+use plugin\ads_api\middleware\AdminMiddleware;
 use plugin\ads_api\controller\v1\AuthController;
 use plugin\ads_api\controller\v1\CaptchaController;
 use plugin\ads_api\controller\v1\HealthController;
@@ -24,6 +25,7 @@ use plugin\ads_api\controller\v1\DocController;
 use plugin\ads_api\controller\v1\SyncController;
 use plugin\ads_api\controller\v1\ConversionController;
 use plugin\ads_api\controller\v1\TenantController;
+use plugin\ads_api\controller\v1\admin\CdnProviderController;
 
 require_once __DIR__ . '/../route_helpers.php';
 
@@ -105,8 +107,22 @@ Webman\Route::group('/api', function () {
 
     Webman\Route::get('/assets', versioned(AssetController::class, 'index'));
     Webman\Route::post('/assets/upload', versioned(AssetController::class, 'upload'));
+    Webman\Route::post('/assets/presign', versioned(AssetController::class, 'presign'));
+    Webman\Route::post('/assets/register', versioned(AssetController::class, 'register'));
     Webman\Route::get('/assets/{id}', versioned(AssetController::class, 'show'));
     Webman\Route::delete('/assets/{id}', versioned(AssetController::class, 'destroy'));
+
+    // CDN 服务商管理 (admin, 仅平台主租户 tenant 1)
+    Webman\Route::group('/admin/cdn', function () {
+        Webman\Route::get('/providers', versioned(CdnProviderController::class, 'index'));
+        Webman\Route::post('/providers', versioned(CdnProviderController::class, 'store'));
+        Webman\Route::put('/providers/{id:\d+}', versioned(CdnProviderController::class, 'update'));
+        Webman\Route::delete('/providers/{id:\d+}', versioned(CdnProviderController::class, 'destroy'));
+        Webman\Route::put('/providers/{id:\d+}/default', versioned(CdnProviderController::class, 'setDefault'));
+        Webman\Route::put('/providers/{id:\d+}/toggle', versioned(CdnProviderController::class, 'toggle'));
+        Webman\Route::post('/providers/{id:\d+}/test', versioned(CdnProviderController::class, 'test'));
+        Webman\Route::post('/providers/{id:\d+}/purge', versioned(CdnProviderController::class, 'purge'));
+    })->middleware([AdminMiddleware::class]);
 
     Webman\Route::get('/reports/attribution', versioned(DashboardController::class, 'attribution'));
     Webman\Route::get('/reports/attribution/models', versioned(DashboardController::class, 'attributionModels'));

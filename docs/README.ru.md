@@ -11,6 +11,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 - **Управление кампаниями** — авторизация OAuth, единое управление кампаниями/группами объявлений/креативами на всех платформах
 - **Отчеты** — агрегация кросс-платформенных метрик, экспорт CSV/Excel/PDF, атрибуция по 5 моделям
 - **Умный показ** — автоматические ставки, предупреждения о бюджете, календарь кампаний (Gantt), библиотека креативов
+- **Глобальное ускорение** — доставка материалов через CDN (мультидрайвер: локально / Alibaba Cloud OSS / Tencent Cloud COS / S3-совместимо, несколько провайдеров настраиваются в админке)
 - **Мониторинг и оповещения** — движок правил оповещений, многоканальные push-уведомления, плановая автосинхронизация
 - **Доступ с нескольких устройств** — веб-админка (Vue 3), Flutter PC/Mobile, HarmonyOS
 - **Стабильность и надежность** — circuit breaker/деградация/таймаут при вызовах платформ, трёхуровневый кэш, оптимизации высокой нагрузки, 22 меры безопасности
@@ -66,8 +67,8 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 | Слой | Технология | Описание |
 |----|------|------|
-| Сервер | webman v2 + PHP 8.2+ | 7 плагинов, 65+ API-эндпоинтов |
-| База данных | MySQL 8.0 | 28 таблиц, префикс ads_, Snowflake BIGINT первичные ключи |
+| Сервер | webman v2 + PHP 8.2+ | 8 плагинов, 75+ API-эндпоинтов |
+| База данных | MySQL 8.0 | 29 таблиц, префикс ads_, Snowflake BIGINT первичные ключи |
 | Кэш | Redis 7 | Трёхуровневый кэш (L1 память/L2 APCu/L3 Redis)、лимитирование запросов、Pub/Sub、очередь сообщений |
 | Поиск | Elasticsearch | webman-scout автоматическая синхронизация индексов (настроено) |
 | Админ-панель | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP-бэкенд (порт 8789), SPA напрямую обращается к бизнес-API (порт 8788), 19 страниц, визуализация ECharts |
@@ -189,6 +190,7 @@ CORS → SecurityHeaders → AttackGuard → ClientPlatform → Version → Rate
 | Календарь кампаний | Кросс-платформенная Gantt-диаграмма, месячный/недельный вид, раскраска по платформам | CalendarService + Vue Gantt |
 | Кросс-платформенная атрибуция | Атрибуция по 5 моделям (first/last/linear/time_decay/position_based), окно 30 дней | AttributionEngine + ECharts |
 | Устойчивость вызовов платформ | Машина состояний circuit breaker для каждой платформы (5 сбоев → OPEN → 30s half-open проба), деградация fast-fail, проверка таймаутов 29 адаптеров | CircuitBreaker + GuardedAdapter |
+| CDN-ускорение материалов | Мультидрайвер объектного хранилища (local/oss/cos/s3), управление CDN-провайдерами в админке, предподписанная прямая загрузка, автоматическая очистка кэша при удалении | плагин ads-storage + CdnProviderController |
 
 ---
 
@@ -225,7 +227,7 @@ cd admin && composer install && php start.php start
 1. **Подключение к базе данных** — укажите хост MySQL, порт, имя БД, имя пользователя и пароль, доступно тестирование подключения
 2. **Настройка Redis** — укажите данные подключения Redis (необязательно)
 3. **Учетная запись администратора** — задайте имя пользователя, пароль и отображаемое имя для входа в админ-панель
-4. **Установка в один клик** — автоматическое создание БД, выполнение `install.sql` для создания 28 таблиц и записи seed-данных, обновление пароля администратора
+4. **Установка в один клик** — автоматическое создание БД, выполнение `install.sql` для создания 29 таблиц и записи seed-данных, обновление пароля администратора
 
 После завершения установки откройте `/` для входа в админ-панель, используя заданные имя пользователя и пароль.
 
@@ -286,7 +288,9 @@ ads-php/
 │   │   ├── ads-task/                  # 定时任务调度 (6 cron)
 │   │   ├── ads-alert/                 # 告警监控引擎 + 预算预警
 │   │   ├── ads-report/                # 报表引擎 (CSV/Excel/PDF) + 归因引擎 + 投放日历
-│   │   └── ads-tenant/                # 多租户管理
+│   │   ├── ads-tenant/                # 多租户管理
+│   │   └── ads-storage/               # Слой абстракции хранилища (local/OSS/COS/S3) + CDN-провайдеры
+│   ├── scripts/backfill-assets.php    # Перенос существующих материалов в объектное хранилище
 │   ├── support/                       # Erik Stack 工具类
 │   │   ├── ControllerTrait.php        # 控制器公共 trait
 │   │   ├── JwtService.php             # JWT 包装类
@@ -294,7 +298,7 @@ ads-php/
 │   │   ├── ExceptionHandler.php       # API 异常处理器
 │   │   └── ApiResponse.php            # 统一响应格式
 │   ├── config/                        # 全局配置 (DB/Redis/Log/Middleware)
-│   ├── tests/                         # PHPUnit 测试 (265 tests)
+│   ├── tests/                         # PHPUnit 测试 (288 tests)
 │   │   ├── Unit/                      # 单元测试 (Middleware, Task)
 │   │   └── Integration/               # 集成测试 (Auth, Health)
 │   └── start.php                      # 服务入口
@@ -347,6 +351,7 @@ ads-php/
 | Кампании | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | Иерархия рекламных кампаний |
 | Отчеты | `ads_report_metrics`, `ads_report_extras` | Унифицированные метрики отчетов |
 | Материалы | `ads_assets` | Библиотека креативов |
+| CDN | `ads_cdn_providers` | Конфигурация CDN-провайдера (учётные данные зашифрованы) |
 | Таргетинг | `ads_targeting_templates` | Шаблоны таргетинга аудитории |
 | Атрибуция | `ads_conversions`, `ads_attribution_results` | Отслеживание конверсий + результаты атрибуции |
 | Ставки | `ads_bid_rules`, `ads_bid_logs` | Правила автобеттинга + история |
@@ -373,10 +378,10 @@ ads-php/
 
 ```bash
 cd service && ./vendor/bin/phpunit
-# 265 测试 / 717 断言
+# 288 测试 / 862 断言
 ```
 
-**Покрытие**: Middleware (Version/SQLGuard/SecurityHeaders) · Объекты данных (CampaignData/FieldMapping/Hashids) · Движки (ReportBuilder/AdapterRegistry) · Интеграционные тесты (Auth/Health)
+**Покрытие**: 14 Middleware · 8 бизнес-слоёв плагинов (аккаунт/алерт/платформа/отчёт/задача/тенант/хранилище) · Движки (Bid/Alert/Attribution/Report) · Интеграционные тесты API (76 маршрутов) · UI E2E (18 страниц)
 
 ```bash
 # TypeScript 检查
@@ -443,6 +448,23 @@ cd apps/flutter && dart analyze   # 零错误
 >
 > - **港元、人民币及美元**：Citibank N.A. Hong Kong — SWIFT `CITIHKHXXXX` · 银行编号 006 · Hong Kong Branch（分行编号 391）· Citibank Tower, Citibank Plaza, 3 Garden Road, Central, Hong Kong
 > - **其他币种**：THE BANK OF NEW YORK MELLON — SWIFT `IRVTUS3NXXX` · 240 GREENWICH STREET, NEW YORK, United States
+
+### Пожертвование в криптовалюте (Crypto Donation)
+
+Если этот проект помог вам, отсканируйте QR-код, чтобы сделать пожертвование, спасибо!
+
+| Сеть (Network) | QR-код (QR Code) | Адрес кошелька (Wallet Address) |
+|---|---|---|
+| BNB Smart Chain (BEP20) | [<img src="./coin/1.jpg" width="150" alt="BNB Smart Chain (BEP20)">](./coin/1.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Tron (TRC20) | [<img src="./coin/2.jpg" width="150" alt="Tron (TRC20)">](./coin/2.jpg) | `TEdDHWLajt1XvqtPDWmQctdrJaC3pzZZzz` |
+| Ethereum (ERC20) | [<img src="./coin/3.jpg" width="150" alt="Ethereum (ERC20)">](./coin/3.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Aptos | [<img src="./coin/4.jpg" width="150" alt="Aptos">](./coin/4.jpg) | `0x836e3780edfc3f7b2372b39e2a1a3a5d7adfaccd96c726f21cfde1b50dd68030` |
+| Plasma | [<img src="./coin/5.jpg" width="150" alt="Plasma">](./coin/5.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Polygon POS | [<img src="./coin/6.jpg" width="150" alt="Polygon POS">](./coin/6.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Solana | [<img src="./coin/7.jpg" width="150" alt="Solana">](./coin/7.jpg) | `2hfhboHdmdrYsY25XfQSsEWxq5ip4EQsR7f4AzSRMUyr` |
+| The Open Network (TON) | [<img src="./coin/8.jpg" width="150" alt="The Open Network (TON)">](./coin/8.jpg) | `UQB9kFQohzmXUir9QSSZq01iwl9aQZIDdBpNmDklljRtCoGK` |
+| Arbitrum One | [<img src="./coin/9.jpg" width="150" alt="Arbitrum One">](./coin/9.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| AVAX C-Chain | [<img src="./coin/10.jpg" width="150" alt="AVAX C-Chain">](./coin/10.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
 
 ---
 

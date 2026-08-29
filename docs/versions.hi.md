@@ -150,11 +150,12 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | | ads_bid_logs | — | — | ✅ |
 | टार्गेटिंग | ads_targeting_templates | — | — | ✅ |
 | एसेट | ads_assets | — | — | ✅ |
+| CDN | ads_cdn_providers | — | — | ✅ |
 | एट्रिब्यूशन | ads_conversions | — | — | ✅ |
 | | ads_attribution_results | — | — | ✅ |
 | सिस्टम | ads_sync_errors | ✅ | ✅ | ✅ |
 | प्रशासन | admin_users/roles/audit_logs | ✅ | ✅ | ✅ |
-| **कुल** | | **8** | **13** | **18** |
+| **कुल** | | **8** | **13** | **19** |
 
 ---
 
@@ -179,9 +180,10 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | नोटिफिकेशन सेंटर | — | ✅ | ✅ |
 | स्वचालित बिडिंग | — | — | ✅ |
 | एसेट लाइब्रेरी | — | — | ✅ |
+| CDN प्रोवाइडर | — | — | ✅ |
 | डिलीवरी कैलेंडर | — | — | ✅ |
 | एट्रिब्यूशन विश्लेषण | — | — | ✅ |
-| **कुल** | **7** | **13** | **17** |
+| **कुल** | **7** | **13** | **18** |
 
 ### Flutter
 
@@ -219,8 +221,9 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | नोटिफिकेशन (index/unread/read/readAll) | — | 4 | 4 |
 | स्वचालित बिडिंग (CRUD + logs) | — | — | 5 |
 | टार्गेटिंग टेम्पलेट (CRUD) | — | — | 5 |
-| एसेट लाइब्रेरी (index/upload/show/destroy) | — | — | 4 |
-| **कुल** | **26** | **44** | **62** |
+| एसेट लाइब्रेरी (index/upload/show/destroy/presign/register) | — | — | 6 |
+| CDN प्रोवाइडर (list/create/update/delete/default/toggle/test/purge) | — | — | 8 |
+| **कुल** | **26** | **44** | **70** |
 
 ---
 

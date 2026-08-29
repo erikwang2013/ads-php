@@ -25,7 +25,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 11 | Targeting-Vorlagen | TargetingTemplateController | 5 | — |
 | 12 | Systemverwaltung | AdminUserController, AuditLogController | 5 | UserManage, AuditLog |
 | 13 | Datensynchronisierung | DataSyncTask, TokenRefreshTask, RetrySyncTask | — | — |
-| 14 | Materialbibliothek | AssetController | 4 | AssetGallery |
+| 14 | Materialbibliothek | AssetController | 6 | AssetGallery |
 | 15 | Budget-Warnung | BudgetAlertService + BudgetCheckTask | 1 | — |
 | 16 | Schaltungs-Kalender | CalendarService | 1 | CampaignCalendar |
 | 17 | Plattformübergreifende Attribution | AttributionEngine | 2 | AttributionReport |
@@ -33,7 +33,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 19 | Captcha | CaptchaController | 2 | — |
 | 20 | API-Dokumentation | DocController | 1 | — |
 
-**Gesamt**: 20 Module, 65+ Routen, 18 Vue-Seiten
+**Gesamt**: 21 Module, 75+ Routen, 19 Vue-Seiten
 
 ---
 
@@ -242,10 +242,13 @@ Schnittstellen: Benutzerverwaltung / Audit-Log / Rollen → [api.md Admin-Endpun
 ## Modul 14: Werbematerial-Bibliothek
 
 - Unterstützte Typen: image/jpeg, image/png, image/gif, image/webp, video/mp4
-- Dateispeicherung: `public/uploads/assets/`
+- Dateispeicherung: `public/uploads/assets/` (lokal Standard), Objekt-Speicher-Multidriver (local/oss/cos/s3)
+- Mit konfiguriertem Standard-CDN-Anbieter werden Asset-URLs automatisch mit cdn_domain für die CDN-Auslieferung zusammengesetzt
+- Vorsignierter Direkt-Upload: `POST /api/assets/presign` liefert Upload-URL, `POST /api/assets/register` registriert den Direkt-Upload (beim lokalen Treiber nicht verfügbar)
+- Beim Löschen eines Assets wird der CDN-Cache automatisch geleert (purge)
 - Frontend: Raster-Galerie + Drag-and-Drop-Upload + Bildvorschau + Videowiedergabe + URL kopieren
 
-Schnittstellen: Upload / Liste / Details / Löschen → [api.md Modul 12](api.de.md#模块-12-素材库)
+Schnittstellen: Upload / Liste / Details / Löschen / Presign / Registrieren → [api.md Modul 12](api.de.md#模块-12-素材库)
 
 ---
 
@@ -334,3 +337,15 @@ Schnittstellen: Attributionsanalyse / Modellliste → [api.md Modul 7](api.de.md
 ### Bekannte Einschränkung
 
 - In-Memory-Zustand auf einem Knoten; Multi-Node-Betrieb benötigt Redis-Shared-State
+---
+
+## Modul 21: CDN-Anbieterverwaltung
+
+- Nur vom Master-Tenant der Plattform (tenant 1) verwaltbar, AdminMiddleware-Prüfung
+- Treiber: local / oss (Aliyun) / cos (Tencent Cloud) / s3 (AWS S3 / Cloudflare R2 / MinIO)
+- Zugangsdaten (access_key / secret_key / cdn_token) feldweise verschlüsselt (Erikwang2013\Encryptable), API liefert nur maskierte Felder
+- Unterstützt Standard-Anbieter / Aktiv-Toggle / Konnektivitätstest / Cache-Bereinigung (purge)
+- Tabelle: `ads_cdn_providers`
+- Frontend: CdnProviderList.vue (Systemmenü)
+
+Schnittstellen: Liste / Erstellen / Aktualisieren / Löschen / Standard / Toggle / Test / Bereinigen → [api.md CDN-Anbieter](api.de.md#cdn-anbieterverwaltung-nur-master-tenant-der-plattform-tenant-1-adminmiddleware)

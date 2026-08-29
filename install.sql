@@ -485,6 +485,30 @@ CREATE TABLE IF NOT EXISTS `wa_users` (
   KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='用户表';
 
+-- ============================================================================
+-- 14. CDN 服务商 (ads-storage)
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS `ads_cdn_providers` (
+    `id` BIGINT UNSIGNED PRIMARY KEY,
+    `name` VARCHAR(100) NOT NULL,
+    `driver` VARCHAR(20) NOT NULL DEFAULT 'oss',
+    `bucket` VARCHAR(100) DEFAULT NULL,
+    `region` VARCHAR(50) DEFAULT NULL,
+    `endpoint` VARCHAR(255) DEFAULT NULL,
+    `access_key` TEXT DEFAULT NULL,
+    `secret_key` TEXT DEFAULT NULL,
+    `cdn_domain` VARCHAR(255) DEFAULT NULL,
+    `cdn_driver` VARCHAR(30) DEFAULT NULL,
+    `cdn_token` VARCHAR(512) DEFAULT NULL,
+    `enabled` TINYINT NOT NULL DEFAULT 1,
+    `is_default` TINYINT NOT NULL DEFAULT 0,
+    `status` VARCHAR(255) NOT NULL DEFAULT 'untested',
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX `idx_enabled_default` (`enabled`, `is_default`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE IF NOT EXISTS `wa_options` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(128) NOT NULL COMMENT '键',

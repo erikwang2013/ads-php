@@ -25,7 +25,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 11 | টার্গেটিং টেমপ্লেট | TargetingTemplateController | 5 | — |
 | 12 | সিস্টেম ম্যানেজমেন্ট | AdminUserController, AuditLogController | 5 | UserManage, AuditLog |
 | 13 | ডেটা সিঙ্ক | DataSyncTask, TokenRefreshTask, RetrySyncTask | — | — |
-| 14 | অ্যাসেট লাইব্রেরি | AssetController | 4 | AssetGallery |
+| 14 | অ্যাসেট লাইব্রেরি | AssetController | 6 | AssetGallery |
 | 15 | বাজেট অ্যালার্ট | BudgetAlertService + BudgetCheckTask | 1 | — |
 | 16 | ক্যাম্পেইন ক্যালেন্ডার | CalendarService | 1 | CampaignCalendar |
 | 17 | ক্রস-প্ল্যাটফর্ম অ্যাট্রিবিউশন | AttributionEngine | 2 | AttributionReport |
@@ -33,7 +33,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 19 | ক্যাপচা | CaptchaController | 2 | — |
 | 20 | API ডকুমেন্টেশন | DocController | 1 | — |
 
-**মোট**: 20 মডিউল, 65+ রাউট, 18টি Vue পেজ
+**মোট**: 21 মডিউল, 75+ রাউট, 19টি Vue পেজ
 
 ---
 
@@ -242,10 +242,13 @@ POST /api/ad-groups 支持 targeting_template_id
 ## মডিউল 14: বিজ্ঞাপন অ্যাসেট লাইব্রেরি
 
 - সাপোর্টেড টাইপ: image/jpeg, image/png, image/gif, image/webp, video/mp4
-- ফাইল স্টোরেজ: `public/uploads/assets/`
+- ফাইল স্টোরেজ: `public/uploads/assets/` (লোকাল ডিফল্ট), অবজেক্ট স্টোরেজ মাল্টি-ড্রাইভার (local/oss/cos/s3)
+- ডিফল্ট CDN প্রোভাইডার কনফিগ করলে অ্যাসেট URL-এ cdn_domain যুক্ত হয়ে CDN ডেলিভারি হয়
+- প্রি-সাইনড ডায়রেক্ট আপলোড: `POST /api/assets/presign` আপলোড URL দেয়, `POST /api/assets/register` ডায়রেক্ট আপলোড রেজিস্টার করে (লোকাল ড্রাইভারে নেই)
+- অ্যাসেট মুছলে CDN ক্যাশ অটো-পার্জ হয় (purge)
 - ফ্রন্টএন্ড: গ্রিড গ্যালারি + ড্র্যাগ-ড্রপ আপলোড + ইমেজ প্রিভিউ + ভিডিও প্লে + URL কপি
 
-ইন্টারফেস: আপলোড / লিস্ট / ডিটেইল / ডিলিট → [api.bn.md মডিউল 12](api.bn.md#模块-12-素材库)
+ইন্টারফেস: আপলোড / লিস্ট / ডিটেইল / ডিলিট / প্রি-সাইন / রেজিস্টার → [api.bn.md মডিউল 12](api.bn.md#模块-12-素材库)
 
 ---
 
@@ -334,3 +337,15 @@ POST /api/ad-groups 支持 targeting_template_id
 ### পরিচিত সীমাবদ্ধতা
 
 - একক-নোড ইন-মেমোরি স্টেট; মাল্টি-নোড ডিপ্লয়মেন্টে Redis শেয়ার্ড স্টেট প্রয়োজন
+---
+
+## মডিউল 21: CDN প্রোভাইডার ম্যানেজমেন্ট
+
+- শুধুমাত্র প্ল্যাটফর্ম মাস্টার টেন্যান্ট (tenant 1) পরিচালনা করতে পারে, AdminMiddleware যাচাই
+- ড্রাইভার: local / oss (Aliyun) / cos (Tencent) / s3 (AWS S3 / Cloudflare R2 / MinIO)
+- ক্রেডেনশিয়াল (access_key / secret_key / cdn_token) ফিল্ড-লেভেল এন্ক্রিপ্টেড (Erikwang2013\Encryptable), API শুধু মাস্কড ফিল্ড দেয়
+- সাপোর্ট: ডিফল্ট প্রোভাইডার / চালু-বন্ধ / কনেক্টিভিটি টেস্ট / ক্যাশ purge
+- টেবিল: `ads_cdn_providers`
+- ফ্রন্টএন্ড: CdnProviderList.vue (সিস্টেম মেনু)
+
+ইন্টারফেস: তালিকা / তৈরি / আপডেট / ডিলিট / ডিফল্ট / টগল / টেস্ট / পার্জ → [api.md CDN প্রোভাইডার](api.bn.md#cdn-প্রোভাইডার-ম্যানেজমেন্ট-শুধু-প্ল্যাটফর্ম-মাস্টার-টেন্যান্ট-tenant-1-adminmiddleware)

@@ -10,11 +10,11 @@ graph TB
     end
     subgraph AppLayer["Lapisan Aplikasi"]
         Admin["Admin :8789<br/>webman-admin v2<br/>RBAC · Audit"]
-        Service["Service :8788<br/>webman v2 API<br/>7 Plugin · 29 Adaptor"]
+        Service["Service :8788<br/>webman v2 API<br/>8 Plugin · 29 Adaptor"]
         ServiceProxy["ServiceProxy<br/>cURL HTTP + JWT"]
     end
     subgraph DataLayer["Lapisan Data"]
-        MySQL[("MySQL 8.0<br/>28 Tabel · PK Snowflake")]
+        MySQL[("MySQL 8.0<br/>29 Tabel · PK Snowflake")]
         Redis[("Redis 7<br/>Cache 3 Tingkat · Antrian")]
         ES[("Elasticsearch<br/>Pencarian Teks Lengkap")]
     end
@@ -22,6 +22,13 @@ graph TB
         Domestic["16 Platform Domestik<br/>Juchuan·Baidu·Tencent·Kuaishou"]
         International["13 Platform Internasional<br/>Google·Meta·TikTok"]
     end
+    subgraph StorageCDN["Penyimpanan & CDN"]
+        OSS[("Penyimpanan objek<br/>local/OSS/COS/S3 multi-driver")]
+        CDN["Akselerasi CDN<br/>perangkaian cdn_domain · purge cache"]
+    end
+    Service --> OSS
+    OSS --> CDN
+    CDN --> Clients
     Clients --> Nginx
     Nginx -->|"/"| Admin
     Nginx -->|"/api/"| Service

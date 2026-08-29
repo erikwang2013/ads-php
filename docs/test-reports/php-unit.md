@@ -1,14 +1,14 @@
 # PHP 单元测试报告
 
-- 日期：2026-08-27
+- 日期：2026-08-29
 - 执行：`cd service && ECC_GATEGUARD=off vendor/bin/phpunit`
 - 环境：SQLite 内存库（`SqliteTestCase` 基类）+ Spy Adapter 桩，不依赖真实 MySQL / 外部广告平台
 
 ## 结果
 
-**Unit 套件：164 tests / 390 assertions 全部通过**（全套件 265 tests / 717 assertions，含 API 集成测试）
+**全套件：288 tests / 862 assertions**（含 API 集成测试）
 
-## 模块覆盖（7 插件 + 中间件，新增文件位于 `service/tests/Unit/`）
+## 模块覆盖（8 插件 + 中间件，新增文件位于 `service/tests/Unit/`）
 
 | 插件 | 用例数 | 覆盖内容 |
 |------|--------|----------|
@@ -18,6 +18,7 @@
 | ads-platform | 20 | BidEngine、FieldMapping、HashidsService、CampaignData |
 | ads-account | 10 | OAuthService、AdapterRegistry |
 | ads-task | 7 | TokenRefreshTask、DataSyncTask |
+| ads-storage | 21 | Storage 门面/驱动 (local/oss/cos/s3)、预签名 URL 生成、CDN purge 签名、CDN 服务商 API（CdnProviderApiTest 14 + AssetStorageTest 6 + AlibabaCdnSignatureTest 1） |
 | 熔断机制 | 21 | CircuitBreaker 状态机（阈值/冷却/半开/恢复）、GuardedAdapter 代理（透传/快失败/计数/Generator） |
 
 ## 发现的 Bug

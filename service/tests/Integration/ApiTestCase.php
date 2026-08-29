@@ -33,6 +33,7 @@ abstract class ApiTestCase extends TestCase
         'ads_alert_rules', 'ads_alert_logs', 'ads_bid_rules', 'ads_bid_logs',
         'ads_targeting_templates', 'ads_notifications', 'ads_assets', 'ads_sync_errors',
         'ads_conversions', 'ads_auth_tokens', 'ads_attribution_results', 'ads_report_metrics',
+        'ads_cdn_providers',
     ];
 
     protected function setUp(): void

@@ -692,6 +692,25 @@ GET /docs
 
 **الاستجابة**: `{ "code": 0, "data": { "id": "hashids", "url": "/uploads/assets/20260522/abc123.jpg", "type": "image" } }`
 
+- عند تكوين CDN، يُجمَّع `url` مع `cdn_domain` للمزود الافتراضي ليكون عنوان HTTPS كاملًا
+
+### POST /api/assets/presign — الحصول على عنوان رفع موقّع مسبقًا
+
+**الطلب**: `{ "filename": "demo.mp4", "mime_type": "video/mp4" }`
+
+**الاستجابة**: `{ "code": 0, "data": { "key": "20260829/ab12...cd34.mp4", "upload_url": "https://signed-url", "expires_in": 3600, "url": "https://cdn.example.com/uploads/assets/..." } }`
+
+- صيغة `key`: `Ymd/32hex.الامتداد`؛ يُعاد إلى `/api/assets/register` بعد الرفع المباشر
+- لفيديوهات حتى 50 MiB يرفع العميل مباشرة إلى تخزين الكائنات؛ غير متاح مع driver `local`
+
+### POST /api/assets/register — تسجيل مادة مرفوعة مباشرة
+
+**الطلب**: `{ "key": "20260829/ab12...cd34.mp4", "filename": "demo.mp4", "mime_type": "video/mp4", "size": 52428800 }`
+
+**الاستجابة**: `{ "code": 0, "message": "Created", "data": { "id": "hashids", "url": "https://cdn.example.com/uploads/assets/...", "type": "video" } }`
+
+- تُتحقق صيغة `key` بصرامة (`^\d{8}/[0-9a-f]{32}\.[a-z0-9]{1,10}$`) لمنع تجاوز المسار
+
 ### GET /api/assets/:id — تفاصيل المادة
 
 ### DELETE /api/assets/:id — حذف مادة
@@ -730,6 +749,37 @@ GET /docs
 ### GET /api/admin/audit-logs — سجلات التدقيق
 
 **المعاملات**: `user_id`, `action`, `date_from`, `date_to`, `page`, `per_page`
+
+---
+
+### إدارة مزودي CDN (للمستأجر الرئيسي فقط tenant 1، عبر AdminMiddleware)
+
+### GET /api/admin/cdn/providers — قائمة المزودين
+
+### POST /api/admin/cdn/providers — إنشاء مزود
+
+**الطلب**: `{ "name": "Aliyun OSS", "driver": "oss", "bucket": "ads-assets", "region": "oss-cn-hangzhou", "endpoint": "https://oss-cn-hangzhou.aliyuncs.com", "access_key": "...", "secret_key": "...", "cdn_domain": "cdn.example.com", "cdn_driver": "aliyun", "cdn_token": "...", "is_default": 1 }`
+
+- `driver`: `local` / `oss` (Alibaba Cloud OSS) / `cos` (Tencent Cloud COS، بروتوكول S3) / `s3` (متوافق S3: AWS S3 / Cloudflare R2 / MinIO)
+- بيانات الاعتماد (access_key/secret_key/cdn_token) مشفرة على مستوى الحقل عبر Encryptable؛ الاستجابات بحقول مقنّعة فقط
+
+### PUT /api/admin/cdn/providers/:id — تحديث مزود
+
+### DELETE /api/admin/cdn/providers/:id — حذف (الافتراضي يُنقل تلقائيًا إلى المزود enabled التالي)
+
+### PUT /api/admin/cdn/providers/:id/default — تعيين كافتراضي
+
+### PUT /api/admin/cdn/providers/:id/toggle — تفعيل/تعطيل (تعطيل الافتراضي ينقله تلقائيًا)
+
+### POST /api/admin/cdn/providers/:id/test — اختبار الاتصال
+
+**الاستجابة**: `{ "code": 0, "data": { "ok": true, "driver": "oss", "status": "ok" } }`
+
+### POST /api/admin/cdn/providers/:id/purge — مسح كاش CDN
+
+**الطلب**: `{ "paths": ["/uploads/assets/20260829/xxx.mp4"] }`
+
+- يتطلب `cdn_driver` و`cdn_domain`؛ `aliyun` مُنفَّذ فعليًا (توقيع OpenAPI)، cloudflare/cloudfront قيد التوسيع
 
 ---
 

@@ -692,6 +692,25 @@ Cache 30 detik. Frontend polling 30 detik.
 
 **Respons**: `{ "code": 0, "data": { "id": "hashids", "url": "/uploads/assets/20260522/abc123.jpg", "type": "image" } }`
 
+- Dengan CDN dikonfigurasi, `url` dirakit dengan `cdn_domain` penyedia default menjadi alamat HTTPS lengkap
+
+### POST /api/assets/presign — Dapatkan URL unggah presign
+
+**Permintaan**: `{ "filename": "demo.mp4", "mime_type": "video/mp4" }`
+
+**Respons**: `{ "code": 0, "data": { "key": "20260829/ab12...cd34.mp4", "upload_url": "https://signed-url", "expires_in": 3600, "url": "https://cdn.example.com/uploads/assets/..." } }`
+
+- Format `key`: `Ymd/32hex.ekstensi`; kirim kembali ke `/api/assets/register` setelah unggah langsung
+- Untuk video hingga 50 MiB klien mengunggah langsung ke object storage; tidak tersedia pada driver `local`
+
+### POST /api/assets/register — Daftarkan aset hasil unggah langsung
+
+**Permintaan**: `{ "key": "20260829/ab12...cd34.mp4", "filename": "demo.mp4", "mime_type": "video/mp4", "size": 52428800 }`
+
+**Respons**: `{ "code": 0, "message": "Created", "data": { "id": "hashids", "url": "https://cdn.example.com/uploads/assets/...", "type": "video" } }`
+
+- `key` divalidasi ketat (`^\d{8}/[0-9a-f]{32}\.[a-z0-9]{1,10}$`) — cegah path traversal
+
 ### GET /api/assets/:id — Detail Materi
 
 ### DELETE /api/assets/:id — Hapus Materi
@@ -730,6 +749,37 @@ Cache 30 detik. Frontend polling 30 detik.
 ### GET /api/admin/audit-logs — Log Audit
 
 **Parameter**: `user_id`, `action`, `date_from`, `date_to`, `page`, `per_page`
+
+---
+
+### Manajemen Penyedia CDN (hanya tenant master platform tenant 1, AdminMiddleware)
+
+### GET /api/admin/cdn/providers — Daftar penyedia
+
+### POST /api/admin/cdn/providers — Buat penyedia
+
+**Permintaan**: `{ "name": "Aliyun OSS", "driver": "oss", "bucket": "ads-assets", "region": "oss-cn-hangzhou", "endpoint": "https://oss-cn-hangzhou.aliyuncs.com", "access_key": "...", "secret_key": "...", "cdn_domain": "cdn.example.com", "cdn_driver": "aliyun", "cdn_token": "...", "is_default": 1 }`
+
+- `driver`: `local` / `oss` (Alibaba Cloud OSS) / `cos` (Tencent Cloud COS, protokol S3) / `s3` (kompatibel S3: AWS S3 / Cloudflare R2 / MinIO)
+- Kredensial (access_key/secret_key/cdn_token) dienkripsi per bidang via Encryptable; respons hanya berisi bidang tersamar
+
+### PUT /api/admin/cdn/providers/:id — Ubah penyedia
+
+### DELETE /api/admin/cdn/providers/:id — Hapus (default otomatis pindah ke penyedia enabled berikutnya)
+
+### PUT /api/admin/cdn/providers/:id/default — Tetapkan sebagai default
+
+### PUT /api/admin/cdn/providers/:id/toggle — Aktif/Nonaktif (menonaktifkan default mengalihkannya otomatis)
+
+### POST /api/admin/cdn/providers/:id/test — Uji konektivitas
+
+**Respons**: `{ "code": 0, "data": { "ok": true, "driver": "oss", "status": "ok" } }`
+
+### POST /api/admin/cdn/providers/:id/purge — Purge cache CDN
+
+**Permintaan**: `{ "paths": ["/uploads/assets/20260829/xxx.mp4"] }`
+
+- Perlu `cdn_driver` dan `cdn_domain`; `aliyun` diimplementasikan nyata (penandatanganan OpenAPI), cloudflare/cloudfront menyusul
 
 ---
 

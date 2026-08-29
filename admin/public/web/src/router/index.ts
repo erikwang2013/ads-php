@@ -115,6 +115,12 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/system/AuditLog.vue'),
         meta: { title: '审计日志' },
       },
+      {
+        path: 'system/cdn',
+        name: 'CdnProviders',
+        component: () => import('@/views/cdn/CdnProviderList.vue'),
+        meta: { title: 'CDN 服务商' },
+      },
     ],
   },
 ]

@@ -11,6 +11,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 - **Gestión de campañas** — autorización OAuth de cuentas, gestión unificada de campañas/grupos de anuncios/creativos entre plataformas
 - **Reportes** — agregación de métricas multiplataforma, exportación CSV/Excel/PDF, atribución multiplataforma de 5 modelos
 - **Entrega inteligente** — ofertas automáticas, alertas de presupuesto, calendario de campañas (Gantt), biblioteca de creativos
+- **Aceleración global** — entrega de materiales vía CDN (multicontrolador: local / Alibaba Cloud OSS / Tencent Cloud COS / compatible con S3, varios proveedores configurables en el panel)
 - **Monitoreo y alertas** — motor de reglas de alerta, notificaciones multicanal, sincronización automática programada
 - **Acceso multidispositivo** — administración web (Vue 3), Flutter PC/Mobile, HarmonyOS
 - **Estabilidad y fiabilidad** — interruptor automático/degradación/timeout en llamadas a plataformas, caché de 3 niveles, optimizaciones de alta concurrencia, 22 protecciones de seguridad
@@ -66,8 +67,8 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 | Capa | Tecnología | Descripción |
 |----|------|------|
-| Servidor | webman v2 + PHP 8.2+ | 7 plugins, 65+ endpoints de API |
-| Base de datos | MySQL 8.0 | 28 tablas, prefijo ads_, claves primarias BIGINT Snowflake |
+| Servidor | webman v2 + PHP 8.2+ | 8 plugins, 75+ endpoints de API |
+| Base de datos | MySQL 8.0 | 29 tablas, prefijo ads_, claves primarias BIGINT Snowflake |
 | Caché | Redis 7 | Caché de tres niveles (L1 memoria / L2 APCu / L3 Redis), contador de limitación de tráfico, Pub/Sub, cola de mensajes |
 | Búsqueda | Elasticsearch | Sincronización automática de índice webman-scout (configurado) |
 | Panel de administración | webman-admin v2 + Vue 3 + TypeScript + Element Plus | Backend PHP (puerto 8789), SPA conecta directamente a la API de negocio (puerto 8788), 19 páginas, visualización ECharts |
@@ -189,6 +190,7 @@ CORS → SecurityHeaders → AttackGuard → ClientPlatform → Version → Rate
 | Calendario de campañas | Diagrama de Gantt multiplataforma, vistas mensual/semanal, coloreado por plataforma | CalendarService + Gantt Vue |
 | Atribución multiplataforma | Atribución de 5 modelos (first/last/linear/time_decay/position_based), retroceso de 30 días | AttributionEngine + ECharts |
 | Resiliencia de llamadas a plataformas | Máquina de estados de interruptor por plataforma (5 fallos → OPEN → sonda semicerrada 30 s), degradación fast-fail, auditoría de timeout de 29 adaptadores | CircuitBreaker + GuardedAdapter |
+| Aceleración de materiales CDN | Multidriver de almacenamiento de objetos (local/oss/cos/s3), gestión de proveedores CDN en el panel, carga directa con firma previa, purga automática de caché al eliminar | plugin ads-storage + CdnProviderController |
 
 ---
 
@@ -225,7 +227,7 @@ El asistente de instalación le guiará en la página web:
 1. **Conexión a la base de datos** — complete host de MySQL, puerto, nombre de la base de datos, usuario y contraseña; admite prueba de conexión
 2. **Configuración de Redis** — complete la información de conexión de Redis (opcional)
 3. **Cuenta de administrador** — configure nombre de usuario, contraseña y nombre mostrado del inicio de sesión del panel
-4. **Instalación con un clic** — crea automáticamente la base de datos, ejecuta `install.sql` para crear 28 tablas, escribe los datos semilla y actualiza la contraseña del administrador
+4. **Instalación con un clic** — crea automáticamente la base de datos, ejecuta `install.sql` para crear 29 tablas, escribe los datos semilla y actualiza la contraseña del administrador
 
 Tras la instalación, acceda a `/` para entrar en el panel de administración e inicie sesión con el nombre de usuario y contraseña configurados.
 
@@ -286,7 +288,9 @@ ads-php/
 │   │   ├── ads-task/                  # Programación de tareas programadas (6 cron)
 │   │   ├── ads-alert/                 # Motor de monitoreo de alertas + alerta de presupuesto
 │   │   ├── ads-report/                # Motor de reportes (CSV/Excel/PDF) + motor de atribución + calendario de campañas
-│   │   └── ads-tenant/                # Gestión multi-tenant
+│   │   ├── ads-tenant/                # Gestión multi-tenant
+│   │   └── ads-storage/               # Capa de abstracción de almacenamiento (local/OSS/COS/S3) + proveedores CDN
+│   ├── scripts/backfill-assets.php    # Volcar materiales existentes al almacenamiento de objetos
 │   ├── support/                       # Clases de utilidades Erik Stack
 │   │   ├── ControllerTrait.php        # Trait común de controladores
 │   │   ├── JwtService.php             # Clase envoltorio de JWT
@@ -294,7 +298,7 @@ ads-php/
 │   │   ├── ExceptionHandler.php       # Manejador de excepciones de API
 │   │   └── ApiResponse.php            # Formato de respuesta unificado
 │   ├── config/                        # Configuración global (DB/Redis/Log/Middleware)
-│   ├── tests/                         # Pruebas PHPUnit (265 tests)
+│   ├── tests/                         # Pruebas PHPUnit (288 tests)
 │   │   ├── Unit/                      # Pruebas unitarias (Middleware, Task)
 │   │   └── Integration/               # Pruebas de integración (Auth, Health)
 │   └── start.php                      # Punto de entrada del servicio
@@ -347,6 +351,7 @@ ads-php/
 | Campañas | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | Jerarquía de entrega de anuncios |
 | Reportes | `ads_report_metrics`, `ads_report_extras` | Métricas de reportes unificadas |
 | Materiales | `ads_assets` | Biblioteca de materiales creativos |
+| CDN | `ads_cdn_providers` | Configuración de proveedor CDN (credenciales cifradas) |
 | Segmentación | `ads_targeting_templates` | Plantillas de segmentación de audiencia |
 | Atribución | `ads_conversions`, `ads_attribution_results` | Seguimiento de conversiones + resultados de atribución |
 | Ofertas | `ads_bid_rules`, `ads_bid_logs` | Reglas de oferta automática + historial |
@@ -373,10 +378,10 @@ ads-php/
 
 ```bash
 cd service && ./vendor/bin/phpunit
-# 265 tests / 717 aserciones
+# 288 tests / 862 aserciones
 ```
 
-**Cobertura**: middlewares (Version/SQLGuard/SecurityHeaders) · objetos de datos (CampaignData/FieldMapping/Hashids) · motores (ReportBuilder/AdapterRegistry) · pruebas de integración (Auth/Health)
+**Cobertura**: 14 middlewares · 8 capas de negocio de plugins (cuenta/alerta/plataforma/informe/tarea/tenant/almacenamiento) · motores (Bid/Alert/Attribution/Report) · pruebas de integración de API (76 rutas) · E2E de interfaz (18 páginas)
 
 ```bash
 # Verificación de TypeScript
@@ -443,6 +448,23 @@ cd apps/flutter && dart analyze   # cero errores
 >
 > - **港元、人民币及美元**：Citibank N.A. Hong Kong — SWIFT `CITIHKHXXXX` · 银行编号 006 · Hong Kong Branch（分行编号 391）· Citibank Tower, Citibank Plaza, 3 Garden Road, Central, Hong Kong
 > - **其他币种**：THE BANK OF NEW YORK MELLON — SWIFT `IRVTUS3NXXX` · 240 GREENWICH STREET, NEW YORK, United States
+
+### Donación en criptomonedas (Crypto Donation)
+
+Si este proyecto te resulta útil, escanea el código QR para donar, ¡gracias!
+
+| Red (Network) | Código QR (QR Code) | Dirección de billetera (Wallet Address) |
+|---|---|---|
+| BNB Smart Chain (BEP20) | [<img src="./coin/1.jpg" width="150" alt="BNB Smart Chain (BEP20)">](./coin/1.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Tron (TRC20) | [<img src="./coin/2.jpg" width="150" alt="Tron (TRC20)">](./coin/2.jpg) | `TEdDHWLajt1XvqtPDWmQctdrJaC3pzZZzz` |
+| Ethereum (ERC20) | [<img src="./coin/3.jpg" width="150" alt="Ethereum (ERC20)">](./coin/3.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Aptos | [<img src="./coin/4.jpg" width="150" alt="Aptos">](./coin/4.jpg) | `0x836e3780edfc3f7b2372b39e2a1a3a5d7adfaccd96c726f21cfde1b50dd68030` |
+| Plasma | [<img src="./coin/5.jpg" width="150" alt="Plasma">](./coin/5.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Polygon POS | [<img src="./coin/6.jpg" width="150" alt="Polygon POS">](./coin/6.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| Solana | [<img src="./coin/7.jpg" width="150" alt="Solana">](./coin/7.jpg) | `2hfhboHdmdrYsY25XfQSsEWxq5ip4EQsR7f4AzSRMUyr` |
+| The Open Network (TON) | [<img src="./coin/8.jpg" width="150" alt="The Open Network (TON)">](./coin/8.jpg) | `UQB9kFQohzmXUir9QSSZq01iwl9aQZIDdBpNmDklljRtCoGK` |
+| Arbitrum One | [<img src="./coin/9.jpg" width="150" alt="Arbitrum One">](./coin/9.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+| AVAX C-Chain | [<img src="./coin/10.jpg" width="150" alt="AVAX C-Chain">](./coin/10.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
 
 ---
 
