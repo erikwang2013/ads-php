@@ -265,6 +265,7 @@ cd apps/flutter && flutter run -d android # Mobile
 cd admin/public/web && npx vue-tsc --noEmit   # 零错误
 ```
 
+उपयोग मार्गदर्शिका → [docs/usage.hi.md](docs/usage.hi.md)
 ---
 
 ## प्रोजेक्ट संरचना

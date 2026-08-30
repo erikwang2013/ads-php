@@ -265,6 +265,7 @@ cd apps/flutter && flutter run -d android # Mobile
 cd admin/public/web && npx vue-tsc --noEmit   # 오류 0개
 ```
 
+사용 안내 → [docs/usage.ko.md](docs/usage.ko.md)
 ---
 
 ## 프로젝트 구조

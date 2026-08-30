@@ -265,6 +265,7 @@ cd apps/flutter && flutter run -d android # Mobile
 cd admin/public/web && npx vue-tsc --noEmit   # エラーゼロ
 ```
 
+使用方法 → [docs/usage.ja.md](docs/usage.ja.md)
 ---
 
 ## プロジェクト構成

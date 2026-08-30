@@ -8,22 +8,25 @@ graph LR
         B3["Anzeigen-Hierarchie<br/>Campaign→AdGroup→Creative"]
         B4["Kreativ-Bibliothek<br/>Upload·Galerie"]
         B5["Targeting-Vorlagen<br/>Audience-JSON"]
+        B6["Speicher/CDN<br/>Lokal·OSS·COS·S3<br/>Vorab signierter Upload·Cache-Purge"]
+        B7["Mandantenfähigkeit<br/>Mandanten-Isolation·Kontingent"]
     end
     subgraph Engine["Engine-Schicht"]
         C1["Datensynchronisierung<br/>6 Cron-Jobs"]
-        C2["Berichts-Engine<br/>CSV·Excel·PDF"]
+        C2["Berichts-Engine<br/>Benutzerdefinierte Berichte·CSV·Excel·PDF"]
         C3["Alarm-Engine<br/>Schwellenwert-Prüfung"]
         C4["Gebots-Engine<br/>Budget-Anpassung·Start/Stop"]
         C5["Attributions-Engine<br/>5 Modelle·30-Tage-Rückschau"]
     end
     subgraph Endpoint["Konsumenten"]
-        D1["Vue Admin<br/>18 Seiten·ECharts"]
+        D1["Vue Admin<br/>21 Seiten·ECharts<br/>Dashboard 8 KPI-Karten<br/>Berichte·Attribution·Kalender·Export"]
         D2["Flutter<br/>12 Seiten·fl_chart"]
         D3["Benachrichtigungszentrum<br/>Web·Email·SMS"]
     end
     A1 --> B1 --> B2 --> C1
     C1 --> B3 --> B4
     B5 --> B3
+    B6 --> B4
     C1 --> C2 & C3 & C4 & C5
     C2 & C3 & C4 & C5 --> D1 & D2
     C3 --> D3

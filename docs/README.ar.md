@@ -265,6 +265,7 @@ cd apps/flutter && flutter run -d android # Mobile
 cd admin/public/web && npx vue-tsc --noEmit   # 零错误
 ```
 
+دليل الاستخدام → [docs/usage.ar.md](docs/usage.ar.md)
 ---
 
 ## هيكل المشروع

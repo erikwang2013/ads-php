@@ -265,6 +265,7 @@ cd apps/flutter && flutter run -d android # Mobile
 cd admin/public/web && npx vue-tsc --noEmit   # zero errors
 ```
 
+Usage Guide → [docs/usage.en.md](docs/usage.en.md)
 ---
 
 ## Project Structure

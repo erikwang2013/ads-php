@@ -8,22 +8,25 @@ graph LR
         B3["광고 계층<br/>Campaign→AdGroup→Creative"]
         B4["소재 라이브러리<br/>업로드·갤러리"]
         B5["타게팅 템플릿<br/>Audience JSON"]
+        B6["스토리지/CDN<br/>로컬·OSS·COS·S3<br/>서명 업로드·캐시 퍼지"]
+        B7["멀티테넌트<br/>테넌트 격리·쿼터"]
     end
     subgraph Engine["엔진 계층"]
         C1["데이터 동기화<br/>Cron 6개 작업"]
-        C2["리포트 엔진<br/>CSV·Excel·PDF"]
+        C2["리포트 엔진<br/>커스텀 리포트·CSV·Excel·PDF"]
         C3["알람 엔진<br/>임계값 평가"]
         C4["입찰 엔진<br/>예산 조정·시작/중지"]
         C5["어트리뷰션 엔진<br/>모델 5개·30일 조회"]
     end
     subgraph Endpoint["소비자"]
-        D1["Vue Admin<br/>18페이지·ECharts"]
+        D1["Vue Admin<br/>21페이지·ECharts<br/>대시보드 8 KPI 카드<br/>리포트·어트리뷰션·캘린더·내보내기"]
         D2["Flutter<br/>12페이지·fl_chart"]
         D3["알림 센터<br/>Web·Email·SMS"]
     end
     A1 --> B1 --> B2 --> C1
     C1 --> B3 --> B4
     B5 --> B3
+    B6 --> B4
     C1 --> C2 & C3 & C4 & C5
     C2 & C3 & C4 & C5 --> D1 & D2
     C3 --> D3

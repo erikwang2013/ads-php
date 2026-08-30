@@ -8,6 +8,7 @@ docs/
 ├── architecture.md                         # 架构设计文档 (部署/安全/目录/数据模型)
 ├── features.md                             # 功能设计文档 (21 模块/业务流程)
 ├── api.md                                  # API 接口文档 (接口定义已统一移至此)
+├── usage.md                                # 使用说明文档 (安装后使用流程)
 ├── versions.md                             # 三版本对比
 ├── apidoc-header.md                        # hg/apidoc 通用规范头部
 ├── diagrams/                               # Mermaid 可视化图表 (5 个)

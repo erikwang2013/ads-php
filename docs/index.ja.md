@@ -8,6 +8,7 @@ docs/
 ├── architecture.md                         # アーキテクチャ設計ドキュメント (デプロイ/セキュリティ/構成/データモデル)
 ├── features.md                             # 機能設計ドキュメント (21 モジュール/業務フロー)
 ├── api.md                                  # API インターフェースドキュメント (インターフェース定義はここに一元化)
+├── usage.md                                # 使用说明文档 (安装后使用流程)
 ├── versions.md                             # 3 バージョン比較
 ├── apidoc-header.md                        # hg/apidoc 共通仕様ヘッダー
 ├── diagrams/                               # Mermaid 可視化チャート (5 個)
