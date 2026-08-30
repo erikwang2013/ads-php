@@ -33,6 +33,33 @@ class CampaignApiTest extends ApiTestCase
         $this->assertArrayHasKey('summary', $body['data']);
     }
 
+    public function testCampaignIndexSortByCost(): void
+    {
+        $campaignId = $this->seedCampaign();
+        $accountId = DB::table('ads_campaigns')->find($campaignId)->platform_account_id;
+        DB::table('ads_report_metrics')->insert([
+            'id'                  => $this->nextId(),
+            'tenant_id'           => $this->tenantId,
+            'platform_account_id' => $accountId,
+            'platform'            => 'mock',
+            'campaign_id'         => $campaignId,
+            'date'                => date('Y-m-d'),
+            'granularity'         => 'day',
+            'cost'                => 100,
+            'impressions'         => 1000,
+            'clicks'              => 50,
+            'conversions'         => 2,
+            'ctr'                 => 5.0,
+            'cvr'                 => 4.0,
+            'created_at'          => now(),
+        ]);
+
+        $request = $this->authedRequest('GET', '/api/campaigns', [], [], ['sort' => 'cost']);
+        $body = $this->assertSuccess((new CampaignController())->index($request));
+        $this->assertEquals($campaignId, $body['data']['list'][0]['id']);
+        $this->assertEquals(100, $body['data']['list'][0]['total_cost']);
+    }
+
     public function testCampaignStoreSuccess(): void
     {
         $accountId = $this->seedAccount();

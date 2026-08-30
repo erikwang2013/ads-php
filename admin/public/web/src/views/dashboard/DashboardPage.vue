@@ -36,7 +36,7 @@
       <MetricCard label="转化量" :value="overview?.total_conversions ?? 0" format="number" :trend="conversionsTrend" />
       <MetricCard label="点击率" :value="(overview?.avg_ctr ?? 0) / 100" format="percent" :trend="ctrTrend" />
       <MetricCard label="转化率" :value="(overview?.avg_cvr ?? 0) / 100" format="percent" :trend="cvrTrend" />
-      <MetricCard label="平均CPC" :value="overview?.avg_cpc ?? 0" format="money" :trend="cpcTrend" />
+      <MetricCard label="平均CPC" :value="overview?.avg_cpc ?? (overview && overview.total_clicks > 0 ? overview.total_cost / overview.total_clicks : 0)" format="money" :trend="cpcTrend" />
       <MetricCard label="平均CPA" :value="overview?.avg_cpa ?? 0" format="money" :trend="cpaTrend" />
     </div>
 

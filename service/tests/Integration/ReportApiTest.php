@@ -53,7 +53,10 @@ class ReportApiTest extends ApiTestCase
         $this->assertEquals(100, $body['data']['overview']['total_cost']);
         $this->assertEquals(50, $body['data']['overview']['total_clicks']);
         $this->assertEquals(2, $body['data']['overview']['total_conversions']);
+        $this->assertEquals(2.0, $body['data']['overview']['avg_cpc']);
         $this->assertNotEmpty($body['data']['by_platform']);
+        $this->assertEquals(50, $body['data']['daily'][0]['clicks']);
+        $this->assertEquals(2, $body['data']['daily'][0]['conversions']);
     }
 
     public function testCustomReport(): void

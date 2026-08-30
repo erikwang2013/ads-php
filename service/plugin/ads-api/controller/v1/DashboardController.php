@@ -40,6 +40,7 @@ class DashboardController
                 ->selectRaw('COALESCE(SUM(conversions), 0) as total_conversions')
                 ->selectRaw('CASE WHEN SUM(impressions) > 0 THEN ROUND(SUM(clicks)/SUM(impressions)*100, 2) ELSE 0 END as avg_ctr')
                 ->selectRaw('CASE WHEN SUM(clicks) > 0 THEN ROUND(SUM(conversions)/SUM(clicks)*100, 2) ELSE 0 END as avg_cvr')
+                ->selectRaw('CASE WHEN SUM(clicks) > 0 THEN ROUND(SUM(cost)/SUM(clicks), 2) ELSE 0 END as avg_cpc')
                 ->selectRaw('CASE WHEN SUM(cost) > 0 THEN ROUND(SUM(cost)/SUM(conversions), 2) ELSE 0 END as avg_cpa')
                 ->first();
 
@@ -63,6 +64,8 @@ class DashboardController
                 ->select('date', 'platform')
                 ->selectRaw('COALESCE(SUM(cost), 0) as cost')
                 ->selectRaw('COALESCE(SUM(impressions), 0) as impressions')
+                ->selectRaw('COALESCE(SUM(clicks), 0) as clicks')
+                ->selectRaw('COALESCE(SUM(conversions), 0) as conversions')
                 ->get();
 
             return [

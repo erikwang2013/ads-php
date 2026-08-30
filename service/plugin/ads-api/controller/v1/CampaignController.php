@@ -26,9 +26,24 @@ class CampaignController
      */
     public function index(Request $request): \Webman\Http\Response
     {
-        $this->allowedSorts = ['id', 'name', 'platform', 'daily_budget', 'status', 'created_at', 'updated_at'];
+        $this->allowedSorts = ['id', 'name', 'platform', 'daily_budget', 'status', 'created_at', 'updated_at', 'cost'];
         $tenantId = $this->tenantId($request);
-        $query = DB::table('ads_campaigns')->where('tenant_id', $tenantId);
+        $query = DB::table('ads_campaigns as c')
+            ->where('c.tenant_id', $tenantId)
+            ->leftJoinSub(
+                DB::table('ads_report_metrics')
+                    ->where('tenant_id', $tenantId)
+                    ->where('date', date('Y-m-d'))
+                    ->select('campaign_id')
+                    ->selectRaw('COALESCE(SUM(cost), 0) as cost')
+                    ->groupBy('campaign_id'),
+                'm',
+                'm.campaign_id',
+                '=',
+                'c.id'
+            )
+            ->select('c.*')
+            ->selectRaw('COALESCE(m.cost, 0) as total_cost');
 
         if ($platform = $request->get('platform')) $query->where('platform', $platform);
         if ($status = $request->get('status')) $query->where('status', $status);

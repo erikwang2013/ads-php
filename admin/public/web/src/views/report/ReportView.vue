@@ -9,7 +9,7 @@
         <el-option v-for="p in platforms" :key="p.code" :label="p.name" :value="p.code" />
       </el-select>
       <el-select v-model="filter.dimension" placeholder="维度" style="width:120px" @change="loadData">
-        <el-option label="按日期" value="date" /><el-option label="按平台" value="platform" /><el-option label="按计划" value="campaign" />
+        <el-option label="按日期" value="date" /><el-option label="按平台" value="platform" /><el-option label="按计划" value="campaign_id" />
       </el-select>
       <el-select v-model="filter.metrics" placeholder="指标" multiple style="width:240px" @change="loadData">
         <el-option label="花费" value="cost" /><el-option label="展示" value="impressions" />
@@ -55,7 +55,7 @@ const tableData = ref<any[]>([]); const tableColumns = ref<any[]>([])
 const trendOption = computed(() => ({
   tooltip: { trigger: 'axis' },
   legend: { data: filter.metrics },
-  xAxis: { type: 'category', data: tableData.value.map((r: any) => r.date || r.platform || r.campaign_name || '') },
+  xAxis: { type: 'category', data: tableData.value.map((r: any) => r.date || r.platform || r.campaign_id || '') },
   yAxis: { type: 'value' },
   series: filter.metrics.map((m: string) => ({ name: m, type: 'line', data: tableData.value.map((r: any) => r[m] ?? 0), smooth: true })),
 }))
@@ -65,7 +65,7 @@ const barOption = computed(() => ({
   legend: { data: filter.metrics },
   grid: { left: '3%', right: '4%', containLabel: true },
   xAxis: { type: 'value' },
-  yAxis: { type: 'category', data: tableData.value.map((r: any) => r.date || r.platform || r.campaign_name || '').reverse() },
+  yAxis: { type: 'category', data: tableData.value.map((r: any) => r.date || r.platform || r.campaign_id || '').reverse() },
   series: filter.metrics.map((m: string) => ({ name: m, type: 'bar', data: tableData.value.map((r: any) => r[m] ?? 0).reverse(), barMaxWidth: 24 })),
 }))
 
@@ -78,13 +78,16 @@ async function loadData() {
       metrics: filter.metrics,
       date_start: start.toISOString().slice(0, 10),
       date_end: end.toISOString().slice(0, 10),
+      page: pagination.page,
+      per_page: pagination.perPage,
     }
     if (filter.platform) params.platform = filter.platform
 
     const data = await reportApi.custom(params)
     tableData.value = data.list || []
+    pagination.total = data.pagination?.total ?? 0
     tableColumns.value = [
-      { prop: filter.dimension === 'date' ? 'date' : filter.dimension === 'platform' ? 'platform' : 'campaign_name', label: '维度', width: 140 },
+      { prop: filter.dimension === 'date' ? 'date' : filter.dimension === 'platform' ? 'platform' : 'campaign_id', label: '维度', width: 140 },
       ...filter.metrics.map((m: string) => ({ prop: m, label: m })),
     ]
   } catch { ElMessage.error('加载报表失败') } finally { loading.value = false }
