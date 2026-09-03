@@ -21,7 +21,7 @@ class CampaignController
         /**
      * @Title("计划列表")
      * @Group("广告计划")
-     * @Url("/api/campaigns")
+     * @Url("/api/v1/campaigns")
      * @Method("GET")
      */
     public function index(Request $request): \Webman\Http\Response
@@ -70,7 +70,7 @@ class CampaignController
         /**
      * @Title("创建计划")
      * @Group("广告计划")
-     * @Url("/api/campaigns")
+     * @Url("/api/v1/campaigns")
      * @Method("POST")
      */
     public function store(Request $request): \Webman\Http\Response
@@ -126,7 +126,7 @@ class CampaignController
         /**
      * @Title("计划详情")
      * @Group("广告计划")
-     * @Url("/api/campaigns/{id}")
+     * @Url("/api/v1/campaigns/{id}")
      * @Method("GET")
      */
     public function show(int $id): \Webman\Http\Response
@@ -147,7 +147,7 @@ class CampaignController
         /**
      * @Title("更新计划")
      * @Group("广告计划")
-     * @Url("/api/campaigns/{id}")
+     * @Url("/api/v1/campaigns/{id}")
      * @Method("PUT")
      */
     public function update(Request $request, int $id): \Webman\Http\Response
@@ -184,7 +184,7 @@ class CampaignController
         /**
      * @Title("启停计划")
      * @Group("广告计划")
-     * @Url("/api/campaigns/{id}/toggle")
+     * @Url("/api/v1/campaigns/{id}/toggle")
      * @Method("POST")
      */
     public function toggle(Request $request, int $id): \Webman\Http\Response
@@ -220,7 +220,7 @@ class CampaignController
         /**
      * @Title("批量启停")
      * @Group("广告计划")
-     * @Url("/api/campaigns/batch/toggle")
+     * @Url("/api/v1/campaigns/batch/toggle")
      * @Method("POST")
      */
     public function batchToggle(Request $request): \Webman\Http\Response

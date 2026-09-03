@@ -18,7 +18,7 @@ class AccountController
         /**
      * @Title("账户列表")
      * @Group("账户")
-     * @Url("/api/accounts")
+     * @Url("/api/v1/accounts")
      * @Method("GET")
      */
     public function index(Request $request): \Webman\Http\Response
@@ -43,7 +43,7 @@ class AccountController
         /**
      * @Title("账户详情")
      * @Group("账户")
-     * @Url("/api/accounts/{id}")
+     * @Url("/api/v1/accounts/{id}")
      * @Method("GET")
      */
     public function show(int $id): \Webman\Http\Response
@@ -55,7 +55,7 @@ class AccountController
         /**
      * @Title("解绑账户")
      * @Group("账户")
-     * @Url("/api/accounts/{id}")
+     * @Url("/api/v1/accounts/{id}")
      * @Method("DELETE")
      */
     public function destroy(int $id): \Webman\Http\Response
@@ -69,7 +69,7 @@ class AccountController
         /**
      * @Title("手动同步")
      * @Group("账户")
-     * @Url("/api/accounts/{id}/sync")
+     * @Url("/api/v1/accounts/{id}/sync")
      * @Method("POST")
      */
     public function sync(Request $request, int $id): \Webman\Http\Response

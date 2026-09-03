@@ -61,7 +61,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 |--------|:---:|:---:|:---:|
 | CORS-Whitelist | ✅ | ✅ | ✅ |
 | Sicherheits-Response-Header (X-Frame/CSP/HSTS/nosniff) | ✅ | ✅ | ✅ |
-| Versions-Routing (X-API-Version) | ✅ | ✅ | ✅ |
+| Versions-Routing (/api/v1) | ✅ | ✅ | ✅ |
 | API-Rate-Limiting (gleitendes Fenster) | ✅ | ✅ | ✅ |
 | SQL-Injection-Erkennung (Musterabgleich) | ✅ | ✅ | ✅ |
 | Eingabefilterung (strip_tags + trim) | ✅ | ✅ | ✅ |

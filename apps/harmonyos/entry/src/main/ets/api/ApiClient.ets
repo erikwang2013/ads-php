@@ -3,9 +3,10 @@ import http from '@ohos.net.http';
 
 export class ApiClient {
   // 默认指向本机开发服务：模拟器可通过宿主机端口映射直连 127.0.0.1；
-  // 真机联调需改为宿主机局域网地址（如 http://192.168.1.100:8788/api），
+  // 真机联调需改为宿主机局域网地址（如 http://192.168.1.100:8788/api/v1），
   // 可在运行时通过 ApiClient.setBaseUrl(url) 覆盖，无需改代码。
-  private static baseUrl: string = 'http://127.0.0.1:8788/api';
+  // API 版本号固定在 URL 路径上（/api/v1/...）。
+  private static baseUrl: string = 'http://127.0.0.1:8788/api/v1';
   private static token: string = '';
   static readonly platform: string = 'harmonyos';
 
@@ -25,7 +26,6 @@ export class ApiClient {
     // replayHeaders 只展开一次（修复此前 get() 内重复展开两次的 bug）
     let headers: Record<string, string | number> = {
       ...this.replayHeaders(),
-      'X-API-Version': 'v1',
       'X-Client-Platform': this.platform
     };
     if (needAuth && this.token !== '') {
@@ -109,7 +109,7 @@ export class ApiClient {
   }
 
   /**
-   * 登录。service POST /api/auth/login 成功返回
+   * 登录。service POST /api/v1/auth/login 成功返回
    * {access_token, token_type, expires_in, user}（见 AuthController::login，
    * 字段为 access_token 而非 token），成功后自动写入 token 供后续请求携带。
    */

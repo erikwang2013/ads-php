@@ -60,7 +60,6 @@ Request
   → AttackGuardMiddleware     (XSS/路径遍历/Header注入/Body 10MiB/Content-Type白名单)
   → ClientPlatformMiddleware  (X-Client-Platform 8端来源识别)
   → ReplayGuardMiddleware     (Nonce+Timestamp 防重放, 非浏览器端强校验)
-  → VersionMiddleware         (X-API-Version 版本路由)
   → RateLimitMiddleware       (Redis 滑动窗口 60次/60s)
   → LoginThrottleMiddleware   (登录节流 5次失败→15分钟锁定)
   → SessionLimitMiddleware    (并发会话限制 最大3个活跃Token)
@@ -80,7 +79,6 @@ Request
   → LoginThrottleMiddleware   (登录节流 5次失败→15分钟)
   → ClientPlatformMiddleware  (X-Client-Platform 来源识别)
   → CsrfMiddleware            (CSRF Token 验证)
-  → VersionMiddleware         (API 版本)
   → AuthCheck                 (Session + JWT 双通道)
   → Controller
 ```
@@ -111,7 +109,6 @@ ads-php/
 │   │   │   ├── controller/v1/             # 14 个控制器
 │   │   │   ├── middleware/                # 7 个中间件
 │   │   │   ├── config/route.php           # 45+ 路由
-│   │   │   └── route_helpers.php          # versioned() 版本路由
 │   │   ├── ads-platform/                  # 平台适配器核心
 │   │   │   ├── adapter/                   # 29 个平台适配器
 │   │   │   ├── src/                       # AdapterRegistry, CampaignData
@@ -222,16 +219,14 @@ Via l'en-tête `X-Client-Platform` :
 
 ---
 
-## 7. Mécanisme de routage par version API
+## 7. Routage par version API
 
-Le numéro de version n'apparaît pas dans le chemin URL. La version est transmise via l'en-tête `X-API-Version`, lue par `VersionMiddleware` qui définit `$request->apiVersion`. La fonction d'aide `versioned()` remplace à l'exécution le segment de version dans la classe de contrôleur par la version de la requête.
+Le numéro de version de l'API est fixé dans le chemin URL (`/api/v1/...`) et les routes sont statiquement liées à `plugin\ads_api\controller\v1\*` ; il n'est pas transmis dans les en-têtes. Pour ajouter une nouvelle version, enregistrez un groupe de routes distinct (par ex. `/api/v2` → `controller\v2\*`).
 
 ```
-请求: GET /api/campaigns
-Header: X-API-Version: v1
+请求: GET /api/v1/campaigns
 
-VersionMiddleware → $request->apiVersion = 'v1'
-versioned(CampaignController::class, 'index')
+路由 /api/v1/campaigns
   → controller\v1\CampaignController::index()
 ```
 

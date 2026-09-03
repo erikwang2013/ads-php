@@ -17,7 +17,7 @@ class SyncController
         /**
      * @Title("同步状态摘要")
      * @Group("同步")
-     * @Url("/api/sync/status")
+     * @Url("/api/v1/sync/status")
      * @Method("GET")
      *
      * 账户维度同步状态 + 整体摘要。
@@ -93,7 +93,7 @@ class SyncController
         /**
      * @Title("同步错误列表")
      * @Group("同步")
-     * @Url("/api/sync/errors")
+     * @Url("/api/v1/sync/errors")
      * @Method("GET")
      *
      * 分页返回 ads_sync_errors，join ads_platform_accounts 取 account_name，

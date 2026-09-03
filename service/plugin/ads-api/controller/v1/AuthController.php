@@ -16,7 +16,7 @@ class AuthController
         /**
      * @Title("登录")
      * @Group("认证")
-     * @Url("/api/auth/login")
+     * @Url("/api/v1/auth/login")
      * @Method("POST")
      */
     public function login(Request $request): \Webman\Http\Response
@@ -70,7 +70,7 @@ class AuthController
         /**
      * @Title("当前用户")
      * @Group("认证")
-     * @Url("/api/auth/me")
+     * @Url("/api/v1/auth/me")
      * @Method("GET")
      */
     public function me(Request $request): \Webman\Http\Response
@@ -98,7 +98,7 @@ class AuthController
         /**
      * @Title("刷新Token")
      * @Group("认证")
-     * @Url("/api/auth/refresh")
+     * @Url("/api/v1/auth/refresh")
      * @Method("POST")
      */
     public function refreshToken(Request $request): \Webman\Http\Response

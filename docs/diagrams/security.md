@@ -64,18 +64,17 @@ graph TB
 
 ```mermaid
 graph LR
-    subgraph AdminGate["Admin :8789 — 10 层中间件"]
+    subgraph AdminGate["Admin :8789 — 9 层中间件"]
         direction TB
         A1["CORS"] --> A2["SecurityHeaders"]
         A2 --> A3["AttackGuard"]
         A3 --> A4["ClientPlatform"]
-        A4 --> A5["Version"]
-        A5 --> A6["RateLimit"]
-        A6 --> A7["LoginThrottle"]
-        A7 --> A8["SQLGuard"]
-        A8 --> A9["Validation"]
-        A9 --> A10["CSRF"]
-        A10 --> AuthCheck["AuthCheck<br/>Session + JWT 双通道"]
+        A4 --> A5["RateLimit"]
+        A5 --> A6["LoginThrottle"]
+        A6 --> A7["SQLGuard"]
+        A7 --> A8["Validation"]
+        A8 --> A9["CSRF"]
+        A9 --> AuthCheck["AuthCheck<br/>Session + JWT 双通道"]
     end
 ```
 
@@ -90,7 +89,6 @@ graph LR
 | 攻击检测 | AttackGuardMiddleware | ✅ | ✅ | XSS 11 · 路径遍历 7 · Header注入 |
 | 客户端 | ClientPlatformMiddleware | ✅ | ✅ | 8端来源识别 |
 | 防重放 | ReplayGuardMiddleware | ✅ | — | Nonce + Timestamp ±5min |
-| 版本 | VersionMiddleware | ✅ | ✅ | X-API-Version路由 |
 | 限流 | RateLimitMiddleware | ✅ | ✅ | Redis滑动窗口 60/60s |
 | 登录节流 | LoginThrottleMiddleware | ✅ | ✅ | 5次→15min Redis |
 | 会话限制 | SessionLimitMiddleware | ✅ | — | 最大3活跃Token |

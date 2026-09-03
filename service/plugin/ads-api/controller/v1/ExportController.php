@@ -19,7 +19,7 @@ class ExportController
         /**
      * @Title("导出报表")
      * @Group("报表")
-     * @Url("/api/reports/export")
+     * @Url("/api/v1/reports/export")
      * @Method("GET")
      */
     public function export(Request $request): Response
@@ -47,7 +47,7 @@ class ExportController
         /**
      * @Title("导出仪表盘")
      * @Group("报表")
-     * @Url("/api/reports/export-dashboard")
+     * @Url("/api/v1/reports/export-dashboard")
      * @Method("GET")
      */
     public function exportDashboard(Request $request): Response

@@ -60,7 +60,6 @@ Request
   → AttackGuardMiddleware     (XSS/路径遍历/Header注入/Body 10MiB/Content-Type白名单)
   → ClientPlatformMiddleware  (X-Client-Platform 8端来源识别)
   → ReplayGuardMiddleware     (Nonce+Timestamp 防重放, 非浏览器端强校验)
-  → VersionMiddleware         (X-API-Version 版本路由)
   → RateLimitMiddleware       (Redis 滑动窗口 60次/60s)
   → LoginThrottleMiddleware   (登录节流 5次失败→15分钟锁定)
   → SessionLimitMiddleware    (并发会话限制 最大3个活跃Token)
@@ -80,7 +79,6 @@ Request
   → LoginThrottleMiddleware   (登录节流 5次失败→15分钟)
   → ClientPlatformMiddleware  (X-Client-Platform 来源识别)
   → CsrfMiddleware            (CSRF Token 验证)
-  → VersionMiddleware         (API 版本)
   → AuthCheck                 (Session + JWT 双通道)
   → Controller
 ```
@@ -111,7 +109,6 @@ ads-php/
 │   │   │   ├── controller/v1/             # 14 个控制器
 │   │   │   ├── middleware/                # 7 个中间件
 │   │   │   ├── config/route.php           # 45+ 路由
-│   │   │   └── route_helpers.php          # versioned() 版本路由
 │   │   ├── ads-platform/                  # 平台适配器核心
 │   │   │   ├── adapter/                   # 29 个平台适配器
 │   │   │   ├── src/                       # AdapterRegistry, CampaignData
@@ -222,16 +219,14 @@ ads-php/
 
 ---
 
-## 7. API 버전 라우팅 메커니즘
+## 7. API 버전 라우팅
 
-버전 번호는 URL 경로에 나타나지 않습니다. 버전은 `X-API-Version` header로 전달되며, `VersionMiddleware`가 이를 읽어 `$request->apiVersion`에 설정합니다. `versioned()` 헬퍼 함수가 런타임에 컨트롤러 클래스의 버전 세그먼트를 요청 버전으로 교체합니다.
+API 버전 번호는 URL 경로에 고정되며(`/api/v1/...`), 라우트는 `plugin\ads_api\controller\v1\*`에 정적으로 바인딩됩니다. Header로 전달되지 않습니다. 새 버전을 추가할 때는 독립적인 라우트 그룹을 등록합니다(예: `/api/v2` → `controller\v2\*`).
 
 ```
-请求: GET /api/campaigns
-Header: X-API-Version: v1
+请求: GET /api/v1/campaigns
 
-VersionMiddleware → $request->apiVersion = 'v1'
-versioned(CampaignController::class, 'index')
+路由 /api/v1/campaigns
   → controller\v1\CampaignController::index()
 ```
 

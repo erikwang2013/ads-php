@@ -61,7 +61,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 |--------|:---:|:---:|:---:|
 | Whitelist CORS | ✅ | ✅ | ✅ |
 | Header respons keamanan (X-Frame/CSP/HSTS/nosniff) | ✅ | ✅ | ✅ |
-| Route versi (X-API-Version) | ✅ | ✅ | ✅ |
+| Route versi (/api/v1) | ✅ | ✅ | ✅ |
 | Rate limit API (sliding window) | ✅ | ✅ | ✅ |
 | Deteksi SQL injection (pencocokan pola) | ✅ | ✅ | ✅ |
 | Filter input (strip_tags + trim) | ✅ | ✅ | ✅ |

@@ -14,14 +14,15 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 ### Base URL
 
 ```
-http://your-domain.com/api
+http://your-domain.com/api/v1
 ```
+
+> رقم إصدار API مثبَّت في مسار URL (حاليًا `v1`) ولا يُمرَّر في الترويسة؛ الإصدارات الرئيسية اللاحقة مثل `/api/v2` تتبع القاعدة نفسها.
 
 ### الترويسات الإلزامية
 
 | الترويسة | القيمة | الوصف |
 |--------|----|------|
-| `X-API-Version` | `v1` | رقم إصدار API (إلزامي، لا يظهر في مسار URL) |
 | `X-Client-Platform` | `web` / `ios` / `android` / `macos` / `windows` / `linux` / `harmonyos` | طرف مصدر العملية (إلزامي) |
 | `Authorization` | `Bearer <token>` | رمز مصادقة JWT (إلزامي عدا تسجيل الدخول/قائمة المنصات/فحص الصحة) |
 
@@ -112,11 +113,11 @@ http://your-domain.com/api
 
 | نقطة النهاية | TTL | الطبقة |
 |------|-----|-----|
-| `/api/platforms` | ساعة واحدة | L1 ذاكرة ← L2 APCu ← L3 Redis |
-| `/api/accounts` + `/api/accounts/:id` | 5 دقائق | نفس ما سبق |
-| `/api/reports/summary` | 5 دقائق | نفس ما سبق |
-| `/api/alerts/rules` | دقيقتان | نفس ما سبق |
-| `/api/alerts/unread-count` | 30 ثانية | نفس ما سبق |
+| `/api/v1/platforms` | ساعة واحدة | L1 ذاكرة ← L2 APCu ← L3 Redis |
+| `/api/v1/accounts` + `/api/v1/accounts/:id` | 5 دقائق | نفس ما سبق |
+| `/api/v1/reports/summary` | 5 دقائق | نفس ما سبق |
+| `/api/v1/alerts/rules` | دقيقتان | نفس ما سبق |
+| `/api/v1/alerts/unread-count` | 30 ثانية | نفس ما سبق |
 
 ---
 
@@ -165,7 +166,7 @@ GET /docs
 
 ---
 
-### GET /api/captcha/generate — توليد رمز التحقق
+### GET /api/v1/captcha/generate — توليد رمز التحقق
 
 بدون مصادقة.
 
@@ -186,7 +187,7 @@ GET /docs
 
 ---
 
-### POST /api/captcha/verify — التحقق من رمز التحقق
+### POST /api/v1/captcha/verify — التحقق من رمز التحقق
 
 بدون مصادقة.
 
@@ -204,7 +205,7 @@ GET /docs
 
 ## الوحدة 2: المصادقة
 
-### POST /api/auth/login — تسجيل الدخول
+### POST /api/v1/auth/login — تسجيل الدخول
 
 بدون مصادقة.
 
@@ -245,7 +246,7 @@ GET /docs
 
 ---
 
-### GET /api/auth/me — المستخدم الحالي
+### GET /api/v1/auth/me — المستخدم الحالي
 
 **ترويسة الطلب**: `Authorization: Bearer <token>`
 
@@ -266,7 +267,7 @@ GET /docs
 
 ---
 
-### POST /api/auth/refresh — تحديث Token
+### POST /api/v1/auth/refresh — تحديث Token
 
 **ترويسة الطلب**: `Authorization: Bearer <old_token>`
 
@@ -290,7 +291,7 @@ GET /docs
 
 ## الوحدة 3: المنصات والحسابات
 
-### GET /api/platforms — قائمة المنصات
+### GET /api/v1/platforms — قائمة المنصات
 
 بدون مصادقة. تخزين مؤقت لمدة ساعة.
 
@@ -307,7 +308,7 @@ GET /docs
 
 ---
 
-### GET /api/platforms/:code/oauth-url — URL تفويض OAuth
+### GET /api/v1/platforms/:code/oauth-url — URL تفويض OAuth
 
 **المعاملات**: `?redirect_uri=https://your-domain.com/callback`
 
@@ -317,7 +318,7 @@ GET /docs
 
 ---
 
-### POST /api/platforms/:code/callback — استدعاء OAuth
+### POST /api/v1/platforms/:code/callback — استدعاء OAuth
 
 **الطلب**: `{ "state": "...", "code": "..." }`
 
@@ -325,7 +326,7 @@ GET /docs
 
 ---
 
-### GET /api/accounts — قائمة الحسابات
+### GET /api/v1/accounts — قائمة الحسابات
 
 تخزين مؤقت لمدة 5 دقائق.
 
@@ -341,23 +342,23 @@ GET /docs
 
 ---
 
-### GET /api/accounts/:id — تفاصيل الحساب
+### GET /api/v1/accounts/:id — تفاصيل الحساب
 
 تخزين مؤقت لمدة 5 دقائق.
 
 ---
 
-### DELETE /api/accounts/:id — إلغاء ربط الحساب
+### DELETE /api/v1/accounts/:id — إلغاء ربط الحساب
 
 ---
 
-### POST /api/accounts/:id/sync — مزامنة يدوية
+### POST /api/v1/accounts/:id/sync — مزامنة يدوية
 
 ---
 
 ## الوحدة 4: خطط الإعلانات
 
-### GET /api/campaigns — قائمة الخطط
+### GET /api/v1/campaigns — قائمة الخطط
 
 **المعاملات**:
 
@@ -374,7 +375,7 @@ GET /docs
 
 ---
 
-### POST /api/campaigns — إنشاء خطة
+### POST /api/v1/campaigns — إنشاء خطة
 
 **الطلب**:
 ```json
@@ -392,25 +393,25 @@ GET /docs
 
 ---
 
-### GET /api/campaigns/:id — تفاصيل الخطة
+### GET /api/v1/campaigns/:id — تفاصيل الخطة
 
 **الاستجابة**: `{ "code": 0, "data": { "campaign": {...}, "today": { "cost":..., "impressions":... } } }`
 
 ---
 
-### PUT /api/campaigns/:id — تحديث الخطة
+### PUT /api/v1/campaigns/:id — تحديث الخطة
 
 **الطلب**: `{ "name": "الاسم الجديد", "daily_budget": 30000 }`
 
 ---
 
-### POST /api/campaigns/:id/toggle — تشغيل/إيقاف الخطة
+### POST /api/v1/campaigns/:id/toggle — تشغيل/إيقاف الخطة
 
 **الطلب**: `{ "enabled": false }`
 
 ---
 
-### POST /api/campaigns/batch/toggle — تشغيل/إيقاف جماعي
+### POST /api/v1/campaigns/batch/toggle — تشغيل/إيقاف جماعي
 
 **الطلب**: `{ "ids": ["hash1", "hash2", "hash3"], "enabled": false }`
 
@@ -420,11 +421,11 @@ GET /docs
 
 ## الوحدة 5: المجموعات الإعلانية
 
-### GET /api/ad-groups — قائمة المجموعات الإعلانية
+### GET /api/v1/ad-groups — قائمة المجموعات الإعلانية
 
 **المعاملات**: `platform`, `campaign_id`, `status`, `sort`(id/name/status/bid_amount), `page`, `per_page`
 
-### POST /api/ad-groups — إنشاء مجموعة إعلانية
+### POST /api/v1/ad-groups — إنشاء مجموعة إعلانية
 
 **الطلب**:
 ```json
@@ -440,27 +441,27 @@ GET /docs
 
 - `targeting_template_id`: اختياري، يُحمَّل targeting JSON من قالب الاستهداف ويُدمج
 
-### GET /api/ad-groups/:id — تفاصيل المجموعة الإعلانية
+### GET /api/v1/ad-groups/:id — تفاصيل المجموعة الإعلانية
 
-### PUT /api/ad-groups/:id — تحديث المجموعة الإعلانية
+### PUT /api/v1/ad-groups/:id — تحديث المجموعة الإعلانية
 
-### POST /api/ad-groups/:id/toggle — تشغيل/إيقاف المجموعة الإعلانية
+### POST /api/v1/ad-groups/:id/toggle — تشغيل/إيقاف المجموعة الإعلانية
 
 ---
 
 ## الوحدة 6: المواد الإبداعية
 
-### GET /api/creatives — قائمة المواد الإبداعية
+### GET /api/v1/creatives — قائمة المواد الإبداعية
 
 **المعاملات**: `platform`, `ad_group_id`, `campaign_id`, `media_type`(image/video/text), `sort`, `page`, `per_page`
 
-### GET /api/creatives/:id — تفاصيل المادة الإبداعية
+### GET /api/v1/creatives/:id — تفاصيل المادة الإبداعية
 
 ---
 
 ## الوحدة 7: التقارير
 
-### GET /api/reports/summary — ملخص لوحة المعلومات
+### GET /api/v1/reports/summary — ملخص لوحة المعلومات
 
 تخزين مؤقت لمدة 5 دقائق.
 
@@ -480,7 +481,7 @@ GET /docs
 
 ---
 
-### GET /api/reports/custom — تقرير مخصص
+### GET /api/v1/reports/custom — تقرير مخصص
 
 **المعاملات**:
 
@@ -494,7 +495,7 @@ GET /docs
 
 ---
 
-### GET /api/reports/export — تصدير التقرير
+### GET /api/v1/reports/export — تصدير التقرير
 
 **المعاملات**: `format=csv`, `date_start`, `date_end`, `metrics[]`
 
@@ -502,11 +503,11 @@ GET /docs
 
 ---
 
-### GET /api/reports/export-dashboard — تصدير لوحة المعلومات PDF
+### GET /api/v1/reports/export-dashboard — تصدير لوحة المعلومات PDF
 
 ---
 
-### GET /api/reports/calendar — تقويم النشر
+### GET /api/v1/reports/calendar — تقويم النشر
 
 **المعاملات**: `date_start`, `date_end`, `platform`
 
@@ -514,7 +515,7 @@ GET /docs
 
 ---
 
-### GET /api/reports/budget-alerts — تنبيه الميزانية
+### GET /api/v1/reports/budget-alerts — تنبيه الميزانية
 
 **الاستجابة**: `[{ campaign_id, campaign_name, platform, spent, budget, pct, level }]`
 
@@ -522,7 +523,7 @@ GET /docs
 
 ---
 
-### GET /api/reports/attribution — تحليل الإسناد
+### GET /api/v1/reports/attribution — تحليل الإسناد
 
 **المعاملات**: `model`(first_touch/last_touch/linear/time_decay/position_based), `date_start`, `date_end`
 
@@ -540,7 +541,7 @@ GET /docs
 
 ---
 
-### GET /api/reports/attribution/models — قائمة نماذج الإسناد
+### GET /api/v1/reports/attribution/models — قائمة نماذج الإسناد
 
 **الاستجابة**: `[{ code: "last_touch", name: "آخر نقطة اتصال", description: "..." }]`
 
@@ -550,13 +551,13 @@ GET /docs
 
 ## الوحدة 8: التنبيهات
 
-### GET /api/alerts/rules — قائمة قواعد التنبيه
+### GET /api/v1/alerts/rules — قائمة قواعد التنبيه
 
 تخزين مؤقت لمدة دقيقتين.
 
 **المعاملات**: `platform`, `enabled`(0/1), `metric`, `page`, `per_page`
 
-### POST /api/alerts/rules — إنشاء قاعدة تنبيه
+### POST /api/v1/alerts/rules — إنشاء قاعدة تنبيه
 
 **الطلب**:
 ```json
@@ -572,17 +573,17 @@ GET /docs
 }
 ```
 
-### PUT /api/alerts/rules/:id — تحديث قاعدة تنبيه
+### PUT /api/v1/alerts/rules/:id — تحديث قاعدة تنبيه
 
-### DELETE /api/alerts/rules/:id — حذف قاعدة تنبيه
+### DELETE /api/v1/alerts/rules/:id — حذف قاعدة تنبيه
 
-### GET /api/alerts/logs — سجلات التنبيه
+### GET /api/v1/alerts/logs — سجلات التنبيه
 
 **المعاملات**: `status`, `rule_id`, `metric`, `page`, `per_page`
 
-### POST /api/alerts/logs/:id/acknowledge — تأكيد التنبيه
+### POST /api/v1/alerts/logs/:id/acknowledge — تأكيد التنبيه
 
-### GET /api/alerts/unread-count — عدد التنبيهات غير المقروءة
+### GET /api/v1/alerts/unread-count — عدد التنبيهات غير المقروءة
 
 تخزين مؤقت لمدة 30 ثانية. استطلاع دوري كل 30 ثانية من الواجهة الأمامية.
 
@@ -590,23 +591,23 @@ GET /docs
 
 ## الوحدة 9: الإشعارات
 
-### GET /api/notifications — قائمة الإشعارات
+### GET /api/v1/notifications — قائمة الإشعارات
 
 **المعاملات**: `type`(alert/system), `is_read`(0/1), `page`, `per_page`
 
-### GET /api/notifications/unread-count — عدد الإشعارات غير المقروءة
+### GET /api/v1/notifications/unread-count — عدد الإشعارات غير المقروءة
 
-### POST /api/notifications/:id/read — تعليم كمقروء
+### POST /api/v1/notifications/:id/read — تعليم كمقروء
 
-### POST /api/notifications/read-all — تعليم الكل كمقروء
+### POST /api/v1/notifications/read-all — تعليم الكل كمقروء
 
 ---
 
 ## الوحدة 10: المزايدة التلقائية
 
-### GET /api/bid-rules — قائمة القواعد
+### GET /api/v1/bid-rules — قائمة القواعد
 
-### POST /api/bid-rules — إنشاء قاعدة
+### POST /api/v1/bid-rules — إنشاء قاعدة
 
 **الطلب**:
 ```json
@@ -636,11 +637,11 @@ GET /docs
 | budget_max | int | الحد الأقصى للميزانية (فن) |
 | cooldown_minutes | int | فترة التهدئة (الافتراضي 60) |
 
-### PUT /api/bid-rules/:id — تحديث قاعدة
+### PUT /api/v1/bid-rules/:id — تحديث قاعدة
 
-### DELETE /api/bid-rules/:id — حذف قاعدة
+### DELETE /api/v1/bid-rules/:id — حذف قاعدة
 
-### GET /api/bid-rules/logs — سجل المزايدة
+### GET /api/v1/bid-rules/logs — سجل المزايدة
 
 **المعاملات**: `rule_id`, `campaign_id`
 
@@ -648,13 +649,13 @@ GET /docs
 
 ## الوحدة 11: قوالب الاستهداف
 
-### GET /api/targeting-templates — قائمة القوالب
+### GET /api/v1/targeting-templates — قائمة القوالب
 
 **المعاملات**: `platform`
 
-### GET /api/targeting-templates/:id — تفاصيل القالب
+### GET /api/v1/targeting-templates/:id — تفاصيل القالب
 
-### POST /api/targeting-templates — إنشاء قالب
+### POST /api/v1/targeting-templates — إنشاء قالب
 
 **الطلب**:
 ```json
@@ -671,19 +672,19 @@ GET /docs
 }
 ```
 
-### PUT /api/targeting-templates/:id — تحديث قالب
+### PUT /api/v1/targeting-templates/:id — تحديث قالب
 
-### DELETE /api/targeting-templates/:id — حذف قالب
+### DELETE /api/v1/targeting-templates/:id — حذف قالب
 
 ---
 
 ## الوحدة 12: مكتبة المواد
 
-### GET /api/assets — قائمة المواد
+### GET /api/v1/assets — قائمة المواد
 
 **المعاملات**: `type`(image/video), `page`, `per_page`
 
-### POST /api/assets/upload — رفع مادة
+### POST /api/v1/assets/upload — رفع مادة
 
 **الطلب**: `multipart/form-data`, الحقل `file`
 
@@ -694,16 +695,16 @@ GET /docs
 
 - عند تكوين CDN، يُجمَّع `url` مع `cdn_domain` للمزود الافتراضي ليكون عنوان HTTPS كاملًا
 
-### POST /api/assets/presign — الحصول على عنوان رفع موقّع مسبقًا
+### POST /api/v1/assets/presign — الحصول على عنوان رفع موقّع مسبقًا
 
 **الطلب**: `{ "filename": "demo.mp4", "mime_type": "video/mp4" }`
 
 **الاستجابة**: `{ "code": 0, "data": { "key": "20260829/ab12...cd34.mp4", "upload_url": "https://signed-url", "expires_in": 3600, "url": "https://cdn.example.com/uploads/assets/..." } }`
 
-- صيغة `key`: `Ymd/32hex.الامتداد`؛ يُعاد إلى `/api/assets/register` بعد الرفع المباشر
+- صيغة `key`: `Ymd/32hex.الامتداد`؛ يُعاد إلى `/api/v1/assets/register` بعد الرفع المباشر
 - لفيديوهات حتى 50 MiB يرفع العميل مباشرة إلى تخزين الكائنات؛ غير متاح مع driver `local`
 
-### POST /api/assets/register — تسجيل مادة مرفوعة مباشرة
+### POST /api/v1/assets/register — تسجيل مادة مرفوعة مباشرة
 
 **الطلب**: `{ "key": "20260829/ab12...cd34.mp4", "filename": "demo.mp4", "mime_type": "video/mp4", "size": 52428800 }`
 
@@ -711,15 +712,15 @@ GET /docs
 
 - تُتحقق صيغة `key` بصرامة (`^\d{8}/[0-9a-f]{32}\.[a-z0-9]{1,10}$`) لمنع تجاوز المسار
 
-### GET /api/assets/:id — تفاصيل المادة
+### GET /api/v1/assets/:id — تفاصيل المادة
 
-### DELETE /api/assets/:id — حذف مادة
+### DELETE /api/v1/assets/:id — حذف مادة
 
 ---
 
 ## نقطة نهاية Admin (المنفذ 8789)
 
-### POST /api/admin/login — تسجيل دخول المسؤول
+### POST /api/v1/admin/login — تسجيل دخول المسؤول
 
 **الطلب**: `{ "username": "admin", "password": "..." }`
 
@@ -728,25 +729,25 @@ GET /docs
 - يُخزَّن Token في localStorage
 - يجب حمل `csrf_token` في ترويسة `X-CSRF-Token` لطلبات POST/PUT/DELETE اللاحقة
 
-### GET /api/admin/me — المسؤول الحالي
+### GET /api/v1/admin/me — المسؤول الحالي
 
-### POST /api/admin/logout — تسجيل الخروج
+### POST /api/v1/admin/logout — تسجيل الخروج
 
-### GET /api/admin/users — قائمة المستخدمين
+### GET /api/v1/admin/users — قائمة المستخدمين
 
 **المعاملات**: `keyword`, `role_id`, `page`, `per_page`
 
 يُرمَّز `id` و`role_id` في الاستجابة عبر hashids.
 
-### POST /api/admin/users — إنشاء مستخدم
+### POST /api/v1/admin/users — إنشاء مستخدم
 
-### PUT /api/admin/users/:id — تحديث مستخدم
+### PUT /api/v1/admin/users/:id — تحديث مستخدم
 
-### DELETE /api/admin/users/:id — تعطيل مستخدم
+### DELETE /api/v1/admin/users/:id — تعطيل مستخدم
 
-### GET /api/admin/users/roles — قائمة الأدوار
+### GET /api/v1/admin/users/roles — قائمة الأدوار
 
-### GET /api/admin/audit-logs — سجلات التدقيق
+### GET /api/v1/admin/audit-logs — سجلات التدقيق
 
 **المعاملات**: `user_id`, `action`, `date_from`, `date_to`, `page`, `per_page`
 
@@ -754,28 +755,28 @@ GET /docs
 
 ### إدارة مزودي CDN (للمستأجر الرئيسي فقط tenant 1، عبر AdminMiddleware)
 
-### GET /api/admin/cdn/providers — قائمة المزودين
+### GET /api/v1/admin/cdn/providers — قائمة المزودين
 
-### POST /api/admin/cdn/providers — إنشاء مزود
+### POST /api/v1/admin/cdn/providers — إنشاء مزود
 
 **الطلب**: `{ "name": "Aliyun OSS", "driver": "oss", "bucket": "ads-assets", "region": "oss-cn-hangzhou", "endpoint": "https://oss-cn-hangzhou.aliyuncs.com", "access_key": "...", "secret_key": "...", "cdn_domain": "cdn.example.com", "cdn_driver": "aliyun", "cdn_token": "...", "is_default": 1 }`
 
 - `driver`: `local` / `oss` (Alibaba Cloud OSS) / `cos` (Tencent Cloud COS، بروتوكول S3) / `s3` (متوافق S3: AWS S3 / Cloudflare R2 / MinIO)
 - بيانات الاعتماد (access_key/secret_key/cdn_token) مشفرة على مستوى الحقل عبر Encryptable؛ الاستجابات بحقول مقنّعة فقط
 
-### PUT /api/admin/cdn/providers/:id — تحديث مزود
+### PUT /api/v1/admin/cdn/providers/:id — تحديث مزود
 
-### DELETE /api/admin/cdn/providers/:id — حذف (الافتراضي يُنقل تلقائيًا إلى المزود enabled التالي)
+### DELETE /api/v1/admin/cdn/providers/:id — حذف (الافتراضي يُنقل تلقائيًا إلى المزود enabled التالي)
 
-### PUT /api/admin/cdn/providers/:id/default — تعيين كافتراضي
+### PUT /api/v1/admin/cdn/providers/:id/default — تعيين كافتراضي
 
-### PUT /api/admin/cdn/providers/:id/toggle — تفعيل/تعطيل (تعطيل الافتراضي ينقله تلقائيًا)
+### PUT /api/v1/admin/cdn/providers/:id/toggle — تفعيل/تعطيل (تعطيل الافتراضي ينقله تلقائيًا)
 
-### POST /api/admin/cdn/providers/:id/test — اختبار الاتصال
+### POST /api/v1/admin/cdn/providers/:id/test — اختبار الاتصال
 
 **الاستجابة**: `{ "code": 0, "data": { "ok": true, "driver": "oss", "status": "ok" } }`
 
-### POST /api/admin/cdn/providers/:id/purge — مسح كاش CDN
+### POST /api/v1/admin/cdn/providers/:id/purge — مسح كاش CDN
 
 **الطلب**: `{ "paths": ["/uploads/assets/20260829/xxx.mp4"] }`
 

@@ -60,7 +60,6 @@ Request
   → AttackGuardMiddleware     (XSS/路径遍历/Header注入/Body 10MiB/Content-Type白名单)
   → ClientPlatformMiddleware  (X-Client-Platform 8端来源识别)
   → ReplayGuardMiddleware     (Nonce+Timestamp 防重放, 非浏览器端强校验)
-  → VersionMiddleware         (X-API-Version 版本路由)
   → RateLimitMiddleware       (Redis 滑动窗口 60次/60s)
   → LoginThrottleMiddleware   (登录节流 5次失败→15分钟锁定)
   → SessionLimitMiddleware    (并发会话限制 最大3个活跃Token)
@@ -80,7 +79,6 @@ Request
   → LoginThrottleMiddleware   (登录节流 5次失败→15分钟)
   → ClientPlatformMiddleware  (X-Client-Platform 来源识别)
   → CsrfMiddleware            (CSRF Token 验证)
-  → VersionMiddleware         (API 版本)
   → AuthCheck                 (Session + JWT 双通道)
   → Controller
 ```
@@ -111,7 +109,6 @@ ads-php/
 │   │   │   ├── controller/v1/             # 14 个控制器
 │   │   │   ├── middleware/                # 7 个中间件
 │   │   │   ├── config/route.php           # 45+ 路由
-│   │   │   └── route_helpers.php          # versioned() 版本路由
 │   │   ├── ads-platform/                  # 平台适配器核心
 │   │   │   ├── adapter/                   # 29 个平台适配器
 │   │   │   ├── src/                       # AdapterRegistry, CampaignData
@@ -222,16 +219,14 @@ ads-php/
 
 ---
 
-## 7. API ভার্সন রাউটিং মেকানিজম
+## 7. API ভার্সন রাউটিং
 
-ভার্সন নম্বর URL পাথে থাকে না। ভার্সন `X-API-Version` header দিয়ে পাস হয়, `VersionMiddleware` পড়ে `$request->apiVersion` সেট করে। `versioned()` হেল্পার ফাংশন রানটাইমে কন্ট্রোলার ক্লাসের ভার্সন অংশকে রিকোয়েস্ট ভার্সন দিয়ে প্রতিস্থাপন করে।
+API ভার্সন নম্বর URL পাথে ফিক্সড থাকে (`/api/v1/...`), এবং রাউটগুলো `plugin\ads_api\controller\v1\*`-এর সাথে স্ট্যাটিকভাবে বাইন্ড থাকে; এটি Header-এ পাঠানো হয় না। নতুন ভার্সন যোগ করলে একটি আলাদা রাউট গ্রুপ রেজিস্টার করুন (যেমন `/api/v2` → `controller\v2\*`)।
 
 ```
-请求: GET /api/campaigns
-Header: X-API-Version: v1
+请求: GET /api/v1/campaigns
 
-VersionMiddleware → $request->apiVersion = 'v1'
-versioned(CampaignController::class, 'index')
+路由 /api/v1/campaigns
   → controller\v1\CampaignController::index()
 ```
 

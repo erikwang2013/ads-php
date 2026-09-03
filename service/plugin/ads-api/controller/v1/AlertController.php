@@ -23,7 +23,7 @@ class AlertController
         /**
      * @Title("告警规则列表")
      * @Group("告警")
-     * @Url("/api/alerts/rules")
+     * @Url("/api/v1/alerts/rules")
      * @Method("GET")
      */
     public function rules(Request $request): \Webman\Http\Response
@@ -62,7 +62,7 @@ class AlertController
         /**
      * @Title("创建告警规则")
      * @Group("告警")
-     * @Url("/api/alerts/rules")
+     * @Url("/api/v1/alerts/rules")
      * @Method("POST")
      */
     public function createRule(Request $request): \Webman\Http\Response
@@ -100,7 +100,7 @@ class AlertController
         /**
      * @Title("更新告警规则")
      * @Group("告警")
-     * @Url("/api/alerts/rules/{id}")
+     * @Url("/api/v1/alerts/rules/{id}")
      * @Method("PUT")
      */
     public function updateRule(Request $request, int $id): \Webman\Http\Response
@@ -146,7 +146,7 @@ class AlertController
         /**
      * @Title("删除告警规则")
      * @Group("告警")
-     * @Url("/api/alerts/rules/{id}")
+     * @Url("/api/v1/alerts/rules/{id}")
      * @Method("DELETE")
      */
     public function deleteRule(Request $request, int $id): \Webman\Http\Response
@@ -171,7 +171,7 @@ class AlertController
         /**
      * @Title("告警记录")
      * @Group("告警")
-     * @Url("/api/alerts/logs")
+     * @Url("/api/v1/alerts/logs")
      * @Method("GET")
      */
     public function logs(Request $request): \Webman\Http\Response
@@ -212,7 +212,7 @@ class AlertController
         /**
      * @Title("确认告警")
      * @Group("告警")
-     * @Url("/api/alerts/logs/{id}/acknowledge")
+     * @Url("/api/v1/alerts/logs/{id}/acknowledge")
      * @Method("POST")
      */
     public function acknowledge(Request $request, int $id): \Webman\Http\Response
@@ -240,7 +240,7 @@ class AlertController
         /**
      * @Title("未读告警数")
      * @Group("告警")
-     * @Url("/api/alerts/unread-count")
+     * @Url("/api/v1/alerts/unread-count")
      * @Method("GET")
      */
     public function unreadCount(Request $request): \Webman\Http\Response

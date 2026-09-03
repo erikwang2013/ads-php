@@ -14,14 +14,15 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 ### Base URL
 
 ```
-http://your-domain.com/api
+http://your-domain.com/api/v1
 ```
+
+> Nomor versi API ditetapkan di dalam jalur URL (saat ini `v1`) dan tidak dikirim melalui Header; versi mayor berikutnya seperti `/api/v2` mengikuti aturan yang sama.
 
 ### Headers Wajib
 
 | Header | Nilai | Keterangan |
 |--------|----|------|
-| `X-API-Version` | `v1` | Nomor versi API（wajib, tidak muncul di path URL） |
 | `X-Client-Platform` | `web` / `ios` / `android` / `macos` / `windows` / `linux` / `harmonyos` | Ujung sumber operasi（wajib） |
 | `Authorization` | `Bearer <token>` | Token autentikasi JWT（wajib kecuali login/daftar platform/health check） |
 
@@ -112,11 +113,11 @@ http://your-domain.com/api
 
 | Endpoint | TTL | Lapisan |
 |------|-----|-----|
-| `/api/platforms` | 1 jam | L1 memori → L2 APCu → L3 Redis |
-| `/api/accounts` + `/api/accounts/:id` | 5 menit | sama seperti di atas |
-| `/api/reports/summary` | 5 menit | sama seperti di atas |
-| `/api/alerts/rules` | 2 menit | sama seperti di atas |
-| `/api/alerts/unread-count` | 30 detik | sama seperti di atas |
+| `/api/v1/platforms` | 1 jam | L1 memori → L2 APCu → L3 Redis |
+| `/api/v1/accounts` + `/api/v1/accounts/:id` | 5 menit | sama seperti di atas |
+| `/api/v1/reports/summary` | 5 menit | sama seperti di atas |
+| `/api/v1/alerts/rules` | 2 menit | sama seperti di atas |
+| `/api/v1/alerts/unread-count` | 30 detik | sama seperti di atas |
 
 ---
 
@@ -165,7 +166,7 @@ Mengembalikan halaman dokumentasi API dalam format HTML（tanpa autentikasi）�
 
 ---
 
-### GET /api/captcha/generate — Generate Kode Verifikasi
+### GET /api/v1/captcha/generate — Generate Kode Verifikasi
 
 Tanpa autentikasi.
 
@@ -186,7 +187,7 @@ Tanpa autentikasi.
 
 ---
 
-### POST /api/captcha/verify — Verifikasi Kode Verifikasi
+### POST /api/v1/captcha/verify — Verifikasi Kode Verifikasi
 
 Tanpa autentikasi.
 
@@ -204,7 +205,7 @@ Tanpa autentikasi.
 
 ## Modul 2: Autentikasi
 
-### POST /api/auth/login — Login
+### POST /api/v1/auth/login — Login
 
 Tanpa autentikasi.
 
@@ -245,7 +246,7 @@ Tanpa autentikasi.
 
 ---
 
-### GET /api/auth/me — Pengguna Saat Ini
+### GET /api/v1/auth/me — Pengguna Saat Ini
 
 **Header request**: `Authorization: Bearer <token>`
 
@@ -266,7 +267,7 @@ Tanpa autentikasi.
 
 ---
 
-### POST /api/auth/refresh — Refresh Token
+### POST /api/v1/auth/refresh — Refresh Token
 
 **Header request**: `Authorization: Bearer <old_token>`
 
@@ -290,7 +291,7 @@ Tanpa autentikasi.
 
 ## Modul 3: Platform & Akun
 
-### GET /api/platforms — Daftar Platform
+### GET /api/v1/platforms — Daftar Platform
 
 Tanpa autentikasi. Cache 1 jam.
 
@@ -307,7 +308,7 @@ Tanpa autentikasi. Cache 1 jam.
 
 ---
 
-### GET /api/platforms/:code/oauth-url — URL Otorisasi OAuth
+### GET /api/v1/platforms/:code/oauth-url — URL Otorisasi OAuth
 
 **Parameter**: `?redirect_uri=https://your-domain.com/callback`
 
@@ -317,7 +318,7 @@ Tanpa autentikasi. Cache 1 jam.
 
 ---
 
-### POST /api/platforms/:code/callback — Callback OAuth
+### POST /api/v1/platforms/:code/callback — Callback OAuth
 
 **Request**: `{ "state": "...", "code": "..." }`
 
@@ -325,7 +326,7 @@ Tanpa autentikasi. Cache 1 jam.
 
 ---
 
-### GET /api/accounts — Daftar Akun
+### GET /api/v1/accounts — Daftar Akun
 
 Cache 5 menit.
 
@@ -341,23 +342,23 @@ Cache 5 menit.
 
 ---
 
-### GET /api/accounts/:id — Detail Akun
+### GET /api/v1/accounts/:id — Detail Akun
 
 Cache 5 menit.
 
 ---
 
-### DELETE /api/accounts/:id — Lepas Ikatan Akun
+### DELETE /api/v1/accounts/:id — Lepas Ikatan Akun
 
 ---
 
-### POST /api/accounts/:id/sync — Sinkronisasi Manual
+### POST /api/v1/accounts/:id/sync — Sinkronisasi Manual
 
 ---
 
 ## Modul 4: Kampanye Iklan
 
-### GET /api/campaigns — Daftar Kampanye
+### GET /api/v1/campaigns — Daftar Kampanye
 
 **Parameter**:
 
@@ -374,7 +375,7 @@ Cache 5 menit.
 
 ---
 
-### POST /api/campaigns — Buat Kampanye
+### POST /api/v1/campaigns — Buat Kampanye
 
 **Request**:
 ```json
@@ -392,25 +393,25 @@ Cache 5 menit.
 
 ---
 
-### GET /api/campaigns/:id — Detail Kampanye
+### GET /api/v1/campaigns/:id — Detail Kampanye
 
 **Respons**: `{ "code": 0, "data": { "campaign": {...}, "today": { "cost":..., "impressions":... } } }`
 
 ---
 
-### PUT /api/campaigns/:id — Perbarui Kampanye
+### PUT /api/v1/campaigns/:id — Perbarui Kampanye
 
 **Request**: `{ "name": "新名称", "daily_budget": 30000 }`
 
 ---
 
-### POST /api/campaigns/:id/toggle — Start-Stop Kampanye
+### POST /api/v1/campaigns/:id/toggle — Start-Stop Kampanye
 
 **Request**: `{ "enabled": false }`
 
 ---
 
-### POST /api/campaigns/batch/toggle — Start-Stop Batch
+### POST /api/v1/campaigns/batch/toggle — Start-Stop Batch
 
 **Request**: `{ "ids": ["hash1", "hash2", "hash3"], "enabled": false }`
 
@@ -420,11 +421,11 @@ Cache 5 menit.
 
 ## Modul 5: Ad Group
 
-### GET /api/ad-groups — Daftar Ad Group
+### GET /api/v1/ad-groups — Daftar Ad Group
 
 **Parameter**: `platform`, `campaign_id`, `status`, `sort`(id/name/status/bid_amount), `page`, `per_page`
 
-### POST /api/ad-groups — Buat Ad Group
+### POST /api/v1/ad-groups — Buat Ad Group
 
 **Request**:
 ```json
@@ -440,27 +441,27 @@ Cache 5 menit.
 
 - `targeting_template_id`: opsional, memuat targeting JSON dari template penargetan dan menggabungkannya
 
-### GET /api/ad-groups/:id — Detail Ad Group
+### GET /api/v1/ad-groups/:id — Detail Ad Group
 
-### PUT /api/ad-groups/:id — Perbarui Ad Group
+### PUT /api/v1/ad-groups/:id — Perbarui Ad Group
 
-### POST /api/ad-groups/:id/toggle — Start-Stop Ad Group
+### POST /api/v1/ad-groups/:id/toggle — Start-Stop Ad Group
 
 ---
 
 ## Modul 6: Kreatif
 
-### GET /api/creatives — Daftar Kreatif
+### GET /api/v1/creatives — Daftar Kreatif
 
 **Parameter**: `platform`, `ad_group_id`, `campaign_id`, `media_type`(image/video/text), `sort`, `page`, `per_page`
 
-### GET /api/creatives/:id — Detail Kreatif
+### GET /api/v1/creatives/:id — Detail Kreatif
 
 ---
 
 ## Modul 7: Laporan
 
-### GET /api/reports/summary — Ringkasan Dasbor
+### GET /api/v1/reports/summary — Ringkasan Dasbor
 
 Cache 5 menit.
 
@@ -480,7 +481,7 @@ Cache 5 menit.
 
 ---
 
-### GET /api/reports/custom — Laporan Kustom
+### GET /api/v1/reports/custom — Laporan Kustom
 
 **Parameter**:
 
@@ -494,7 +495,7 @@ Cache 5 menit.
 
 ---
 
-### GET /api/reports/export — Ekspor Laporan
+### GET /api/v1/reports/export — Ekspor Laporan
 
 **Parameter**: `format=csv`, `date_start`, `date_end`, `metrics[]`
 
@@ -502,11 +503,11 @@ Mengembalikan unduhan file（CSV UTF-8 BOM atau Excel .xls）。
 
 ---
 
-### GET /api/reports/export-dashboard — Ekspor Dasbor PDF
+### GET /api/v1/reports/export-dashboard — Ekspor Dasbor PDF
 
 ---
 
-### GET /api/reports/calendar — Kalender Penayangan
+### GET /api/v1/reports/calendar — Kalender Penayangan
 
 **Parameter**: `date_start`, `date_end`, `platform`
 
@@ -514,7 +515,7 @@ Mengembalikan unduhan file（CSV UTF-8 BOM atau Excel .xls）。
 
 ---
 
-### GET /api/reports/budget-alerts — Peringatan Anggaran
+### GET /api/v1/reports/budget-alerts — Peringatan Anggaran
 
 **Respons**: `[{ campaign_id, campaign_name, platform, spent, budget, pct, level }]`
 
@@ -522,7 +523,7 @@ Mengembalikan unduhan file（CSV UTF-8 BOM atau Excel .xls）。
 
 ---
 
-### GET /api/reports/attribution — Analisis Atribusi
+### GET /api/v1/reports/attribution — Analisis Atribusi
 
 **Parameter**: `model`(first_touch/last_touch/linear/time_decay/position_based), `date_start`, `date_end`
 
@@ -540,7 +541,7 @@ Mengembalikan unduhan file（CSV UTF-8 BOM atau Excel .xls）。
 
 ---
 
-### GET /api/reports/attribution/models — Daftar Model Atribusi
+### GET /api/v1/reports/attribution/models — Daftar Model Atribusi
 
 **Respons**: `[{ code: "last_touch", name: "末次触点", description: "..." }]`
 
@@ -550,13 +551,13 @@ Total 5 model.
 
 ## Modul 8: Peringatan
 
-### GET /api/alerts/rules — Daftar Aturan Peringatan
+### GET /api/v1/alerts/rules — Daftar Aturan Peringatan
 
 Cache 2 menit.
 
 **Parameter**: `platform`, `enabled`(0/1), `metric`, `page`, `per_page`
 
-### POST /api/alerts/rules — Buat Aturan Peringatan
+### POST /api/v1/alerts/rules — Buat Aturan Peringatan
 
 **Request**:
 ```json
@@ -572,17 +573,17 @@ Cache 2 menit.
 }
 ```
 
-### PUT /api/alerts/rules/:id — Perbarui Aturan Peringatan
+### PUT /api/v1/alerts/rules/:id — Perbarui Aturan Peringatan
 
-### DELETE /api/alerts/rules/:id — Hapus Aturan Peringatan
+### DELETE /api/v1/alerts/rules/:id — Hapus Aturan Peringatan
 
-### GET /api/alerts/logs — Catatan Peringatan
+### GET /api/v1/alerts/logs — Catatan Peringatan
 
 **Parameter**: `status`, `rule_id`, `metric`, `page`, `per_page`
 
-### POST /api/alerts/logs/:id/acknowledge — Konfirmasi Peringatan
+### POST /api/v1/alerts/logs/:id/acknowledge — Konfirmasi Peringatan
 
-### GET /api/alerts/unread-count — Jumlah Peringatan Belum Dibaca
+### GET /api/v1/alerts/unread-count — Jumlah Peringatan Belum Dibaca
 
 Cache 30 detik. Frontend polling 30 detik.
 
@@ -590,23 +591,23 @@ Cache 30 detik. Frontend polling 30 detik.
 
 ## Modul 9: Notifikasi
 
-### GET /api/notifications — Daftar Notifikasi
+### GET /api/v1/notifications — Daftar Notifikasi
 
 **Parameter**: `type`(alert/system), `is_read`(0/1), `page`, `per_page`
 
-### GET /api/notifications/unread-count — Jumlah Notifikasi Belum Dibaca
+### GET /api/v1/notifications/unread-count — Jumlah Notifikasi Belum Dibaca
 
-### POST /api/notifications/:id/read — Tandai Dibaca
+### POST /api/v1/notifications/:id/read — Tandai Dibaca
 
-### POST /api/notifications/read-all — Semua Dibaca
+### POST /api/v1/notifications/read-all — Semua Dibaca
 
 ---
 
 ## Modul 10: Penawaran Otomatis
 
-### GET /api/bid-rules — Daftar Aturan
+### GET /api/v1/bid-rules — Daftar Aturan
 
-### POST /api/bid-rules — Buat Aturan
+### POST /api/v1/bid-rules — Buat Aturan
 
 **Request**:
 ```json
@@ -636,11 +637,11 @@ Cache 30 detik. Frontend polling 30 detik.
 | budget_max | int | Batas atas anggaran（sen） |
 | cooldown_minutes | int | Waktu cooldown（default 60） |
 
-### PUT /api/bid-rules/:id — Perbarui Aturan
+### PUT /api/v1/bid-rules/:id — Perbarui Aturan
 
-### DELETE /api/bid-rules/:id — Hapus Aturan
+### DELETE /api/v1/bid-rules/:id — Hapus Aturan
 
-### GET /api/bid-rules/logs — Riwayat Penawaran
+### GET /api/v1/bid-rules/logs — Riwayat Penawaran
 
 **Parameter**: `rule_id`, `campaign_id`
 
@@ -648,13 +649,13 @@ Cache 30 detik. Frontend polling 30 detik.
 
 ## Modul 11: Template Penargetan
 
-### GET /api/targeting-templates — Daftar Template
+### GET /api/v1/targeting-templates — Daftar Template
 
 **Parameter**: `platform`
 
-### GET /api/targeting-templates/:id — Detail Template
+### GET /api/v1/targeting-templates/:id — Detail Template
 
-### POST /api/targeting-templates — Buat Template
+### POST /api/v1/targeting-templates — Buat Template
 
 **Request**:
 ```json
@@ -671,19 +672,19 @@ Cache 30 detik. Frontend polling 30 detik.
 }
 ```
 
-### PUT /api/targeting-templates/:id — Perbarui Template
+### PUT /api/v1/targeting-templates/:id — Perbarui Template
 
-### DELETE /api/targeting-templates/:id — Hapus Template
+### DELETE /api/v1/targeting-templates/:id — Hapus Template
 
 ---
 
 ## Modul 12: Pustaka Materi
 
-### GET /api/assets — Daftar Materi
+### GET /api/v1/assets — Daftar Materi
 
 **Parameter**: `type`(image/video), `page`, `per_page`
 
-### POST /api/assets/upload — Unggah Materi
+### POST /api/v1/assets/upload — Unggah Materi
 
 **Request**: `multipart/form-data`, field `file`
 
@@ -694,16 +695,16 @@ Cache 30 detik. Frontend polling 30 detik.
 
 - Dengan CDN dikonfigurasi, `url` dirakit dengan `cdn_domain` penyedia default menjadi alamat HTTPS lengkap
 
-### POST /api/assets/presign — Dapatkan URL unggah presign
+### POST /api/v1/assets/presign — Dapatkan URL unggah presign
 
 **Permintaan**: `{ "filename": "demo.mp4", "mime_type": "video/mp4" }`
 
 **Respons**: `{ "code": 0, "data": { "key": "20260829/ab12...cd34.mp4", "upload_url": "https://signed-url", "expires_in": 3600, "url": "https://cdn.example.com/uploads/assets/..." } }`
 
-- Format `key`: `Ymd/32hex.ekstensi`; kirim kembali ke `/api/assets/register` setelah unggah langsung
+- Format `key`: `Ymd/32hex.ekstensi`; kirim kembali ke `/api/v1/assets/register` setelah unggah langsung
 - Untuk video hingga 50 MiB klien mengunggah langsung ke object storage; tidak tersedia pada driver `local`
 
-### POST /api/assets/register — Daftarkan aset hasil unggah langsung
+### POST /api/v1/assets/register — Daftarkan aset hasil unggah langsung
 
 **Permintaan**: `{ "key": "20260829/ab12...cd34.mp4", "filename": "demo.mp4", "mime_type": "video/mp4", "size": 52428800 }`
 
@@ -711,15 +712,15 @@ Cache 30 detik. Frontend polling 30 detik.
 
 - `key` divalidasi ketat (`^\d{8}/[0-9a-f]{32}\.[a-z0-9]{1,10}$`) — cegah path traversal
 
-### GET /api/assets/:id — Detail Materi
+### GET /api/v1/assets/:id — Detail Materi
 
-### DELETE /api/assets/:id — Hapus Materi
+### DELETE /api/v1/assets/:id — Hapus Materi
 
 ---
 
 ## Endpoint Admin (port 8789)
 
-### POST /api/admin/login — Login Admin
+### POST /api/v1/admin/login — Login Admin
 
 **Request**: `{ "username": "admin", "password": "..." }`
 
@@ -728,25 +729,25 @@ Cache 30 detik. Frontend polling 30 detik.
 - Token disimpan ke localStorage
 - `csrf_token` perlu dibawa di header `X-CSRF-Token` untuk request POST/PUT/DELETE berikutnya
 
-### GET /api/admin/me — Admin Saat Ini
+### GET /api/v1/admin/me — Admin Saat Ini
 
-### POST /api/admin/logout — Keluar
+### POST /api/v1/admin/logout — Keluar
 
-### GET /api/admin/users — Daftar Pengguna
+### GET /api/v1/admin/users — Daftar Pengguna
 
 **Parameter**: `keyword`, `role_id`, `page`, `per_page`
 
 `id` dan `role_id` di respons menggunakan encoding hashids.
 
-### POST /api/admin/users — Buat Pengguna
+### POST /api/v1/admin/users — Buat Pengguna
 
-### PUT /api/admin/users/:id — Perbarui Pengguna
+### PUT /api/v1/admin/users/:id — Perbarui Pengguna
 
-### DELETE /api/admin/users/:id — Nonaktifkan Pengguna
+### DELETE /api/v1/admin/users/:id — Nonaktifkan Pengguna
 
-### GET /api/admin/users/roles — Daftar Peran
+### GET /api/v1/admin/users/roles — Daftar Peran
 
-### GET /api/admin/audit-logs — Log Audit
+### GET /api/v1/admin/audit-logs — Log Audit
 
 **Parameter**: `user_id`, `action`, `date_from`, `date_to`, `page`, `per_page`
 
@@ -754,28 +755,28 @@ Cache 30 detik. Frontend polling 30 detik.
 
 ### Manajemen Penyedia CDN (hanya tenant master platform tenant 1, AdminMiddleware)
 
-### GET /api/admin/cdn/providers — Daftar penyedia
+### GET /api/v1/admin/cdn/providers — Daftar penyedia
 
-### POST /api/admin/cdn/providers — Buat penyedia
+### POST /api/v1/admin/cdn/providers — Buat penyedia
 
 **Permintaan**: `{ "name": "Aliyun OSS", "driver": "oss", "bucket": "ads-assets", "region": "oss-cn-hangzhou", "endpoint": "https://oss-cn-hangzhou.aliyuncs.com", "access_key": "...", "secret_key": "...", "cdn_domain": "cdn.example.com", "cdn_driver": "aliyun", "cdn_token": "...", "is_default": 1 }`
 
 - `driver`: `local` / `oss` (Alibaba Cloud OSS) / `cos` (Tencent Cloud COS, protokol S3) / `s3` (kompatibel S3: AWS S3 / Cloudflare R2 / MinIO)
 - Kredensial (access_key/secret_key/cdn_token) dienkripsi per bidang via Encryptable; respons hanya berisi bidang tersamar
 
-### PUT /api/admin/cdn/providers/:id — Ubah penyedia
+### PUT /api/v1/admin/cdn/providers/:id — Ubah penyedia
 
-### DELETE /api/admin/cdn/providers/:id — Hapus (default otomatis pindah ke penyedia enabled berikutnya)
+### DELETE /api/v1/admin/cdn/providers/:id — Hapus (default otomatis pindah ke penyedia enabled berikutnya)
 
-### PUT /api/admin/cdn/providers/:id/default — Tetapkan sebagai default
+### PUT /api/v1/admin/cdn/providers/:id/default — Tetapkan sebagai default
 
-### PUT /api/admin/cdn/providers/:id/toggle — Aktif/Nonaktif (menonaktifkan default mengalihkannya otomatis)
+### PUT /api/v1/admin/cdn/providers/:id/toggle — Aktif/Nonaktif (menonaktifkan default mengalihkannya otomatis)
 
-### POST /api/admin/cdn/providers/:id/test — Uji konektivitas
+### POST /api/v1/admin/cdn/providers/:id/test — Uji konektivitas
 
 **Respons**: `{ "code": 0, "data": { "ok": true, "driver": "oss", "status": "ok" } }`
 
-### POST /api/admin/cdn/providers/:id/purge — Purge cache CDN
+### POST /api/v1/admin/cdn/providers/:id/purge — Purge cache CDN
 
 **Permintaan**: `{ "paths": ["/uploads/assets/20260829/xxx.mp4"] }`
 

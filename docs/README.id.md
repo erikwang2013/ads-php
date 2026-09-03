@@ -243,7 +243,7 @@ make db-init
 # Akses
 # Panel admin: http://localhost
 # Wizard instalasi: http://localhost/install
-# API: http://localhost/api（Header: X-API-Version: v1）
+# API: http://localhost/api/v1（versi ditetapkan di jalur URL, tidak dikirim melalui Header）
 ```
 
 ### Pengembangan Lokal
@@ -278,7 +278,6 @@ ads-php/
 │   │   │   ├── controller/v1/         # 17 controller
 │   │   │   ├── middleware/            # 15 middleware
 │   │   │   ├── config/route.php       # Definisi rute
-│   │   │   └── route_helpers.php      # Fungsi bantuan versioned()
 │   │   ├── ads-platform/              # Inti adaptor platform
 │   │   │   ├── adapter/               # 29 adaptor platform
 │   │   │   ├── src/                   # AdapterRegistry, CampaignData

@@ -12,7 +12,7 @@ raw.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }
-  config.headers['X-API-Version'] = 'v1'
+  config.url = versionedPath(config.url ?? '')
   config.headers['X-Client-Platform'] = 'web'
   return config
 })

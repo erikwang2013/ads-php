@@ -37,7 +37,7 @@ class HealthDocApiTest extends ApiTestCase
         $this->assertEquals(200, $response->getStatusCode());
         $html = $response->rawBody();
         $this->assertStringContainsString('/health', $html);
-        $this->assertStringContainsString('/api/auth/login', $html);
+        $this->assertStringContainsString('/api/v1/auth/login', $html);
     }
 
     public function testCaptchaGenerate(): void

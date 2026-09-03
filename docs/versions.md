@@ -61,7 +61,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 |--------|:---:|:---:|:---:|
 | CORS 白名单 | ✅ | ✅ | ✅ |
 | 安全响应头 (X-Frame/CSP/HSTS/nosniff) | ✅ | ✅ | ✅ |
-| 版本路由 (X-API-Version) | ✅ | ✅ | ✅ |
+| 版本路由 (/api/v1) | ✅ | ✅ | ✅ |
 | 接口限流 (滑动窗口) | ✅ | ✅ | ✅ |
 | SQL 注入检测 (模式匹配) | ✅ | ✅ | ✅ |
 | 输入过滤 (strip_tags + trim) | ✅ | ✅ | ✅ |

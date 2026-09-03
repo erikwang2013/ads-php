@@ -14,14 +14,15 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 ### Base URL
 
 ```
-http://your-domain.com/api
+http://your-domain.com/api/v1
 ```
+
+> API 版本号固定在 URL 路径中（当前为 `v1`），不在 Header 中传递；后续大版本如 `/api/v2` 沿用同一规则。
 
 ### 必需 Headers
 
 | Header | 值 | 说明 |
 |--------|----|------|
-| `X-API-Version` | `v1` | API 版本号（必填，不出现于 URL 路径） |
 | `X-Client-Platform` | `web` / `ios` / `android` / `macos` / `windows` / `linux` / `harmonyos` | 操作来源端（必填） |
 | `Authorization` | `Bearer <token>` | JWT 认证令牌（除登录/平台列表/健康检查外必填） |
 
@@ -112,11 +113,11 @@ http://your-domain.com/api
 
 | 端点 | TTL | 层 |
 |------|-----|-----|
-| `/api/platforms` | 1 小时 | L1 内存 → L2 APCu → L3 Redis |
-| `/api/accounts` + `/api/accounts/:id` | 5 分钟 | 同上 |
-| `/api/reports/summary` | 5 分钟 | 同上 |
-| `/api/alerts/rules` | 2 分钟 | 同上 |
-| `/api/alerts/unread-count` | 30 秒 | 同上 |
+| `/api/v1/platforms` | 1 小时 | L1 内存 → L2 APCu → L3 Redis |
+| `/api/v1/accounts` + `/api/v1/accounts/:id` | 5 分钟 | 同上 |
+| `/api/v1/reports/summary` | 5 分钟 | 同上 |
+| `/api/v1/alerts/rules` | 2 分钟 | 同上 |
+| `/api/v1/alerts/unread-count` | 30 秒 | 同上 |
 
 ---
 
@@ -165,7 +166,7 @@ GET /docs
 
 ---
 
-### GET /api/captcha/generate — 生成验证码
+### GET /api/v1/captcha/generate — 生成验证码
 
 免认证。
 
@@ -186,7 +187,7 @@ GET /docs
 
 ---
 
-### POST /api/captcha/verify — 验证验证码
+### POST /api/v1/captcha/verify — 验证验证码
 
 免认证。
 
@@ -204,7 +205,7 @@ GET /docs
 
 ## 模块 2: 认证
 
-### POST /api/auth/login — 登录
+### POST /api/v1/auth/login — 登录
 
 免认证。
 
@@ -245,7 +246,7 @@ GET /docs
 
 ---
 
-### GET /api/auth/me — 当前用户
+### GET /api/v1/auth/me — 当前用户
 
 **请求头**: `Authorization: Bearer <token>`
 
@@ -266,7 +267,7 @@ GET /docs
 
 ---
 
-### POST /api/auth/refresh — 刷新 Token
+### POST /api/v1/auth/refresh — 刷新 Token
 
 **请求头**: `Authorization: Bearer <old_token>`
 
@@ -290,7 +291,7 @@ GET /docs
 
 ## 模块 3: 平台 & 账户
 
-### GET /api/platforms — 平台列表
+### GET /api/v1/platforms — 平台列表
 
 免认证。缓存 1 小时。
 
@@ -307,7 +308,7 @@ GET /docs
 
 ---
 
-### GET /api/platforms/:code/oauth-url — OAuth 授权 URL
+### GET /api/v1/platforms/:code/oauth-url — OAuth 授权 URL
 
 **参数**: `?redirect_uri=https://your-domain.com/callback`
 
@@ -317,7 +318,7 @@ GET /docs
 
 ---
 
-### POST /api/platforms/:code/callback — OAuth 回调
+### POST /api/v1/platforms/:code/callback — OAuth 回调
 
 **请求**: `{ "state": "...", "code": "..." }`
 
@@ -325,7 +326,7 @@ GET /docs
 
 ---
 
-### GET /api/accounts — 账户列表
+### GET /api/v1/accounts — 账户列表
 
 缓存 5 分钟。
 
@@ -341,23 +342,23 @@ GET /docs
 
 ---
 
-### GET /api/accounts/:id — 账户详情
+### GET /api/v1/accounts/:id — 账户详情
 
 缓存 5 分钟。
 
 ---
 
-### DELETE /api/accounts/:id — 解绑账户
+### DELETE /api/v1/accounts/:id — 解绑账户
 
 ---
 
-### POST /api/accounts/:id/sync — 手动同步
+### POST /api/v1/accounts/:id/sync — 手动同步
 
 ---
 
 ## 模块 4: 广告计划
 
-### GET /api/campaigns — 计划列表
+### GET /api/v1/campaigns — 计划列表
 
 **参数**:
 
@@ -374,7 +375,7 @@ GET /docs
 
 ---
 
-### POST /api/campaigns — 创建计划
+### POST /api/v1/campaigns — 创建计划
 
 **请求**:
 ```json
@@ -392,25 +393,25 @@ GET /docs
 
 ---
 
-### GET /api/campaigns/:id — 计划详情
+### GET /api/v1/campaigns/:id — 计划详情
 
 **响应**: `{ "code": 0, "data": { "campaign": {...}, "today": { "cost":..., "impressions":... } } }`
 
 ---
 
-### PUT /api/campaigns/:id — 更新计划
+### PUT /api/v1/campaigns/:id — 更新计划
 
 **请求**: `{ "name": "新名称", "daily_budget": 30000 }`
 
 ---
 
-### POST /api/campaigns/:id/toggle — 启停计划
+### POST /api/v1/campaigns/:id/toggle — 启停计划
 
 **请求**: `{ "enabled": false }`
 
 ---
 
-### POST /api/campaigns/batch/toggle — 批量启停
+### POST /api/v1/campaigns/batch/toggle — 批量启停
 
 **请求**: `{ "ids": ["hash1", "hash2", "hash3"], "enabled": false }`
 
@@ -420,11 +421,11 @@ GET /docs
 
 ## 模块 5: 广告组
 
-### GET /api/ad-groups — 广告组列表
+### GET /api/v1/ad-groups — 广告组列表
 
 **参数**: `platform`, `campaign_id`, `status`, `sort`(id/name/status/bid_amount), `page`, `per_page`
 
-### POST /api/ad-groups — 创建广告组
+### POST /api/v1/ad-groups — 创建广告组
 
 **请求**:
 ```json
@@ -440,27 +441,27 @@ GET /docs
 
 - `targeting_template_id`: 可选，从定向模板加载 targeting JSON 并合并
 
-### GET /api/ad-groups/:id — 广告组详情
+### GET /api/v1/ad-groups/:id — 广告组详情
 
-### PUT /api/ad-groups/:id — 更新广告组
+### PUT /api/v1/ad-groups/:id — 更新广告组
 
-### POST /api/ad-groups/:id/toggle — 启停广告组
+### POST /api/v1/ad-groups/:id/toggle — 启停广告组
 
 ---
 
 ## 模块 6: 创意
 
-### GET /api/creatives — 创意列表
+### GET /api/v1/creatives — 创意列表
 
 **参数**: `platform`, `ad_group_id`, `campaign_id`, `media_type`(image/video/text), `sort`, `page`, `per_page`
 
-### GET /api/creatives/:id — 创意详情
+### GET /api/v1/creatives/:id — 创意详情
 
 ---
 
 ## 模块 7: 报表
 
-### GET /api/reports/summary — 仪表盘汇总
+### GET /api/v1/reports/summary — 仪表盘汇总
 
 缓存 5 分钟。
 
@@ -480,7 +481,7 @@ GET /docs
 
 ---
 
-### GET /api/reports/custom — 自定义报表
+### GET /api/v1/reports/custom — 自定义报表
 
 **参数**:
 
@@ -494,7 +495,7 @@ GET /docs
 
 ---
 
-### GET /api/reports/export — 导出报表
+### GET /api/v1/reports/export — 导出报表
 
 **参数**: `format=csv`, `date_start`, `date_end`, `metrics[]`
 
@@ -502,11 +503,11 @@ GET /docs
 
 ---
 
-### GET /api/reports/export-dashboard — 导出仪表盘 PDF
+### GET /api/v1/reports/export-dashboard — 导出仪表盘 PDF
 
 ---
 
-### GET /api/reports/calendar — 投放日历
+### GET /api/v1/reports/calendar — 投放日历
 
 **参数**: `date_start`, `date_end`, `platform`
 
@@ -514,7 +515,7 @@ GET /docs
 
 ---
 
-### GET /api/reports/budget-alerts — 预算预警
+### GET /api/v1/reports/budget-alerts — 预算预警
 
 **响应**: `[{ campaign_id, campaign_name, platform, spent, budget, pct, level }]`
 
@@ -522,7 +523,7 @@ GET /docs
 
 ---
 
-### GET /api/reports/attribution — 归因分析
+### GET /api/v1/reports/attribution — 归因分析
 
 **参数**: `model`(first_touch/last_touch/linear/time_decay/position_based), `date_start`, `date_end`
 
@@ -540,7 +541,7 @@ GET /docs
 
 ---
 
-### GET /api/reports/attribution/models — 归因模型列表
+### GET /api/v1/reports/attribution/models — 归因模型列表
 
 **响应**: `[{ code: "last_touch", name: "末次触点", description: "..." }]`
 
@@ -550,13 +551,13 @@ GET /docs
 
 ## 模块 8: 告警
 
-### GET /api/alerts/rules — 告警规则列表
+### GET /api/v1/alerts/rules — 告警规则列表
 
 缓存 2 分钟。
 
 **参数**: `platform`, `enabled`(0/1), `metric`, `page`, `per_page`
 
-### POST /api/alerts/rules — 创建告警规则
+### POST /api/v1/alerts/rules — 创建告警规则
 
 **请求**:
 ```json
@@ -572,17 +573,17 @@ GET /docs
 }
 ```
 
-### PUT /api/alerts/rules/:id — 更新告警规则
+### PUT /api/v1/alerts/rules/:id — 更新告警规则
 
-### DELETE /api/alerts/rules/:id — 删除告警规则
+### DELETE /api/v1/alerts/rules/:id — 删除告警规则
 
-### GET /api/alerts/logs — 告警记录
+### GET /api/v1/alerts/logs — 告警记录
 
 **参数**: `status`, `rule_id`, `metric`, `page`, `per_page`
 
-### POST /api/alerts/logs/:id/acknowledge — 确认告警
+### POST /api/v1/alerts/logs/:id/acknowledge — 确认告警
 
-### GET /api/alerts/unread-count — 未读告警数
+### GET /api/v1/alerts/unread-count — 未读告警数
 
 缓存 30 秒。前端 30s 轮询。
 
@@ -590,23 +591,23 @@ GET /docs
 
 ## 模块 9: 通知
 
-### GET /api/notifications — 通知列表
+### GET /api/v1/notifications — 通知列表
 
 **参数**: `type`(alert/system), `is_read`(0/1), `page`, `per_page`
 
-### GET /api/notifications/unread-count — 未读通知数
+### GET /api/v1/notifications/unread-count — 未读通知数
 
-### POST /api/notifications/:id/read — 标记已读
+### POST /api/v1/notifications/:id/read — 标记已读
 
-### POST /api/notifications/read-all — 全部已读
+### POST /api/v1/notifications/read-all — 全部已读
 
 ---
 
 ## 模块 10: 自动出价
 
-### GET /api/bid-rules — 规则列表
+### GET /api/v1/bid-rules — 规则列表
 
-### POST /api/bid-rules — 创建规则
+### POST /api/v1/bid-rules — 创建规则
 
 **请求**:
 ```json
@@ -636,11 +637,11 @@ GET /docs
 | budget_max | int | 预算上限（分） |
 | cooldown_minutes | int | 冷却时间（默认 60） |
 
-### PUT /api/bid-rules/:id — 更新规则
+### PUT /api/v1/bid-rules/:id — 更新规则
 
-### DELETE /api/bid-rules/:id — 删除规则
+### DELETE /api/v1/bid-rules/:id — 删除规则
 
-### GET /api/bid-rules/logs — 出价历史
+### GET /api/v1/bid-rules/logs — 出价历史
 
 **参数**: `rule_id`, `campaign_id`
 
@@ -648,13 +649,13 @@ GET /docs
 
 ## 模块 11: 定向模板
 
-### GET /api/targeting-templates — 模板列表
+### GET /api/v1/targeting-templates — 模板列表
 
 **参数**: `platform`
 
-### GET /api/targeting-templates/:id — 模板详情
+### GET /api/v1/targeting-templates/:id — 模板详情
 
-### POST /api/targeting-templates — 创建模板
+### POST /api/v1/targeting-templates — 创建模板
 
 **请求**:
 ```json
@@ -671,19 +672,19 @@ GET /docs
 }
 ```
 
-### PUT /api/targeting-templates/:id — 更新模板
+### PUT /api/v1/targeting-templates/:id — 更新模板
 
-### DELETE /api/targeting-templates/:id — 删除模板
+### DELETE /api/v1/targeting-templates/:id — 删除模板
 
 ---
 
 ## 模块 12: 素材库
 
-### GET /api/assets — 素材列表
+### GET /api/v1/assets — 素材列表
 
 **参数**: `type`(image/video), `page`, `per_page`
 
-### POST /api/assets/upload — 上传素材
+### POST /api/v1/assets/upload — 上传素材
 
 **请求**: `multipart/form-data`, 字段 `file`
 
@@ -694,16 +695,16 @@ GET /docs
 
 - 配置 CDN 后 `url` 按默认 provider 的 `cdn_domain` 拼接为完整 HTTPS 地址
 
-### POST /api/assets/presign — 获取预签名上传地址
+### POST /api/v1/assets/presign — 获取预签名上传地址
 
 **请求**: `{ "filename": "demo.mp4", "mime_type": "video/mp4" }`
 
 **响应**: `{ "code": 0, "data": { "key": "20260829/ab12...cd34.mp4", "upload_url": "https://signed-url", "expires_in": 3600, "url": "https://cdn.example.com/uploads/assets/..." } }`
 
-- `key` 格式 `Ymd/32位hex.扩展名`，直传完成后回传 `/api/assets/register` 登记
+- `key` 格式 `Ymd/32位hex.扩展名`，直传完成后回传 `/api/v1/assets/register` 登记
 - 视频 50 MiB 场景客户端直传对象存储；`local` 驱动下不可用
 
-### POST /api/assets/register — 登记直传素材
+### POST /api/v1/assets/register — 登记直传素材
 
 **请求**: `{ "key": "20260829/ab12...cd34.mp4", "filename": "demo.mp4", "mime_type": "video/mp4", "size": 52428800 }`
 
@@ -711,15 +712,15 @@ GET /docs
 
 - `key` 严格校验 `^\d{8}/[0-9a-f]{32}\.[a-z0-9]{1,10}$`，防路径穿越
 
-### GET /api/assets/:id — 素材详情
+### GET /api/v1/assets/:id — 素材详情
 
-### DELETE /api/assets/:id — 删除素材
+### DELETE /api/v1/assets/:id — 删除素材
 
 ---
 
 ## Admin 端点（端口 8789）
 
-### POST /api/admin/login — 管理员登录
+### POST /api/v1/admin/login — 管理员登录
 
 **请求**: `{ "username": "admin", "password": "..." }`
 
@@ -728,52 +729,52 @@ GET /docs
 - Token 存入 localStorage
 - `csrf_token` 需在后续 POST/PUT/DELETE 请求的 `X-CSRF-Token` header 中携带
 
-### GET /api/admin/me — 当前管理员
+### GET /api/v1/admin/me — 当前管理员
 
-### POST /api/admin/logout — 退出
+### POST /api/v1/admin/logout — 退出
 
-### GET /api/admin/users — 用户列表
+### GET /api/v1/admin/users — 用户列表
 
 **参数**: `keyword`, `role_id`, `page`, `per_page`
 
 响应中 `id` 和 `role_id` 使用 hashids 编码。
 
-### POST /api/admin/users — 创建用户
+### POST /api/v1/admin/users — 创建用户
 
-### PUT /api/admin/users/:id — 更新用户
+### PUT /api/v1/admin/users/:id — 更新用户
 
-### DELETE /api/admin/users/:id — 禁用用户
+### DELETE /api/v1/admin/users/:id — 禁用用户
 
-### GET /api/admin/users/roles — 角色列表
+### GET /api/v1/admin/users/roles — 角色列表
 
-### GET /api/admin/audit-logs — 审计日志
+### GET /api/v1/admin/audit-logs — 审计日志
 
 **参数**: `user_id`, `action`, `date_from`, `date_to`, `page`, `per_page`
 
 ### CDN 服务商管理（仅平台主租户 tenant 1，AdminMiddleware 校验）
 
-### GET /api/admin/cdn/providers — 服务商列表
+### GET /api/v1/admin/cdn/providers — 服务商列表
 
-### POST /api/admin/cdn/providers — 创建服务商
+### POST /api/v1/admin/cdn/providers — 创建服务商
 
 **请求**: `{ "name": "阿里云 OSS", "driver": "oss", "bucket": "ads-assets", "region": "oss-cn-hangzhou", "endpoint": "https://oss-cn-hangzhou.aliyuncs.com", "access_key": "...", "secret_key": "...", "cdn_domain": "cdn.example.com", "cdn_driver": "aliyun", "cdn_token": "...", "is_default": 1 }`
 
 - `driver`: `local` / `oss`（阿里云 OSS）/ `cos`（腾讯云 COS，S3 协议）/ `s3`（S3 兼容，覆盖 AWS S3/Cloudflare R2/MinIO）
 - 凭据字段（access_key/secret_key/cdn_token）经 Encryptable 加密落库，响应只返回脱敏字段
 
-### PUT /api/admin/cdn/providers/:id — 更新服务商
+### PUT /api/v1/admin/cdn/providers/:id — 更新服务商
 
-### DELETE /api/admin/cdn/providers/:id — 删除服务商（默认自动转移给剩余 enabled 服务商）
+### DELETE /api/v1/admin/cdn/providers/:id — 删除服务商（默认自动转移给剩余 enabled 服务商）
 
-### PUT /api/admin/cdn/providers/:id/default — 设为默认
+### PUT /api/v1/admin/cdn/providers/:id/default — 设为默认
 
-### PUT /api/admin/cdn/providers/:id/toggle — 启用/停用（停用默认服务商自动转移）
+### PUT /api/v1/admin/cdn/providers/:id/toggle — 启用/停用（停用默认服务商自动转移）
 
-### POST /api/admin/cdn/providers/:id/test — 连通性测试
+### POST /api/v1/admin/cdn/providers/:id/test — 连通性测试
 
 **响应**: `{ "code": 0, "data": { "ok": true, "driver": "oss", "status": "ok" } }`
 
-### POST /api/admin/cdn/providers/:id/purge — 缓存刷新
+### POST /api/v1/admin/cdn/providers/:id/purge — 缓存刷新
 
 **请求**: `{ "paths": ["/uploads/assets/20260829/xxx.mp4"] }`
 

@@ -243,7 +243,7 @@ make db-init
 # Access
 # Admin Panel: http://localhost
 # Install Wizard: http://localhost/install
-# API: http://localhost/api (Header: X-API-Version: v1)
+# API: http://localhost/api/v1 (version fixed in the URL path, not passed via Header)
 ```
 
 ### Local Development
@@ -278,7 +278,6 @@ ads-php/
 │   │   │   ├── controller/v1/         # 14 controllers
 │   │   │   ├── middleware/            # 7 middleware
 │   │   │   ├── config/route.php       # Route definitions
-│   │   │   └── route_helpers.php      # versioned() helper
 │   │   ├── ads-platform/              # Platform adapter core
 │   │   │   ├── adapter/               # 29 platform adapters
 │   │   │   ├── src/                   # AdapterRegistry, CampaignData

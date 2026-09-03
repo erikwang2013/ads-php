@@ -21,7 +21,7 @@ class AdGroupController
         /**
      * @Title("广告组列表")
      * @Group("广告组")
-     * @Url("/api/ad-groups")
+     * @Url("/api/v1/ad-groups")
      * @Method("GET")
      */
     public function index(Request $request): \Webman\Http\Response
@@ -52,7 +52,7 @@ class AdGroupController
         /**
      * @Title("广告组详情")
      * @Group("广告组")
-     * @Url("/api/ad-groups/{id}")
+     * @Url("/api/v1/ad-groups/{id}")
      * @Method("GET")
      */
     public function show(int $id): \Webman\Http\Response
@@ -78,7 +78,7 @@ class AdGroupController
         /**
      * @Title("创建广告组")
      * @Group("广告组")
-     * @Url("/api/ad-groups")
+     * @Url("/api/v1/ad-groups")
      * @Method("POST")
      */
     public function store(Request $request): \Webman\Http\Response
@@ -135,7 +135,7 @@ class AdGroupController
         /**
      * @Title("更新广告组")
      * @Group("广告组")
-     * @Url("/api/ad-groups/{id}")
+     * @Url("/api/v1/ad-groups/{id}")
      * @Method("PUT")
      */
     public function update(Request $request, int $id): \Webman\Http\Response
@@ -183,7 +183,7 @@ class AdGroupController
         /**
      * @Title("启停广告组")
      * @Group("广告组")
-     * @Url("/api/ad-groups/{id}/toggle")
+     * @Url("/api/v1/ad-groups/{id}/toggle")
      * @Method("POST")
      */
     public function toggle(Request $request, int $id): \Webman\Http\Response

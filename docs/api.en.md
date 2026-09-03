@@ -14,14 +14,15 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 ### Base URL
 
 ```
-http://your-domain.com/api
+http://your-domain.com/api/v1
 ```
+
+> The API version is fixed in the URL path (currently `v1`) and is not passed via a Header; future major versions such as `/api/v2` follow the same rule.
 
 ### Required Headers
 
 | Header | Value | Description |
 |--------|-------|-------------|
-| `X-API-Version` | `v1` | API version (required, not present in the URL path) |
 | `X-Client-Platform` | `web` / `ios` / `android` / `macos` / `windows` / `linux` / `harmonyos` | Client source (required) |
 | `Authorization` | `Bearer <token>` | JWT auth token (required except for login/platform list/health check) |
 
@@ -112,11 +113,11 @@ http://your-domain.com/api
 
 | Endpoint | TTL | Tier |
 |----------|-----|------|
-| `/api/platforms` | 1 hour | L1 memory → L2 APCu → L3 Redis |
-| `/api/accounts` + `/api/accounts/:id` | 5 min | Same as above |
-| `/api/reports/summary` | 5 min | Same as above |
-| `/api/alerts/rules` | 2 min | Same as above |
-| `/api/alerts/unread-count` | 30 s | Same as above |
+| `/api/v1/platforms` | 1 hour | L1 memory → L2 APCu → L3 Redis |
+| `/api/v1/accounts` + `/api/v1/accounts/:id` | 5 min | Same as above |
+| `/api/v1/reports/summary` | 5 min | Same as above |
+| `/api/v1/alerts/rules` | 2 min | Same as above |
+| `/api/v1/alerts/unread-count` | 30 s | Same as above |
 
 ---
 
@@ -165,7 +166,7 @@ Returns an HTML API documentation page (no auth required).
 
 ---
 
-### GET /api/captcha/generate — Generate CAPTCHA
+### GET /api/v1/captcha/generate — Generate CAPTCHA
 
 No auth required.
 
@@ -186,7 +187,7 @@ No auth required.
 
 ---
 
-### POST /api/captcha/verify — Verify CAPTCHA
+### POST /api/v1/captcha/verify — Verify CAPTCHA
 
 No auth required.
 
@@ -204,7 +205,7 @@ No auth required.
 
 ## Module 2: Authentication
 
-### POST /api/auth/login — Login
+### POST /api/v1/auth/login — Login
 
 No auth required.
 
@@ -245,7 +246,7 @@ No auth required.
 
 ---
 
-### GET /api/auth/me — Current User
+### GET /api/v1/auth/me — Current User
 
 **Request header**: `Authorization: Bearer <token>`
 
@@ -266,7 +267,7 @@ No auth required.
 
 ---
 
-### POST /api/auth/refresh — Refresh Token
+### POST /api/v1/auth/refresh — Refresh Token
 
 **Request header**: `Authorization: Bearer <old_token>`
 
@@ -290,7 +291,7 @@ No auth required.
 
 ## Module 3: Platforms & Accounts
 
-### GET /api/platforms — Platform List
+### GET /api/v1/platforms — Platform List
 
 No auth required. Cached for 1 hour.
 
@@ -307,7 +308,7 @@ No auth required. Cached for 1 hour.
 
 ---
 
-### GET /api/platforms/:code/oauth-url — OAuth Authorization URL
+### GET /api/v1/platforms/:code/oauth-url — OAuth Authorization URL
 
 **Parameters**: `?redirect_uri=https://your-domain.com/callback`
 
@@ -317,7 +318,7 @@ No auth required. Cached for 1 hour.
 
 ---
 
-### POST /api/platforms/:code/callback — OAuth Callback
+### POST /api/v1/platforms/:code/callback — OAuth Callback
 
 **Request**: `{ "state": "...", "code": "..." }`
 
@@ -325,7 +326,7 @@ No auth required. Cached for 1 hour.
 
 ---
 
-### GET /api/accounts — Account List
+### GET /api/v1/accounts — Account List
 
 Cached for 5 minutes.
 
@@ -341,23 +342,23 @@ Cached for 5 minutes.
 
 ---
 
-### GET /api/accounts/:id — Account Detail
+### GET /api/v1/accounts/:id — Account Detail
 
 Cached for 5 minutes.
 
 ---
 
-### DELETE /api/accounts/:id — Unbind Account
+### DELETE /api/v1/accounts/:id — Unbind Account
 
 ---
 
-### POST /api/accounts/:id/sync — Manual Sync
+### POST /api/v1/accounts/:id/sync — Manual Sync
 
 ---
 
 ## Module 4: Campaigns
 
-### GET /api/campaigns — Campaign List
+### GET /api/v1/campaigns — Campaign List
 
 **Parameters**:
 
@@ -374,7 +375,7 @@ Cached for 5 minutes.
 
 ---
 
-### POST /api/campaigns — Create Campaign
+### POST /api/v1/campaigns — Create Campaign
 
 **Request**:
 ```json
@@ -392,25 +393,25 @@ Cached for 5 minutes.
 
 ---
 
-### GET /api/campaigns/:id — Campaign Detail
+### GET /api/v1/campaigns/:id — Campaign Detail
 
 **Response**: `{ "code": 0, "data": { "campaign": {...}, "today": { "cost":..., "impressions":... } } }`
 
 ---
 
-### PUT /api/campaigns/:id — Update Campaign
+### PUT /api/v1/campaigns/:id — Update Campaign
 
 **Request**: `{ "name": "新名称", "daily_budget": 30000 }`
 
 ---
 
-### POST /api/campaigns/:id/toggle — Enable/Disable Campaign
+### POST /api/v1/campaigns/:id/toggle — Enable/Disable Campaign
 
 **Request**: `{ "enabled": false }`
 
 ---
 
-### POST /api/campaigns/batch/toggle — Batch Toggle
+### POST /api/v1/campaigns/batch/toggle — Batch Toggle
 
 **Request**: `{ "ids": ["hash1", "hash2", "hash3"], "enabled": false }`
 
@@ -420,11 +421,11 @@ Cached for 5 minutes.
 
 ## Module 5: Ad Groups
 
-### GET /api/ad-groups — Ad Group List
+### GET /api/v1/ad-groups — Ad Group List
 
 **Parameters**: `platform`, `campaign_id`, `status`, `sort`(id/name/status/bid_amount), `page`, `per_page`
 
-### POST /api/ad-groups — Create Ad Group
+### POST /api/v1/ad-groups — Create Ad Group
 
 **Request**:
 ```json
@@ -440,27 +441,27 @@ Cached for 5 minutes.
 
 - `targeting_template_id`: optional, loads targeting JSON from the template and merges
 
-### GET /api/ad-groups/:id — Ad Group Detail
+### GET /api/v1/ad-groups/:id — Ad Group Detail
 
-### PUT /api/ad-groups/:id — Update Ad Group
+### PUT /api/v1/ad-groups/:id — Update Ad Group
 
-### POST /api/ad-groups/:id/toggle — Enable/Disable Ad Group
+### POST /api/v1/ad-groups/:id/toggle — Enable/Disable Ad Group
 
 ---
 
 ## Module 6: Creatives
 
-### GET /api/creatives — Creative List
+### GET /api/v1/creatives — Creative List
 
 **Parameters**: `platform`, `ad_group_id`, `campaign_id`, `media_type`(image/video/text), `sort`, `page`, `per_page`
 
-### GET /api/creatives/:id — Creative Detail
+### GET /api/v1/creatives/:id — Creative Detail
 
 ---
 
 ## Module 7: Reporting
 
-### GET /api/reports/summary — Dashboard Summary
+### GET /api/v1/reports/summary — Dashboard Summary
 
 Cached for 5 minutes.
 
@@ -480,7 +481,7 @@ Cached for 5 minutes.
 
 ---
 
-### GET /api/reports/custom — Custom Report
+### GET /api/v1/reports/custom — Custom Report
 
 **Parameters**:
 
@@ -494,7 +495,7 @@ Cached for 5 minutes.
 
 ---
 
-### GET /api/reports/export — Export Report
+### GET /api/v1/reports/export — Export Report
 
 **Parameters**: `format=csv`, `date_start`, `date_end`, `metrics[]`
 
@@ -502,11 +503,11 @@ Returns a file download (CSV UTF-8 BOM or Excel .xls).
 
 ---
 
-### GET /api/reports/export-dashboard — Export Dashboard PDF
+### GET /api/v1/reports/export-dashboard — Export Dashboard PDF
 
 ---
 
-### GET /api/reports/calendar — Campaign Calendar
+### GET /api/v1/reports/calendar — Campaign Calendar
 
 **Parameters**: `date_start`, `date_end`, `platform`
 
@@ -514,7 +515,7 @@ Returns a file download (CSV UTF-8 BOM or Excel .xls).
 
 ---
 
-### GET /api/reports/budget-alerts — Budget Alerts
+### GET /api/v1/reports/budget-alerts — Budget Alerts
 
 **Response**: `[{ campaign_id, campaign_name, platform, spent, budget, pct, level }]`
 
@@ -522,7 +523,7 @@ Returns a file download (CSV UTF-8 BOM or Excel .xls).
 
 ---
 
-### GET /api/reports/attribution — Attribution Analysis
+### GET /api/v1/reports/attribution — Attribution Analysis
 
 **Parameters**: `model`(first_touch/last_touch/linear/time_decay/position_based), `date_start`, `date_end`
 
@@ -540,7 +541,7 @@ Returns a file download (CSV UTF-8 BOM or Excel .xls).
 
 ---
 
-### GET /api/reports/attribution/models — Attribution Model List
+### GET /api/v1/reports/attribution/models — Attribution Model List
 
 **Response**: `[{ code: "last_touch", name: "末次触点", description: "..." }]`
 
@@ -550,13 +551,13 @@ Returns a file download (CSV UTF-8 BOM or Excel .xls).
 
 ## Module 8: Alerts
 
-### GET /api/alerts/rules — Alert Rule List
+### GET /api/v1/alerts/rules — Alert Rule List
 
 Cached for 2 minutes.
 
 **Parameters**: `platform`, `enabled`(0/1), `metric`, `page`, `per_page`
 
-### POST /api/alerts/rules — Create Alert Rule
+### POST /api/v1/alerts/rules — Create Alert Rule
 
 **Request**:
 ```json
@@ -572,17 +573,17 @@ Cached for 2 minutes.
 }
 ```
 
-### PUT /api/alerts/rules/:id — Update Alert Rule
+### PUT /api/v1/alerts/rules/:id — Update Alert Rule
 
-### DELETE /api/alerts/rules/:id — Delete Alert Rule
+### DELETE /api/v1/alerts/rules/:id — Delete Alert Rule
 
-### GET /api/alerts/logs — Alert Logs
+### GET /api/v1/alerts/logs — Alert Logs
 
 **Parameters**: `status`, `rule_id`, `metric`, `page`, `per_page`
 
-### POST /api/alerts/logs/:id/acknowledge — Acknowledge Alert
+### POST /api/v1/alerts/logs/:id/acknowledge — Acknowledge Alert
 
-### GET /api/alerts/unread-count — Unread Alert Count
+### GET /api/v1/alerts/unread-count — Unread Alert Count
 
 Cached for 30 seconds. Frontend polls every 30s.
 
@@ -590,23 +591,23 @@ Cached for 30 seconds. Frontend polls every 30s.
 
 ## Module 9: Notifications
 
-### GET /api/notifications — Notification List
+### GET /api/v1/notifications — Notification List
 
 **Parameters**: `type`(alert/system), `is_read`(0/1), `page`, `per_page`
 
-### GET /api/notifications/unread-count — Unread Notification Count
+### GET /api/v1/notifications/unread-count — Unread Notification Count
 
-### POST /api/notifications/:id/read — Mark as Read
+### POST /api/v1/notifications/:id/read — Mark as Read
 
-### POST /api/notifications/read-all — Mark All as Read
+### POST /api/v1/notifications/read-all — Mark All as Read
 
 ---
 
 ## Module 10: Auto-Bidding
 
-### GET /api/bid-rules — Rule List
+### GET /api/v1/bid-rules — Rule List
 
-### POST /api/bid-rules — Create Rule
+### POST /api/v1/bid-rules — Create Rule
 
 **Request**:
 ```json
@@ -636,11 +637,11 @@ Cached for 30 seconds. Frontend polls every 30s.
 | budget_max | int | Budget upper bound (cents) |
 | cooldown_minutes | int | Cooldown period (default 60) |
 
-### PUT /api/bid-rules/:id — Update Rule
+### PUT /api/v1/bid-rules/:id — Update Rule
 
-### DELETE /api/bid-rules/:id — Delete Rule
+### DELETE /api/v1/bid-rules/:id — Delete Rule
 
-### GET /api/bid-rules/logs — Bid History
+### GET /api/v1/bid-rules/logs — Bid History
 
 **Parameters**: `rule_id`, `campaign_id`
 
@@ -648,13 +649,13 @@ Cached for 30 seconds. Frontend polls every 30s.
 
 ## Module 11: Targeting Templates
 
-### GET /api/targeting-templates — Template List
+### GET /api/v1/targeting-templates — Template List
 
 **Parameters**: `platform`
 
-### GET /api/targeting-templates/:id — Template Detail
+### GET /api/v1/targeting-templates/:id — Template Detail
 
-### POST /api/targeting-templates — Create Template
+### POST /api/v1/targeting-templates — Create Template
 
 **Request**:
 ```json
@@ -671,19 +672,19 @@ Cached for 30 seconds. Frontend polls every 30s.
 }
 ```
 
-### PUT /api/targeting-templates/:id — Update Template
+### PUT /api/v1/targeting-templates/:id — Update Template
 
-### DELETE /api/targeting-templates/:id — Delete Template
+### DELETE /api/v1/targeting-templates/:id — Delete Template
 
 ---
 
 ## Module 12: Asset Library
 
-### GET /api/assets — Asset List
+### GET /api/v1/assets — Asset List
 
 **Parameters**: `type`(image/video), `page`, `per_page`
 
-### POST /api/assets/upload — Upload Asset
+### POST /api/v1/assets/upload — Upload Asset
 
 **Request**: `multipart/form-data`, field `file`
 
@@ -694,16 +695,16 @@ Cached for 30 seconds. Frontend polls every 30s.
 
 - With CDN configured, `url` is assembled with the default provider's `cdn_domain` into a full HTTPS address
 
-### POST /api/assets/presign — Get Presigned Upload URL
+### POST /api/v1/assets/presign — Get Presigned Upload URL
 
 **Request**: `{ "filename": "demo.mp4", "mime_type": "video/mp4" }`
 
 **Response**: `{ "code": 0, "data": { "key": "20260829/ab12...cd34.mp4", "upload_url": "https://signed-url", "expires_in": 3600, "url": "https://cdn.example.com/uploads/assets/..." } }`
 
-- `key` format `Ymd/32-hex.ext`; pass it back to `/api/assets/register` after direct upload
+- `key` format `Ymd/32-hex.ext`; pass it back to `/api/v1/assets/register` after direct upload
 - For videos up to 50 MiB the client uploads directly to object storage; not available under the `local` driver
 
-### POST /api/assets/register — Register Directly Uploaded Asset
+### POST /api/v1/assets/register — Register Directly Uploaded Asset
 
 **Request**: `{ "key": "20260829/ab12...cd34.mp4", "filename": "demo.mp4", "mime_type": "video/mp4", "size": 52428800 }`
 
@@ -711,15 +712,15 @@ Cached for 30 seconds. Frontend polls every 30s.
 
 - `key` strictly validated (`^\d{8}/[0-9a-f]{32}\.[a-z0-9]{1,10}$`) against path traversal
 
-### GET /api/assets/:id — Asset Detail
+### GET /api/v1/assets/:id — Asset Detail
 
-### DELETE /api/assets/:id — Delete Asset
+### DELETE /api/v1/assets/:id — Delete Asset
 
 ---
 
 ## Admin Endpoints (port 8789)
 
-### POST /api/admin/login — Admin Login
+### POST /api/v1/admin/login — Admin Login
 
 **Request**: `{ "username": "admin", "password": "..." }`
 
@@ -728,25 +729,25 @@ Cached for 30 seconds. Frontend polls every 30s.
 - Token stored in localStorage
 - `csrf_token` must be sent in the `X-CSRF-Token` header on subsequent POST/PUT/DELETE requests
 
-### GET /api/admin/me — Current Admin
+### GET /api/v1/admin/me — Current Admin
 
-### POST /api/admin/logout — Logout
+### POST /api/v1/admin/logout — Logout
 
-### GET /api/admin/users — User List
+### GET /api/v1/admin/users — User List
 
 **Parameters**: `keyword`, `role_id`, `page`, `per_page`
 
 `id` and `role_id` in the response are hashids-encoded.
 
-### POST /api/admin/users — Create User
+### POST /api/v1/admin/users — Create User
 
-### PUT /api/admin/users/:id — Update User
+### PUT /api/v1/admin/users/:id — Update User
 
-### DELETE /api/admin/users/:id — Disable User
+### DELETE /api/v1/admin/users/:id — Disable User
 
-### GET /api/admin/users/roles — Role List
+### GET /api/v1/admin/users/roles — Role List
 
-### GET /api/admin/audit-logs — Audit Logs
+### GET /api/v1/admin/audit-logs — Audit Logs
 
 **Parameters**: `user_id`, `action`, `date_from`, `date_to`, `page`, `per_page`
 
@@ -754,28 +755,28 @@ Cached for 30 seconds. Frontend polls every 30s.
 
 ### CDN Provider Management (platform master tenant only, AdminMiddleware)
 
-### GET /api/admin/cdn/providers — Provider List
+### GET /api/v1/admin/cdn/providers — Provider List
 
-### POST /api/admin/cdn/providers — Create Provider
+### POST /api/v1/admin/cdn/providers — Create Provider
 
 **Request**: `{ "name": "Aliyun OSS", "driver": "oss", "bucket": "ads-assets", "region": "oss-cn-hangzhou", "endpoint": "https://oss-cn-hangzhou.aliyuncs.com", "access_key": "...", "secret_key": "...", "cdn_domain": "cdn.example.com", "cdn_driver": "aliyun", "cdn_token": "...", "is_default": 1 }`
 
 - `driver`: `local` / `oss` (Alibaba Cloud OSS) / `cos` (Tencent Cloud COS, S3 protocol) / `s3` (S3-compatible: AWS S3 / Cloudflare R2 / MinIO)
 - Credentials (access_key/secret_key/cdn_token) encrypted at field level via Encryptable; responses return masked fields only
 
-### PUT /api/admin/cdn/providers/:id — Update Provider
+### PUT /api/v1/admin/cdn/providers/:id — Update Provider
 
-### DELETE /api/admin/cdn/providers/:id — Delete Provider (default auto-transfers to the next enabled provider)
+### DELETE /api/v1/admin/cdn/providers/:id — Delete Provider (default auto-transfers to the next enabled provider)
 
-### PUT /api/admin/cdn/providers/:id/default — Set as Default
+### PUT /api/v1/admin/cdn/providers/:id/default — Set as Default
 
-### PUT /api/admin/cdn/providers/:id/toggle — Enable/Disable (disabling the default transfers it automatically)
+### PUT /api/v1/admin/cdn/providers/:id/toggle — Enable/Disable (disabling the default transfers it automatically)
 
-### POST /api/admin/cdn/providers/:id/test — Connectivity Test
+### POST /api/v1/admin/cdn/providers/:id/test — Connectivity Test
 
 **Response**: `{ "code": 0, "data": { "ok": true, "driver": "oss", "status": "ok" } }`
 
-### POST /api/admin/cdn/providers/:id/purge — Purge CDN Cache
+### POST /api/v1/admin/cdn/providers/:id/purge — Purge CDN Cache
 
 **Request**: `{ "paths": ["/uploads/assets/20260829/xxx.mp4"] }`
 

@@ -61,7 +61,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 |--------|:---:|:---:|:---:|
 | Lista de permissões CORS | ✅ | ✅ | ✅ |
 | Cabeçalhos de segurança (X-Frame/CSP/HSTS/nosniff) | ✅ | ✅ | ✅ |
-| Roteamento por versão (X-API-Version) | ✅ | ✅ | ✅ |
+| Roteamento por versão (/api/v1) | ✅ | ✅ | ✅ |
 | Rate limit de API (janela deslizante) | ✅ | ✅ | ✅ |
 | Detecção de injeção de SQL (correspondência de padrões) | ✅ | ✅ | ✅ |
 | Filtragem de entrada (strip_tags + trim) | ✅ | ✅ | ✅ |

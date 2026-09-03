@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiClient {
   static final Dio dio = Dio(BaseOptions(
-    baseUrl: '/api',
+    baseUrl: '/api/v1',
     connectTimeout: const Duration(seconds: 10),
     receiveTimeout: const Duration(seconds: 30),
   ));
@@ -27,7 +27,6 @@ class ApiClient {
         if (token != null) {
           options.headers['Authorization'] = 'Bearer $token';
         }
-        options.headers['X-API-Version'] = 'v1';
         options.headers['X-Client-Platform'] = clientPlatform;
         options.headers['X-Nonce'] = DateTime.now().microsecondsSinceEpoch.toRadixString(36);
         options.headers['X-Timestamp'] = DateTime.now().millisecondsSinceEpoch ~/ 1000;

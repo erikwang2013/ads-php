@@ -17,7 +17,7 @@ class BidRuleController
         /**
      * @Title("出价规则列表")
      * @Group("自动出价")
-     * @Url("/api/bid-rules")
+     * @Url("/api/v1/bid-rules")
      * @Method("GET")
      */
     public function index(Request $request): \Webman\Http\Response
@@ -37,7 +37,7 @@ class BidRuleController
         /**
      * @Title("创建出价规则")
      * @Group("自动出价")
-     * @Url("/api/bid-rules")
+     * @Url("/api/v1/bid-rules")
      * @Method("POST")
      */
     public function store(Request $request): \Webman\Http\Response
@@ -65,7 +65,7 @@ class BidRuleController
         /**
      * @Title("更新出价规则")
      * @Group("自动出价")
-     * @Url("/api/bid-rules/{id}")
+     * @Url("/api/v1/bid-rules/{id}")
      * @Method("PUT")
      */
     public function update(Request $request, int $id): \Webman\Http\Response
@@ -91,7 +91,7 @@ class BidRuleController
         /**
      * @Title("删除出价规则")
      * @Group("自动出价")
-     * @Url("/api/bid-rules/{id}")
+     * @Url("/api/v1/bid-rules/{id}")
      * @Method("DELETE")
      */
     public function destroy(int $id): \Webman\Http\Response
@@ -105,7 +105,7 @@ class BidRuleController
         /**
      * @Title("出价历史")
      * @Group("自动出价")
-     * @Url("/api/bid-rules/logs")
+     * @Url("/api/v1/bid-rules/logs")
      * @Method("GET")
      */
     public function logs(Request $request): \Webman\Http\Response

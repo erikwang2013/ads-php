@@ -243,7 +243,7 @@ make db-init
 # アクセス
 # 管理バックエンド: http://localhost
 # インストールウィザード: http://localhost/install
-# API: http://localhost/api（Header: X-API-Version: v1）
+# API: http://localhost/api/v1（バージョンは URL パスに固定され、Header では渡しません）
 ```
 
 ### ローカル開発
@@ -278,7 +278,6 @@ ads-php/
 │   │   │   ├── controller/v1/         # 17 コントローラー
 │   │   │   ├── middleware/            # 15 ミドルウェア
 │   │   │   ├── config/route.php       # ルート定義
-│   │   │   └── route_helpers.php      # versioned() ヘルパー関数
 │   │   ├── ads-platform/              # プラットフォームアダプターのコア
 │   │   │   ├── adapter/               # 29 プラットフォームアダプター
 │   │   │   ├── src/                   # AdapterRegistry, CampaignData

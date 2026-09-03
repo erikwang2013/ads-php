@@ -60,7 +60,6 @@ Request
   → AttackGuardMiddleware     (XSS/パストラバーサル/Headerインジェクション/Body 10MiB/Content-Typeホワイトリスト)
   → ClientPlatformMiddleware  (X-Client-Platform 8 端由来の識別)
   → ReplayGuardMiddleware     (Nonce+Timestamp リプレイ対策、非ブラウザー側は強検証)
-  → VersionMiddleware         (X-API-Version バージョンルーティング)
   → RateLimitMiddleware       (Redis スライディングウィンドウ 60回/60s)
   → LoginThrottleMiddleware   (ログインスロットル 5回失敗→15分ロック)
   → SessionLimitMiddleware    (同時セッション制限 最大3つの有効Token)
@@ -80,7 +79,6 @@ Request
   → LoginThrottleMiddleware   (ログインスロットル 5回失敗→15分)
   → ClientPlatformMiddleware  (X-Client-Platform 由来の識別)
   → CsrfMiddleware            (CSRF Token 検証)
-  → VersionMiddleware         (API バージョン)
   → AuthCheck                 (Session + JWT デュアルチャネル)
   → Controller
 ```
@@ -111,7 +109,6 @@ ads-php/
 │   │   │   ├── controller/v1/             # 14 コントローラー
 │   │   │   ├── middleware/                # 7 ミドルウェア
 │   │   │   ├── config/route.php           # 45+ ルート
-│   │   │   └── route_helpers.php          # versioned() バージョンルーティング
 │   │   ├── ads-platform/                  # プラットフォームアダプターコア
 │   │   │   ├── adapter/                   # 29 プラットフォームアダプター
 │   │   │   ├── src/                       # AdapterRegistry, CampaignData
@@ -222,16 +219,14 @@ ads-php/
 
 ---
 
-## 7. API バージョンルーティングの仕組み
+## 7. API バージョンルーティング
 
-バージョン番号は URL パスに出現しません。バージョンは `X-API-Version` ヘッダーで渡され、`VersionMiddleware` が読み取って `$request->apiVersion` に設定します。`versioned()` ヘルパー関数は実行時にコントローラークラス内のバージョンセグメントをリクエストバージョンに置き換えます。
+API のバージョン番号は URL パスに固定され（`/api/v1/...`）、ルートは `plugin\ads_api\controller\v1\*` に静的にバインドされます。ヘッダーでは渡されません。新しいバージョンを追加する際は、独立したルートグループを登録します（例: `/api/v2` → `controller\v2\*`）。
 
 ```
-リクエスト: GET /api/campaigns
-Header: X-API-Version: v1
+请求: GET /api/v1/campaigns
 
-VersionMiddleware → $request->apiVersion = 'v1'
-versioned(CampaignController::class, 'index')
+路由 /api/v1/campaigns
   → controller\v1\CampaignController::index()
 ```
 

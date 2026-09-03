@@ -15,7 +15,7 @@ class ReportController
         /**
      * @Title("自定义报表")
      * @Group("报表")
-     * @Url("/api/reports/custom")
+     * @Url("/api/v1/reports/custom")
      * @Method("GET")
      */
     public function custom(Request $request): \Webman\Http\Response

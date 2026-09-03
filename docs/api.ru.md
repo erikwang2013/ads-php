@@ -14,14 +14,15 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 ### Base URL
 
 ```
-http://your-domain.com/api
+http://your-domain.com/api/v1
 ```
+
+> Номер версии API зафиксирован в пути URL (сейчас `v1`) и не передаётся в Header; последующие крупные версии, например `/api/v2`, следуют тому же правилу.
 
 ### Обязательные Headers
 
 | Header | Значение | Описание |
 |--------|----|------|
-| `X-API-Version` | `v1` | Номер версии API (обязательно, не появляется в пути URL) |
 | `X-Client-Platform` | `web` / `ios` / `android` / `macos` / `windows` / `linux` / `harmonyos` | Источник операции (обязательно) |
 | `Authorization` | `Bearer <token>` | JWT-токен аутентификации (обязателен, кроме логина/списка платформ/проверки здоровья) |
 
@@ -112,11 +113,11 @@ http://your-domain.com/api
 
 | Эндпоинт | TTL | Слой |
 |------|-----|------|
-| `/api/platforms` | 1 час | L1 память → L2 APCu → L3 Redis |
-| `/api/accounts` + `/api/accounts/:id` | 5 минут | То же |
-| `/api/reports/summary` | 5 минут | То же |
-| `/api/alerts/rules` | 2 минуты | То же |
-| `/api/alerts/unread-count` | 30 секунд | То же |
+| `/api/v1/platforms` | 1 час | L1 память → L2 APCu → L3 Redis |
+| `/api/v1/accounts` + `/api/v1/accounts/:id` | 5 минут | То же |
+| `/api/v1/reports/summary` | 5 минут | То же |
+| `/api/v1/alerts/rules` | 2 минуты | То же |
+| `/api/v1/alerts/unread-count` | 30 секунд | То же |
 
 ---
 
@@ -165,7 +166,7 @@ GET /docs
 
 ---
 
-### GET /api/captcha/generate — Генерация капчи
+### GET /api/v1/captcha/generate — Генерация капчи
 
 Без аутентификации.
 
@@ -186,7 +187,7 @@ GET /docs
 
 ---
 
-### POST /api/captcha/verify — Проверка капчи
+### POST /api/v1/captcha/verify — Проверка капчи
 
 Без аутентификации.
 
@@ -204,7 +205,7 @@ GET /docs
 
 ## Модуль 2: Аутентификация
 
-### POST /api/auth/login — Вход
+### POST /api/v1/auth/login — Вход
 
 Без аутентификации.
 
@@ -245,7 +246,7 @@ GET /docs
 
 ---
 
-### GET /api/auth/me — Текущий пользователь
+### GET /api/v1/auth/me — Текущий пользователь
 
 **Заголовок**: `Authorization: Bearer <token>`
 
@@ -266,7 +267,7 @@ GET /docs
 
 ---
 
-### POST /api/auth/refresh — Обновление токена
+### POST /api/v1/auth/refresh — Обновление токена
 
 **Заголовок**: `Authorization: Bearer <old_token>`
 
@@ -290,7 +291,7 @@ GET /docs
 
 ## Модуль 3: Платформы & Аккаунты
 
-### GET /api/platforms — Список платформ
+### GET /api/v1/platforms — Список платформ
 
 Без аутентификации. Кэш 1 час.
 
@@ -307,7 +308,7 @@ GET /docs
 
 ---
 
-### GET /api/platforms/:code/oauth-url — OAuth-URL авторизации
+### GET /api/v1/platforms/:code/oauth-url — OAuth-URL авторизации
 
 **Параметры**: `?redirect_uri=https://your-domain.com/callback`
 
@@ -317,7 +318,7 @@ GET /docs
 
 ---
 
-### POST /api/platforms/:code/callback — OAuth-колбэк
+### POST /api/v1/platforms/:code/callback — OAuth-колбэк
 
 **Запрос**: `{ "state": "...", "code": "..." }`
 
@@ -325,7 +326,7 @@ GET /docs
 
 ---
 
-### GET /api/accounts — Список аккаунтов
+### GET /api/v1/accounts — Список аккаунтов
 
 Кэш 5 минут.
 
@@ -341,23 +342,23 @@ GET /docs
 
 ---
 
-### GET /api/accounts/:id — Детали аккаунта
+### GET /api/v1/accounts/:id — Детали аккаунта
 
 Кэш 5 минут.
 
 ---
 
-### DELETE /api/accounts/:id — Отвязка аккаунта
+### DELETE /api/v1/accounts/:id — Отвязка аккаунта
 
 ---
 
-### POST /api/accounts/:id/sync — Ручная синхронизация
+### POST /api/v1/accounts/:id/sync — Ручная синхронизация
 
 ---
 
 ## Модуль 4: Рекламные кампании
 
-### GET /api/campaigns — Список кампаний
+### GET /api/v1/campaigns — Список кампаний
 
 **Параметры**:
 
@@ -374,7 +375,7 @@ GET /docs
 
 ---
 
-### POST /api/campaigns — Создание кампании
+### POST /api/v1/campaigns — Создание кампании
 
 **Запрос**:
 ```json
@@ -392,25 +393,25 @@ GET /docs
 
 ---
 
-### GET /api/campaigns/:id — Детали кампании
+### GET /api/v1/campaigns/:id — Детали кампании
 
 **Ответ**: `{ "code": 0, "data": { "campaign": {...}, "today": { "cost":..., "impressions":... } } }`
 
 ---
 
-### PUT /api/campaigns/:id — Обновление кампании
+### PUT /api/v1/campaigns/:id — Обновление кампании
 
 **Запрос**: `{ "name": "新名称", "daily_budget": 30000 }`
 
 ---
 
-### POST /api/campaigns/:id/toggle — Включение/отключение кампании
+### POST /api/v1/campaigns/:id/toggle — Включение/отключение кампании
 
 **Запрос**: `{ "enabled": false }`
 
 ---
 
-### POST /api/campaigns/batch/toggle — Массовое включение/отключение
+### POST /api/v1/campaigns/batch/toggle — Массовое включение/отключение
 
 **Запрос**: `{ "ids": ["hash1", "hash2", "hash3"], "enabled": false }`
 
@@ -420,11 +421,11 @@ GET /docs
 
 ## Модуль 5: Группы объявлений
 
-### GET /api/ad-groups — Список групп объявлений
+### GET /api/v1/ad-groups — Список групп объявлений
 
 **Параметры**: `platform`, `campaign_id`, `status`, `sort`(id/name/status/bid_amount), `page`, `per_page`
 
-### POST /api/ad-groups — Создание группы объявлений
+### POST /api/v1/ad-groups — Создание группы объявлений
 
 **Запрос**:
 ```json
@@ -440,27 +441,27 @@ GET /docs
 
 - `targeting_template_id`: необязательно, загружает targeting JSON из шаблона таргетинга и объединяет
 
-### GET /api/ad-groups/:id — Детали группы объявлений
+### GET /api/v1/ad-groups/:id — Детали группы объявлений
 
-### PUT /api/ad-groups/:id — Обновление группы объявлений
+### PUT /api/v1/ad-groups/:id — Обновление группы объявлений
 
-### POST /api/ad-groups/:id/toggle — Включение/отключение группы объявлений
+### POST /api/v1/ad-groups/:id/toggle — Включение/отключение группы объявлений
 
 ---
 
 ## Модуль 6: Креативы
 
-### GET /api/creatives — Список креативов
+### GET /api/v1/creatives — Список креативов
 
 **Параметры**: `platform`, `ad_group_id`, `campaign_id`, `media_type`(image/video/text), `sort`, `page`, `per_page`
 
-### GET /api/creatives/:id — Детали креатива
+### GET /api/v1/creatives/:id — Детали креатива
 
 ---
 
 ## Модуль 7: Отчеты
 
-### GET /api/reports/summary — Сводка дашборда
+### GET /api/v1/reports/summary — Сводка дашборда
 
 Кэш 5 минут.
 
@@ -480,7 +481,7 @@ GET /docs
 
 ---
 
-### GET /api/reports/custom — Пользовательский отчет
+### GET /api/v1/reports/custom — Пользовательский отчет
 
 **Параметры**:
 
@@ -494,7 +495,7 @@ GET /docs
 
 ---
 
-### GET /api/reports/export — Экспорт отчета
+### GET /api/v1/reports/export — Экспорт отчета
 
 **Параметры**: `format=csv`, `date_start`, `date_end`, `metrics[]`
 
@@ -502,11 +503,11 @@ GET /docs
 
 ---
 
-### GET /api/reports/export-dashboard — Экспорт дашборда в PDF
+### GET /api/v1/reports/export-dashboard — Экспорт дашборда в PDF
 
 ---
 
-### GET /api/reports/calendar — Календарь кампаний
+### GET /api/v1/reports/calendar — Календарь кампаний
 
 **Параметры**: `date_start`, `date_end`, `platform`
 
@@ -514,7 +515,7 @@ GET /docs
 
 ---
 
-### GET /api/reports/budget-alerts — Предупреждения о бюджете
+### GET /api/v1/reports/budget-alerts — Предупреждения о бюджете
 
 **Ответ**: `[{ campaign_id, campaign_name, platform, spent, budget, pct, level }]`
 
@@ -522,7 +523,7 @@ GET /docs
 
 ---
 
-### GET /api/reports/attribution — Атрибутивный анализ
+### GET /api/v1/reports/attribution — Атрибутивный анализ
 
 **Параметры**: `model`(first_touch/last_touch/linear/time_decay/position_based), `date_start`, `date_end`
 
@@ -540,7 +541,7 @@ GET /docs
 
 ---
 
-### GET /api/reports/attribution/models — Список моделей атрибуции
+### GET /api/v1/reports/attribution/models — Список моделей атрибуции
 
 **Ответ**: `[{ code: "last_touch", name: "末次触点", description: "..." }]`
 
@@ -550,13 +551,13 @@ GET /docs
 
 ## Модуль 8: Оповещения
 
-### GET /api/alerts/rules — Список правил оповещений
+### GET /api/v1/alerts/rules — Список правил оповещений
 
 Кэш 2 минуты.
 
 **Параметры**: `platform`, `enabled`(0/1), `metric`, `page`, `per_page`
 
-### POST /api/alerts/rules — Создание правила оповещения
+### POST /api/v1/alerts/rules — Создание правила оповещения
 
 **Запрос**:
 ```json
@@ -572,17 +573,17 @@ GET /docs
 }
 ```
 
-### PUT /api/alerts/rules/:id — Обновление правила оповещения
+### PUT /api/v1/alerts/rules/:id — Обновление правила оповещения
 
-### DELETE /api/alerts/rules/:id — Удаление правила оповещения
+### DELETE /api/v1/alerts/rules/:id — Удаление правила оповещения
 
-### GET /api/alerts/logs — Записи оповещений
+### GET /api/v1/alerts/logs — Записи оповещений
 
 **Параметры**: `status`, `rule_id`, `metric`, `page`, `per_page`
 
-### POST /api/alerts/logs/:id/acknowledge — Подтверждение оповещения
+### POST /api/v1/alerts/logs/:id/acknowledge — Подтверждение оповещения
 
-### GET /api/alerts/unread-count — Количество непрочитанных оповещений
+### GET /api/v1/alerts/unread-count — Количество непрочитанных оповещений
 
 Кэш 30 секунд. Фронтенд опрашивает каждые 30 секунд.
 
@@ -590,23 +591,23 @@ GET /docs
 
 ## Модуль 9: Уведомления
 
-### GET /api/notifications — Список уведомлений
+### GET /api/v1/notifications — Список уведомлений
 
 **Параметры**: `type`(alert/system), `is_read`(0/1), `page`, `per_page`
 
-### GET /api/notifications/unread-count — Количество непрочитанных уведомлений
+### GET /api/v1/notifications/unread-count — Количество непрочитанных уведомлений
 
-### POST /api/notifications/:id/read — Отметить прочитанным
+### POST /api/v1/notifications/:id/read — Отметить прочитанным
 
-### POST /api/notifications/read-all — Отметить все прочитанными
+### POST /api/v1/notifications/read-all — Отметить все прочитанными
 
 ---
 
 ## Модуль 10: Автоматические ставки
 
-### GET /api/bid-rules — Список правил
+### GET /api/v1/bid-rules — Список правил
 
-### POST /api/bid-rules — Создание правила
+### POST /api/v1/bid-rules — Создание правила
 
 **Запрос**:
 ```json
@@ -636,11 +637,11 @@ GET /docs
 | budget_max | int | Верхняя граница бюджета (фэни) |
 | cooldown_minutes | int | Время охлаждения (по умолчанию 60) |
 
-### PUT /api/bid-rules/:id — Обновление правила
+### PUT /api/v1/bid-rules/:id — Обновление правила
 
-### DELETE /api/bid-rules/:id — Удаление правила
+### DELETE /api/v1/bid-rules/:id — Удаление правила
 
-### GET /api/bid-rules/logs — История ставок
+### GET /api/v1/bid-rules/logs — История ставок
 
 **Параметры**: `rule_id`, `campaign_id`
 
@@ -648,13 +649,13 @@ GET /docs
 
 ## Модуль 11: Шаблоны таргетинга
 
-### GET /api/targeting-templates — Список шаблонов
+### GET /api/v1/targeting-templates — Список шаблонов
 
 **Параметры**: `platform`
 
-### GET /api/targeting-templates/:id — Детали шаблона
+### GET /api/v1/targeting-templates/:id — Детали шаблона
 
-### POST /api/targeting-templates — Создание шаблона
+### POST /api/v1/targeting-templates — Создание шаблона
 
 **Запрос**:
 ```json
@@ -671,19 +672,19 @@ GET /docs
 }
 ```
 
-### PUT /api/targeting-templates/:id — Обновление шаблона
+### PUT /api/v1/targeting-templates/:id — Обновление шаблона
 
-### DELETE /api/targeting-templates/:id — Удаление шаблона
+### DELETE /api/v1/targeting-templates/:id — Удаление шаблона
 
 ---
 
 ## Модуль 12: Библиотека материалов
 
-### GET /api/assets — Список материалов
+### GET /api/v1/assets — Список материалов
 
 **Параметры**: `type`(image/video), `page`, `per_page`
 
-### POST /api/assets/upload — Загрузка материала
+### POST /api/v1/assets/upload — Загрузка материала
 
 **Запрос**: `multipart/form-data`, поле `file`
 
@@ -694,16 +695,16 @@ GET /docs
 
 - При настроенном CDN `url` собирается с `cdn_domain` провайдера по умолчанию в полный HTTPS-адрес
 
-### POST /api/assets/presign — Получение предподписанного URL загрузки
+### POST /api/v1/assets/presign — Получение предподписанного URL загрузки
 
 **Запрос**: `{ "filename": "demo.mp4", "mime_type": "video/mp4" }`
 
 **Ответ**: `{ "code": 0, "data": { "key": "20260829/ab12...cd34.mp4", "upload_url": "https://signed-url", "expires_in": 3600, "url": "https://cdn.example.com/uploads/assets/..." } }`
 
-- Формат `key`: `Ymd/32hex.расширение`; после прямой загрузки вернуть в `/api/assets/register`
+- Формат `key`: `Ymd/32hex.расширение`; после прямой загрузки вернуть в `/api/v1/assets/register`
 - Для видео до 50 МиБ клиент грузит напрямую в объектное хранилище; на драйвере `local` недоступно
 
-### POST /api/assets/register — Регистрация материала, загруженного напрямую
+### POST /api/v1/assets/register — Регистрация материала, загруженного напрямую
 
 **Запрос**: `{ "key": "20260829/ab12...cd34.mp4", "filename": "demo.mp4", "mime_type": "video/mp4", "size": 52428800 }`
 
@@ -711,15 +712,15 @@ GET /docs
 
 - `key` строго проверяется (`^\d{8}/[0-9a-f]{32}\.[a-z0-9]{1,10}$`) — защита от path traversal
 
-### GET /api/assets/:id — Детали материала
+### GET /api/v1/assets/:id — Детали материала
 
-### DELETE /api/assets/:id — Удаление материала
+### DELETE /api/v1/assets/:id — Удаление материала
 
 ---
 
 ## Эндпоинты Admin (порт 8789)
 
-### POST /api/admin/login — Вход администратора
+### POST /api/v1/admin/login — Вход администратора
 
 **Запрос**: `{ "username": "admin", "password": "..." }`
 
@@ -728,25 +729,25 @@ GET /docs
 - Токен сохраняется в localStorage
 - `csrf_token` необходимо передавать в заголовке `X-CSRF-Token` при последующих POST/PUT/DELETE-запросах
 
-### GET /api/admin/me — Текущий администратор
+### GET /api/v1/admin/me — Текущий администратор
 
-### POST /api/admin/logout — Выход
+### POST /api/v1/admin/logout — Выход
 
-### GET /api/admin/users — Список пользователей
+### GET /api/v1/admin/users — Список пользователей
 
 **Параметры**: `keyword`, `role_id`, `page`, `per_page`
 
 В ответе `id` и `role_id` закодированы через hashids.
 
-### POST /api/admin/users — Создание пользователя
+### POST /api/v1/admin/users — Создание пользователя
 
-### PUT /api/admin/users/:id — Обновление пользователя
+### PUT /api/v1/admin/users/:id — Обновление пользователя
 
-### DELETE /api/admin/users/:id — Отключение пользователя
+### DELETE /api/v1/admin/users/:id — Отключение пользователя
 
-### GET /api/admin/users/roles — Список ролей
+### GET /api/v1/admin/users/roles — Список ролей
 
-### GET /api/admin/audit-logs — Журнал аудита
+### GET /api/v1/admin/audit-logs — Журнал аудита
 
 **Параметры**: `user_id`, `action`, `date_from`, `date_to`, `page`, `per_page`
 
@@ -754,28 +755,28 @@ GET /docs
 
 ### Управление CDN-провайдерами (только главный тенант платформы tenant 1, AdminMiddleware)
 
-### GET /api/admin/cdn/providers — Список провайдеров
+### GET /api/v1/admin/cdn/providers — Список провайдеров
 
-### POST /api/admin/cdn/providers — Создать провайдера
+### POST /api/v1/admin/cdn/providers — Создать провайдера
 
 **Запрос**: `{ "name": "Aliyun OSS", "driver": "oss", "bucket": "ads-assets", "region": "oss-cn-hangzhou", "endpoint": "https://oss-cn-hangzhou.aliyuncs.com", "access_key": "...", "secret_key": "...", "cdn_domain": "cdn.example.com", "cdn_driver": "aliyun", "cdn_token": "...", "is_default": 1 }`
 
 - `driver`: `local` / `oss` (Alibaba Cloud OSS) / `cos` (Tencent Cloud COS, протокол S3) / `s3` (S3-совместимые: AWS S3 / Cloudflare R2 / MinIO)
 - Учётные данные (access_key/secret_key/cdn_token) шифруются по полям через Encryptable; в ответе только маскированные поля
 
-### PUT /api/admin/cdn/providers/:id — Обновить провайдера
+### PUT /api/v1/admin/cdn/providers/:id — Обновить провайдера
 
-### DELETE /api/admin/cdn/providers/:id — Удалить (умолчание автоматически передаётся следующему enabled)
+### DELETE /api/v1/admin/cdn/providers/:id — Удалить (умолчание автоматически передаётся следующему enabled)
 
-### PUT /api/admin/cdn/providers/:id/default — Сделать провайдером по умолчанию
+### PUT /api/v1/admin/cdn/providers/:id/default — Сделать провайдером по умолчанию
 
-### PUT /api/admin/cdn/providers/:id/toggle — Включить/отключить (при отключении умолчание передаётся автоматически)
+### PUT /api/v1/admin/cdn/providers/:id/toggle — Включить/отключить (при отключении умолчание передаётся автоматически)
 
-### POST /api/admin/cdn/providers/:id/test — Проверка связи
+### POST /api/v1/admin/cdn/providers/:id/test — Проверка связи
 
 **Ответ**: `{ "code": 0, "data": { "ok": true, "driver": "oss", "status": "ok" } }`
 
-### POST /api/admin/cdn/providers/:id/purge — Очистка кэша CDN
+### POST /api/v1/admin/cdn/providers/:id/purge — Очистка кэша CDN
 
 **Запрос**: `{ "paths": ["/uploads/assets/20260829/xxx.mp4"] }`
 

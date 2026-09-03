@@ -32,7 +32,7 @@ class AssetController
         /**
      * @Title("上传素材")
      * @Group("素材库")
-     * @Url("/api/assets/upload")
+     * @Url("/api/v1/assets/upload")
      * @Method("POST")
      */
     public function upload(Request $request): Response
@@ -80,7 +80,7 @@ class AssetController
         /**
      * @Title("素材列表")
      * @Group("素材库")
-     * @Url("/api/assets")
+     * @Url("/api/v1/assets")
      * @Method("GET")
      */
     public function index(Request $request): Response
@@ -102,7 +102,7 @@ class AssetController
         /**
      * @Title("素材详情")
      * @Group("素材库")
-     * @Url("/api/assets/{id}")
+     * @Url("/api/v1/assets/{id}")
      * @Method("GET")
      */
     public function show(Request $request, int $id): Response
@@ -116,7 +116,7 @@ class AssetController
         /**
      * @Title("删除素材")
      * @Group("素材库")
-     * @Url("/api/assets/{id}")
+     * @Url("/api/v1/assets/{id}")
      * @Method("DELETE")
      */
     public function destroy(Request $request, int $id): Response
@@ -136,7 +136,7 @@ class AssetController
     /**
      * @Title("预签名直传地址")
      * @Group("素材库")
-     * @Url("/api/assets/presign")
+     * @Url("/api/v1/assets/presign")
      * @Method("POST")
      */
     public function presign(Request $request): Response
@@ -166,7 +166,7 @@ class AssetController
     /**
      * @Title("登记直传素材")
      * @Group("素材库")
-     * @Url("/api/assets/register")
+     * @Url("/api/v1/assets/register")
      * @Method("POST")
      */
     public function register(Request $request): Response

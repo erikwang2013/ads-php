@@ -60,7 +60,7 @@ class CdnProviderController
     /**
      * @Title("CDN 服务商列表")
      * @Group("CDN")
-     * @Url("/api/admin/cdn/providers")
+     * @Url("/api/v1/admin/cdn/providers")
      * @Method("GET")
      */
     public function index(Request $request): Response
@@ -78,7 +78,7 @@ class CdnProviderController
     /**
      * @Title("创建 CDN 服务商")
      * @Group("CDN")
-     * @Url("/api/admin/cdn/providers")
+     * @Url("/api/v1/admin/cdn/providers")
      * @Method("POST")
      */
     public function store(Request $request): Response
@@ -119,7 +119,7 @@ class CdnProviderController
     /**
      * @Title("更新 CDN 服务商")
      * @Group("CDN")
-     * @Url("/api/admin/cdn/providers/{id}")
+     * @Url("/api/v1/admin/cdn/providers/{id}")
      * @Method("PUT")
      */
     public function update(Request $request, int $id): Response
@@ -169,7 +169,7 @@ class CdnProviderController
     /**
      * @Title("删除 CDN 服务商")
      * @Group("CDN")
-     * @Url("/api/admin/cdn/providers/{id}")
+     * @Url("/api/v1/admin/cdn/providers/{id}")
      * @Method("DELETE")
      */
     public function destroy(int $id): Response
@@ -192,7 +192,7 @@ class CdnProviderController
     /**
      * @Title("设默认 CDN 服务商")
      * @Group("CDN")
-     * @Url("/api/admin/cdn/providers/{id}/default")
+     * @Url("/api/v1/admin/cdn/providers/{id}/default")
      * @Method("PUT")
      */
     public function setDefault(int $id): Response
@@ -207,7 +207,7 @@ class CdnProviderController
     /**
      * @Title("启停 CDN 服务商")
      * @Group("CDN")
-     * @Url("/api/admin/cdn/providers/{id}/toggle")
+     * @Url("/api/v1/admin/cdn/providers/{id}/toggle")
      * @Method("PUT")
      */
     public function toggle(int $id): Response
@@ -239,7 +239,7 @@ class CdnProviderController
     /**
      * @Title("测试 CDN 服务商连通性")
      * @Group("CDN")
-     * @Url("/api/admin/cdn/providers/{id}/test")
+     * @Url("/api/v1/admin/cdn/providers/{id}/test")
      * @Method("POST")
      */
     public function test(int $id): Response
@@ -261,7 +261,7 @@ class CdnProviderController
     /**
      * @Title("CDN 缓存刷新")
      * @Group("CDN")
-     * @Url("/api/admin/cdn/providers/{id}/purge")
+     * @Url("/api/v1/admin/cdn/providers/{id}/purge")
      * @Method("POST")
      */
     public function purge(Request $request, int $id): Response

@@ -61,7 +61,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 |--------|:---:|:---:|:---:|
 | Liste blanche CORS | ✅ | ✅ | ✅ |
 | En-têtes de sécurité (X-Frame/CSP/HSTS/nosniff) | ✅ | ✅ | ✅ |
-| Routage par version (X-API-Version) | ✅ | ✅ | ✅ |
+| Routage par version (/api/v1) | ✅ | ✅ | ✅ |
 | Limitation d'API (fenêtre glissante) | ✅ | ✅ | ✅ |
 | Détection d'injection SQL (correspondance de modèles) | ✅ | ✅ | ✅ |
 | Filtrage des entrées (strip_tags + trim) | ✅ | ✅ | ✅ |

@@ -19,7 +19,7 @@ class CaptchaController
         /**
      * @Title("生成验证码")
      * @Group("系统")
-     * @Url("/api/captcha/generate")
+     * @Url("/api/v1/captcha/generate")
      * @Method("GET")
      */
     public function generate(): \Webman\Http\Response
@@ -35,7 +35,7 @@ class CaptchaController
         /**
      * @Title("验证验证码")
      * @Group("系统")
-     * @Url("/api/captcha/verify")
+     * @Url("/api/v1/captcha/verify")
      * @Method("POST")
      */
     public function verify(Request $request): \Webman\Http\Response

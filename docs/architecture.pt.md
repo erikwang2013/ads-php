@@ -60,7 +60,6 @@ Request
   → AttackGuardMiddleware     (XSS/路径遍历/Header注入/Body 10MiB/Content-Type白名单)
   → ClientPlatformMiddleware  (X-Client-Platform 8端来源识别)
   → ReplayGuardMiddleware     (Nonce+Timestamp 防重放, 非浏览器端强校验)
-  → VersionMiddleware         (X-API-Version 版本路由)
   → RateLimitMiddleware       (Redis 滑动窗口 60次/60s)
   → LoginThrottleMiddleware   (登录节流 5次失败→15分钟锁定)
   → SessionLimitMiddleware    (并发会话限制 最大3个活跃Token)
@@ -80,7 +79,6 @@ Request
   → LoginThrottleMiddleware   (登录节流 5次失败→15分钟)
   → ClientPlatformMiddleware  (X-Client-Platform 来源识别)
   → CsrfMiddleware            (CSRF Token 验证)
-  → VersionMiddleware         (API 版本)
   → AuthCheck                 (Session + JWT 双通道)
   → Controller
 ```
@@ -111,7 +109,6 @@ ads-php/
 │   │   │   ├── controller/v1/             # 14 个控制器
 │   │   │   ├── middleware/                # 7 个中间件
 │   │   │   ├── config/route.php           # 45+ 路由
-│   │   │   └── route_helpers.php          # versioned() 版本路由
 │   │   ├── ads-platform/                  # 平台适配器核心
 │   │   │   ├── adapter/                   # 29 个平台适配器
 │   │   │   ├── src/                       # AdapterRegistry, CampaignData
@@ -222,16 +219,14 @@ Através do header `X-Client-Platform`:
 
 ---
 
-## 7. Mecanismo de roteamento por versão da API
+## 7. Roteamento por versão da API
 
-O número da versão não aparece no caminho da URL. A versão é transmitida pelo header `X-API-Version`, e o `VersionMiddleware` a lê e define `$request->apiVersion`. A função auxiliar `versioned()` substitui em tempo de execução o segmento de versão na classe do controlador pela versão da requisição.
+O número da versão da API é fixado no caminho da URL (`/api/v1/...`) e as rotas são vinculadas estaticamente a `plugin\ads_api\controller\v1\*`; não é transmitido no header. Ao adicionar uma nova versão, registre um grupo de rotas independente (ex.: `/api/v2` → `controller\v2\*`).
 
 ```
-请求: GET /api/campaigns
-Header: X-API-Version: v1
+请求: GET /api/v1/campaigns
 
-VersionMiddleware → $request->apiVersion = 'v1'
-versioned(CampaignController::class, 'index')
+路由 /api/v1/campaigns
   → controller\v1\CampaignController::index()
 ```
 

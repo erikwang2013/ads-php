@@ -17,7 +17,7 @@ class TenantController
         /**
      * @Title("租户配额")
      * @Group("租户")
-     * @Url("/api/tenant/quota")
+     * @Url("/api/v1/tenant/quota")
      * @Method("GET")
      *
      * 返回当前租户的版本线、配额上限与实时用量。

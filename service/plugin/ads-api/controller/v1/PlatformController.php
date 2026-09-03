@@ -20,7 +20,7 @@ class PlatformController
         /**
      * @Title("平台列表")
      * @Group("平台")
-     * @Url("/api/platforms")
+     * @Url("/api/v1/platforms")
      * @Method("GET")
      */
     public function index(): Response
@@ -38,7 +38,7 @@ class PlatformController
         /**
      * @Title("OAuth授权URL")
      * @Group("平台")
-     * @Url("/api/platforms/{code}/oauth-url")
+     * @Url("/api/v1/platforms/{code}/oauth-url")
      * @Method("GET")
      */
     public function oauthUrl(Request $request, string $code): \Webman\Http\Response
@@ -73,7 +73,7 @@ class PlatformController
         /**
      * @Title("OAuth回调")
      * @Group("平台")
-     * @Url("/api/platforms/{code}/callback")
+     * @Url("/api/v1/platforms/{code}/callback")
      * @Method("POST")
      */
     public function callback(Request $request, string $code): \Webman\Http\Response

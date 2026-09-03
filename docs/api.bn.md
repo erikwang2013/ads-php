@@ -14,14 +14,15 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 ### Base URL
 
 ```
-http://your-domain.com/api
+http://your-domain.com/api/v1
 ```
+
+> API সংস্করণ নম্বর URL পাথে স্থির থাকে (বর্তমানে `v1`) এবং Header-এ পাঠানো হয় না; পরবর্তী প্রধান সংস্করণ যেমন `/api/v2` একই নিয়ম অনুসরণ করে।
 
 ### আবশ্যক Headers
 
 | Header | মান | বিবরণ |
 |--------|----|------|
-| `X-API-Version` | `v1` | API ভার্সন নম্বর (আবশ্যক, URL পাথে থাকে না) |
 | `X-Client-Platform` | `web` / `ios` / `android` / `macos` / `windows` / `linux` / `harmonyos` | অপারেশন উৎস এন্ড (আবশ্যক) |
 | `Authorization` | `Bearer <token>` | JWT অথেনটিকেশন টোকেন (লগইন/প্ল্যাটফর্ম লিস্ট/হেলথ চেক ছাড়া আবশ্যক) |
 
@@ -112,11 +113,11 @@ http://your-domain.com/api
 
 | এন্ডপয়েন্ট | TTL | লেয়ার |
 |------|-----|-----|
-| `/api/platforms` | 1 ঘণ্টা | L1 মেমরি → L2 APCu → L3 Redis |
-| `/api/accounts` + `/api/accounts/:id` | 5 মিনিট | একই |
-| `/api/reports/summary` | 5 মিনিট | একই |
-| `/api/alerts/rules` | 2 মিনিট | একই |
-| `/api/alerts/unread-count` | 30 সেকেন্ড | একই |
+| `/api/v1/platforms` | 1 ঘণ্টা | L1 মেমরি → L2 APCu → L3 Redis |
+| `/api/v1/accounts` + `/api/v1/accounts/:id` | 5 মিনিট | একই |
+| `/api/v1/reports/summary` | 5 মিনিট | একই |
+| `/api/v1/alerts/rules` | 2 মিনিট | একই |
+| `/api/v1/alerts/unread-count` | 30 সেকেন্ড | একই |
 
 ---
 
@@ -165,7 +166,7 @@ HTML ফরম্যাটে API ডকুমেন্টেশন পেজ �
 
 ---
 
-### GET /api/captcha/generate — ক্যাপচা জেনারেট
+### GET /api/v1/captcha/generate — ক্যাপচা জেনারেট
 
 অথেনটিকেশন ছাড়া।
 
@@ -186,7 +187,7 @@ HTML ফরম্যাটে API ডকুমেন্টেশন পেজ �
 
 ---
 
-### POST /api/captcha/verify — ক্যাপচা ভেরিফাই
+### POST /api/v1/captcha/verify — ক্যাপচা ভেরিফাই
 
 অথেনটিকেশন ছাড়া।
 
@@ -204,7 +205,7 @@ HTML ফরম্যাটে API ডকুমেন্টেশন পেজ �
 
 ## মডিউল 2: অথেনটিকেশন
 
-### POST /api/auth/login — লগইন
+### POST /api/v1/auth/login — লগইন
 
 অথেনটিকেশন ছাড়া।
 
@@ -245,7 +246,7 @@ HTML ফরম্যাটে API ডকুমেন্টেশন পেজ �
 
 ---
 
-### GET /api/auth/me — বর্তমান ইউজার
+### GET /api/v1/auth/me — বর্তমান ইউজার
 
 **রিকোয়েস্ট হেডার**: `Authorization: Bearer <token>`
 
@@ -266,7 +267,7 @@ HTML ফরম্যাটে API ডকুমেন্টেশন পেজ �
 
 ---
 
-### POST /api/auth/refresh — Token রিফ্রেশ
+### POST /api/v1/auth/refresh — Token রিফ্রেশ
 
 **রিকোয়েস্ট হেডার**: `Authorization: Bearer <old_token>`
 
@@ -290,7 +291,7 @@ HTML ফরম্যাটে API ডকুমেন্টেশন পেজ �
 
 ## মডিউল 3: প্ল্যাটফর্ম ও অ্যাকাউন্ট
 
-### GET /api/platforms — প্ল্যাটফর্ম লিস্ট
+### GET /api/v1/platforms — প্ল্যাটফর্ম লিস্ট
 
 অথেনটিকেশন ছাড়া। 1 ঘণ্টা ক্যাশ।
 
@@ -307,7 +308,7 @@ HTML ফরম্যাটে API ডকুমেন্টেশন পেজ �
 
 ---
 
-### GET /api/platforms/:code/oauth-url — OAuth অথরাইজেশন URL
+### GET /api/v1/platforms/:code/oauth-url — OAuth অথরাইজেশন URL
 
 **প্যারামিটার**: `?redirect_uri=https://your-domain.com/callback`
 
@@ -317,7 +318,7 @@ HTML ফরম্যাটে API ডকুমেন্টেশন পেজ �
 
 ---
 
-### POST /api/platforms/:code/callback — OAuth কলব্যাক
+### POST /api/v1/platforms/:code/callback — OAuth কলব্যাক
 
 **রিকোয়েস্ট**: `{ "state": "...", "code": "..." }`
 
@@ -325,7 +326,7 @@ HTML ফরম্যাটে API ডকুমেন্টেশন পেজ �
 
 ---
 
-### GET /api/accounts — অ্যাকাউন্ট লিস্ট
+### GET /api/v1/accounts — অ্যাকাউন্ট লিস্ট
 
 5 মিনিট ক্যাশ।
 
@@ -341,23 +342,23 @@ HTML ফরম্যাটে API ডকুমেন্টেশন পেজ �
 
 ---
 
-### GET /api/accounts/:id — অ্যাকাউন্ট ডিটেইল
+### GET /api/v1/accounts/:id — অ্যাকাউন্ট ডিটেইল
 
 5 মিনিট ক্যাশ।
 
 ---
 
-### DELETE /api/accounts/:id — অ্যাকাউন্ট আনবাইন্ড
+### DELETE /api/v1/accounts/:id — অ্যাকাউন্ট আনবাইন্ড
 
 ---
 
-### POST /api/accounts/:id/sync — ম্যানুয়াল সিঙ্ক
+### POST /api/v1/accounts/:id/sync — ম্যানুয়াল সিঙ্ক
 
 ---
 
 ## মডিউল 4: বিজ্ঞাপন প্ল্যান
 
-### GET /api/campaigns — প্ল্যান লিস্ট
+### GET /api/v1/campaigns — প্ল্যান লিস্ট
 
 **প্যারামিটার**:
 
@@ -374,7 +375,7 @@ HTML ফরম্যাটে API ডকুমেন্টেশন পেজ �
 
 ---
 
-### POST /api/campaigns — প্ল্যান তৈরি
+### POST /api/v1/campaigns — প্ল্যান তৈরি
 
 **রিকোয়েস্ট**:
 ```json
@@ -392,25 +393,25 @@ HTML ফরম্যাটে API ডকুমেন্টেশন পেজ �
 
 ---
 
-### GET /api/campaigns/:id — প্ল্যান ডিটেইল
+### GET /api/v1/campaigns/:id — প্ল্যান ডিটেইল
 
 **রেসপন্স**: `{ "code": 0, "data": { "campaign": {...}, "today": { "cost":..., "impressions":... } } }`
 
 ---
 
-### PUT /api/campaigns/:id — প্ল্যান আপডেট
+### PUT /api/v1/campaigns/:id — প্ল্যান আপডেট
 
 **রিকোয়েস্ট**: `{ "name": "新名称", "daily_budget": 30000 }`
 
 ---
 
-### POST /api/campaigns/:id/toggle — প্ল্যান স্টার্ট/স্টপ
+### POST /api/v1/campaigns/:id/toggle — প্ল্যান স্টার্ট/স্টপ
 
 **রিকোয়েস্ট**: `{ "enabled": false }`
 
 ---
 
-### POST /api/campaigns/batch/toggle — বাল্ক স্টার্ট/স্টপ
+### POST /api/v1/campaigns/batch/toggle — বাল্ক স্টার্ট/স্টপ
 
 **রিকোয়েস্ট**: `{ "ids": ["hash1", "hash2", "hash3"], "enabled": false }`
 
@@ -420,11 +421,11 @@ HTML ফরম্যাটে API ডকুমেন্টেশন পেজ �
 
 ## মডিউল 5: বিজ্ঞাপন গ্রুপ
 
-### GET /api/ad-groups — অ্যাড গ্রুপ লিস্ট
+### GET /api/v1/ad-groups — অ্যাড গ্রুপ লিস্ট
 
 **প্যারামিটার**: `platform`, `campaign_id`, `status`, `sort`(id/name/status/bid_amount), `page`, `per_page`
 
-### POST /api/ad-groups — অ্যাড গ্রুপ তৈরি
+### POST /api/v1/ad-groups — অ্যাড গ্রুপ তৈরি
 
 **রিকোয়েস্ট**:
 ```json
@@ -440,27 +441,27 @@ HTML ফরম্যাটে API ডকুমেন্টেশন পেজ �
 
 - `targeting_template_id`: ঐচ্ছিক, টার্গেটিং টেমপ্লেট থেকে targeting JSON লোড করে মার্জ করে
 
-### GET /api/ad-groups/:id — অ্যাড গ্রুপ ডিটেইল
+### GET /api/v1/ad-groups/:id — অ্যাড গ্রুপ ডিটেইল
 
-### PUT /api/ad-groups/:id — অ্যাড গ্রুপ আপডেট
+### PUT /api/v1/ad-groups/:id — অ্যাড গ্রুপ আপডেট
 
-### POST /api/ad-groups/:id/toggle — অ্যাড গ্রুপ স্টার্ট/স্টপ
+### POST /api/v1/ad-groups/:id/toggle — অ্যাড গ্রুপ স্টার্ট/স্টপ
 
 ---
 
 ## মডিউল 6: ক্রিয়েটিভ
 
-### GET /api/creatives — ক্রিয়েটিভ লিস্ট
+### GET /api/v1/creatives — ক্রিয়েটিভ লিস্ট
 
 **প্যারামিটার**: `platform`, `ad_group_id`, `campaign_id`, `media_type`(image/video/text), `sort`, `page`, `per_page`
 
-### GET /api/creatives/:id — ক্রিয়েটিভ ডিটেইল
+### GET /api/v1/creatives/:id — ক্রিয়েটিভ ডিটেইল
 
 ---
 
 ## মডিউল 7: রিপোর্ট
 
-### GET /api/reports/summary — ড্যাশবোর্ড সামারি
+### GET /api/v1/reports/summary — ড্যাশবোর্ড সামারি
 
 5 মিনিট ক্যাশ।
 
@@ -480,7 +481,7 @@ HTML ফরম্যাটে API ডকুমেন্টেশন পেজ �
 
 ---
 
-### GET /api/reports/custom — কাস্টম রিপোর্ট
+### GET /api/v1/reports/custom — কাস্টম রিপোর্ট
 
 **প্যারামিটার**:
 
@@ -494,7 +495,7 @@ HTML ফরম্যাটে API ডকুমেন্টেশন পেজ �
 
 ---
 
-### GET /api/reports/export — রিপোর্ট এক্সপোর্ট
+### GET /api/v1/reports/export — রিপোর্ট এক্সপোর্ট
 
 **প্যারামিটার**: `format=csv`, `date_start`, `date_end`, `metrics[]`
 
@@ -502,11 +503,11 @@ HTML ফরম্যাটে API ডকুমেন্টেশন পেজ �
 
 ---
 
-### GET /api/reports/export-dashboard — ড্যাশবোর্ড PDF এক্সপোর্ট
+### GET /api/v1/reports/export-dashboard — ড্যাশবোর্ড PDF এক্সপোর্ট
 
 ---
 
-### GET /api/reports/calendar — ক্যাম্পেইন ক্যালেন্ডার
+### GET /api/v1/reports/calendar — ক্যাম্পেইন ক্যালেন্ডার
 
 **প্যারামিটার**: `date_start`, `date_end`, `platform`
 
@@ -514,7 +515,7 @@ HTML ফরম্যাটে API ডকুমেন্টেশন পেজ �
 
 ---
 
-### GET /api/reports/budget-alerts — বাজেট অ্যালার্ট
+### GET /api/v1/reports/budget-alerts — বাজেট অ্যালার্ট
 
 **রেসপন্স**: `[{ campaign_id, campaign_name, platform, spent, budget, pct, level }]`
 
@@ -522,7 +523,7 @@ HTML ফরম্যাটে API ডকুমেন্টেশন পেজ �
 
 ---
 
-### GET /api/reports/attribution — অ্যাট্রিবিউশন অ্যানালাইসিস
+### GET /api/v1/reports/attribution — অ্যাট্রিবিউশন অ্যানালাইসিস
 
 **প্যারামিটার**: `model`(first_touch/last_touch/linear/time_decay/position_based), `date_start`, `date_end`
 
@@ -540,7 +541,7 @@ HTML ফরম্যাটে API ডকুমেন্টেশন পেজ �
 
 ---
 
-### GET /api/reports/attribution/models — অ্যাট্রিবিউশন মডেল লিস্ট
+### GET /api/v1/reports/attribution/models — অ্যাট্রিবিউশন মডেল লিস্ট
 
 **রেসপন্স**: `[{ code: "last_touch", name: "末次触点", description: "..." }]`
 
@@ -550,13 +551,13 @@ HTML ফরম্যাটে API ডকুমেন্টেশন পেজ �
 
 ## মডিউল 8: অ্যালার্ট
 
-### GET /api/alerts/rules — অ্যালার্ট রুল লিস্ট
+### GET /api/v1/alerts/rules — অ্যালার্ট রুল লিস্ট
 
 2 মিনিট ক্যাশ।
 
 **প্যারামিটার**: `platform`, `enabled`(0/1), `metric`, `page`, `per_page`
 
-### POST /api/alerts/rules — অ্যালার্ট রুল তৈরি
+### POST /api/v1/alerts/rules — অ্যালার্ট রুল তৈরি
 
 **রিকোয়েস্ট**:
 ```json
@@ -572,17 +573,17 @@ HTML ফরম্যাটে API ডকুমেন্টেশন পেজ �
 }
 ```
 
-### PUT /api/alerts/rules/:id — অ্যালার্ট রুল আপডেট
+### PUT /api/v1/alerts/rules/:id — অ্যালার্ট রুল আপডেট
 
-### DELETE /api/alerts/rules/:id — অ্যালার্ট রুল ডিলিট
+### DELETE /api/v1/alerts/rules/:id — অ্যালার্ট রুল ডিলিট
 
-### GET /api/alerts/logs — অ্যালার্ট রেকর্ড
+### GET /api/v1/alerts/logs — অ্যালার্ট রেকর্ড
 
 **প্যারামিটার**: `status`, `rule_id`, `metric`, `page`, `per_page`
 
-### POST /api/alerts/logs/:id/acknowledge — অ্যালার্ট কনফার্ম
+### POST /api/v1/alerts/logs/:id/acknowledge — অ্যালার্ট কনফার্ম
 
-### GET /api/alerts/unread-count — আনরিড অ্যালার্ট কাউন্ট
+### GET /api/v1/alerts/unread-count — আনরিড অ্যালার্ট কাউন্ট
 
 30 সেকেন্ড ক্যাশ। ফ্রন্টএন্ড 30s পোলিং।
 
@@ -590,23 +591,23 @@ HTML ফরম্যাটে API ডকুমেন্টেশন পেজ �
 
 ## মডিউল 9: নোটিফিকেশন
 
-### GET /api/notifications — নোটিফিকেশন লিস্ট
+### GET /api/v1/notifications — নোটিফিকেশন লিস্ট
 
 **প্যারামিটার**: `type`(alert/system), `is_read`(0/1), `page`, `per_page`
 
-### GET /api/notifications/unread-count — আনরিড নোটিফিকেশন কাউন্ট
+### GET /api/v1/notifications/unread-count — আনরিড নোটিফিকেশন কাউন্ট
 
-### POST /api/notifications/:id/read — রিড মার্ক
+### POST /api/v1/notifications/:id/read — রিড মার্ক
 
-### POST /api/notifications/read-all — সব রিড
+### POST /api/v1/notifications/read-all — সব রিড
 
 ---
 
 ## মডিউল 10: অটো বিডিং
 
-### GET /api/bid-rules — রুল লিস্ট
+### GET /api/v1/bid-rules — রুল লিস্ট
 
-### POST /api/bid-rules — রুল তৈরি
+### POST /api/v1/bid-rules — রুল তৈরি
 
 **রিকোয়েস্ট**:
 ```json
@@ -636,11 +637,11 @@ HTML ফরম্যাটে API ডকুমেন্টেশন পেজ �
 | budget_max | int | বাজেট ঊর্ধ্বসীমা（ফেন） |
 | cooldown_minutes | int | কুলডাউন সময়（ডিফল্ট 60） |
 
-### PUT /api/bid-rules/:id — রুল আপডেট
+### PUT /api/v1/bid-rules/:id — রুল আপডেট
 
-### DELETE /api/bid-rules/:id — রুল ডিলিট
+### DELETE /api/v1/bid-rules/:id — রুল ডিলিট
 
-### GET /api/bid-rules/logs — বিডিং হিস্টোরি
+### GET /api/v1/bid-rules/logs — বিডিং হিস্টোরি
 
 **প্যারামিটার**: `rule_id`, `campaign_id`
 
@@ -648,13 +649,13 @@ HTML ফরম্যাটে API ডকুমেন্টেশন পেজ �
 
 ## মডিউল 11: টার্গেটিং টেমপ্লেট
 
-### GET /api/targeting-templates — টেমপ্লেট লিস্ট
+### GET /api/v1/targeting-templates — টেমপ্লেট লিস্ট
 
 **প্যারামিটার**: `platform`
 
-### GET /api/targeting-templates/:id — টেমপ্লেট ডিটেইল
+### GET /api/v1/targeting-templates/:id — টেমপ্লেট ডিটেইল
 
-### POST /api/targeting-templates — টেমপ্লেট তৈরি
+### POST /api/v1/targeting-templates — টেমপ্লেট তৈরি
 
 **রিকোয়েস্ট**:
 ```json
@@ -671,19 +672,19 @@ HTML ফরম্যাটে API ডকুমেন্টেশন পেজ �
 }
 ```
 
-### PUT /api/targeting-templates/:id — টেমপ্লেট আপডেট
+### PUT /api/v1/targeting-templates/:id — টেমপ্লেট আপডেট
 
-### DELETE /api/targeting-templates/:id — টেমপ্লেট ডিলিট
+### DELETE /api/v1/targeting-templates/:id — টেমপ্লেট ডিলিট
 
 ---
 
 ## মডিউল 12: অ্যাসেট লাইব্রেরি
 
-### GET /api/assets — অ্যাসেট লিস্ট
+### GET /api/v1/assets — অ্যাসেট লিস্ট
 
 **প্যারামিটার**: `type`(image/video), `page`, `per_page`
 
-### POST /api/assets/upload — অ্যাসেট আপলোড
+### POST /api/v1/assets/upload — অ্যাসেট আপলোড
 
 **রিকোয়েস্ট**: `multipart/form-data`, ফিল্ড `file`
 
@@ -694,16 +695,16 @@ HTML ফরম্যাটে API ডকুমেন্টেশন পেজ �
 
 - CDN কনফিগার থাকলে `url` ডিফল্ট প্রোভাইডারের `cdn_domain` দিয়ে জোড়া লাগিয়ে সম্পূর্ণ HTTPS ঠিকানা হয়
 
-### POST /api/assets/presign — প্রিসাইন আপলোড URL নিন
+### POST /api/v1/assets/presign — প্রিসাইন আপলোড URL নিন
 
 **অনুরোধ**: `{ "filename": "demo.mp4", "mime_type": "video/mp4" }`
 
 **রেসপন্স**: `{ "code": 0, "data": { "key": "20260829/ab12...cd34.mp4", "upload_url": "https://signed-url", "expires_in": 3600, "url": "https://cdn.example.com/uploads/assets/..." } }`
 
-- `key` ফরম্যাট `Ymd/32hex.এক্সটেনশন`; ডাইরেক্ট আপলোডের পর `/api/assets/register`-এ ফেরত দিন
+- `key` ফরম্যাট `Ymd/32hex.এক্সটেনশন`; ডাইরেক্ট আপলোডের পর `/api/v1/assets/register`-এ ফেরত দিন
 - 50 MiB পর্যন্ত ভিডিও ক্লায়েন্ট সরাসরি অবজেক্ট স্টোরেজে আপলোড করে; `local` driver-এ নেই
 
-### POST /api/assets/register — সরাসরি আপলোড করা অ্যাসেট নিবন্ধন
+### POST /api/v1/assets/register — সরাসরি আপলোড করা অ্যাসেট নিবন্ধন
 
 **অনুরোধ**: `{ "key": "20260829/ab12...cd34.mp4", "filename": "demo.mp4", "mime_type": "video/mp4", "size": 52428800 }`
 
@@ -711,15 +712,15 @@ HTML ফরম্যাটে API ডকুমেন্টেশন পেজ �
 
 - `key` কঠোরভাবে যাচাই (`^\d{8}/[0-9a-f]{32}\.[a-z0-9]{1,10}$`) — পাথ ট্রাভার্সাল প্রতিরোধ
 
-### GET /api/assets/:id — অ্যাসেট ডিটেইল
+### GET /api/v1/assets/:id — অ্যাসেট ডিটেইল
 
-### DELETE /api/assets/:id — অ্যাসেট ডিলিট
+### DELETE /api/v1/assets/:id — অ্যাসেট ডিলিট
 
 ---
 
 ## Admin এন্ডপয়েন্ট（পোর্ট 8789）
 
-### POST /api/admin/login — অ্যাডমিন লগইন
+### POST /api/v1/admin/login — অ্যাডমিন লগইন
 
 **রিকোয়েস্ট**: `{ "username": "admin", "password": "..." }`
 
@@ -728,25 +729,25 @@ HTML ফরম্যাটে API ডকুমেন্টেশন পেজ �
 - Token localStorage-এ সংরক্ষিত
 - `csrf_token` পরের POST/PUT/DELETE রিকোয়েস্টের `X-CSRF-Token` header-এ পাঠাতে হবে
 
-### GET /api/admin/me — বর্তমান অ্যাডমিন
+### GET /api/v1/admin/me — বর্তমান অ্যাডমিন
 
-### POST /api/admin/logout — লগআউট
+### POST /api/v1/admin/logout — লগআউট
 
-### GET /api/admin/users — ইউজার লিস্ট
+### GET /api/v1/admin/users — ইউজার লিস্ট
 
 **প্যারামিটার**: `keyword`, `role_id`, `page`, `per_page`
 
 রেসপন্সে `id` এবং `role_id` hashids এনকোড করা।
 
-### POST /api/admin/users — ইউজার তৈরি
+### POST /api/v1/admin/users — ইউজার তৈরি
 
-### PUT /api/admin/users/:id — ইউজার আপডেট
+### PUT /api/v1/admin/users/:id — ইউজার আপডেট
 
-### DELETE /api/admin/users/:id — ইউজার ডিসেবল
+### DELETE /api/v1/admin/users/:id — ইউজার ডিসেবল
 
-### GET /api/admin/users/roles — রোল লিস্ট
+### GET /api/v1/admin/users/roles — রোল লিস্ট
 
-### GET /api/admin/audit-logs — অডিট লগ
+### GET /api/v1/admin/audit-logs — অডিট লগ
 
 **প্যারামিটার**: `user_id`, `action`, `date_from`, `date_to`, `page`, `per_page`
 
@@ -754,28 +755,28 @@ HTML ফরম্যাটে API ডকুমেন্টেশন পেজ �
 
 ### CDN প্রোভাইডার ম্যানেজমেন্ট (শুধু প্ল্যাটফর্ম মাস্টার টেন্যান্ট tenant 1, AdminMiddleware)
 
-### GET /api/admin/cdn/providers — প্রোভাইডার তালিকা
+### GET /api/v1/admin/cdn/providers — প্রোভাইডার তালিকা
 
-### POST /api/admin/cdn/providers — প্রোভাইডার তৈরি
+### POST /api/v1/admin/cdn/providers — প্রোভাইডার তৈরি
 
 **অনুরোধ**: `{ "name": "Aliyun OSS", "driver": "oss", "bucket": "ads-assets", "region": "oss-cn-hangzhou", "endpoint": "https://oss-cn-hangzhou.aliyuncs.com", "access_key": "...", "secret_key": "...", "cdn_domain": "cdn.example.com", "cdn_driver": "aliyun", "cdn_token": "...", "is_default": 1 }`
 
 - `driver`: `local` / `oss` (Alibaba Cloud OSS) / `cos` (Tencent Cloud COS, S3 প্রোটোকল) / `s3` (S3-কমপ্যাটিবল: AWS S3 / Cloudflare R2 / MinIO)
 - ক্রেডেনশিয়াল (access_key/secret_key/cdn_token) Encryptable দিয়ে ফিল্ড-লেভেল এনক্রিপ্টেড; রেসপন্সে শুধু মাস্ক করা ফিল্ড
 
-### PUT /api/admin/cdn/providers/:id — প্রোভাইডার আপডেট
+### PUT /api/v1/admin/cdn/providers/:id — প্রোভাইডার আপডেট
 
-### DELETE /api/admin/cdn/providers/:id — প্রোভাইডার ডিলিট (ডিফল্ট পরের enabled প্রোভাইডারে অটো স্থানান্তর)
+### DELETE /api/v1/admin/cdn/providers/:id — প্রোভাইডার ডিলিট (ডিফল্ট পরের enabled প্রোভাইডারে অটো স্থানান্তর)
 
-### PUT /api/admin/cdn/providers/:id/default — ডিফল্ট নির্ধারণ
+### PUT /api/v1/admin/cdn/providers/:id/default — ডিফল্ট নির্ধারণ
 
-### PUT /api/admin/cdn/providers/:id/toggle — চালু/বন্ধ (ডিফল্ট বন্ধ করলে অটো স্থানান্তর)
+### PUT /api/v1/admin/cdn/providers/:id/toggle — চালু/বন্ধ (ডিফল্ট বন্ধ করলে অটো স্থানান্তর)
 
-### POST /api/admin/cdn/providers/:id/test — কানেক্টিভিটি টেস্ট
+### POST /api/v1/admin/cdn/providers/:id/test — কানেক্টিভিটি টেস্ট
 
 **রেসপন্স**: `{ "code": 0, "data": { "ok": true, "driver": "oss", "status": "ok" } }`
 
-### POST /api/admin/cdn/providers/:id/purge — ক্যাশ পার্জ
+### POST /api/v1/admin/cdn/providers/:id/purge — ক্যাশ পার্জ
 
 **অনুরোধ**: `{ "paths": ["/uploads/assets/20260829/xxx.mp4"] }`
 

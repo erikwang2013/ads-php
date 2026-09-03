@@ -19,7 +19,7 @@ class DashboardController
         /**
      * @Title("仪表盘汇总")
      * @Group("报表")
-     * @Url("/api/reports/summary")
+     * @Url("/api/v1/reports/summary")
      * @Method("GET")
      */
     public function summary(Request $request): \Webman\Http\Response

@@ -10,7 +10,8 @@ class ServiceProxy
 
     public static function init(): void
     {
-        static::$baseUrl = config('app.service_api_url', 'http://127.0.0.1:8788/api');
+        // service API 版本固定在 URL 路径上（/api/v1/...），配置里只存不含版本的后端地址
+        static::$baseUrl = rtrim(config('app.service_api_url', 'http://127.0.0.1:8788/api'), '/') . '/v1';
     }
 
     public static function get(string $path, array $params = [], ?string $token = null): array
@@ -18,7 +19,7 @@ class ServiceProxy
         $url = static::$baseUrl . $path;
         if ($params) $url .= '?' . http_build_query($params);
 
-        $headers = ['Content-Type: application/json', 'X-API-Version: v1'];
+        $headers = ['Content-Type: application/json'];
         if ($token) $headers[] = 'Authorization: Bearer ' . $token;
 
         $ch = curl_init();
@@ -43,7 +44,7 @@ class ServiceProxy
     {
         $ch = curl_init();
 
-        $headers = ['Content-Type: application/json', 'X-API-Version: v1'];
+        $headers = ['Content-Type: application/json'];
         if ($token) $headers[] = 'Authorization: Bearer ' . $token;
 
         curl_setopt_array($ch, [

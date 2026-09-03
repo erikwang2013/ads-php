@@ -16,7 +16,7 @@ class TargetingTemplateController
         /**
      * @Title("模板列表")
      * @Group("定向模板")
-     * @Url("/api/targeting-templates")
+     * @Url("/api/v1/targeting-templates")
      * @Method("GET")
      */
     public function index(Request $request): \Webman\Http\Response
@@ -34,7 +34,7 @@ class TargetingTemplateController
         /**
      * @Title("模板详情")
      * @Group("定向模板")
-     * @Url("/api/targeting-templates/{id}")
+     * @Url("/api/v1/targeting-templates/{id}")
      * @Method("GET")
      */
     public function show(int $id): \Webman\Http\Response
@@ -47,7 +47,7 @@ class TargetingTemplateController
         /**
      * @Title("创建模板")
      * @Group("定向模板")
-     * @Url("/api/targeting-templates")
+     * @Url("/api/v1/targeting-templates")
      * @Method("POST")
      */
     public function store(Request $request): \Webman\Http\Response
@@ -66,7 +66,7 @@ class TargetingTemplateController
         /**
      * @Title("更新模板")
      * @Group("定向模板")
-     * @Url("/api/targeting-templates/{id}")
+     * @Url("/api/v1/targeting-templates/{id}")
      * @Method("PUT")
      */
     public function update(Request $request, int $id): \Webman\Http\Response
@@ -86,7 +86,7 @@ class TargetingTemplateController
         /**
      * @Title("删除模板")
      * @Group("定向模板")
-     * @Url("/api/targeting-templates/{id}")
+     * @Url("/api/v1/targeting-templates/{id}")
      * @Method("DELETE")
      */
     public function destroy(int $id): \Webman\Http\Response

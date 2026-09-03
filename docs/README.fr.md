@@ -243,7 +243,7 @@ make db-init
 # Accès
 # Back-office : http://localhost
 # Assistant d'installation : http://localhost/install
-# API : http://localhost/api (Header : X-API-Version: v1)
+# API : http://localhost/api/v1 (version fixée dans le chemin d'URL, non transmise via Header)
 ```
 
 ### Développement local
@@ -278,7 +278,6 @@ ads-php/
 │   │   │   ├── controller/v1/         # 17 contrôleurs
 │   │   │   ├── middleware/            # 15 middlewares
 │   │   │   ├── config/route.php       # Définition des routes
-│   │   │   └── route_helpers.php      # Fonction d'aide versioned()
 │   │   ├── ads-platform/              # Cœur des adaptateurs de plateformes
 │   │   │   ├── adapter/               # 29 adaptateurs de plateformes
 │   │   │   ├── src/                   # AdapterRegistry, CampaignData

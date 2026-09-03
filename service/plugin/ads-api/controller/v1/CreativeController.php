@@ -18,7 +18,7 @@ class CreativeController
         /**
      * @Title("创意列表")
      * @Group("创意")
-     * @Url("/api/creatives")
+     * @Url("/api/v1/creatives")
      * @Method("GET")
      */
     public function index(Request $request): \Webman\Http\Response
@@ -61,7 +61,7 @@ class CreativeController
         /**
      * @Title("创意详情")
      * @Group("创意")
-     * @Url("/api/creatives/{id}")
+     * @Url("/api/v1/creatives/{id}")
      * @Method("GET")
      */
     public function show(int $id): \Webman\Http\Response

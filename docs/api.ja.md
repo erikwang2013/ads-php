@@ -14,14 +14,15 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 ### Base URL
 
 ```
-http://your-domain.com/api
+http://your-domain.com/api/v1
 ```
+
+> API のバージョン番号は URL パスに固定されており（現在は `v1`）、Header では渡されません。今後のメジャーバージョン（`/api/v2` など）も同じ規則に従います。
 
 ### 必須 Headers
 
 | Header | 値 | 説明 |
 |--------|----|------|
-| `X-API-Version` | `v1` | API バージョン番号（必須、URL パスには出現しない） |
 | `X-Client-Platform` | `web` / `ios` / `android` / `macos` / `windows` / `linux` / `harmonyos` | 操作の発生元（必須） |
 | `Authorization` | `Bearer <token>` | JWT 認証トークン（ログイン/プラットフォームリスト/ヘルスチェック以外は必須） |
 
@@ -112,11 +113,11 @@ http://your-domain.com/api
 
 | エンドポイント | TTL | 層 |
 |------|-----|-----|
-| `/api/platforms` | 1 時間 | L1 メモリ → L2 APCu → L3 Redis |
-| `/api/accounts` + `/api/accounts/:id` | 5 分 | 同上 |
-| `/api/reports/summary` | 5 分 | 同上 |
-| `/api/alerts/rules` | 2 分 | 同上 |
-| `/api/alerts/unread-count` | 30 秒 | 同上 |
+| `/api/v1/platforms` | 1 時間 | L1 メモリ → L2 APCu → L3 Redis |
+| `/api/v1/accounts` + `/api/v1/accounts/:id` | 5 分 | 同上 |
+| `/api/v1/reports/summary` | 5 分 | 同上 |
+| `/api/v1/alerts/rules` | 2 分 | 同上 |
+| `/api/v1/alerts/unread-count` | 30 秒 | 同上 |
 
 ---
 
@@ -165,7 +166,7 @@ HTML 形式の API ドキュメントページを返す（認証不要）。
 
 ---
 
-### GET /api/captcha/generate — 認証コード生成
+### GET /api/v1/captcha/generate — 認証コード生成
 
 認証不要。
 
@@ -186,7 +187,7 @@ HTML 形式の API ドキュメントページを返す（認証不要）。
 
 ---
 
-### POST /api/captcha/verify — 認証コード検証
+### POST /api/v1/captcha/verify — 認証コード検証
 
 認証不要。
 
@@ -204,7 +205,7 @@ HTML 形式の API ドキュメントページを返す（認証不要）。
 
 ## モジュール 2: 認証
 
-### POST /api/auth/login — ログイン
+### POST /api/v1/auth/login — ログイン
 
 認証不要。
 
@@ -245,7 +246,7 @@ HTML 形式の API ドキュメントページを返す（認証不要）。
 
 ---
 
-### GET /api/auth/me — 現在のユーザー
+### GET /api/v1/auth/me — 現在のユーザー
 
 **リクエストヘッダー**: `Authorization: Bearer <token>`
 
@@ -266,7 +267,7 @@ HTML 形式の API ドキュメントページを返す（認証不要）。
 
 ---
 
-### POST /api/auth/refresh — Token リフレッシュ
+### POST /api/v1/auth/refresh — Token リフレッシュ
 
 **リクエストヘッダー**: `Authorization: Bearer <old_token>`
 
@@ -290,7 +291,7 @@ HTML 形式の API ドキュメントページを返す（認証不要）。
 
 ## モジュール 3: プラットフォーム & アカウント
 
-### GET /api/platforms — プラットフォームリスト
+### GET /api/v1/platforms — プラットフォームリスト
 
 認証不要。1 時間キャッシュ。
 
@@ -307,7 +308,7 @@ HTML 形式の API ドキュメントページを返す（認証不要）。
 
 ---
 
-### GET /api/platforms/:code/oauth-url — OAuth 認可 URL
+### GET /api/v1/platforms/:code/oauth-url — OAuth 認可 URL
 
 **パラメータ**: `?redirect_uri=https://your-domain.com/callback`
 
@@ -317,7 +318,7 @@ HTML 形式の API ドキュメントページを返す（認証不要）。
 
 ---
 
-### POST /api/platforms/:code/callback — OAuth コールバック
+### POST /api/v1/platforms/:code/callback — OAuth コールバック
 
 **リクエスト**: `{ "state": "...", "code": "..." }`
 
@@ -325,7 +326,7 @@ HTML 形式の API ドキュメントページを返す（認証不要）。
 
 ---
 
-### GET /api/accounts — アカウントリスト
+### GET /api/v1/accounts — アカウントリスト
 
 5 分キャッシュ。
 
@@ -341,23 +342,23 @@ HTML 形式の API ドキュメントページを返す（認証不要）。
 
 ---
 
-### GET /api/accounts/:id — アカウント詳細
+### GET /api/v1/accounts/:id — アカウント詳細
 
 5 分キャッシュ。
 
 ---
 
-### DELETE /api/accounts/:id — アカウント解除
+### DELETE /api/v1/accounts/:id — アカウント解除
 
 ---
 
-### POST /api/accounts/:id/sync — 手動同期
+### POST /api/v1/accounts/:id/sync — 手動同期
 
 ---
 
 ## モジュール 4: 広告プラン
 
-### GET /api/campaigns — プランリスト
+### GET /api/v1/campaigns — プランリスト
 
 **パラメータ**:
 
@@ -374,7 +375,7 @@ HTML 形式の API ドキュメントページを返す（認証不要）。
 
 ---
 
-### POST /api/campaigns — プラン作成
+### POST /api/v1/campaigns — プラン作成
 
 **リクエスト**:
 ```json
@@ -392,25 +393,25 @@ HTML 形式の API ドキュメントページを返す（認証不要）。
 
 ---
 
-### GET /api/campaigns/:id — プラン詳細
+### GET /api/v1/campaigns/:id — プラン詳細
 
 **レスポンス**: `{ "code": 0, "data": { "campaign": {...}, "today": { "cost":..., "impressions":... } } }`
 
 ---
 
-### PUT /api/campaigns/:id — プラン更新
+### PUT /api/v1/campaigns/:id — プラン更新
 
 **リクエスト**: `{ "name": "新名称", "daily_budget": 30000 }`
 
 ---
 
-### POST /api/campaigns/:id/toggle — プランの開始・停止
+### POST /api/v1/campaigns/:id/toggle — プランの開始・停止
 
 **リクエスト**: `{ "enabled": false }`
 
 ---
 
-### POST /api/campaigns/batch/toggle — 一括開始・停止
+### POST /api/v1/campaigns/batch/toggle — 一括開始・停止
 
 **リクエスト**: `{ "ids": ["hash1", "hash2", "hash3"], "enabled": false }`
 
@@ -420,11 +421,11 @@ HTML 形式の API ドキュメントページを返す（認証不要）。
 
 ## モジュール 5: 広告グループ
 
-### GET /api/ad-groups — 広告グループリスト
+### GET /api/v1/ad-groups — 広告グループリスト
 
 **パラメータ**: `platform`, `campaign_id`, `status`, `sort`(id/name/status/bid_amount), `page`, `per_page`
 
-### POST /api/ad-groups — 広告グループ作成
+### POST /api/v1/ad-groups — 広告グループ作成
 
 **リクエスト**:
 ```json
@@ -440,27 +441,27 @@ HTML 形式の API ドキュメントページを返す（認証不要）。
 
 - `targeting_template_id`: 任意。ターゲティングテンプレートから targeting JSON を読み込んでマージ
 
-### GET /api/ad-groups/:id — 広告グループ詳細
+### GET /api/v1/ad-groups/:id — 広告グループ詳細
 
-### PUT /api/ad-groups/:id — 広告グループ更新
+### PUT /api/v1/ad-groups/:id — 広告グループ更新
 
-### POST /api/ad-groups/:id/toggle — 広告グループの開始・停止
+### POST /api/v1/ad-groups/:id/toggle — 広告グループの開始・停止
 
 ---
 
 ## モジュール 6: クリエイティブ
 
-### GET /api/creatives — クリエイティブリスト
+### GET /api/v1/creatives — クリエイティブリスト
 
 **パラメータ**: `platform`, `ad_group_id`, `campaign_id`, `media_type`(image/video/text), `sort`, `page`, `per_page`
 
-### GET /api/creatives/:id — クリエイティブ詳細
+### GET /api/v1/creatives/:id — クリエイティブ詳細
 
 ---
 
 ## モジュール 7: レポート
 
-### GET /api/reports/summary — ダッシュボード集計
+### GET /api/v1/reports/summary — ダッシュボード集計
 
 5 分キャッシュ。
 
@@ -480,7 +481,7 @@ HTML 形式の API ドキュメントページを返す（認証不要）。
 
 ---
 
-### GET /api/reports/custom — カスタムレポート
+### GET /api/v1/reports/custom — カスタムレポート
 
 **パラメータ**:
 
@@ -494,7 +495,7 @@ HTML 形式の API ドキュメントページを返す（認証不要）。
 
 ---
 
-### GET /api/reports/export — レポートエクスポート
+### GET /api/v1/reports/export — レポートエクスポート
 
 **パラメータ**: `format=csv`, `date_start`, `date_end`, `metrics[]`
 
@@ -502,11 +503,11 @@ HTML 形式の API ドキュメントページを返す（認証不要）。
 
 ---
 
-### GET /api/reports/export-dashboard — ダッシュボード PDF エクスポート
+### GET /api/v1/reports/export-dashboard — ダッシュボード PDF エクスポート
 
 ---
 
-### GET /api/reports/calendar — 配信カレンダー
+### GET /api/v1/reports/calendar — 配信カレンダー
 
 **パラメータ**: `date_start`, `date_end`, `platform`
 
@@ -514,7 +515,7 @@ HTML 形式の API ドキュメントページを返す（認証不要）。
 
 ---
 
-### GET /api/reports/budget-alerts — 予算警告
+### GET /api/v1/reports/budget-alerts — 予算警告
 
 **レスポンス**: `[{ campaign_id, campaign_name, platform, spent, budget, pct, level }]`
 
@@ -522,7 +523,7 @@ HTML 形式の API ドキュメントページを返す（認証不要）。
 
 ---
 
-### GET /api/reports/attribution — アトリビューション分析
+### GET /api/v1/reports/attribution — アトリビューション分析
 
 **パラメータ**: `model`(first_touch/last_touch/linear/time_decay/position_based), `date_start`, `date_end`
 
@@ -540,7 +541,7 @@ HTML 形式の API ドキュメントページを返す（認証不要）。
 
 ---
 
-### GET /api/reports/attribution/models — アトリビューションモデルリスト
+### GET /api/v1/reports/attribution/models — アトリビューションモデルリスト
 
 **レスポンス**: `[{ code: "last_touch", name: "末次触点", description: "..." }]`
 
@@ -550,13 +551,13 @@ HTML 形式の API ドキュメントページを返す（認証不要）。
 
 ## モジュール 8: アラート
 
-### GET /api/alerts/rules — アラートルールリスト
+### GET /api/v1/alerts/rules — アラートルールリスト
 
 2 分キャッシュ。
 
 **パラメータ**: `platform`, `enabled`(0/1), `metric`, `page`, `per_page`
 
-### POST /api/alerts/rules — アラートルール作成
+### POST /api/v1/alerts/rules — アラートルール作成
 
 **リクエスト**:
 ```json
@@ -572,17 +573,17 @@ HTML 形式の API ドキュメントページを返す（認証不要）。
 }
 ```
 
-### PUT /api/alerts/rules/:id — アラートルール更新
+### PUT /api/v1/alerts/rules/:id — アラートルール更新
 
-### DELETE /api/alerts/rules/:id — アラートルール削除
+### DELETE /api/v1/alerts/rules/:id — アラートルール削除
 
-### GET /api/alerts/logs — アラート記録
+### GET /api/v1/alerts/logs — アラート記録
 
 **パラメータ**: `status`, `rule_id`, `metric`, `page`, `per_page`
 
-### POST /api/alerts/logs/:id/acknowledge — アラート確認
+### POST /api/v1/alerts/logs/:id/acknowledge — アラート確認
 
-### GET /api/alerts/unread-count — 未読アラート数
+### GET /api/v1/alerts/unread-count — 未読アラート数
 
 30 秒キャッシュ。フロントエンドは 30s ポーリング。
 
@@ -590,23 +591,23 @@ HTML 形式の API ドキュメントページを返す（認証不要）。
 
 ## モジュール 9: 通知
 
-### GET /api/notifications — 通知リスト
+### GET /api/v1/notifications — 通知リスト
 
 **パラメータ**: `type`(alert/system), `is_read`(0/1), `page`, `per_page`
 
-### GET /api/notifications/unread-count — 未読通知数
+### GET /api/v1/notifications/unread-count — 未読通知数
 
-### POST /api/notifications/:id/read — 既読マーク
+### POST /api/v1/notifications/:id/read — 既読マーク
 
-### POST /api/notifications/read-all — 全既読
+### POST /api/v1/notifications/read-all — 全既読
 
 ---
 
 ## モジュール 10: 自動入札
 
-### GET /api/bid-rules — ルールリスト
+### GET /api/v1/bid-rules — ルールリスト
 
-### POST /api/bid-rules — ルール作成
+### POST /api/v1/bid-rules — ルール作成
 
 **リクエスト**:
 ```json
@@ -636,11 +637,11 @@ HTML 形式の API ドキュメントページを返す（認証不要）。
 | budget_max | int | 予算上限（分） |
 | cooldown_minutes | int | クールダウン時間（デフォルト 60） |
 
-### PUT /api/bid-rules/:id — ルール更新
+### PUT /api/v1/bid-rules/:id — ルール更新
 
-### DELETE /api/bid-rules/:id — ルール削除
+### DELETE /api/v1/bid-rules/:id — ルール削除
 
-### GET /api/bid-rules/logs — 入札履歴
+### GET /api/v1/bid-rules/logs — 入札履歴
 
 **パラメータ**: `rule_id`, `campaign_id`
 
@@ -648,13 +649,13 @@ HTML 形式の API ドキュメントページを返す（認証不要）。
 
 ## モジュール 11: ターゲティングテンプレート
 
-### GET /api/targeting-templates — テンプレートリスト
+### GET /api/v1/targeting-templates — テンプレートリスト
 
 **パラメータ**: `platform`
 
-### GET /api/targeting-templates/:id — テンプレート詳細
+### GET /api/v1/targeting-templates/:id — テンプレート詳細
 
-### POST /api/targeting-templates — テンプレート作成
+### POST /api/v1/targeting-templates — テンプレート作成
 
 **リクエスト**:
 ```json
@@ -671,19 +672,19 @@ HTML 形式の API ドキュメントページを返す（認証不要）。
 }
 ```
 
-### PUT /api/targeting-templates/:id — テンプレート更新
+### PUT /api/v1/targeting-templates/:id — テンプレート更新
 
-### DELETE /api/targeting-templates/:id — テンプレート削除
+### DELETE /api/v1/targeting-templates/:id — テンプレート削除
 
 ---
 
 ## モジュール 12: 素材ライブラリ
 
-### GET /api/assets — 素材リスト
+### GET /api/v1/assets — 素材リスト
 
 **パラメータ**: `type`(image/video), `page`, `per_page`
 
-### POST /api/assets/upload — 素材アップロード
+### POST /api/v1/assets/upload — 素材アップロード
 
 **リクエスト**: `multipart/form-data`, フィールド `file`
 
@@ -694,16 +695,16 @@ HTML 形式の API ドキュメントページを返す（認証不要）。
 
 - CDN 設定時、`url` はデフォルトプロバイダーの `cdn_domain` を付けて完全な HTTPS アドレスに組み立てられます
 
-### POST /api/assets/presign — 事前署名アップロード URL を取得
+### POST /api/v1/assets/presign — 事前署名アップロード URL を取得
 
 **リクエスト**: `{ "filename": "demo.mp4", "mime_type": "video/mp4" }`
 
 **レスポンス**: `{ "code": 0, "data": { "key": "20260829/ab12...cd34.mp4", "upload_url": "https://signed-url", "expires_in": 3600, "url": "https://cdn.example.com/uploads/assets/..." } }`
 
-- `key` 形式: `Ymd/32hex.拡張子`。直接アップロード後 `/api/assets/register` に返却
+- `key` 形式: `Ymd/32hex.拡張子`。直接アップロード後 `/api/v1/assets/register` に返却
 - 50 MiB までの動画はクライアントがオブジェクトストレージへ直接アップロード。`local` driver では利用不可
 
-### POST /api/assets/register — 直接アップロード済み素材を登録
+### POST /api/v1/assets/register — 直接アップロード済み素材を登録
 
 **リクエスト**: `{ "key": "20260829/ab12...cd34.mp4", "filename": "demo.mp4", "mime_type": "video/mp4", "size": 52428800 }`
 
@@ -711,15 +712,15 @@ HTML 形式の API ドキュメントページを返す（認証不要）。
 
 - `key` を厳格検証 (`^\d{8}/[0-9a-f]{32}\.[a-z0-9]{1,10}$`) — パストラバーサル防止
 
-### GET /api/assets/:id — 素材詳細
+### GET /api/v1/assets/:id — 素材詳細
 
-### DELETE /api/assets/:id — 素材削除
+### DELETE /api/v1/assets/:id — 素材削除
 
 ---
 
 ## Admin エンドポイント（ポート 8789）
 
-### POST /api/admin/login — 管理者ログイン
+### POST /api/v1/admin/login — 管理者ログイン
 
 **リクエスト**: `{ "username": "admin", "password": "..." }`
 
@@ -728,25 +729,25 @@ HTML 形式の API ドキュメントページを返す（認証不要）。
 - Token は localStorage に保存
 - `csrf_token` は後続の POST/PUT/DELETE リクエストの `X-CSRF-Token` header で送信する必要がある
 
-### GET /api/admin/me — 現在の管理者
+### GET /api/v1/admin/me — 現在の管理者
 
-### POST /api/admin/logout — ログアウト
+### POST /api/v1/admin/logout — ログアウト
 
-### GET /api/admin/users — ユーザーリスト
+### GET /api/v1/admin/users — ユーザーリスト
 
 **パラメータ**: `keyword`, `role_id`, `page`, `per_page`
 
 レスポンスの `id` と `role_id` は hashids でエンコードされる。
 
-### POST /api/admin/users — ユーザー作成
+### POST /api/v1/admin/users — ユーザー作成
 
-### PUT /api/admin/users/:id — ユーザー更新
+### PUT /api/v1/admin/users/:id — ユーザー更新
 
-### DELETE /api/admin/users/:id — ユーザー無効化
+### DELETE /api/v1/admin/users/:id — ユーザー無効化
 
-### GET /api/admin/users/roles — ロールリスト
+### GET /api/v1/admin/users/roles — ロールリスト
 
-### GET /api/admin/audit-logs — 監査ログ
+### GET /api/v1/admin/audit-logs — 監査ログ
 
 **パラメータ**: `user_id`, `action`, `date_from`, `date_to`, `page`, `per_page`
 
@@ -754,28 +755,28 @@ HTML 形式の API ドキュメントページを返す（認証不要）。
 
 ### CDN プロバイダー管理 (プラットフォームのマスターテナント tenant 1 のみ、AdminMiddleware 検証)
 
-### GET /api/admin/cdn/providers — プロバイダー一覧
+### GET /api/v1/admin/cdn/providers — プロバイダー一覧
 
-### POST /api/admin/cdn/providers — プロバイダー作成
+### POST /api/v1/admin/cdn/providers — プロバイダー作成
 
 **リクエスト**: `{ "name": "Aliyun OSS", "driver": "oss", "bucket": "ads-assets", "region": "oss-cn-hangzhou", "endpoint": "https://oss-cn-hangzhou.aliyuncs.com", "access_key": "...", "secret_key": "...", "cdn_domain": "cdn.example.com", "cdn_driver": "aliyun", "cdn_token": "...", "is_default": 1 }`
 
 - `driver`: `local` / `oss` (阿里云 OSS) / `cos` (腾讯云 COS、S3 プロトコル) / `s3` (S3 互換: AWS S3 / Cloudflare R2 / MinIO)
 - 認証情報 (access_key/secret_key/cdn_token) は Encryptable でフィールド単位暗号化。レスポンスはマスク済みフィールドのみ
 
-### PUT /api/admin/cdn/providers/:id — プロバイダー更新
+### PUT /api/v1/admin/cdn/providers/:id — プロバイダー更新
 
-### DELETE /api/admin/cdn/providers/:id — 削除 (デフォルトは次の enabled プロバイダーへ自動移行)
+### DELETE /api/v1/admin/cdn/providers/:id — 削除 (デフォルトは次の enabled プロバイダーへ自動移行)
 
-### PUT /api/admin/cdn/providers/:id/default — デフォルトに設定
+### PUT /api/v1/admin/cdn/providers/:id/default — デフォルトに設定
 
-### PUT /api/admin/cdn/providers/:id/toggle — 有効/無効切替 (デフォルト無効化時は自動移行)
+### PUT /api/v1/admin/cdn/providers/:id/toggle — 有効/無効切替 (デフォルト無効化時は自動移行)
 
-### POST /api/admin/cdn/providers/:id/test — 接続テスト
+### POST /api/v1/admin/cdn/providers/:id/test — 接続テスト
 
 **レスポンス**: `{ "code": 0, "data": { "ok": true, "driver": "oss", "status": "ok" } }`
 
-### POST /api/admin/cdn/providers/:id/purge — キャッシュパージ
+### POST /api/v1/admin/cdn/providers/:id/purge — キャッシュパージ
 
 **リクエスト**: `{ "paths": ["/uploads/assets/20260829/xxx.mp4"] }`
 

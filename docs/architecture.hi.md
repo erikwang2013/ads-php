@@ -60,7 +60,6 @@ Request
   → AttackGuardMiddleware     (XSS/路径遍历/Header注入/Body 10MiB/Content-Type白名单)
   → ClientPlatformMiddleware  (X-Client-Platform 8端来源识别)
   → ReplayGuardMiddleware     (Nonce+Timestamp 防重放, 非浏览器端强校验)
-  → VersionMiddleware         (X-API-Version 版本路由)
   → RateLimitMiddleware       (Redis 滑动窗口 60次/60s)
   → LoginThrottleMiddleware   (登录节流 5次失败→15分钟锁定)
   → SessionLimitMiddleware    (并发会话限制 最大3个活跃Token)
@@ -80,7 +79,6 @@ Request
   → LoginThrottleMiddleware   (登录节流 5次失败→15分钟)
   → ClientPlatformMiddleware  (X-Client-Platform 来源识别)
   → CsrfMiddleware            (CSRF Token 验证)
-  → VersionMiddleware         (API 版本)
   → AuthCheck                 (Session + JWT 双通道)
   → Controller
 ```
@@ -111,7 +109,6 @@ ads-php/
 │   │   │   ├── controller/v1/             # 14 个控制器
 │   │   │   ├── middleware/                # 7 个中间件
 │   │   │   ├── config/route.php           # 45+ 路由
-│   │   │   └── route_helpers.php          # versioned() 版本路由
 │   │   ├── ads-platform/                  # 平台适配器核心
 │   │   │   ├── adapter/                   # 29 个平台适配器
 │   │   │   ├── src/                       # AdapterRegistry, CampaignData
@@ -222,16 +219,14 @@ ads-php/
 
 ---
 
-## 7. API वर्शन रूटिंग तंत्र
+## 7. API वर्शन रूटिंग
 
-वर्शन नंबर URL पाथ में नहीं आता। वर्शन `X-API-Version` header के माध्यम से भेजा जाता है, `VersionMiddleware` इसे पढ़कर `$request->apiVersion` सेट करता है। `versioned()` सहायक फ़ंक्शन रनटाइम पर कंट्रोलर क्लास के वर्शन सेगमेंट को अनुरोध वर्शन से बदल देता है।
+API वर्शन नंबर URL पाथ में फिक्स रहता है (`/api/v1/...`), और रूट्स `plugin\ads_api\controller\v1\*` से स्टैटिक रूप से बाइंड होते हैं; इसे Header में नहीं भेजा जाता। नया वर्शन जोड़ते समय एक अलग रूट ग्रुप रजिस्टर करें (जैसे `/api/v2` → `controller\v2\*`)।
 
 ```
-请求: GET /api/campaigns
-Header: X-API-Version: v1
+请求: GET /api/v1/campaigns
 
-VersionMiddleware → $request->apiVersion = 'v1'
-versioned(CampaignController::class, 'index')
+路由 /api/v1/campaigns
   → controller\v1\CampaignController::index()
 ```
 

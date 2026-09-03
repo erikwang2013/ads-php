@@ -61,7 +61,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 |--------|:---:|:---:|:---:|
 | CORS 화이트리스트 | ✅ | ✅ | ✅ |
 | 보안 응답 헤더 (X-Frame/CSP/HSTS/nosniff) | ✅ | ✅ | ✅ |
-| 버전 라우팅 (X-API-Version) | ✅ | ✅ | ✅ |
+| 버전 라우팅 (/api/v1) | ✅ | ✅ | ✅ |
 | API 속도 제한 (슬라이딩 윈도우) | ✅ | ✅ | ✅ |
 | SQL 주입 검출 (패턴 매칭) | ✅ | ✅ | ✅ |
 | 입력 필터링 (strip_tags + trim) | ✅ | ✅ | ✅ |

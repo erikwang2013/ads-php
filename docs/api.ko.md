@@ -14,14 +14,15 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 ### Base URL
 
 ```
-http://your-domain.com/api
+http://your-domain.com/api/v1
 ```
+
+> API 버전 번호는 URL 경로에 고정되어 있으며(현재 `v1`) Header로 전달되지 않습니다. 이후의 메이저 버전(예: `/api/v2`)도 동일한 규칙을 따릅니다.
 
 ### 필수 Headers
 
 | Header | 값 | 설명 |
 |--------|----|------|
-| `X-API-Version` | `v1` | API 버전 번호（필수, URL 경로에 나타나지 않음） |
 | `X-Client-Platform` | `web` / `ios` / `android` / `macos` / `windows` / `linux` / `harmonyos` | 작업 출처 단말（필수） |
 | `Authorization` | `Bearer <token>` | JWT 인증 토큰（로그인/플랫폼 목록/헬스 체크 외 필수） |
 
@@ -112,11 +113,11 @@ http://your-domain.com/api
 
 | 엔드포인트 | TTL | 계층 |
 |------|-----|-----|
-| `/api/platforms` | 1시간 | L1 메모리 → L2 APCu → L3 Redis |
-| `/api/accounts` + `/api/accounts/:id` | 5분 | 위와 동일 |
-| `/api/reports/summary` | 5분 | 위와 동일 |
-| `/api/alerts/rules` | 2분 | 위와 동일 |
-| `/api/alerts/unread-count` | 30초 | 위와 동일 |
+| `/api/v1/platforms` | 1시간 | L1 메모리 → L2 APCu → L3 Redis |
+| `/api/v1/accounts` + `/api/v1/accounts/:id` | 5분 | 위와 동일 |
+| `/api/v1/reports/summary` | 5분 | 위와 동일 |
+| `/api/v1/alerts/rules` | 2분 | 위와 동일 |
+| `/api/v1/alerts/unread-count` | 30초 | 위와 동일 |
 
 ---
 
@@ -165,7 +166,7 @@ HTML 형식의 API 문서 페이지 반환（인증 불필요）.
 
 ---
 
-### GET /api/captcha/generate — 캡차 생성
+### GET /api/v1/captcha/generate — 캡차 생성
 
 인증 불필요.
 
@@ -186,7 +187,7 @@ HTML 형식의 API 문서 페이지 반환（인증 불필요）.
 
 ---
 
-### POST /api/captcha/verify — 캡차 검증
+### POST /api/v1/captcha/verify — 캡차 검증
 
 인증 불필요.
 
@@ -204,7 +205,7 @@ HTML 형식의 API 문서 페이지 반환（인증 불필요）.
 
 ## 모듈 2: 인증
 
-### POST /api/auth/login — 로그인
+### POST /api/v1/auth/login — 로그인
 
 인증 불필요.
 
@@ -245,7 +246,7 @@ HTML 형식의 API 문서 페이지 반환（인증 불필요）.
 
 ---
 
-### GET /api/auth/me — 현재 사용자
+### GET /api/v1/auth/me — 현재 사용자
 
 **요청 헤더**: `Authorization: Bearer <token>`
 
@@ -266,7 +267,7 @@ HTML 형식의 API 문서 페이지 반환（인증 불필요）.
 
 ---
 
-### POST /api/auth/refresh — Token 갱신
+### POST /api/v1/auth/refresh — Token 갱신
 
 **요청 헤더**: `Authorization: Bearer <old_token>`
 
@@ -290,7 +291,7 @@ HTML 형식의 API 문서 페이지 반환（인증 불필요）.
 
 ## 모듈 3: 플랫폼 & 계정
 
-### GET /api/platforms — 플랫폼 목록
+### GET /api/v1/platforms — 플랫폼 목록
 
 인증 불필요. 1시간 캐시.
 
@@ -307,7 +308,7 @@ HTML 형식의 API 문서 페이지 반환（인증 불필요）.
 
 ---
 
-### GET /api/platforms/:code/oauth-url — OAuth 인증 URL
+### GET /api/v1/platforms/:code/oauth-url — OAuth 인증 URL
 
 **파라미터**: `?redirect_uri=https://your-domain.com/callback`
 
@@ -317,7 +318,7 @@ HTML 형식의 API 문서 페이지 반환（인증 불필요）.
 
 ---
 
-### POST /api/platforms/:code/callback — OAuth 콜백
+### POST /api/v1/platforms/:code/callback — OAuth 콜백
 
 **요청**: `{ "state": "...", "code": "..." }`
 
@@ -325,7 +326,7 @@ HTML 형식의 API 문서 페이지 반환（인증 불필요）.
 
 ---
 
-### GET /api/accounts — 계정 목록
+### GET /api/v1/accounts — 계정 목록
 
 5분 캐시.
 
@@ -341,23 +342,23 @@ HTML 형식의 API 문서 페이지 반환（인증 불필요）.
 
 ---
 
-### GET /api/accounts/:id — 계정 상세
+### GET /api/v1/accounts/:id — 계정 상세
 
 5분 캐시.
 
 ---
 
-### DELETE /api/accounts/:id — 계정 해제
+### DELETE /api/v1/accounts/:id — 계정 해제
 
 ---
 
-### POST /api/accounts/:id/sync — 수동 동기화
+### POST /api/v1/accounts/:id/sync — 수동 동기화
 
 ---
 
 ## 모듈 4: 광고 캠페인
 
-### GET /api/campaigns — 캠페인 목록
+### GET /api/v1/campaigns — 캠페인 목록
 
 **파라미터**:
 
@@ -374,7 +375,7 @@ HTML 형식의 API 문서 페이지 반환（인증 불필요）.
 
 ---
 
-### POST /api/campaigns — 캠페인 생성
+### POST /api/v1/campaigns — 캠페인 생성
 
 **요청**:
 ```json
@@ -392,25 +393,25 @@ HTML 형식의 API 문서 페이지 반환（인증 불필요）.
 
 ---
 
-### GET /api/campaigns/:id — 캠페인 상세
+### GET /api/v1/campaigns/:id — 캠페인 상세
 
 **응답**: `{ "code": 0, "data": { "campaign": {...}, "today": { "cost":..., "impressions":... } } }`
 
 ---
 
-### PUT /api/campaigns/:id — 캠페인 업데이트
+### PUT /api/v1/campaigns/:id — 캠페인 업데이트
 
 **요청**: `{ "name": "新名称", "daily_budget": 30000 }`
 
 ---
 
-### POST /api/campaigns/:id/toggle — 캠페인 시작/중지
+### POST /api/v1/campaigns/:id/toggle — 캠페인 시작/중지
 
 **요청**: `{ "enabled": false }`
 
 ---
 
-### POST /api/campaigns/batch/toggle — 일괄 시작/중지
+### POST /api/v1/campaigns/batch/toggle — 일괄 시작/중지
 
 **요청**: `{ "ids": ["hash1", "hash2", "hash3"], "enabled": false }`
 
@@ -420,11 +421,11 @@ HTML 형식의 API 문서 페이지 반환（인증 불필요）.
 
 ## 모듈 5: 광고 그룹
 
-### GET /api/ad-groups — 광고 그룹 목록
+### GET /api/v1/ad-groups — 광고 그룹 목록
 
 **파라미터**: `platform`, `campaign_id`, `status`, `sort`(id/name/status/bid_amount), `page`, `per_page`
 
-### POST /api/ad-groups — 광고 그룹 생성
+### POST /api/v1/ad-groups — 광고 그룹 생성
 
 **요청**:
 ```json
@@ -440,27 +441,27 @@ HTML 형식의 API 문서 페이지 반환（인증 불필요）.
 
 - `targeting_template_id`: 선택 사항, 타겟팅 템플릿에서 targeting JSON을 로드하여 병합
 
-### GET /api/ad-groups/:id — 광고 그룹 상세
+### GET /api/v1/ad-groups/:id — 광고 그룹 상세
 
-### PUT /api/ad-groups/:id — 광고 그룹 업데이트
+### PUT /api/v1/ad-groups/:id — 광고 그룹 업데이트
 
-### POST /api/ad-groups/:id/toggle — 광고 그룹 시작/중지
+### POST /api/v1/ad-groups/:id/toggle — 광고 그룹 시작/중지
 
 ---
 
 ## 모듈 6: 소재
 
-### GET /api/creatives — 소재 목록
+### GET /api/v1/creatives — 소재 목록
 
 **파라미터**: `platform`, `ad_group_id`, `campaign_id`, `media_type`(image/video/text), `sort`, `page`, `per_page`
 
-### GET /api/creatives/:id — 소재 상세
+### GET /api/v1/creatives/:id — 소재 상세
 
 ---
 
 ## 모듈 7: 보고서
 
-### GET /api/reports/summary — 대시보드 집계
+### GET /api/v1/reports/summary — 대시보드 집계
 
 5분 캐시.
 
@@ -480,7 +481,7 @@ HTML 형식의 API 문서 페이지 반환（인증 불필요）.
 
 ---
 
-### GET /api/reports/custom — 커스텀 보고서
+### GET /api/v1/reports/custom — 커스텀 보고서
 
 **파라미터**:
 
@@ -494,7 +495,7 @@ HTML 형식의 API 문서 페이지 반환（인증 불필요）.
 
 ---
 
-### GET /api/reports/export — 보고서 내보내기
+### GET /api/v1/reports/export — 보고서 내보내기
 
 **파라미터**: `format=csv`, `date_start`, `date_end`, `metrics[]`
 
@@ -502,11 +503,11 @@ HTML 형식의 API 문서 페이지 반환（인증 불필요）.
 
 ---
 
-### GET /api/reports/export-dashboard — 대시보드 PDF 내보내기
+### GET /api/v1/reports/export-dashboard — 대시보드 PDF 내보내기
 
 ---
 
-### GET /api/reports/calendar — 집행 캘린더
+### GET /api/v1/reports/calendar — 집행 캘린더
 
 **파라미터**: `date_start`, `date_end`, `platform`
 
@@ -514,7 +515,7 @@ HTML 형식의 API 문서 페이지 반환（인증 불필요）.
 
 ---
 
-### GET /api/reports/budget-alerts — 예산 경보
+### GET /api/v1/reports/budget-alerts — 예산 경보
 
 **응답**: `[{ campaign_id, campaign_name, platform, spent, budget, pct, level }]`
 
@@ -522,7 +523,7 @@ HTML 형식의 API 문서 페이지 반환（인증 불필요）.
 
 ---
 
-### GET /api/reports/attribution — 기여도 분석
+### GET /api/v1/reports/attribution — 기여도 분석
 
 **파라미터**: `model`(first_touch/last_touch/linear/time_decay/position_based), `date_start`, `date_end`
 
@@ -540,7 +541,7 @@ HTML 형식의 API 문서 페이지 반환（인증 불필요）.
 
 ---
 
-### GET /api/reports/attribution/models — 기여도 모델 목록
+### GET /api/v1/reports/attribution/models — 기여도 모델 목록
 
 **응답**: `[{ code: "last_touch", name: "末次触点", description: "..." }]`
 
@@ -550,13 +551,13 @@ HTML 형식의 API 문서 페이지 반환（인증 불필요）.
 
 ## 모듈 8: 경보
 
-### GET /api/alerts/rules — 경보 규칙 목록
+### GET /api/v1/alerts/rules — 경보 규칙 목록
 
 2분 캐시.
 
 **파라미터**: `platform`, `enabled`(0/1), `metric`, `page`, `per_page`
 
-### POST /api/alerts/rules — 경보 규칙 생성
+### POST /api/v1/alerts/rules — 경보 규칙 생성
 
 **요청**:
 ```json
@@ -572,17 +573,17 @@ HTML 형식의 API 문서 페이지 반환（인증 불필요）.
 }
 ```
 
-### PUT /api/alerts/rules/:id — 경보 규칙 업데이트
+### PUT /api/v1/alerts/rules/:id — 경보 규칙 업데이트
 
-### DELETE /api/alerts/rules/:id — 경보 규칙 삭제
+### DELETE /api/v1/alerts/rules/:id — 경보 규칙 삭제
 
-### GET /api/alerts/logs — 경보 기록
+### GET /api/v1/alerts/logs — 경보 기록
 
 **파라미터**: `status`, `rule_id`, `metric`, `page`, `per_page`
 
-### POST /api/alerts/logs/:id/acknowledge — 경보 확인
+### POST /api/v1/alerts/logs/:id/acknowledge — 경보 확인
 
-### GET /api/alerts/unread-count — 미확인 경보 수
+### GET /api/v1/alerts/unread-count — 미확인 경보 수
 
 30초 캐시. 프론트엔드 30초 폴링.
 
@@ -590,23 +591,23 @@ HTML 형식의 API 문서 페이지 반환（인증 불필요）.
 
 ## 모듈 9: 알림
 
-### GET /api/notifications — 알림 목록
+### GET /api/v1/notifications — 알림 목록
 
 **파라미터**: `type`(alert/system), `is_read`(0/1), `page`, `per_page`
 
-### GET /api/notifications/unread-count — 미확인 알림 수
+### GET /api/v1/notifications/unread-count — 미확인 알림 수
 
-### POST /api/notifications/:id/read — 읽음 표시
+### POST /api/v1/notifications/:id/read — 읽음 표시
 
-### POST /api/notifications/read-all — 전체 읽음
+### POST /api/v1/notifications/read-all — 전체 읽음
 
 ---
 
 ## 모듈 10: 자동 입찰
 
-### GET /api/bid-rules — 규칙 목록
+### GET /api/v1/bid-rules — 규칙 목록
 
-### POST /api/bid-rules — 규칙 생성
+### POST /api/v1/bid-rules — 규칙 생성
 
 **요청**:
 ```json
@@ -636,11 +637,11 @@ HTML 형식의 API 문서 페이지 반환（인증 불필요）.
 | budget_max | int | 예산 상한（분） |
 | cooldown_minutes | int | 쿨다운 시간（기본 60） |
 
-### PUT /api/bid-rules/:id — 규칙 업데이트
+### PUT /api/v1/bid-rules/:id — 규칙 업데이트
 
-### DELETE /api/bid-rules/:id — 규칙 삭제
+### DELETE /api/v1/bid-rules/:id — 규칙 삭제
 
-### GET /api/bid-rules/logs — 입찰 이력
+### GET /api/v1/bid-rules/logs — 입찰 이력
 
 **파라미터**: `rule_id`, `campaign_id`
 
@@ -648,13 +649,13 @@ HTML 형식의 API 문서 페이지 반환（인증 불필요）.
 
 ## 모듈 11: 타겟팅 템플릿
 
-### GET /api/targeting-templates — 템플릿 목록
+### GET /api/v1/targeting-templates — 템플릿 목록
 
 **파라미터**: `platform`
 
-### GET /api/targeting-templates/:id — 템플릿 상세
+### GET /api/v1/targeting-templates/:id — 템플릿 상세
 
-### POST /api/targeting-templates — 템플릿 생성
+### POST /api/v1/targeting-templates — 템플릿 생성
 
 **요청**:
 ```json
@@ -671,19 +672,19 @@ HTML 형식의 API 문서 페이지 반환（인증 불필요）.
 }
 ```
 
-### PUT /api/targeting-templates/:id — 템플릿 업데이트
+### PUT /api/v1/targeting-templates/:id — 템플릿 업데이트
 
-### DELETE /api/targeting-templates/:id — 템플릿 삭제
+### DELETE /api/v1/targeting-templates/:id — 템플릿 삭제
 
 ---
 
 ## 모듈 12: 소재 라이브러리
 
-### GET /api/assets — 소재 목록
+### GET /api/v1/assets — 소재 목록
 
 **파라미터**: `type`(image/video), `page`, `per_page`
 
-### POST /api/assets/upload — 소재 업로드
+### POST /api/v1/assets/upload — 소재 업로드
 
 **요청**: `multipart/form-data`, 필드 `file`
 
@@ -694,16 +695,16 @@ HTML 형식의 API 문서 페이지 반환（인증 불필요）.
 
 - CDN 설정 시 `url`은 기본 프로바이더의 `cdn_domain`을 붙여 완전한 HTTPS 주소로 조립됩니다
 
-### POST /api/assets/presign — 프리사인 업로드 URL 획득
+### POST /api/v1/assets/presign — 프리사인 업로드 URL 획득
 
 **요청**: `{ "filename": "demo.mp4", "mime_type": "video/mp4" }`
 
 **응답**: `{ "code": 0, "data": { "key": "20260829/ab12...cd34.mp4", "upload_url": "https://signed-url", "expires_in": 3600, "url": "https://cdn.example.com/uploads/assets/..." } }`
 
-- `key` 형식: `Ymd/32hex.확장자`, 직접 업로드 후 `/api/assets/register`에 회신
+- `key` 형식: `Ymd/32hex.확장자`, 직접 업로드 후 `/api/v1/assets/register`에 회신
 - 50 MiB 비디오 등 클라이언트가 객체 스토리지에 직접 업로드; `local` driver에서는 미지원
 
-### POST /api/assets/register — 직접 업로드한 소재 등록
+### POST /api/v1/assets/register — 직접 업로드한 소재 등록
 
 **요청**: `{ "key": "20260829/ab12...cd34.mp4", "filename": "demo.mp4", "mime_type": "video/mp4", "size": 52428800 }`
 
@@ -711,15 +712,15 @@ HTML 형식의 API 문서 페이지 반환（인증 불필요）.
 
 - `key` 엄격 검증 (`^\d{8}/[0-9a-f]{32}\.[a-z0-9]{1,10}$`)으로 경로 탐색 방지
 
-### GET /api/assets/:id — 소재 상세
+### GET /api/v1/assets/:id — 소재 상세
 
-### DELETE /api/assets/:id — 소재 삭제
+### DELETE /api/v1/assets/:id — 소재 삭제
 
 ---
 
 ## Admin 엔드포인트（포트 8789）
 
-### POST /api/admin/login — 관리자 로그인
+### POST /api/v1/admin/login — 관리자 로그인
 
 **요청**: `{ "username": "admin", "password": "..." }`
 
@@ -728,25 +729,25 @@ HTML 형식의 API 문서 페이지 반환（인증 불필요）.
 - Token은 localStorage에 저장
 - `csrf_token`은 이후 POST/PUT/DELETE 요청의 `X-CSRF-Token` header에 포함 필요
 
-### GET /api/admin/me — 현재 관리자
+### GET /api/v1/admin/me — 현재 관리자
 
-### POST /api/admin/logout — 로그아웃
+### POST /api/v1/admin/logout — 로그아웃
 
-### GET /api/admin/users — 사용자 목록
+### GET /api/v1/admin/users — 사용자 목록
 
 **파라미터**: `keyword`, `role_id`, `page`, `per_page`
 
 응답의 `id`와 `role_id`는 hashids로 인코딩.
 
-### POST /api/admin/users — 사용자 생성
+### POST /api/v1/admin/users — 사용자 생성
 
-### PUT /api/admin/users/:id — 사용자 업데이트
+### PUT /api/v1/admin/users/:id — 사용자 업데이트
 
-### DELETE /api/admin/users/:id — 사용자 비활성화
+### DELETE /api/v1/admin/users/:id — 사용자 비활성화
 
-### GET /api/admin/users/roles — 역할 목록
+### GET /api/v1/admin/users/roles — 역할 목록
 
-### GET /api/admin/audit-logs — 감사 로그
+### GET /api/v1/admin/audit-logs — 감사 로그
 
 **파라미터**: `user_id`, `action`, `date_from`, `date_to`, `page`, `per_page`
 
@@ -754,28 +755,28 @@ HTML 형식의 API 문서 페이지 반환（인증 불필요）.
 
 ### CDN 프로바이더 관리 (플랫폼 마스터 테넌트 tenant 1만, AdminMiddleware 검증)
 
-### GET /api/admin/cdn/providers — 프로바이더 목록
+### GET /api/v1/admin/cdn/providers — 프로바이더 목록
 
-### POST /api/admin/cdn/providers — 프로바이더 생성
+### POST /api/v1/admin/cdn/providers — 프로바이더 생성
 
 **요청**: `{ "name": "Aliyun OSS", "driver": "oss", "bucket": "ads-assets", "region": "oss-cn-hangzhou", "endpoint": "https://oss-cn-hangzhou.aliyuncs.com", "access_key": "...", "secret_key": "...", "cdn_domain": "cdn.example.com", "cdn_driver": "aliyun", "cdn_token": "...", "is_default": 1 }`
 
 - `driver`: `local` / `oss`(알리바바 OSS) / `cos`(텐센트 COS, S3 프로토콜) / `s3`(S3 호환: AWS S3 / Cloudflare R2 / MinIO)
 - 자격 증명(access_key/secret_key/cdn_token)은 Encryptable로 필드 단위 암호화, 응답은 마스킹 필드만
 
-### PUT /api/admin/cdn/providers/:id — 프로바이더 수정
+### PUT /api/v1/admin/cdn/providers/:id — 프로바이더 수정
 
-### DELETE /api/admin/cdn/providers/:id — 프로바이더 삭제 (기본값은 남은 enabled 프로바이더로 자동 이관)
+### DELETE /api/v1/admin/cdn/providers/:id — 프로바이더 삭제 (기본값은 남은 enabled 프로바이더로 자동 이관)
 
-### PUT /api/admin/cdn/providers/:id/default — 기본값 설정
+### PUT /api/v1/admin/cdn/providers/:id/default — 기본값 설정
 
-### PUT /api/admin/cdn/providers/:id/toggle — 활성화/비활성화 (기본값 비활성화 시 자동 이관)
+### PUT /api/v1/admin/cdn/providers/:id/toggle — 활성화/비활성화 (기본값 비활성화 시 자동 이관)
 
-### POST /api/admin/cdn/providers/:id/test — 연결 테스트
+### POST /api/v1/admin/cdn/providers/:id/test — 연결 테스트
 
 **응답**: `{ "code": 0, "data": { "ok": true, "driver": "oss", "status": "ok" } }`
 
-### POST /api/admin/cdn/providers/:id/purge — 캐시 퍼지
+### POST /api/v1/admin/cdn/providers/:id/purge — 캐시 퍼지
 
 **요청**: `{ "paths": ["/uploads/assets/20260829/xxx.mp4"] }`
 

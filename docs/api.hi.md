@@ -14,14 +14,15 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 ### Base URL
 
 ```
-http://your-domain.com/api
+http://your-domain.com/api/v1
 ```
+
+> API संस्करण संख्या URL पथ में निर्धारित है (वर्तमान में `v1`) और Header में प्रेषित नहीं की जाती; भविष्य के प्रमुख संस्करण जैसे `/api/v2` भी इसी नियम का पालन करते हैं।
 
 ### आवश्यक Headers
 
 | Header | मान | विवरण |
 |--------|----|------|
-| `X-API-Version` | `v1` | API वर्शन नंबर（आवश्यक, URL पाथ में नहीं आता） |
 | `X-Client-Platform` | `web` / `ios` / `android` / `macos` / `windows` / `linux` / `harmonyos` | ऑपरेशन स्रोत एंड（आवश्यक） |
 | `Authorization` | `Bearer <token>` | JWT प्रमाणीकरण टोकन（लॉगिन/प्लेटफ़ॉर्म सूची/हेल्थ चेक को छोड़कर आवश्यक） |
 
@@ -112,11 +113,11 @@ http://your-domain.com/api
 
 | एंडपॉइंट | TTL | परत |
 |------|-----|-----|
-| `/api/platforms` | 1 घंटा | L1 मेमोरी → L2 APCu → L3 Redis |
-| `/api/accounts` + `/api/accounts/:id` | 5 मिनट | वही |
-| `/api/reports/summary` | 5 मिनट | वही |
-| `/api/alerts/rules` | 2 मिनट | वही |
-| `/api/alerts/unread-count` | 30 सेकंड | वही |
+| `/api/v1/platforms` | 1 घंटा | L1 मेमोरी → L2 APCu → L3 Redis |
+| `/api/v1/accounts` + `/api/v1/accounts/:id` | 5 मिनट | वही |
+| `/api/v1/reports/summary` | 5 मिनट | वही |
+| `/api/v1/alerts/rules` | 2 मिनट | वही |
+| `/api/v1/alerts/unread-count` | 30 सेकंड | वही |
 
 ---
 
@@ -165,7 +166,7 @@ HTML प्रारूप में API दस्तावेज़ पेज �
 
 ---
 
-### GET /api/captcha/generate — कैप्चा जनरेट करें
+### GET /api/v1/captcha/generate — कैप्चा जनरेट करें
 
 बिना प्रमाणीकरण।
 
@@ -186,7 +187,7 @@ HTML प्रारूप में API दस्तावेज़ पेज �
 
 ---
 
-### POST /api/captcha/verify — कैप्चा सत्यापित करें
+### POST /api/v1/captcha/verify — कैप्चा सत्यापित करें
 
 बिना प्रमाणीकरण।
 
@@ -204,7 +205,7 @@ HTML प्रारूप में API दस्तावेज़ पेज �
 
 ## मॉड्यूल 2: प्रमाणीकरण
 
-### POST /api/auth/login — लॉगिन
+### POST /api/v1/auth/login — लॉगिन
 
 बिना प्रमाणीकरण।
 
@@ -245,7 +246,7 @@ HTML प्रारूप में API दस्तावेज़ पेज �
 
 ---
 
-### GET /api/auth/me — वर्तमान उपयोगकर्ता
+### GET /api/v1/auth/me — वर्तमान उपयोगकर्ता
 
 **अनुरोध हेडर**: `Authorization: Bearer <token>`
 
@@ -266,7 +267,7 @@ HTML प्रारूप में API दस्तावेज़ पेज �
 
 ---
 
-### POST /api/auth/refresh — Token रिफ़्रेश करें
+### POST /api/v1/auth/refresh — Token रिफ़्रेश करें
 
 **अनुरोध हेडर**: `Authorization: Bearer <old_token>`
 
@@ -290,7 +291,7 @@ HTML प्रारूप में API दस्तावेज़ पेज �
 
 ## मॉड्यूल 3: प्लेटफ़ॉर्म और खाता
 
-### GET /api/platforms — प्लेटफ़ॉर्म सूची
+### GET /api/v1/platforms — प्लेटफ़ॉर्म सूची
 
 बिना प्रमाणीकरण। 1 घंटे कैश।
 
@@ -307,7 +308,7 @@ HTML प्रारूप में API दस्तावेज़ पेज �
 
 ---
 
-### GET /api/platforms/:code/oauth-url — OAuth प्राधिकरण URL
+### GET /api/v1/platforms/:code/oauth-url — OAuth प्राधिकरण URL
 
 **पैरामीटर**: `?redirect_uri=https://your-domain.com/callback`
 
@@ -317,7 +318,7 @@ HTML प्रारूप में API दस्तावेज़ पेज �
 
 ---
 
-### POST /api/platforms/:code/callback — OAuth कॉलबैक
+### POST /api/v1/platforms/:code/callback — OAuth कॉलबैक
 
 **अनुरोध**: `{ "state": "...", "code": "..." }`
 
@@ -325,7 +326,7 @@ HTML प्रारूप में API दस्तावेज़ पेज �
 
 ---
 
-### GET /api/accounts — खाता सूची
+### GET /api/v1/accounts — खाता सूची
 
 5 मिनट कैश।
 
@@ -341,23 +342,23 @@ HTML प्रारूप में API दस्तावेज़ पेज �
 
 ---
 
-### GET /api/accounts/:id — खाता विवरण
+### GET /api/v1/accounts/:id — खाता विवरण
 
 5 मिनट कैश।
 
 ---
 
-### DELETE /api/accounts/:id — खाता अनबाइंड करें
+### DELETE /api/v1/accounts/:id — खाता अनबाइंड करें
 
 ---
 
-### POST /api/accounts/:id/sync — मैनुअल सिंक
+### POST /api/v1/accounts/:id/sync — मैनुअल सिंक
 
 ---
 
 ## मॉड्यूल 4: विज्ञापन अभियान
 
-### GET /api/campaigns — अभियान सूची
+### GET /api/v1/campaigns — अभियान सूची
 
 **पैरामीटर**:
 
@@ -374,7 +375,7 @@ HTML प्रारूप में API दस्तावेज़ पेज �
 
 ---
 
-### POST /api/campaigns — अभियान बनाएँ
+### POST /api/v1/campaigns — अभियान बनाएँ
 
 **अनुरोध**:
 ```json
@@ -392,25 +393,25 @@ HTML प्रारूप में API दस्तावेज़ पेज �
 
 ---
 
-### GET /api/campaigns/:id — अभियान विवरण
+### GET /api/v1/campaigns/:id — अभियान विवरण
 
 **प्रतिक्रिया**: `{ "code": 0, "data": { "campaign": {...}, "today": { "cost":..., "impressions":... } } }`
 
 ---
 
-### PUT /api/campaigns/:id — अभियान अपडेट करें
+### PUT /api/v1/campaigns/:id — अभियान अपडेट करें
 
 **अनुरोध**: `{ "name": "新名称", "daily_budget": 30000 }`
 
 ---
 
-### POST /api/campaigns/:id/toggle — अभियान स्टार्ट/स्टॉप
+### POST /api/v1/campaigns/:id/toggle — अभियान स्टार्ट/स्टॉप
 
 **अनुरोध**: `{ "enabled": false }`
 
 ---
 
-### POST /api/campaigns/batch/toggle — बैच स्टार्ट/स्टॉप
+### POST /api/v1/campaigns/batch/toggle — बैच स्टार्ट/स्टॉप
 
 **अनुरोध**: `{ "ids": ["hash1", "hash2", "hash3"], "enabled": false }`
 
@@ -420,11 +421,11 @@ HTML प्रारूप में API दस्तावेज़ पेज �
 
 ## मॉड्यूल 5: विज्ञापन समूह
 
-### GET /api/ad-groups — विज्ञापन समूह सूची
+### GET /api/v1/ad-groups — विज्ञापन समूह सूची
 
 **पैरामीटर**: `platform`, `campaign_id`, `status`, `sort`(id/name/status/bid_amount), `page`, `per_page`
 
-### POST /api/ad-groups — विज्ञापन समूह बनाएँ
+### POST /api/v1/ad-groups — विज्ञापन समूह बनाएँ
 
 **अनुरोध**:
 ```json
@@ -440,27 +441,27 @@ HTML प्रारूप में API दस्तावेज़ पेज �
 
 - `targeting_template_id`: वैकल्पिक, टार्गेटिंग टेम्पलेट से targeting JSON लोड करके मर्ज करता है
 
-### GET /api/ad-groups/:id — विज्ञापन समूह विवरण
+### GET /api/v1/ad-groups/:id — विज्ञापन समूह विवरण
 
-### PUT /api/ad-groups/:id — विज्ञापन समूह अपडेट करें
+### PUT /api/v1/ad-groups/:id — विज्ञापन समूह अपडेट करें
 
-### POST /api/ad-groups/:id/toggle — विज्ञापन समूह स्टार्ट/स्टॉप
+### POST /api/v1/ad-groups/:id/toggle — विज्ञापन समूह स्टार्ट/स्टॉप
 
 ---
 
 ## मॉड्यूल 6: क्रिएटिव
 
-### GET /api/creatives — क्रिएटिव सूची
+### GET /api/v1/creatives — क्रिएटिव सूची
 
 **पैरामीटर**: `platform`, `ad_group_id`, `campaign_id`, `media_type`(image/video/text), `sort`, `page`, `per_page`
 
-### GET /api/creatives/:id — क्रिएटिव विवरण
+### GET /api/v1/creatives/:id — क्रिएटिव विवरण
 
 ---
 
 ## मॉड्यूल 7: रिपोर्ट
 
-### GET /api/reports/summary — डैशबोर्ड सारांश
+### GET /api/v1/reports/summary — डैशबोर्ड सारांश
 
 5 मिनट कैश।
 
@@ -480,7 +481,7 @@ HTML प्रारूप में API दस्तावेज़ पेज �
 
 ---
 
-### GET /api/reports/custom — कस्टम रिपोर्ट
+### GET /api/v1/reports/custom — कस्टम रिपोर्ट
 
 **पैरामीटर**:
 
@@ -494,7 +495,7 @@ HTML प्रारूप में API दस्तावेज़ पेज �
 
 ---
 
-### GET /api/reports/export — रिपोर्ट एक्सपोर्ट करें
+### GET /api/v1/reports/export — रिपोर्ट एक्सपोर्ट करें
 
 **पैरामीटर**: `format=csv`, `date_start`, `date_end`, `metrics[]`
 
@@ -502,11 +503,11 @@ HTML प्रारूप में API दस्तावेज़ पेज �
 
 ---
 
-### GET /api/reports/export-dashboard — डैशबोर्ड PDF एक्सपोर्ट
+### GET /api/v1/reports/export-dashboard — डैशबोर्ड PDF एक्सपोर्ट
 
 ---
 
-### GET /api/reports/calendar — डिलीवरी कैलेंडर
+### GET /api/v1/reports/calendar — डिलीवरी कैलेंडर
 
 **पैरामीटर**: `date_start`, `date_end`, `platform`
 
@@ -514,7 +515,7 @@ HTML प्रारूप में API दस्तावेज़ पेज �
 
 ---
 
-### GET /api/reports/budget-alerts — बजट अलर्ट
+### GET /api/v1/reports/budget-alerts — बजट अलर्ट
 
 **प्रतिक्रिया**: `[{ campaign_id, campaign_name, platform, spent, budget, pct, level }]`
 
@@ -522,7 +523,7 @@ HTML प्रारूप में API दस्तावेज़ पेज �
 
 ---
 
-### GET /api/reports/attribution — एट्रिब्यूशन विश्लेषण
+### GET /api/v1/reports/attribution — एट्रिब्यूशन विश्लेषण
 
 **पैरामीटर**: `model`(first_touch/last_touch/linear/time_decay/position_based), `date_start`, `date_end`
 
@@ -540,7 +541,7 @@ HTML प्रारूप में API दस्तावेज़ पेज �
 
 ---
 
-### GET /api/reports/attribution/models — एट्रिब्यूशन मॉडल सूची
+### GET /api/v1/reports/attribution/models — एट्रिब्यूशन मॉडल सूची
 
 **प्रतिक्रिया**: `[{ code: "last_touch", name: "末次触点", description: "..." }]`
 
@@ -550,13 +551,13 @@ HTML प्रारूप में API दस्तावेज़ पेज �
 
 ## मॉड्यूल 8: अलर्ट
 
-### GET /api/alerts/rules — अलर्ट नियम सूची
+### GET /api/v1/alerts/rules — अलर्ट नियम सूची
 
 2 मिनट कैश।
 
 **पैरामीटर**: `platform`, `enabled`(0/1), `metric`, `page`, `per_page`
 
-### POST /api/alerts/rules — अलर्ट नियम बनाएँ
+### POST /api/v1/alerts/rules — अलर्ट नियम बनाएँ
 
 **अनुरोध**:
 ```json
@@ -572,17 +573,17 @@ HTML प्रारूप में API दस्तावेज़ पेज �
 }
 ```
 
-### PUT /api/alerts/rules/:id — अलर्ट नियम अपडेट करें
+### PUT /api/v1/alerts/rules/:id — अलर्ट नियम अपडेट करें
 
-### DELETE /api/alerts/rules/:id — अलर्ट नियम हटाएँ
+### DELETE /api/v1/alerts/rules/:id — अलर्ट नियम हटाएँ
 
-### GET /api/alerts/logs — अलर्ट रिकॉर्ड
+### GET /api/v1/alerts/logs — अलर्ट रिकॉर्ड
 
 **पैरामीटर**: `status`, `rule_id`, `metric`, `page`, `per_page`
 
-### POST /api/alerts/logs/:id/acknowledge — अलर्ट पुष्टि करें
+### POST /api/v1/alerts/logs/:id/acknowledge — अलर्ट पुष्टि करें
 
-### GET /api/alerts/unread-count — अपठित अलर्ट संख्या
+### GET /api/v1/alerts/unread-count — अपठित अलर्ट संख्या
 
 30 सेकंड कैश। फ्रंटएंड 30s पोलिंग।
 
@@ -590,23 +591,23 @@ HTML प्रारूप में API दस्तावेज़ पेज �
 
 ## मॉड्यूल 9: नोटिफिकेशन
 
-### GET /api/notifications — नोटिफिकेशन सूची
+### GET /api/v1/notifications — नोटिफिकेशन सूची
 
 **पैरामीटर**: `type`(alert/system), `is_read`(0/1), `page`, `per_page`
 
-### GET /api/notifications/unread-count — अपठित नोटिफिकेशन संख्या
+### GET /api/v1/notifications/unread-count — अपठित नोटिफिकेशन संख्या
 
-### POST /api/notifications/:id/read — पढ़ा-चिह्नित करें
+### POST /api/v1/notifications/:id/read — पढ़ा-चिह्नित करें
 
-### POST /api/notifications/read-all — सभी पढ़े
+### POST /api/v1/notifications/read-all — सभी पढ़े
 
 ---
 
 ## मॉड्यूल 10: स्वचालित बिडिंग
 
-### GET /api/bid-rules — नियम सूची
+### GET /api/v1/bid-rules — नियम सूची
 
-### POST /api/bid-rules — नियम बनाएँ
+### POST /api/v1/bid-rules — नियम बनाएँ
 
 **अनुरोध**:
 ```json
@@ -636,11 +637,11 @@ HTML प्रारूप में API दस्तावेज़ पेज �
 | budget_max | int | बजट ऊपरी सीमा（分） |
 | cooldown_minutes | int | कूलडाउन समय（डिफ़ॉल्ट 60） |
 
-### PUT /api/bid-rules/:id — नियम अपडेट करें
+### PUT /api/v1/bid-rules/:id — नियम अपडेट करें
 
-### DELETE /api/bid-rules/:id — नियम हटाएँ
+### DELETE /api/v1/bid-rules/:id — नियम हटाएँ
 
-### GET /api/bid-rules/logs — बिडिंग इतिहास
+### GET /api/v1/bid-rules/logs — बिडिंग इतिहास
 
 **पैरामीटर**: `rule_id`, `campaign_id`
 
@@ -648,13 +649,13 @@ HTML प्रारूप में API दस्तावेज़ पेज �
 
 ## मॉड्यूल 11: टार्गेटिंग टेम्पलेट
 
-### GET /api/targeting-templates — टेम्पलेट सूची
+### GET /api/v1/targeting-templates — टेम्पलेट सूची
 
 **पैरामीटर**: `platform`
 
-### GET /api/targeting-templates/:id — टेम्पलेट विवरण
+### GET /api/v1/targeting-templates/:id — टेम्पलेट विवरण
 
-### POST /api/targeting-templates — टेम्पलेट बनाएँ
+### POST /api/v1/targeting-templates — टेम्पलेट बनाएँ
 
 **अनुरोध**:
 ```json
@@ -671,19 +672,19 @@ HTML प्रारूप में API दस्तावेज़ पेज �
 }
 ```
 
-### PUT /api/targeting-templates/:id — टेम्पलेट अपडेट करें
+### PUT /api/v1/targeting-templates/:id — टेम्पलेट अपडेट करें
 
-### DELETE /api/targeting-templates/:id — टेम्पलेट हटाएँ
+### DELETE /api/v1/targeting-templates/:id — टेम्पलेट हटाएँ
 
 ---
 
 ## मॉड्यूल 12: एसेट लाइब्रेरी
 
-### GET /api/assets — एसेट सूची
+### GET /api/v1/assets — एसेट सूची
 
 **पैरामीटर**: `type`(image/video), `page`, `per_page`
 
-### POST /api/assets/upload — एसेट अपलोड करें
+### POST /api/v1/assets/upload — एसेट अपलोड करें
 
 **अनुरोध**: `multipart/form-data`, फ़ील्ड `file`
 
@@ -694,16 +695,16 @@ HTML प्रारूप में API दस्तावेज़ पेज �
 
 - CDN कॉन्फ़िगर होने पर `url` डिफ़ॉल्ट प्रोवाइडर के `cdn_domain` से जुड़कर पूरा HTTPS पता बनता है
 
-### POST /api/assets/presign — प्रीसाइन अपलोड URL पाएं
+### POST /api/v1/assets/presign — प्रीसाइन अपलोड URL पाएं
 
 **अनुरोध**: `{ "filename": "demo.mp4", "mime_type": "video/mp4" }`
 
 **प्रतिक्रिया**: `{ "code": 0, "data": { "key": "20260829/ab12...cd34.mp4", "upload_url": "https://signed-url", "expires_in": 3600, "url": "https://cdn.example.com/uploads/assets/..." } }`
 
-- `key` फ़ॉर्मेट `Ymd/32hex.एक्सटेंशन`; डायरेक्ट अपलोड के बाद `/api/assets/register` में लौटाएं
+- `key` फ़ॉर्मेट `Ymd/32hex.एक्सटेंशन`; डायरेक्ट अपलोड के बाद `/api/v1/assets/register` में लौटाएं
 - 50 MiB तक के वीडियो क्लाइंट सीधे ऑब्जेक्ट स्टोरेज में अपलोड करता है; `local` driver में उपलब्ध नहीं
 
-### POST /api/assets/register — सीधे अपलोड किए एसेट का पंजीकरण
+### POST /api/v1/assets/register — सीधे अपलोड किए एसेट का पंजीकरण
 
 **अनुरोध**: `{ "key": "20260829/ab12...cd34.mp4", "filename": "demo.mp4", "mime_type": "video/mp4", "size": 52428800 }`
 
@@ -711,15 +712,15 @@ HTML प्रारूप में API दस्तावेज़ पेज �
 
 - `key` सख्ती से वैलिडेट (`^\d{8}/[0-9a-f]{32}\.[a-z0-9]{1,10}$`) — पाथ ट्रैवर्सल रोकथाम
 
-### GET /api/assets/:id — एसेट विवरण
+### GET /api/v1/assets/:id — एसेट विवरण
 
-### DELETE /api/assets/:id — एसेट हटाएँ
+### DELETE /api/v1/assets/:id — एसेट हटाएँ
 
 ---
 
 ## Admin एंडपॉइंट（पोर्ट 8789）
 
-### POST /api/admin/login — एडमिन लॉगिन
+### POST /api/v1/admin/login — एडमिन लॉगिन
 
 **अनुरोध**: `{ "username": "admin", "password": "..." }`
 
@@ -728,25 +729,25 @@ HTML प्रारूप में API दस्तावेज़ पेज �
 - Token localStorage में स्टोर होता है
 - `csrf_token` बाद के POST/PUT/DELETE अनुरोधों के `X-CSRF-Token` header में भेजना होगा
 
-### GET /api/admin/me — वर्तमान एडमिन
+### GET /api/v1/admin/me — वर्तमान एडमिन
 
-### POST /api/admin/logout — लॉगआउट
+### POST /api/v1/admin/logout — लॉगआउट
 
-### GET /api/admin/users — उपयोगकर्ता सूची
+### GET /api/v1/admin/users — उपयोगकर्ता सूची
 
 **पैरामीटर**: `keyword`, `role_id`, `page`, `per_page`
 
 प्रतिक्रिया में `id` और `role_id` hashids से एन्कोडेड हैं।
 
-### POST /api/admin/users — उपयोगकर्ता बनाएँ
+### POST /api/v1/admin/users — उपयोगकर्ता बनाएँ
 
-### PUT /api/admin/users/:id — उपयोगकर्ता अपडेट करें
+### PUT /api/v1/admin/users/:id — उपयोगकर्ता अपडेट करें
 
-### DELETE /api/admin/users/:id — उपयोगकर्ता निष्क्रिय करें
+### DELETE /api/v1/admin/users/:id — उपयोगकर्ता निष्क्रिय करें
 
-### GET /api/admin/users/roles — भूमिका सूची
+### GET /api/v1/admin/users/roles — भूमिका सूची
 
-### GET /api/admin/audit-logs — ऑडिट लॉग
+### GET /api/v1/admin/audit-logs — ऑडिट लॉग
 
 **पैरामीटर**: `user_id`, `action`, `date_from`, `date_to`, `page`, `per_page`
 
@@ -754,28 +755,28 @@ HTML प्रारूप में API दस्तावेज़ पेज �
 
 ### CDN प्रोवाइडर प्रबंधन (केवल प्लेटफ़ॉर्म मास्टर टेनेंट tenant 1, AdminMiddleware)
 
-### GET /api/admin/cdn/providers — प्रोवाइडर सूची
+### GET /api/v1/admin/cdn/providers — प्रोवाइडर सूची
 
-### POST /api/admin/cdn/providers — प्रोवाइडर बनाएं
+### POST /api/v1/admin/cdn/providers — प्रोवाइडर बनाएं
 
 **अनुरोध**: `{ "name": "Aliyun OSS", "driver": "oss", "bucket": "ads-assets", "region": "oss-cn-hangzhou", "endpoint": "https://oss-cn-hangzhou.aliyuncs.com", "access_key": "...", "secret_key": "...", "cdn_domain": "cdn.example.com", "cdn_driver": "aliyun", "cdn_token": "...", "is_default": 1 }`
 
 - `driver`: `local` / `oss` (Alibaba Cloud OSS) / `cos` (Tencent Cloud COS, S3 प्रोटोकॉल) / `s3` (S3-कंपैटिबल: AWS S3 / Cloudflare R2 / MinIO)
 - क्रेडेंशियल (access_key/secret_key/cdn_token) Encryptable से फ़ील्ड-स्तर एन्क्रिप्टेड; रिस्पॉन्स में सिर्फ़ मास्क किए फ़ील्ड
 
-### PUT /api/admin/cdn/providers/:id — प्रोवाइडर अपडेट करें
+### PUT /api/v1/admin/cdn/providers/:id — प्रोवाइडर अपडेट करें
 
-### DELETE /api/admin/cdn/providers/:id — प्रोवाइडर हटाएं (डिफ़ॉल्ट अगले enabled प्रोवाइडर को ऑटो ट्रांसफर)
+### DELETE /api/v1/admin/cdn/providers/:id — प्रोवाइडर हटाएं (डिफ़ॉल्ट अगले enabled प्रोवाइडर को ऑटो ट्रांसफर)
 
-### PUT /api/admin/cdn/providers/:id/default — डिफ़ॉल्ट बनाएं
+### PUT /api/v1/admin/cdn/providers/:id/default — डिफ़ॉल्ट बनाएं
 
-### PUT /api/admin/cdn/providers/:id/toggle — चालू/बंद (डिफ़ॉल्ट बंद करने पर ऑटो ट्रांसफर)
+### PUT /api/v1/admin/cdn/providers/:id/toggle — चालू/बंद (डिफ़ॉल्ट बंद करने पर ऑटो ट्रांसफर)
 
-### POST /api/admin/cdn/providers/:id/test — कनेक्टिविटी टेस्ट
+### POST /api/v1/admin/cdn/providers/:id/test — कनेक्टिविटी टेस्ट
 
 **प्रतिक्रिया**: `{ "code": 0, "data": { "ok": true, "driver": "oss", "status": "ok" } }`
 
-### POST /api/admin/cdn/providers/:id/purge — कैश पर्ज
+### POST /api/v1/admin/cdn/providers/:id/purge — कैश पर्ज
 
 **अनुरोध**: `{ "paths": ["/uploads/assets/20260829/xxx.mp4"] }`
 

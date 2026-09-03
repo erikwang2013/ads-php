@@ -243,7 +243,7 @@ make db-init
 # 访问
 # 管理后台: http://localhost
 # 安装向导: http://localhost/install
-# API: http://localhost/api（Header: X-API-Version: v1）
+# API: http://localhost/api/v1（संस्करण URL पथ में निर्धारित है, Header में नहीं भेजा जाता）
 ```
 
 ### स्थानीय विकास
@@ -278,7 +278,6 @@ ads-php/
 │   │   │   ├── controller/v1/         # 17 个控制器
 │   │   │   ├── middleware/            # 15 个中间件
 │   │   │   ├── config/route.php       # 路由定义
-│   │   │   └── route_helpers.php      # versioned() 辅助函数
 │   │   ├── ads-platform/              # 平台适配器核心
 │   │   │   ├── adapter/               # 29 个平台适配器
 │   │   │   ├── src/                   # AdapterRegistry, CampaignData

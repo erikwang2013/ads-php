@@ -14,7 +14,6 @@ return [
         'cache' => ['enable' => false],
         'auth'  => ['enable' => false],
         'params' => ['header' => [
-            ['name' => 'X-API-Version',    'type' => 'string', 'require' => true,  'desc' => 'API版本号: v1'],
             ['name' => 'X-Client-Platform', 'type' => 'string', 'require' => true,  'desc' => '来源端: web/ios/android/macos/windows/linux/harmonyos'],
             ['name' => 'Authorization',     'type' => 'string', 'require' => false, 'desc' => 'Bearer <JWT Token>'],
         ]],

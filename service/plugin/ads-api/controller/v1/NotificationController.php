@@ -18,7 +18,7 @@ class NotificationController
         /**
      * @Title("通知列表")
      * @Group("通知")
-     * @Url("/api/notifications")
+     * @Url("/api/v1/notifications")
      * @Method("GET")
      */
     public function index(Request $request): \Webman\Http\Response
@@ -41,7 +41,7 @@ class NotificationController
         /**
      * @Title("未读通知数")
      * @Group("通知")
-     * @Url("/api/notifications/unread-count")
+     * @Url("/api/v1/notifications/unread-count")
      * @Method("GET")
      */
     public function unreadCount(Request $request): \Webman\Http\Response
@@ -58,7 +58,7 @@ class NotificationController
         /**
      * @Title("标记已读")
      * @Group("通知")
-     * @Url("/api/notifications/{id}/read")
+     * @Url("/api/v1/notifications/{id}/read")
      * @Method("POST")
      */
     public function markRead(Request $request, int $id): \Webman\Http\Response
@@ -79,7 +79,7 @@ class NotificationController
         /**
      * @Title("全部已读")
      * @Group("通知")
-     * @Url("/api/notifications/read-all")
+     * @Url("/api/v1/notifications/read-all")
      * @Method("POST")
      */
     public function markAllRead(Request $request): \Webman\Http\Response

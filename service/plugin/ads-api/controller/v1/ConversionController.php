@@ -19,7 +19,7 @@ class ConversionController
         /**
      * @Title("转化回传")
      * @Group("转化")
-     * @Url("/api/conversions")
+     * @Url("/api/v1/conversions")
      * @Method("POST")
      */
     public function store(Request $request): \Webman\Http\Response
@@ -37,7 +37,7 @@ class ConversionController
         /**
      * @Title("转化列表")
      * @Group("转化")
-     * @Url("/api/conversions")
+     * @Url("/api/v1/conversions")
      * @Method("GET")
      */
     public function index(Request $request): \Webman\Http\Response

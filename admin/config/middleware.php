@@ -5,14 +5,13 @@
  * 管理后台全局中间件配置
  *
  * 请求流：Request → CORS → SecurityHeaders → AttackGuard → ClientPlatform
- *           → Version → RateLimit → LoginThrottle → SQLGuard → Validation → CSRF → Controller
+ *           → RateLimit → LoginThrottle → SQLGuard → Validation → CSRF → Controller
  *
  * 每个中间件职责：
  *   CorsMiddleware            — 跨域请求处理（debug 模式放行所有，生产白名单）
  *   SecurityHeadersMiddleware — 安全响应头（X-Frame-Options, X-Content-Type-Options, HSTS 等）
  *   AttackGuardMiddleware     — XSS/路径遍历/请求头注入/Body大小/Content-Type 检测拦截
  *   ClientPlatformMiddleware  — 操作来源端识别
- *   VersionMiddleware         — API 版本路由（X-API-Version 头）
  *   RateLimitMiddleware       — Redis 滑动窗口限流，默认 60次/60秒
  *   LoginThrottleMiddleware   — 登录爆破保护，5次失败锁15分钟
  *   SqlGuardMiddleware        — SQL 注入模式检测（UNION/DROP/ALTER/注释符）
@@ -29,7 +28,6 @@ return [
         admin\middleware\SecurityHeadersMiddleware::class,
         admin\middleware\AttackGuardMiddleware::class,
         admin\middleware\ClientPlatformMiddleware::class,
-        admin\middleware\VersionMiddleware::class,
         admin\middleware\RateLimitMiddleware::class,
         admin\middleware\LoginThrottleMiddleware::class,
         admin\middleware\SqlGuardMiddleware::class,
