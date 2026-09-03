@@ -12,14 +12,19 @@ use Illuminate\Database\Query\Builder as QueryBuilder;
 
 class AlertEngine
 {
-    protected const METRIC_SQL = [
+    /** 基表整数 SUM 列（SQL 仅做整数聚合；比率指标在 PHP 侧 bcmath 计算） */
+    protected const METRIC_SUM_SQL = [
         'cost'        => 'COALESCE(SUM(cost), 0)',
         'impressions' => 'COALESCE(SUM(impressions), 0)',
         'clicks'      => 'COALESCE(SUM(clicks), 0)',
         'conversions' => 'COALESCE(SUM(conversions), 0)',
-        'ctr'         => 'CASE WHEN COALESCE(SUM(impressions), 0) > 0 THEN COALESCE(SUM(clicks), 0) / COALESCE(SUM(impressions), 0) ELSE 0 END',
-        'cvr'         => 'CASE WHEN COALESCE(SUM(clicks), 0) > 0 THEN COALESCE(SUM(conversions), 0) / COALESCE(SUM(clicks), 0) ELSE 0 END',
-        'roi'         => 'CASE WHEN COALESCE(SUM(cost), 0) > 0 THEN COALESCE(SUM(conversions), 0) / COALESCE(SUM(cost), 0) * 100 ELSE 0 END',
+    ];
+
+    /** 派生比率指标：分子/分母 SUM 列 + 放大系数（值由 derivedValue() bcmath 计算） */
+    protected const METRIC_DERIVED = [
+        'ctr' => ['numerator' => 'clicks',       'denominator' => 'impressions', 'factor' => 1],
+        'cvr' => ['numerator' => 'conversions',  'denominator' => 'clicks',       'factor' => 1],
+        'roi' => ['numerator' => 'conversions',  'denominator' => 'cost',         'factor' => 100],
     ];
 
     /**
@@ -27,18 +32,22 @@ class AlertEngine
      */
     public function evaluate(AlertRule $rule): ?AlertLog
     {
-        if (!isset(self::METRIC_SQL[$rule->metric])) {
+        $metric  = $rule->metric;
+        $derived = self::METRIC_DERIVED[$metric] ?? null;
+        if (!isset(self::METRIC_SUM_SQL[$metric]) && $derived === null) {
             return null;
         }
 
-        $query = $this->buildMetricQuery($rule);
+        $query = $this->buildMetricQuery($rule, $metric, $derived);
         $result = $query->first();
 
         if (!$result) {
             return null;
         }
 
-        $currentValue = (float) ($result->metric_value ?? 0);
+        $currentValue = $derived
+            ? $this->derivedValue($result, $derived)
+            : (float) ($result->metric_value ?? 0);
 
         if (!$this->compare($currentValue, (float) $rule->threshold, $rule->condition)) {
             return null;
@@ -76,11 +85,21 @@ class AlertEngine
 
     /**
      * Build the query against report_metrics filtered by scope.
+     *
+     * @param string   $metric  规则指标名
+     * @param ?array   $derived METRIC_DERIVED 派生定义；null 表示基表指标
      */
-    public function buildMetricQuery(AlertRule $rule): QueryBuilder
+    public function buildMetricQuery(AlertRule $rule, string $metric, ?array $derived = null): QueryBuilder
     {
-        $selectRaw = self::METRIC_SQL[$rule->metric] . ' as metric_value';
-        $query = DB::table('ads_report_metrics')->selectRaw($selectRaw);
+        $query = DB::table('ads_report_metrics');
+        if ($derived) {
+            // 只取分子/分母两个整数 SUM，比率由 PHP 侧 derivedValue() 计算
+            foreach ([$derived['numerator'], $derived['denominator']] as $col) {
+                $query->selectRaw("COALESCE(SUM({$col}), 0) as {$col}");
+            }
+        } else {
+            $query->selectRaw(self::METRIC_SUM_SQL[$metric] . ' as metric_value');
+        }
 
         // Scope filter
         switch ($rule->scope) {
@@ -109,6 +128,21 @@ class AlertEngine
         $query->where('date', date('Y-m-d'));
 
         return $query;
+    }
+
+    /**
+     * 派生比率指标 PHP 侧 bcmath 计算（原 SQL 为原始除法、无 ROUND，故不额外舍入）。
+     * bcdiv 以 10 位截断后转 float，误差 ≤ 5e-11，对规则阈值（通常 ≤4 位小数）判定无影响；
+     * 分母 ≤ 0 时返回 0.0（等价原 CASE ELSE 0）。
+     */
+    protected function derivedValue(object $result, array $def): float
+    {
+        $num = (string) ((int) ($result->{$def['numerator']} ?? 0));
+        $den = (string) ((int) ($result->{$def['denominator']} ?? 0));
+        if (bccomp($den, '0') <= 0) {
+            return 0.0;
+        }
+        return (float) bcdiv(bcmul($num, (string) $def['factor']), $den, 10);
     }
 
     /**

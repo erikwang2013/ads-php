@@ -29,7 +29,8 @@ class BudgetAlertService
             $budget = (int) $campaign->daily_budget;
             if ($budget <= 0) continue;
 
-            $pct = round($spent / $budget * 100, 1);
+            // 消耗占比：bcmath 计算避免浮点误差；先四舍五入到 1 位小数再判级（与 float 版语义一致）
+            $pct = (float) bc_round(bcdiv(bcmul((string) $spent, '100'), (string) $budget, 4), 1);
 
             $level = null;
             if ($pct >= 100) $level = 'red';

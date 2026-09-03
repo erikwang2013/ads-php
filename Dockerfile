@@ -8,7 +8,7 @@ RUN apk add --no-cache \
     libpq-dev \
     libpng-dev libjpeg-turbo-dev \
     $PHPIZE_DEPS \
-    && docker-php-ext-install pdo pdo_mysql pcntl gd \
+    && docker-php-ext-install pdo pdo_mysql pcntl gd bcmath \
     && pecl install redis \
     && docker-php-ext-enable redis
 

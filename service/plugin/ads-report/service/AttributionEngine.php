@@ -73,7 +73,7 @@ class AttributionEngine
                     'conversion_id' => $conv->id,
                     'model'         => $model,
                     'campaign_id'   => $tp['campaign_id'],
-                    'credit'        => round($tp['credit'] * (float) $conv->value, 2),
+                    'credit'        => (float) bc_round(bcmul((string) $tp['credit'], (string) (float) $conv->value, 8), 2),
                     'created_at'    => now(),
                 ]);
             }
@@ -148,21 +148,25 @@ class AttributionEngine
     {
         $byCampaign = [];
         $byPlatform = [];
-        $totalValue = 0;
+        $totalValue = '0';
 
         foreach ($results as $r) {
-            $totalValue += $r['value'];
+            // 金额/份额累加走 bcmath，避免浮点累加误差；scale 6 保留足够中间精度
+            $totalValue = bcadd($totalValue, (string) (float) $r['value'], 6);
             foreach ($r['credits'] as $c) {
                 $cid = $c['campaign_id'];
-                if (!isset($byCampaign[$cid])) $byCampaign[$cid] = ['campaign_id' => $cid, 'credit' => 0];
-                $byCampaign[$cid]['credit'] += $c['credit'];
+                if (!isset($byCampaign[$cid])) $byCampaign[$cid] = ['campaign_id' => $cid, 'credit' => '0'];
+                $byCampaign[$cid]['credit'] = bcadd($byCampaign[$cid]['credit'], (string) (float) $c['credit'], 6);
             }
         }
 
         return [
             'total_conversions' => count($results),
-            'total_value'       => round($totalValue, 2),
-            'by_campaign'       => array_values($byCampaign),
+            'total_value'       => (float) bc_round($totalValue, 2),
+            'by_campaign'       => array_map(
+                fn(array $v) => ['campaign_id' => $v['campaign_id'], 'credit' => (float) $v['credit']],
+                array_values($byCampaign)
+            ),
         ];
     }
 }

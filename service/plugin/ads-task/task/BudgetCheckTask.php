@@ -34,7 +34,7 @@ class BudgetCheckTask
                 'tenant_id'  => $alert['tenant_id'],
                 'type'       => 'alert',
                 'title'      => "{$emoji} 预算{$alert['level']}预警: {$alert['campaign_name']}",
-                'content'    => "{$alert['platform']} | 已消耗 ¥" . number_format($alert['spent'] / 100, 2) . " / 日预算 ¥" . number_format($alert['budget'] / 100, 2) . " ({$alert['pct']}%)",
+                'content'    => "{$alert['platform']} | 已消耗 ¥" . bc_money($alert['spent']) . " / 日预算 ¥" . bc_money($alert['budget']) . " ({$alert['pct']}%)",
                 'created_at' => now(),
             ]);
 

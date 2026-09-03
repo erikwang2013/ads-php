@@ -11,6 +11,7 @@
 - NEVER add a `Co-Authored-By` trailer to user commits unless this project's `.claude/settings.json` has `attribution.commit` set (#2078). The Claude Code Bash tool may suggest one in its default commit-message template — ignore it. `Co-Authored-By` is semantic authorship attribution under git/GitHub convention; the tool is the facilitator, not a co-author.
 - Keep files under 500 lines
 - Validate input at system boundaries
+- Money/data ratio arithmetic MUST use bcmath (`bcmul`/`bcdiv`/`bcadd` + helpers `bc_round()`/`bc_money()`/`bc_div()` in support/helpers.php); never float `round()` on prices. Store amounts in integer cents; display via `bc_money()`. SQL keeps only integer SUM/group/pagination/ORDER BY — derived ratios (CTR/CVR/CPC/CPM/ROI/CPA) are computed PHP-side via `bc_div()`; attribution exp/log weight models are exempt
 
 ## Agent Comms (SendMessage-First Coordination)
 

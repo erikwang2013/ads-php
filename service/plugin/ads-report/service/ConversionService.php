@@ -91,7 +91,7 @@ class ConversionService
             'campaign_id'     => $campaignId,
             'order_id'        => $orderId,
             'conversion_time' => $conversionTime->format('Y-m-d H:i:s'),
-            'value'           => round((float) $value, 2),
+            'value'           => (float) bc_round((float) $value, 2),
             'currency'        => $currency !== '' ? $currency : self::DEFAULT_CURRENCY,
             'channel'         => $channel !== '' ? $channel : self::DEFAULT_CHANNEL,
         ];

@@ -2,7 +2,7 @@
 /**
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
  *
- * AlertEngine 测试：compare 条件语义（反射）、METRIC_SQL 指标覆盖、
+ * AlertEngine 测试：compare 条件语义（反射）、METRIC_SUM_SQL/METRIC_DERIVED 指标覆盖、
  * 未知指标不触发；SQLite 上验证完整 evaluate 流程（触发 + 去重抑制）。
  */
 
@@ -63,11 +63,17 @@ class AlertEngineTest extends SqliteTestCase
 
     public function testMetricSqlCoversAllMetrics(): void
     {
-        $const = new \ReflectionClassConstant(AlertEngine::class, 'METRIC_SQL');
-        $sql = $const->getValue();
+        $sum = (new \ReflectionClassConstant(AlertEngine::class, 'METRIC_SUM_SQL'))->getValue();
+        $derived = (new \ReflectionClassConstant(AlertEngine::class, 'METRIC_DERIVED'))->getValue();
 
-        foreach (['cost', 'impressions', 'clicks', 'conversions', 'ctr', 'cvr', 'roi'] as $m) {
-            $this->assertArrayHasKey($m, $sql, "missing METRIC_SQL entry for {$m}");
+        foreach (['cost', 'impressions', 'clicks', 'conversions'] as $m) {
+            $this->assertArrayHasKey($m, $sum, "missing METRIC_SUM_SQL entry for {$m}");
+        }
+        foreach (['ctr', 'cvr', 'roi'] as $m) {
+            $this->assertArrayHasKey($m, $derived, "missing METRIC_DERIVED entry for {$m}");
+            foreach ($derived[$m] as $field => $value) {
+                $this->assertNotSame('', $value, "empty {$field} in METRIC_DERIVED[{$m}]");
+            }
         }
     }
 

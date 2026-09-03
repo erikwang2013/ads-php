@@ -30,11 +30,8 @@ class PdfExporter
             ->selectRaw('COALESCE(SUM(impressions), 0) as total_impressions')
             ->selectRaw('COALESCE(SUM(clicks), 0) as total_clicks')
             ->selectRaw('COALESCE(SUM(conversions), 0) as total_conversions')
-            ->selectRaw('CASE WHEN SUM(impressions) > 0 THEN ROUND(SUM(clicks)/SUM(impressions)*100, 2) ELSE 0 END as avg_ctr')
-            ->selectRaw('CASE WHEN SUM(clicks) > 0 THEN ROUND(SUM(conversions)/SUM(clicks)*100, 2) ELSE 0 END as avg_cvr')
-            ->selectRaw('CASE WHEN SUM(clicks) > 0 THEN ROUND(SUM(cost)/SUM(clicks), 2) ELSE 0 END as avg_cpc')
-            ->selectRaw('CASE WHEN SUM(cost) > 0 THEN ROUND(SUM(cost)/SUM(conversions)/100, 2) ELSE 0 END as avg_cpa')
             ->first();
+        $overview = $this->hydrateOverview($overview);
 
         // --- Fetch platform comparison ---
         $byPlatform = DB::table('ads_report_metrics')
@@ -46,11 +43,15 @@ class PdfExporter
             ->selectRaw('COALESCE(SUM(impressions), 0) as impressions')
             ->selectRaw('COALESCE(SUM(clicks), 0) as clicks')
             ->selectRaw('COALESCE(SUM(conversions), 0) as conversions')
-            ->selectRaw('CASE WHEN SUM(impressions) > 0 THEN ROUND(SUM(clicks)/SUM(impressions)*100, 2) ELSE 0 END as ctr')
-            ->selectRaw('CASE WHEN SUM(clicks) > 0 THEN ROUND(SUM(conversions)/SUM(clicks)*100, 2) ELSE 0 END as cvr')
-            ->selectRaw('CASE WHEN SUM(clicks) > 0 THEN ROUND(SUM(cost)/SUM(clicks), 2) ELSE 0 END as cpc')
             ->orderByDesc('cost')
             ->get()
+            ->map(function ($row) {
+                $row = (array) $row;
+                $row['ctr'] = $this->divMetric($row, 'clicks', 'impressions', 100);
+                $row['cvr'] = $this->divMetric($row, 'conversions', 'clicks', 100);
+                $row['cpc'] = $this->divMetric($row, 'cost', 'clicks');
+                return $row;
+            })
             ->toArray();
 
         // --- Fetch daily trend ---
@@ -73,6 +74,33 @@ class PdfExporter
         file_put_contents($filePath, $html);
 
         return $filePath;
+    }
+
+    /**
+     * Overview 派生比率 PHP 侧 bcmath 计算（SQL 只回整数 SUM）。
+     * 原 SQL 公式平移：
+     *   avg_ctr = ROUND(clicks/impressions*100, 2)   avg_cvr = ROUND(conversions/clicks*100, 2)
+     *   avg_cpc = ROUND(cost/clicks, 2)（分/点击，展示时 bc_money ÷100 → 元）
+     *   avg_cpa = ROUND(cost/conversions/100, 2)（元/转化）
+     */
+    protected function hydrateOverview(array $overview): array
+    {
+        $overview['avg_ctr'] = $this->divMetric($overview, 'total_clicks', 'total_impressions', 100);
+        $overview['avg_cvr'] = $this->divMetric($overview, 'total_conversions', 'total_clicks', 100);
+        $overview['avg_cpc'] = $this->divMetric($overview, 'total_cost', 'total_clicks');
+        $overview['avg_cpa'] = $this->divMetric($overview, 'total_cost', 'total_conversions', 1, 100);
+        return $overview;
+    }
+
+    /**
+     * 派生比率 bcmath 除法（num×numFactor / den×denFactor，两位小数）。
+     * 分母 ≤ 0 由 bc_div 守卫返回 "0.00"（等价原 SQL CASE ELSE 0）。
+     */
+    protected function divMetric(array $row, string $numKey, string $denKey, int $numFactor = 1, int $denFactor = 1): string
+    {
+        $num = (string) ((int) ($row[$numKey] ?? 0));
+        $den = (string) ((int) ($row[$denKey] ?? 0));
+        return bc_div(bcmul($num, (string) $numFactor), bcmul($den, (string) $denFactor), 2);
     }
 
     /**
@@ -166,13 +194,13 @@ HTML;
      */
     protected function renderOverviewTable(array $overview): string
     {
-        $cost        = number_format(($overview['total_cost'] ?? 0) / 100, 2);
+        $cost        = bc_money($overview['total_cost'] ?? 0);
         $impressions = number_format($overview['total_impressions'] ?? 0);
         $clicks      = number_format($overview['total_clicks'] ?? 0);
         $conversions = number_format($overview['total_conversions'] ?? 0);
         $ctr         = number_format((float)($overview['avg_ctr'] ?? 0), 2) . '%';
         $cvr         = number_format((float)($overview['avg_cvr'] ?? 0), 2) . '%';
-        $cpc         = number_format(($overview['avg_cpc'] ?? 0) / 100, 2);
+        $cpc         = bc_money($overview['avg_cpc'] ?? 0);
         $cpa         = number_format((float)($overview['avg_cpa'] ?? 0), 2);
 
         return <<<HTML
@@ -202,13 +230,13 @@ HTML;
         foreach ($byPlatform as $row) {
             $row = (array) $row;
             $platform = htmlspecialchars($row['platform'] ?? '', ENT_QUOTES, 'UTF-8');
-            $cost     = number_format(($row['cost'] ?? 0) / 100, 2);
+            $cost     = bc_money($row['cost'] ?? 0);
             $imp      = number_format($row['impressions'] ?? 0);
             $clk      = number_format($row['clicks'] ?? 0);
             $conv     = number_format($row['conversions'] ?? 0);
             $ctr      = number_format((float)($row['ctr'] ?? 0), 2) . '%';
             $cvr      = number_format((float)($row['cvr'] ?? 0), 2) . '%';
-            $cpc      = number_format(($row['cpc'] ?? 0) / 100, 2);
+            $cpc      = bc_money($row['cpc'] ?? 0);
             $rows    .= "<tr>
                 <td class=\"text-left\">{$platform}</td>
                 <td class=\"text-right\">¥{$cost}</td>
@@ -253,7 +281,7 @@ HTML;
         foreach ($daily as $row) {
             $row  = (array) $row;
             $date = htmlspecialchars($row['date'] ?? '', ENT_QUOTES, 'UTF-8');
-            $cost = number_format(($row['cost'] ?? 0) / 100, 2);
+            $cost = bc_money($row['cost'] ?? 0);
             $imp  = number_format($row['impressions'] ?? 0);
             $clk  = number_format($row['clicks'] ?? 0);
             $conv = number_format($row['conversions'] ?? 0);

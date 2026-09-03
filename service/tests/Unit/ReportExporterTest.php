@@ -41,11 +41,12 @@ class ReportExporterTest extends SqliteTestCase
         $this->assertSame(['custom_col'], $exporter->exposeTranslateHeaders(['custom_col']));
     }
 
-    public function testMetricColumnsFiltersUnknownMetrics(): void
+    public function testMetricColumnsKeepsBaseMetricsOnly(): void
     {
         $exporter = new ExposableReportExporter();
         $cols = $exporter->exposeMetricColumns(['cost', 'bogus', ' ctr ', 'roi']);
-        $this->assertSame(['cost', 'ctr', 'roi'], array_keys($cols));
+        // 未知指标被滤掉；派生指标（ctr/roi）由 PHP 侧计算，同样不出现在 SQL 列映射
+        $this->assertSame(['cost'], array_keys($cols));
     }
 
     public function testDimensionColumnsIntersectsWhitelist(): void

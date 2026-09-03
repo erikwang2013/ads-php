@@ -5,9 +5,11 @@
 
 namespace plugin\ads_report\service;
 
-use Illuminate\Database\Capsule\Manager as DB;
-
-class ReportExporter
+/**
+ * 报表导出。查询/聚合/派生比率（bcmath PHP 侧）复用 ReportBuilder；
+ * 本类只负责表头翻译与 CSV / Excel-HTML 输出。
+ */
+class ReportExporter extends ReportBuilder
 {
     /**
      * Export report data as CSV file.
@@ -93,44 +95,10 @@ class ReportExporter
      */
     protected function fetchAllData(int $tenantId, array $params): array
     {
-        $dateStart  = $params['date_start']  ?? date('Y-m-d', strtotime('-7 days'));
-        $dateEnd    = $params['date_end']    ?? date('Y-m-d');
-        $dimensions = $params['dimensions']  ?? ['platform'];
-        $metrics    = $params['metrics']     ?? ['cost', 'impressions', 'clicks'];
-        $platform   = $params['platform']    ?? null;
+        [$query, $dimensions, $metrics] = $this->queryFor($tenantId, $params);
 
-        // Normalize arrays from query string (e.g. "dimensions[]=platform&dimensions[]=date")
-        if (is_string($dimensions)) {
-            $dimensions = explode(',', $dimensions);
-        }
-        if (is_string($metrics)) {
-            $metrics = explode(',', $metrics);
-        }
-
-        $metricCols = $this->metricColumns($metrics);
-        $groupCols  = $this->dimensionColumns($dimensions);
-
-        $query = DB::table('ads_report_metrics')
-            ->where('tenant_id', $tenantId)
-            ->whereBetween('date', [$dateStart, $dateEnd]);
-
-        if ($platform) {
-            $query->where('platform', $platform);
-        }
-
-        foreach ($groupCols as $col) {
-            $query->select($col)->groupBy($col);
-        }
-        foreach ($metricCols as $alias => $raw) {
-            $query->selectRaw("{$raw} as {$alias}");
-        }
-        if (in_array('date', $dimensions)) {
-            $query->orderBy('date');
-        }
-        $query->orderByDesc(array_keys($metricCols)[0] ?? 'cost');
-
-        return $query->get()->map(function ($row) {
-            return (array)$row;
+        return $query->get()->map(function ($row) use ($dimensions, $metrics) {
+            return $this->decorateRow((array) $row, $dimensions, $metrics);
         })->toArray();
     }
 
@@ -139,20 +107,23 @@ class ReportExporter
      */
     protected function headerKeys(array $params): array
     {
-        $dimensions = $params['dimensions'] ?? ['platform'];
-        $metrics    = $params['metrics']    ?? ['cost', 'impressions', 'clicks'];
+        $dimKeys = $this->dimensionColumns(
+            $this->normalizeList($params['dimensions'] ?? null, ['platform'])
+        );
 
-        if (is_string($dimensions)) {
-            $dimensions = explode(',', $dimensions);
+        $metrics = $this->normalizeList(
+            $params['metrics'] ?? null,
+            ['cost', 'impressions', 'clicks']
+        );
+
+        $valid = [];
+        foreach ($metrics as $m) {
+            if (isset(self::SUM_SQL[$m]) || isset(self::DERIVED_SQL[$m])) {
+                $valid[$m] = $m;
+            }
         }
-        if (is_string($metrics)) {
-            $metrics = explode(',', $metrics);
-        }
 
-        $dimKeys = $this->dimensionColumns($dimensions);
-        $validMetrics = array_keys($this->metricColumns($metrics));
-
-        return array_merge($dimKeys, $validMetrics);
+        return array_merge($dimKeys, array_values($valid));
     }
 
     /**
@@ -179,33 +150,5 @@ class ReportExporter
         return array_map(function ($key) use ($map) {
             return $map[$key] ?? $key;
         }, $keys);
-    }
-
-    protected function metricColumns(array $metrics): array
-    {
-        $map = [
-            'cost'         => 'COALESCE(SUM(cost), 0)',
-            'impressions'  => 'COALESCE(SUM(impressions), 0)',
-            'clicks'       => 'COALESCE(SUM(clicks), 0)',
-            'conversions'  => 'COALESCE(SUM(conversions), 0)',
-            'ctr'          => 'CASE WHEN SUM(impressions) > 0 THEN ROUND(SUM(clicks)/SUM(impressions), 6) ELSE 0 END',
-            'cvr'          => 'CASE WHEN SUM(clicks) > 0 THEN ROUND(SUM(conversions)/SUM(clicks), 6) ELSE 0 END',
-            'cpc'          => 'CASE WHEN SUM(clicks) > 0 THEN ROUND(SUM(cost)/SUM(clicks), 2) ELSE 0 END',
-            'cpm'          => 'CASE WHEN SUM(impressions) > 0 THEN ROUND(SUM(cost)/SUM(impressions)*1000, 2) ELSE 0 END',
-            'roi'          => 'CASE WHEN SUM(cost) > 0 THEN ROUND(SUM(conversions)/SUM(cost)*100, 2) ELSE 0 END',
-        ];
-        $result = [];
-        foreach ($metrics as $m) {
-            $m = trim($m);
-            if (isset($map[$m])) {
-                $result[$m] = $map[$m];
-            }
-        }
-        return $result;
-    }
-
-    protected function dimensionColumns(array $dimensions): array
-    {
-        return array_values(array_intersect($dimensions, ['platform', 'date', 'campaign_id', 'granularity']));
     }
 }
