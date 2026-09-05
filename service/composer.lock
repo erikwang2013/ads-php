@@ -762,16 +762,16 @@
         },
         {
             "name": "erikwang2013/season",
-            "version": "v2.0.0",
+            "version": "v2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/erikwang2013/season.git",
-                "reference": "e6b4783ce596995f5f0f63c1a3184b497c922cd5"
+                "reference": "63f4bd28ab678d2c952830ab9c571589d660a533"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/erikwang2013/season/zipball/e6b4783ce596995f5f0f63c1a3184b497c922cd5",
-                "reference": "e6b4783ce596995f5f0f63c1a3184b497c922cd5",
+                "url": "https://api.github.com/repos/erikwang2013/season/zipball/63f4bd28ab678d2c952830ab9c571589d660a533",
+                "reference": "63f4bd28ab678d2c952830ab9c571589d660a533",
                 "shasum": ""
             },
             "require": {
@@ -779,6 +779,7 @@
                 "php": ">=8.1"
             },
             "require-dev": {
+                "phpstan/phpstan": "^2.0",
                 "phpunit/phpunit": "^10.0 || ^11.0 || ^12.0"
             },
             "suggest": {
@@ -837,9 +838,9 @@
             ],
             "support": {
                 "issues": "https://github.com/erikwang2013/season/issues",
-                "source": "https://github.com/erikwang2013/season/tree/v2.0.0"
+                "source": "https://github.com/erikwang2013/season/tree/v2.0.2"
             },
-            "time": "2026-05-17T11:02:49+00:00"
+            "time": "2026-08-02T08:14:02+00:00"
         },
         {
             "name": "erikwang2013/snowflake-php",
@@ -8549,5 +8550,5 @@
         "ext-bcmath": "*"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }
