@@ -126,7 +126,7 @@ ads-php/
 │   │   ├── ads-tenant/                    # 多租户
 │   │   └── ads-storage/                   # Abstração de armazenamento (local/OSS/COS/S3) + provedores CDN
 │   ├── public/                            # 静态资源 (webman 内置静态处理)
-│   │   └── img/pet.svg                    # 项目宠物「阿鸮」，/docs 页展示
+│   │   └── img/pet.svg                    # 项目宠物「阿章」，/docs 页展示
 │   ├── tests/                             # PHPUnit
 │   │   ├── Unit/Middleware/               # 中间件测试
 │   │   ├── Unit/Task/                     # 任务测试 (规划)
@@ -139,7 +139,7 @@ ads-php/
 │   │   ├── service/                       # AuditService, ServiceProxy
 │   │   └── support/                       # HashidsService
 │   ├── public/web/                        # Vue 3 + TS SPA
-│   │   ├── public/pet.svg                 # 项目宠物「阿鸮」，favicon + 登录页
+│   │   ├── public/pet.svg                 # 项目宠物「阿章」，favicon + 登录页
 │   │   ├── src/
 │   │       ├── views/                     # 21 页面 (dashboard/campaign/adgroup/creative/account/asset/report/alert/notification/sync/bid/cdn/login/system)
 │   │       ├── api/                       # 15 个 API 客户端

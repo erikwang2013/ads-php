@@ -4,6 +4,26 @@
 
 Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
+## 项目宠物「阿章」
+
+<p align="center"><img src="docs/diagrams/svg/pet.svg" width="160" alt="项目宠物 阿章"></p>
+
+**阿章**（zhāng）是本项目的吉祥物：一只章鱼。它八爪齐下，每条触手各管一摊、同时伸向 29 个平台——正是这套系统在做的事。
+
+| 形象 | 寓意 | 对应实现 |
+|------|------|---------|
+| 八条触手 | 八个插件各司其职、并行不悖 | ads-account / ads-alert / ads-api / ads-platform / ads-report / ads-storage / ads-task / ads-tenant |
+| 触手吸盘 | 数据一路吸附汇总 | 29 家平台 → 统一 `/api/v1` |
+| 双目前视 | 多端同时盯屏 | Vue Admin / Flutter / HarmonyOS 三端共用一套 API |
+| 眨眼 + 起伏 | 周期性轮询与守护 | 6 个定时任务（3/5/10/10/15/55 分钟）循环采集；22 项防护静默运行 |
+| 外环 29 个节点 | 29 个平台常驻在线 | 16 国内 + 13 国际，逐个盯住 |
+
+阿章已整合进代码：管理后台 **登录页** 与 **favicon**、Service 端 **`/docs` API 文档页**，以及全部文档页。
+
+> SVG 源码 [docs/diagrams/svg/pet.svg](docs/diagrams/svg/pet.svg)（无文字，13 种语言文档共用同一份；含 SMIL 眨眼与呼吸动画）
+
+---
+
 ## 概述
 
 **Ads Platform** 是一套多平台广告管理系统，对接 **29 个广告平台**（国内 16 家 + 国际 13 家），统一管理广告投放与跨平台数据报表。
@@ -16,7 +36,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 - **多端访问** — Web 管理后台 (Vue 3)、Flutter PC/Mobile、HarmonyOS
 - **稳定可靠** — 平台调用熔断/降级/超时、三级缓存、高并发优化、22 项安全防护
 - **国际化** — 12 语言文档、界面中英双语
-- **项目宠物** — 猫头鹰「阿鸮」，24 小时值守 29 个平台（[pet.svg](docs/diagrams/svg/pet.svg)）
+- **项目宠物** — 章鱼「阿章」，八爪并行，24 小时值守 29 个平台（[pet.svg](docs/diagrams/svg/pet.svg)）
 
 > 架构设计 → [docs/architecture.md](docs/architecture.md)  
 > 功能模块 → [docs/features.md](docs/features.md)  
@@ -61,25 +81,6 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | Spotify Ads | Spotify | OAuth2 Bearer |
 | Twitch Ads | Twitch | OAuth2 Bearer + ClientId |
 | Netflix Ads | Netflix | OAuth2 client_credentials |
-
----
-
-## 项目宠物「阿鸮」
-
-<p align="center"><img src="docs/diagrams/svg/pet.svg" width="160" alt="项目宠物 阿鸮"></p>
-
-**阿鸮**（xiāo）是本项目的吉祥物：一只猫头鹰。它昼伏夜出，整夜盯着每一个平台——正是这套系统在做的事。
-
-| 形象 | 寓意 | 对应实现 |
-|------|------|---------|
-| 双目前视 | 多端同时盯屏 | Vue Admin / Flutter / HarmonyOS 三端共用一套 API |
-| 眨眼动画 | 周期性轮询 | 6 个定时任务（3/5/10/10/15/55 分钟）循环采集 |
-| 头后雷达环 | 持续扫描发现异常 | 告警引擎求值 + 预算预警三段阈值 |
-| 夜间值守 | 无声守夜，出事才叫 | 22 项防护静默运行，触发才推送通知 |
-
-阿鸮已整合进代码：管理后台 **登录页** 与 **favicon**、Service 端 **`/docs` API 文档页**，以及全部文档页。
-
-> SVG 源码 [docs/diagrams/svg/pet.svg](docs/diagrams/svg/pet.svg)（无文字，13 种语言文档共用同一份；含 SMIL 眨眼动画）
 
 ---
 
@@ -311,7 +312,7 @@ ads-php/
 │   │   ├── ads-tenant/                # 多租户管理
 │   │   └── ads-storage/               # 存储抽象层 (local/OSS/COS/S3) + CDN 服务商
 │   ├── public/                        # 静态资源 (webman 内置静态处理)
-│   │   └── img/pet.svg                # 项目宠物「阿鸮」，/docs 页展示
+│   │   └── img/pet.svg                # 项目宠物「阿章」，/docs 页展示
 │   ├── scripts/backfill-assets.php    # 存量素材回填对象存储
 │   ├── support/                       # Erik Stack 工具类
 │   │   ├── ControllerTrait.php        # 控制器公共 trait
@@ -326,7 +327,7 @@ ads-php/
 │   └── start.php                      # 服务入口
 ├── admin/                             # 独立管理后台 (webman-admin v2 :8789)
 │   ├── public/web/
-│   │   ├── public/pet.svg             # 项目宠物「阿鸮」，favicon + 登录页
+│   │   ├── public/pet.svg             # 项目宠物「阿章」，favicon + 登录页
 │   │   ├── src/
 │   │   │   ├── views/                 # 21 个 Vue 页面
 │   │   │   │   ├── dashboard/         # 仪表盘 (ECharts)
@@ -341,7 +342,7 @@ ads-php/
 │   │   │   │   ├── sync/              # 同步状态
 │   │   │   │   ├── bid/               # 自动出价规则
 │   │   │   │   ├── cdn/               # CDN 服务商
-│   │   │   │   ├── login/             # 登录页 (阿鸮)
+│   │   │   │   ├── login/             # 登录页 (阿章)
 │   │   │   │   └── system/            # 用户管理 + 审计日志 + 系统信息
 │   │   │   ├── api/                   # 15 个 API 客户端
 │   │   │   ├── stores/                # 5 个 Pinia Store

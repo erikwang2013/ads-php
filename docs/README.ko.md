@@ -4,6 +4,26 @@
 
 Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
+## 프로젝트 펫「아장(阿章)」
+
+<p align="center"><img src="docs/diagrams/svg/pet.svg" width="160" alt="프로젝트 마스코트 阿章"></p>
+
+**아장(阿章)**（zhāng, 문어）는 이 프로젝트의 마스코트입니다: 문어 한 마리. 여덟 다리를 한꺼번에 뻗어 각자 맡은 일을 하면서 동시에 29개 플랫폼으로 향합니다—바로 이 시스템이 하는 일입니다.
+
+| 모습 | 의미 | 대응 구현 |
+|------|------|---------|
+| 여덟 개의 다리 | 8개 플러그인이 각자 맡은 일을 병행 수행 | ads-account / ads-alert / ads-api / ads-platform / ads-report / ads-storage / ads-task / ads-tenant |
+| 다리의 빨판 | 데이터가 빨려들어와 하나로 집계 | 29개 플랫폼 → 통합 `/api/v1` |
+| 두 눈 정면 응시 | 여러 단말이 동시에 화면 주시 | Vue Admin / Flutter / HarmonyOS 3개 단말이 하나의 API 공유 |
+| 눈 깜빡임 + 오르내림 | 주기적 폴링과 조용한 수호 | 6개 예약 작업 (3/5/10/10/15/55분) 순환 수집; 22개 보호 기능 무음 실행 |
+| 외곽 고리 29개 노드 | 29개 플랫폼 상시 온라인 | 국내 16 + 해외 13, 하나하나 지켜봄 |
+
+아장은 이미 코드에 통합되었습니다: 관리 백엔드 **로그인 페이지**와 **favicon**, Service 측 **`/docs` API 문서 페이지**, 그리고 모든 문서 페이지.
+
+> SVG 소스 [docs/diagrams/svg/pet.svg](docs/diagrams/svg/pet.svg)（텍스트 없음, 13개 언어 문서가 동일본을 공유; SMIL 눈 깜빡임과 호흡 애니메이션 포함）
+
+---
+
 ## 개요
 
 **Ads Platform**은 **29개 광고 플랫폼**(국내 16개 + 국제 13개)을 연동하는 멀티 플랫폼 광고 관리 시스템으로, 광고 집행과 플랫폼 간 데이터 보고서를 통합 관리합니다.
@@ -16,7 +36,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 - **다중 단말 접근** — 웹 관리자 (Vue 3), Flutter PC/Mobile, HarmonyOS
 - **안정성 및 신뢰성** — 플랫폼 호출 서킷 브레이커/다운그레이드/타임아웃, 3단계 캐시, 고동시성 최적화, 22개 보안 보호
 - **국제화** — 12개 언어 문서, 중영 이중 언어 인터페이스
-- **프로젝트 펫** — 부엉이「아샤오(阿鸮)」, 24시간 동안 29개 플랫폼을 지킵니다（[pet.svg](docs/diagrams/svg/pet.svg)）
+- **프로젝트 펫** — 문어「아장(阿章)」, 여덟 다리로 병행하며 24시간 동안 29개 플랫폼을 지킵니다（[pet.svg](docs/diagrams/svg/pet.svg)）
 
 > 아키텍처 설계 → [docs/architecture.md](docs/architecture.ko.md)  
 > 기능 모듈 → [docs/features.md](docs/features.ko.md)  
@@ -61,25 +81,6 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | Spotify Ads | Spotify | OAuth2 Bearer |
 | Twitch Ads | Twitch | OAuth2 Bearer + ClientId |
 | Netflix Ads | Netflix | OAuth2 client_credentials |
-
----
-
-## 프로젝트 펫「아샤오(阿鸮)」
-
-<p align="center"><img src="docs/diagrams/svg/pet.svg" width="160" alt="프로젝트 마스코트 阿鸮"></p>
-
-**아샤오**（xiāo, 부엉이）는 이 프로젝트의 마스코트입니다: 부엉이 한 마리. 낮에는 숨어 있다가 밤에 나와, 밤새 모든 플랫폼을 지켜봅니다—바로 이 시스템이 하는 일입니다.
-
-| 모습 | 의미 | 대응 구현 |
-|------|------|---------|
-| 두 눈 정면 응시 | 여러 단말이 동시에 화면 주시 | Vue Admin / Flutter / HarmonyOS 3개 단말이 하나의 API 공유 |
-| 눈 깜빡임 애니메이션 | 주기적 폴링 | 6개 예약 작업 (3/5/10/10/15/55분) 순환 수집 |
-| 머리 뒤 레이더 링 | 지속 스캔으로 이상 발견 | 경보 엔진 평가 + 예산 경보 3단계 임계값 |
-| 야간 근무 | 소리 없이 지키다, 문제가 생기면 울림 | 22개 보호 기능 무음 실행, 트리거 시에만 푸시 알림 |
-
-아샤오는 이미 코드에 통합되었습니다: 관리 백엔드 **로그인 페이지**와 **favicon**, Service 측 **`/docs` API 문서 페이지**, 그리고 모든 문서 페이지.
-
-> SVG 소스 [docs/diagrams/svg/pet.svg](docs/diagrams/svg/pet.svg)（텍스트 없음, 13개 언어 문서가 동일본을 공유; SMIL 눈 깜빡임 애니메이션 포함）
 
 ---
 
@@ -311,7 +312,7 @@ ads-php/
 │   │   ├── ads-tenant/                # 멀티 테넌트 관리
 │   │   └── ads-storage/               # 스토리지 추상화 계층 (local/OSS/COS/S3) + CDN 프로바이더
 │   ├── public/                        # 정적 리소스 (webman 내장 정적 처리)
-│   │   └── img/pet.svg                # 프로젝트 펫「아샤오」, /docs 페이지 표시
+│   │   └── img/pet.svg                # 프로젝트 펫「아장」, /docs 페이지 표시
 │   ├── scripts/backfill-assets.php    # 기존 소재를 객체 스토리지로 백필
 │   ├── support/                       # Erik Stack 유틸리티 클래스
 │   │   ├── ControllerTrait.php        # 컨트롤러 공용 trait
@@ -326,7 +327,7 @@ ads-php/
 │   └── start.php                      # 서비스 진입점
 ├── admin/                             # 독립 관리 백엔드 (webman-admin v2 :8789)
 │   ├── public/web/
-│   │   ├── public/pet.svg             # 프로젝트 펫「아샤오」, favicon + 로그인 페이지
+│   │   ├── public/pet.svg             # 프로젝트 펫「아장」, favicon + 로그인 페이지
 │   │   ├── src/
 │   │   │   ├── views/                 # 21개 Vue 페이지
 │   │   │   │   ├── dashboard/         # 대시보드 (ECharts)
@@ -341,7 +342,7 @@ ads-php/
 │   │   │   │   ├── sync/              # 동기화 상태
 │   │   │   │   ├── bid/               # 자동 입찰 규칙
 │   │   │   │   ├── cdn/               # CDN 프로바이더
-│   │   │   │   ├── login/             # 로그인 페이지 (아샤오)
+│   │   │   │   ├── login/             # 로그인 페이지 (아장)
 │   │   │   │   └── system/            # 사용자 관리 + 감사 로그 + 시스템 정보
 │   │   │   ├── api/                   # 15개 API 클라이언트
 │   │   │   ├── stores/                # 5개 Pinia Store

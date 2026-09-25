@@ -18,7 +18,7 @@ docs/
 │   ├── data-lifecycle.md                   #   データライフサイクル図 (6 段階+ガントチャート+キャッシュ状態遷移図)
 │   ├── security.md                         #   セキュリティアーキテクチャ図
 │   └── svg/                                #   レンダリング成果物: <name>.svg + 12 言語 <name>.<lang>.svg
-│       └── pet.svg                         #   プロジェクトペット「阿鸮」(テキストなし、全言語共通)
+│       └── pet.svg                         #   プロジェクトペット「阿章」(テキストなし、全言語共通)
 ├── skills/                                 # 再利用可能なプロジェクトスキル (11 個)
 │   ├── adapter-generator.md                # プラットフォームアダプターテンプレート生成
 │   ├── admin-page-generator.md             # Vue3 管理バックエンドページ生成

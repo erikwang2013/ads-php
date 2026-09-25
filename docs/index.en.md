@@ -18,7 +18,7 @@ docs/
 │   ├── data-lifecycle.md                   #   数据生命周期图 (6 阶段+甘特图+缓存状态机)
 │   ├── security.md                         #   安全架构图
 │   └── svg/                                #   渲染产物: <name>.svg + 12 语言 <name>.<lang>.svg
-│       └── pet.svg                         #   项目宠物「阿鸮」(无文字，全语言共用)
+│       └── pet.svg                         #   项目宠物「阿章」(无文字，全语言共用)
 ├── skills/                                 # 可复用项目技能 (11 个)
 │   ├── adapter-generator.md                # 生成平台适配器模板
 │   ├── admin-page-generator.md             # 生成 Vue3 管理后台页面

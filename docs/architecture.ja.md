@@ -126,7 +126,7 @@ ads-php/
 │   │   ├── ads-tenant/                    # マルチテナント
 │   │   └── ads-storage/                   # ストレージ抽象化 (local/OSS/COS/S3) + CDN プロバイダー
 │   ├── public/                            # 静的リソース (webman 内蔵静的処理)
-│   │   └── img/pet.svg                    # プロジェクトマスコット「阿鸮」、/docs ページで表示
+│   │   └── img/pet.svg                    # プロジェクトマスコット「阿章」、/docs ページで表示
 │   ├── tests/                             # PHPUnit
 │   │   ├── Unit/Middleware/               # ミドルウェアテスト
 │   │   ├── Unit/Task/                     # タスクテスト (計画)
@@ -139,7 +139,7 @@ ads-php/
 │   │   ├── service/                       # AuditService, ServiceProxy
 │   │   └── support/                       # HashidsService
 │   ├── public/web/                        # Vue 3 + TS SPA
-│   │   ├── public/pet.svg                 # プロジェクトマスコット「阿鸮」、favicon + ログインページ
+│   │   ├── public/pet.svg                 # プロジェクトマスコット「阿章」、favicon + ログインページ
 │   │   ├── src/
 │   │       ├── views/                     # 21 ページ (dashboard/campaign/adgroup/creative/account/asset/report/alert/notification/sync/bid/cdn/login/system)
 │   │       ├── api/                       # 15 の API クライアント

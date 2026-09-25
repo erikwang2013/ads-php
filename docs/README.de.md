@@ -4,6 +4,26 @@
 
 Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
+## Projekt-Maskottchen „阿章"
+
+<p align="center"><img src="docs/diagrams/svg/pet.svg" width="160" alt="Projekt-Maskottchen 阿章"></p>
+
+**阿章** (zhāng, „Krake") ist das Maskottchen dieses Projekts: ein Krake. Seine acht Arme kümmern sich jeweils um ihre eigene Aufgabe und reichen gleichzeitig hinaus zu 29 Plattformen — genau das tut dieses System.
+
+| Figur | Bedeutung | Entsprechende Umsetzung |
+|------|------|---------|
+| Acht Arme | Acht Plugins, jedes mit eigener Aufgabe, alle parallel | ads-account / ads-alert / ads-api / ads-platform / ads-report / ads-storage / ads-task / ads-tenant |
+| Saugnäpfe der Arme | Daten bleiben hängen und werden unterwegs gebündelt | 29 Plattformen → eine einheitliche `/api/v1` |
+| Beide Augen nach vorn | Mehrere Endgeräte gleichzeitig im Blick | Vue Admin / Flutter / HarmonyOS nutzen gemeinsam eine API |
+| Blinzeln + Atmen | Zyklisches Polling und stille Wache | 6 geplante Aufgaben (3/5/10/10/15/55 Minuten) sammeln in Schleife; 22 Schutzmaßnahmen laufen still |
+| 29 Knoten im äußeren Ring | 29 Plattformen dauerhaft online | 16 Inland + 13 international, jede einzelne im Blick |
+
+阿章 ist bereits im Code integriert: **Login-Seite** und **favicon** des Verwaltungs-Backends, die **`/docs`-API-Dokumentationsseite** des Service sowie alle Dokumentationsseiten.
+
+> SVG-Quellcode [docs/diagrams/svg/pet.svg](docs/diagrams/svg/pet.svg) (ohne Text, alle 13 Sprachversionen der Dokumentation nutzen dieselbe Datei; mit SMIL-Animation zum Blinzeln und Atmen)
+
+---
+
 ## Übersicht
 
 **Ads Platform** ist ein Multi-Plattform-Werbesystem, das **29 Werbeplattformen** (16 inländische + 13 internationale) anbindet und Werbeschaltung sowie plattformübergreifende Datenberichte einheitlich verwaltet.
@@ -16,7 +36,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 - **Multi-Geräte-Zugriff** — Web-Admin (Vue 3), Flutter PC/Mobile, HarmonyOS
 - **Stabilität & Zuverlässigkeit** — Circuit Breaker/Degradierung/Timeout für Plattformaufrufe, 3-stufiger Cache, Hochparallelitäts-Optimierungen, 22 Sicherheitsmaßnahmen
 - **Internationalisierung** — Dokumentation in 12 Sprachen, zweisprachige Oberfläche (ZH/EN)
-- **Projekt-Maskottchen** — die Eule „阿鸮", 24 Stunden im Einsatz für 29 Plattformen ([pet.svg](docs/diagrams/svg/pet.svg))
+- **Projekt-Maskottchen** — der Krake „阿章", acht Arme, 24 Stunden im Einsatz für 29 Plattformen ([pet.svg](docs/diagrams/svg/pet.svg))
 
 > Architekturentwurf → [docs/architecture.md](docs/architecture.de.md)  
 > Funktionsmodule → [docs/features.md](docs/features.de.md)  
@@ -61,25 +81,6 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | Spotify Ads | Spotify | OAuth2 Bearer |
 | Twitch Ads | Twitch | OAuth2 Bearer + ClientId |
 | Netflix Ads | Netflix | OAuth2 client_credentials |
-
----
-
-## Projekt-Maskottchen „阿鸮"
-
-<p align="center"><img src="docs/diagrams/svg/pet.svg" width="160" alt="Projekt-Maskottchen 阿鸮"></p>
-
-**阿鸮** (xiāo, „Eule") ist das Maskottchen dieses Projekts: eine Eule. Sie schläft tagsüber und ist nachts wach — die ganze Nacht behält sie jede Plattform im Blick. Genau das tut dieses System.
-
-| Figur | Bedeutung | Entsprechende Umsetzung |
-|------|------|---------|
-| Beide Augen nach vorn | Mehrere Endgeräte gleichzeitig im Blick | Vue Admin / Flutter / HarmonyOS nutzen gemeinsam eine API |
-| Blinzel-Animation | Zyklisches Polling | 6 geplante Aufgaben (3/5/10/10/15/55 Minuten) sammeln in Schleife |
-| Radarring hinter dem Kopf | Kontinuierliches Scannen auf Anomalien | Auswertung durch die Alarm-Engine + dreistufige Schwellenwerte der Budgetwarnung |
-| Nachtwache | Stille Wache, ruft nur im Ernstfall | 22 Schutzmaßnahmen laufen still, Benachrichtigung erst bei Auslösung |
-
-阿鸮 ist bereits im Code integriert: **Login-Seite** und **favicon** des Verwaltungs-Backends, die **`/docs`-API-Dokumentationsseite** des Service sowie alle Dokumentationsseiten.
-
-> SVG-Quellcode [docs/diagrams/svg/pet.svg](docs/diagrams/svg/pet.svg) (ohne Text, alle 13 Sprachversionen der Dokumentation nutzen dieselbe Datei; mit SMIL-Blinzelanimation)
 
 ---
 
@@ -311,7 +312,7 @@ ads-php/
 │   │   ├── ads-tenant/                # Multi-Tenant-Verwaltung
 │   │   └── ads-storage/               # Speicherabstraktion (local/OSS/COS/S3) + CDN-Anbieter
 │   ├── public/                        # Statische Ressourcen (webman-interne Static-Verarbeitung)
-│   │   └── img/pet.svg                # Projekt-Maskottchen 阿鸮, auf der /docs-Seite angezeigt
+│   │   └── img/pet.svg                # Projekt-Maskottchen 阿章, auf der /docs-Seite angezeigt
 │   ├── scripts/backfill-assets.php    # Bestehende Assets in den Objektspeicher übertragen
 │   ├── support/                       # Erik-Stack-Hilfsklassen
 │   │   ├── ControllerTrait.php        # Gemeinsamer Controller-Trait
@@ -326,7 +327,7 @@ ads-php/
 │   └── start.php                      # Diensteinstieg
 ├── admin/                             # Unabhängiges Verwaltungs-Backend (webman-admin v2 :8789)
 │   ├── public/web/
-│   │   ├── public/pet.svg             # Projekt-Maskottchen 阿鸮, Favicon + Login-Seite
+│   │   ├── public/pet.svg             # Projekt-Maskottchen 阿章, Favicon + Login-Seite
 │   │   ├── src/
 │   │   │   ├── views/                 # 21 Vue-Seiten
 │   │   │   │   ├── dashboard/         # Dashboard (ECharts)
@@ -341,7 +342,7 @@ ads-php/
 │   │   │   │   ├── sync/              # Synchronisierungsstatus
 │   │   │   │   ├── bid/               # Automatische Gebotsregeln
 │   │   │   │   ├── cdn/               # CDN-Anbieter
-│   │   │   │   ├── login/             # Login-Seite (阿鸮)
+│   │   │   │   ├── login/             # Login-Seite (阿章)
 │   │   │   │   └── system/            # Benutzerverwaltung + Audit-Log + Systeminformationen
 │   │   │   ├── api/                   # 15 API-Clients
 │   │   │   ├── stores/                # 5 Pinia-Stores

@@ -1,80 +1,104 @@
-<!-- 项目宠物「阿鸮」— 手写 SVG，非 render.py 生成（无 .mmd 源，故不参与图表渲染流程）。
+<!-- 项目宠物「阿章」— 手写 SVG，非 render.py 生成（无 .mmd 源，故不参与图表渲染流程）。
+     八条触手 = 8 个 service 插件；外环 29 个节点 = 29 个广告平台。
      不含文字，13 种语言文档共用同一份，勿加语言后缀。 -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240" role="img" aria-labelledby="petTitle petDesc">
-  <title id="petTitle">Ads Platform mascot — 阿鸮, the watch owl</title>
-  <desc id="petDesc">An owl inside a radar halo, guarding 29 ad platforms. Eyes blink.</desc>
+  <title id="petTitle">Ads Platform mascot — A-Zhang, the eight-armed octopus</title>
+  <desc id="petDesc">An octopus whose eight arms stand for the eight service plugins, reaching out to 29 platform nodes on the data ring. Eyes blink.</desc>
 
   <defs>
     <linearGradient id="petBody" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#2E5288"/>
-      <stop offset="1" stop-color="#16213E"/>
+      <stop offset="0" stop-color="#3E6FB0"/>
+      <stop offset="1" stop-color="#17233F"/>
     </linearGradient>
-    <linearGradient id="petWing" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#26466F"/>
-      <stop offset="1" stop-color="#12203A"/>
+    <linearGradient id="petArm" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#35619E"/>
+      <stop offset="1" stop-color="#14203A"/>
     </linearGradient>
   </defs>
 
-  <!-- radar halo — 监控值守 -->
-  <g fill="none" stroke="#409EFF" stroke-linecap="round">
-    <circle cx="120" cy="122" r="106" stroke-opacity="0.16" stroke-width="2"/>
-    <circle cx="120" cy="122" r="94" stroke-opacity="0.09" stroke-width="2">
-      <animate attributeName="r" values="94;100;94" dur="4s" repeatCount="indefinite"/>
-      <animate attributeName="stroke-opacity" values="0.09;0.20;0.09" dur="4s" repeatCount="indefinite"/>
-    </circle>
-    <path d="M120 122 L206 70" stroke-opacity="0.28" stroke-width="2" stroke-dasharray="5 7">
-      <animateTransform attributeName="transform" type="rotate" values="0 120 122;360 120 122" dur="12s" repeatCount="indefinite"/>
-    </path>
-    <circle cx="120" cy="122" r="4" fill="#409EFF" stroke="none" opacity="0.55"/>
+  <!-- 29 platform nodes on the data ring -->
+  <g fill="none" stroke="#409EFF">
+    <circle cx="120" cy="120" r="112" stroke-opacity="0.15" stroke-width="1.6"/>
+    <circle cx="120" cy="120" r="100" stroke-opacity="0.06" stroke-width="1.6"/>
+  </g>
+  <g fill="#409EFF" fill-opacity="0.42">
+      <circle cx="120.0" cy="8.0" r="3.2"/>
+      <circle cx="144.1" cy="10.6" r="3.2"/>
+      <circle cx="167.0" cy="18.4" r="3.2"/>
+      <circle cx="187.8" cy="30.8" r="3.2"/>
+      <circle cx="205.4" cy="47.5" r="3.2"/>
+      <circle cx="219.0" cy="67.5" r="3.2"/>
+      <circle cx="227.9" cy="90.0" r="3.2"/>
+      <circle cx="231.8" cy="113.9" r="3.2"/>
+      <circle cx="230.5" cy="138.1" r="3.2"/>
+      <circle cx="224.0" cy="161.5" r="3.2"/>
+      <circle cx="212.7" cy="182.9" r="3.2"/>
+      <circle cx="197.0" cy="201.3" r="3.2"/>
+      <circle cx="177.7" cy="216.0" r="3.2"/>
+      <circle cx="155.8" cy="226.1" r="3.2"/>
+      <circle cx="132.1" cy="231.3" r="3.2"/>
+      <circle cx="107.9" cy="231.3" r="3.2"/>
+      <circle cx="84.2" cy="226.1" r="3.2"/>
+      <circle cx="62.3" cy="216.0" r="3.2"/>
+      <circle cx="43.0" cy="201.3" r="3.2"/>
+      <circle cx="27.3" cy="182.9" r="3.2"/>
+      <circle cx="16.0" cy="161.5" r="3.2"/>
+      <circle cx="9.5" cy="138.1" r="3.2"/>
+      <circle cx="8.2" cy="113.9" r="3.2"/>
+      <circle cx="12.1" cy="90.0" r="3.2"/>
+      <circle cx="21.0" cy="67.5" r="3.2"/>
+      <circle cx="34.6" cy="47.5" r="3.2"/>
+      <circle cx="52.2" cy="30.8" r="3.2"/>
+      <circle cx="73.0" cy="18.4" r="3.2"/>
+      <circle cx="95.9" cy="10.6" r="3.2"/>
   </g>
 
-  <!-- ear tufts -->
-  <path d="M72 84 C62 64 56 46 58 30 C78 36 102 46 118 56 Z" fill="url(#petWing)"/>
-  <path d="M168 84 C178 64 184 46 182 30 C162 36 138 46 122 56 Z" fill="url(#petWing)"/>
-
-  <!-- wings -->
-  <path d="M68 132 C48 146 46 186 60 206 C74 196 82 160 78 132 Z" fill="url(#petWing)"/>
-  <path d="M172 132 C192 146 194 186 180 206 C166 196 158 160 162 132 Z" fill="url(#petWing)"/>
-
-  <!-- body -->
-  <path d="M120 56 C152 56 176 78 178 112 C180 146 182 176 176 192 C168 208 148 216 120 216 C92 216 72 208 64 192 C58 176 60 146 62 112 C64 78 88 56 120 56 Z" fill="url(#petBody)"/>
-
-  <!-- facial disc -->
-  <ellipse cx="120" cy="106" rx="53" ry="43" fill="#EAF2FF"/>
-
-  <!-- chest -->
-  <ellipse cx="120" cy="178" rx="38" ry="32" fill="#EAF2FF"/>
-  <g fill="none" stroke="#A9C6EE" stroke-width="3.6" stroke-linecap="round">
-    <path d="M107 166 L120 176 L133 166"/>
-    <path d="M107 180 L120 190 L133 180"/>
-    <path d="M109 194 L120 203 L131 194"/>
+  <!-- 8 arms = 8 service plugins: 4 drawn, 4 mirrored -->
+  <g id="azArms">
+    <g fill="none" stroke="url(#petArm)" stroke-width="20" stroke-linecap="round">
+      <path d="M80 132 C58 124 38 104 32 84 C28 70 32 60 42 56"/>
+      <path d="M72 146 C54 148 36 152 28 162 C22 170 24 180 32 182"/>
+      <path d="M78 154 C70 172 58 190 44 200 C36 206 28 204 26 196"/>
+      <path d="M98 160 C94 180 90 200 86 214 C84 222 90 226 96 222"/>
+    </g>
+    <g fill="#FFB020" fill-opacity="0.85">
+      <circle cx="33.2" cy="98.2" r="4"/>
+      <circle cx="26.1" cy="70.3" r="4"/>
+      <circle cx="31.4" cy="152.9" r="4"/>
+      <circle cx="20.0" cy="170.3" r="4"/>
+      <circle cx="48.9" cy="189.8" r="4"/>
+      <circle cx="36.3" cy="208.0" r="4"/>
+      <circle cx="83.9" cy="203.8" r="4"/>
+      <circle cx="82.5" cy="223.0" r="4"/>
+    </g>
   </g>
+  <use href="#azArms" transform="translate(240,0) scale(-1,1)"/>
 
-  <!-- beak -->
-  <path d="M120 112 L132 124 L120 142 L108 124 Z" fill="#FFB020"/>
+  <!-- mantle -->
+  <path d="M120 34 C150 34 174 56 176 92 C177 114 174 136 168 148 C152 156 88 156 72 148 C66 136 63 114 64 92 C66 56 90 34 120 34 Z" fill="url(#petBody)"/>
+
+  <!-- smile -->
+  <path d="M112 131 Q120 139 128 131" fill="none" stroke="#16213E" stroke-width="3.4" stroke-linecap="round" opacity="0.7"/>
 
   <!-- eyes -->
   <g>
-    <circle cx="95" cy="104" r="24" fill="#FFFFFF"/>
-    <circle cx="145" cy="104" r="24" fill="#FFFFFF"/>
-    <circle cx="95" cy="104" r="14" fill="#409EFF"/>
-    <circle cx="145" cy="104" r="14" fill="#409EFF"/>
-    <circle cx="95" cy="104" r="7" fill="#16213E"/>
-    <circle cx="145" cy="104" r="7" fill="#16213E"/>
-    <circle cx="88.5" cy="97.5" r="4.2" fill="#FFFFFF"/>
-    <circle cx="138.5" cy="97.5" r="4.2" fill="#FFFFFF"/>
+    <circle cx="96" cy="100" r="22" fill="#FFFFFF"/>
+    <circle cx="144" cy="100" r="22" fill="#FFFFFF"/>
+    <circle cx="96" cy="100" r="13" fill="#409EFF"/>
+    <circle cx="144" cy="100" r="13" fill="#409EFF"/>
+    <circle cx="96" cy="100" r="7" fill="#16213E"/>
+    <circle cx="144" cy="100" r="7" fill="#16213E"/>
+    <circle cx="89.5" cy="93.5" r="4.2" fill="#FFFFFF"/>
+    <circle cx="137.5" cy="93.5" r="4.2" fill="#FFFFFF"/>
   </g>
-  <!-- blink: lids in facial-disc colour, so the eye simply vanishes -->
-  <ellipse cx="95" cy="104" rx="25" ry="0" fill="#EAF2FF">
-    <animate attributeName="ry" values="0;0;26;0;0" keyTimes="0;0.90;0.94;0.98;1" dur="6s" repeatCount="indefinite"/>
+  <!-- blink: lids in the mantle tone, so the eye simply vanishes -->
+  <ellipse cx="96" cy="100" rx="23" ry="0" fill="#294673">
+    <animate attributeName="ry" values="0;0;24;0;0" keyTimes="0;0.90;0.94;0.98;1" dur="6s" repeatCount="indefinite"/>
   </ellipse>
-  <ellipse cx="145" cy="104" rx="25" ry="0" fill="#EAF2FF">
-    <animate attributeName="ry" values="0;0;26;0;0" keyTimes="0;0.90;0.94;0.98;1" dur="6s" repeatCount="indefinite"/>
+  <ellipse cx="144" cy="100" rx="23" ry="0" fill="#294673">
+    <animate attributeName="ry" values="0;0;24;0;0" keyTimes="0;0.90;0.94;0.98;1" dur="6s" repeatCount="indefinite"/>
   </ellipse>
 
-  <!-- feet -->
-  <g fill="#FFB020">
-    <rect x="90" y="204" width="24" height="16" rx="8"/>
-    <rect x="126" y="204" width="24" height="16" rx="8"/>
-  </g>
+  <!-- slow breathing -->
+  <animateTransform attributeName="transform" type="translate" values="0 0;0 -3;0 0" dur="5s" repeatCount="indefinite"/>
 </svg>

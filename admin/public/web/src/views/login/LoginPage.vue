@@ -1,7 +1,7 @@
 <template>
   <div class="login-container">
     <div class="login-card">
-      <img class="pet" src="/pet.svg" alt="阿鸮" />
+      <img class="pet" src="/pet.svg" alt="阿章" />
       <h2>广告管理系统</h2>
       <el-form ref="formRef" :model="form" :rules="rules" size="large">
         <el-form-item prop="username">

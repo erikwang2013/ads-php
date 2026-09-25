@@ -4,6 +4,26 @@
 
 Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
+## Mascote do projeto "阿章"
+
+<p align="center"><img src="docs/diagrams/svg/pet.svg" width="160" alt="Mascote do projeto 阿章"></p>
+
+**阿章** (zhāng, «polvo») é o mascote deste projeto: um polvo. Seus oito tentáculos cuidam cada um do seu próprio trabalho e, ao mesmo tempo, alcançam 29 plataformas — exatamente o que este sistema faz.
+
+| Imagem | Significado | Implementação correspondente |
+|------|------|---------|
+| Oito tentáculos | Oito plugins, cada um cuidando do seu próprio trabalho, todos em paralelo | ads-account / ads-alert / ads-api / ads-platform / ads-report / ads-storage / ads-task / ads-tenant |
+| Ventosas dos tentáculos | Os dados aderem e se agregam ao longo do caminho | 29 plataformas → `/api/v1` unificado |
+| Ambos os olhos voltados para a frente | Vários clientes olhando a tela ao mesmo tempo | Vue Admin / Flutter / HarmonyOS: os três clientes compartilham uma única API |
+| Piscar + ondular | Polling periódico e guarda constante | 6 tarefas agendadas (3/5/10/10/15/55 minutos) coletando em ciclo; 22 proteções rodando em silêncio |
+| 29 nós no anel externo | 29 plataformas permanentemente online | 16 nacionais + 13 internacionais, todas vigiadas |
+
+阿章 já está integrado ao código: **página de login** e **favicon** do painel administrativo, a **página de documentação da API `/docs`** do lado Service, e todas as páginas de documentação.
+
+> Código-fonte SVG [docs/diagrams/svg/pet.svg](docs/diagrams/svg/pet.svg) (sem texto, a mesma versão é compartilhada pela documentação em 13 idiomas; inclui animação SMIL de piscar e respirar)
+
+---
+
 ## Visão geral
 
 **Ads Platform** é um sistema de gerenciamento de anúncios multiplataforma que integra **29 plataformas de publicidade** (16 nacionais + 13 internacionais), com gerenciamento unificado da veiculação de anúncios e relatórios de dados entre plataformas.
@@ -16,7 +36,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 - **Acesso multidispositivo** — painel web (Vue 3), Flutter PC/Mobile, HarmonyOS
 - **Estabilidade e confiabilidade** — disjuntor/redução de capacidade/timeout em chamadas de plataforma, cache de 3 níveis, otimizações de alta concorrência, 22 proteções de segurança
 - **Internacionalização** — documentação em 12 idiomas, interface bilíngue (ZH/EN)
-- **Mascote do projeto** — a coruja "阿鸮", vigiando 29 plataformas 24 horas por dia ([pet.svg](docs/diagrams/svg/pet.svg))
+- **Mascote do projeto** — o polvo "阿章", oito tentáculos em paralelo, de plantão 24 horas em 29 plataformas ([pet.svg](docs/diagrams/svg/pet.svg))
 
 > Design de arquitetura → [docs/architecture.md](docs/architecture.pt.md)  
 > Módulos de funcionalidades → [docs/features.md](docs/features.pt.md)  
@@ -61,25 +81,6 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | Spotify Ads | Spotify | OAuth2 Bearer |
 | Twitch Ads | Twitch | OAuth2 Bearer + ClientId |
 | Netflix Ads | Netflix | OAuth2 client_credentials |
-
----
-
-## Mascote do projeto "阿鸮"
-
-<p align="center"><img src="docs/diagrams/svg/pet.svg" width="160" alt="Mascote do projeto 阿鸮"></p>
-
-**阿鸮** (xiāo, «coruja») é o mascote deste projeto: uma coruja. Dorme de dia e vive à noite, vigiando cada plataforma a noite inteira — exatamente o que este sistema faz.
-
-| Imagem | Significado | Implementação correspondente |
-|------|------|---------|
-| Olhos voltados para a frente | Vários clientes olhando a tela ao mesmo tempo | Vue Admin / Flutter / HarmonyOS: os três clientes compartilham uma única API |
-| Animação de piscar | Polling periódico | 6 tarefas agendadas (3/5/10/10/15/55 minutos) coletando em ciclo |
-| Anel de radar atrás da cabeça | Varredura contínua em busca de anomalias | Avaliação do motor de alertas + três limiares de aviso de orçamento |
-| Vigília noturna | Guarda silenciosa, só dá sinal quando há problema | 22 proteções rodando em silêncio, notificação só quando disparadas |
-
-阿鸮 já está integrado ao código: **página de login** e **favicon** do painel administrativo, a **página de documentação da API `/docs`** do lado Service, e todas as páginas de documentação.
-
-> Código-fonte SVG [docs/diagrams/svg/pet.svg](docs/diagrams/svg/pet.svg) (sem texto, a mesma versão é compartilhada pela documentação em 13 idiomas; inclui animação de piscar SMIL)
 
 ---
 
@@ -311,7 +312,7 @@ ads-php/
 │   │   ├── ads-tenant/                # Gerenciamento multitenant
 │   │   └── ads-storage/               # Camada de abstração de armazenamento (local/OSS/COS/S3) + provedores CDN
 │   ├── public/                        # Recursos estáticos (tratamento estático nativo do webman)
-│   │   └── img/pet.svg                # Mascote do projeto "阿鸮", exibido na página /docs
+│   │   └── img/pet.svg                # Mascote do projeto "阿章", exibido na página /docs
 │   ├── scripts/backfill-assets.php    # Migrar materiais existentes para o armazenamento de objetos
 │   ├── support/                       # Classes utilitárias do Erik Stack
 │   │   ├── ControllerTrait.php        # Trait compartilhado de controladores
@@ -326,7 +327,7 @@ ads-php/
 │   └── start.php                      # Ponto de entrada do serviço
 ├── admin/                             # Painel administrativo independente (webman-admin v2 :8789)
 │   ├── public/web/
-│   │   ├── public/pet.svg             # Mascote do projeto "阿鸮", favicon + página de login
+│   │   ├── public/pet.svg             # Mascote do projeto "阿章", favicon + página de login
 │   │   ├── src/
 │   │   │   ├── views/                 # 21 páginas Vue
 │   │   │   │   ├── dashboard/         # Painel (ECharts)
@@ -341,7 +342,7 @@ ads-php/
 │   │   │   │   ├── sync/              # Status de sincronização
 │   │   │   │   ├── bid/               # Regras de lance automático
 │   │   │   │   ├── cdn/               # Provedores CDN
-│   │   │   │   ├── login/             # Página de login (阿鸮)
+│   │   │   │   ├── login/             # Página de login (阿章)
 │   │   │   │   └── system/            # Gerenciamento de usuários + log de auditoria + informações do sistema
 │   │   │   ├── api/                   # 15 clientes de API
 │   │   │   ├── stores/                # 5 Pinia Store

@@ -4,6 +4,26 @@
 
 Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
+## Project Mascot "A-Zhang (阿章)"
+
+<p align="center"><img src="docs/diagrams/svg/pet.svg" width="160" alt="Project mascot A-Zhang"></p>
+
+**A-Zhang (阿章)** (zhāng, "octopus") is this project's mascot: an octopus. Its eight arms each mind their own business while reaching out to 29 platforms at once — exactly what this system does.
+
+| Appearance | Meaning | Implementation |
+|------------|---------|----------------|
+| Eight arms | Eight plugins, each minding its own job, all in parallel | ads-account / ads-alert / ads-api / ads-platform / ads-report / ads-storage / ads-task / ads-tenant |
+| Arm suckers | Data clings and aggregates along the way | 29 platforms → one unified `/api/v1` |
+| Both eyes facing forward | Watching many screens at once | Vue Admin / Flutter / HarmonyOS share a single API |
+| Blinking + breathing | Periodic polling and steady guard duty | 6 cron jobs (3/5/10/10/15/55 min) loop the collection; 22 protections run silently |
+| 29 nodes on the outer ring | 29 platforms permanently online | 16 in China + 13 international, every one watched |
+
+A-Zhang is already integrated into the code: the admin panel **login page** and **favicon**, the Service **`/docs` API docs page**, and every documentation page.
+
+> SVG source [docs/diagrams/svg/pet.svg](docs/diagrams/svg/pet.svg) (no text; shared by all 13 language versions of the docs; includes a SMIL blinking and breathing animation)
+
+---
+
 ## Overview
 
 **Ads Platform** is a multi-platform ad management system integrating **29 advertising platforms** (16 domestic + 13 international), providing unified ad delivery management and cross-platform reporting.
@@ -16,7 +36,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 - **Multi-Device Access** — Web admin (Vue 3), Flutter PC/Mobile, HarmonyOS
 - **Stability & Reliability** — platform call circuit breaker/degradation/timeout, 3-tier cache, high-concurrency optimizations, 22 security protections
 - **Internationalization** — 12-language docs, bilingual UI (ZH/EN)
-- **Project Mascot** — the owl "A-Xiao (阿鸮)", on duty 24/7 across 29 platforms ([pet.svg](docs/diagrams/svg/pet.svg))
+- **Project Mascot** — A-Zhang (阿章) the octopus, eight arms on duty 24/7 across 29 platforms ([pet.svg](docs/diagrams/svg/pet.svg))
 
 > Architecture → [docs/architecture.en.md](docs/architecture.en.md)  
 > Features → [docs/features.en.md](docs/features.en.md)  
@@ -61,25 +81,6 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | Spotify Ads | Spotify | OAuth2 Bearer |
 | Twitch Ads | Twitch | OAuth2 Bearer + ClientId |
 | Netflix Ads | Netflix | OAuth2 client_credentials |
-
----
-
-## Project Mascot "A-Xiao (阿鸮)"
-
-<p align="center"><img src="docs/diagrams/svg/pet.svg" width="160" alt="Project mascot A-Xiao"></p>
-
-**A-Xiao (阿鸮)** (xiāo, "owl") is this project's mascot: an owl. It rests by day and comes out at night, watching every platform all night long — exactly what this system does.
-
-| Appearance | Meaning | Implementation |
-|------------|---------|----------------|
-| Both eyes facing forward | Watching many screens at once | Vue Admin / Flutter / HarmonyOS share a single API |
-| Blinking animation | Periodic polling | 6 cron jobs (3/5/10/10/15/55 min) loop the collection |
-| Radar ring behind the head | Continuous scanning for anomalies | Alert engine evaluation + 3-tier budget alert thresholds |
-| Night watch | Silent vigil, speaks only when something happens | 22 protections run silently, push a notification only on trigger |
-
-A-Xiao is already integrated into the code: the admin panel **login page** and **favicon**, the Service **`/docs` API docs page**, and every documentation page.
-
-> SVG source [docs/diagrams/svg/pet.svg](docs/diagrams/svg/pet.svg) (no text; shared by all 13 language versions of the docs; includes a SMIL blinking animation)
 
 ---
 
@@ -311,7 +312,7 @@ ads-php/
 │   │   ├── ads-tenant/                # Multi-tenant management
 │   │   └── ads-storage/               # Storage abstraction (local/OSS/COS/S3) + CDN providers
 │   ├── public/                        # Static assets (webman built-in static handling)
-│   │   └── img/pet.svg                # Project mascot "A-Xiao (阿鸮)", shown on the /docs page
+│   │   └── img/pet.svg                # Project mascot "A-Zhang (阿章)", shown on the /docs page
 │   ├── scripts/backfill-assets.php    # Backfill existing assets to object storage
 │   ├── support/                       # Erik Stack utilities
 │   │   ├── ControllerTrait.php        # Controller shared trait
@@ -326,7 +327,7 @@ ads-php/
 │   └── start.php                      # Service entry point
 ├── admin/                             # Standalone admin panel (webman-admin v2 :8789)
 │   ├── public/web/
-│   │   ├── public/pet.svg             # Project mascot "A-Xiao (阿鸮)", favicon + login page
+│   │   ├── public/pet.svg             # Project mascot "A-Zhang (阿章)", favicon + login page
 │   │   ├── src/
 │   │   │   ├── views/                 # 21 Vue pages
 │   │   │   │   ├── dashboard/         # Dashboard (ECharts)
@@ -341,7 +342,7 @@ ads-php/
 │   │   │   │   ├── sync/              # Sync status
 │   │   │   │   ├── bid/               # Auto-bid rules
 │   │   │   │   ├── cdn/               # CDN providers
-│   │   │   │   ├── login/             # Login page (A-Xiao)
+│   │   │   │   ├── login/             # Login page (A-Zhang)
 │   │   │   │   └── system/            # User management + audit logs + system info
 │   │   │   ├── api/                   # 15 API clients
 │   │   │   ├── stores/                # 5 Pinia stores

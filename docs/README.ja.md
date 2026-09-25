@@ -4,6 +4,26 @@
 
 Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
+## プロジェクトマスコット「阿章」
+
+<p align="center"><img src="docs/diagrams/svg/pet.svg" width="160" alt="プロジェクトマスコット 阿章"></p>
+
+**阿章（アージャン、zhāng、タコ）** は本プロジェクトのマスコットで、タコです。八本の触手を一斉に伸ばし、それぞれが持ち場を受け持ちながら同時に 29 のプラットフォームへと伸びていきます——それはまさに、このシステムがやっていることです。
+
+| 姿 | 寓意 | 対応する実装 |
+|------|------|---------|
+| 八本の触手 | 8 つのプラグインが各々の役割を果たし、並行して動く | ads-account / ads-alert / ads-api / ads-platform / ads-report / ads-storage / ads-task / ads-tenant |
+| 触手の吸盤 | データが吸い寄せられて集約される | 29 社のプラットフォーム → 統一 `/api/v1` |
+| 両目が前を向く | 複数端末を同時に監視 | Vue Admin / Flutter / HarmonyOS の 3 端が 1 つの API を共用 |
+| まばたき + 起伏 | 周期的なポーリングと静かな見守り | 6 つの定期タスク (3/5/10/10/15/55 分) が巡回収集；22 項目の防御が静かに稼働 |
+| 外環の 29 ノード | 29 のプラットフォームが常時オンライン | 国内 16 + 海外 13、ひとつひとつを見張る |
+
+阿章はすでにコードに統合されています：管理バックエンドの **ログインページ** と **favicon**、Service 側の **`/docs` API ドキュメントページ**、そしてすべてのドキュメントページ。
+
+> SVG ソース [docs/diagrams/svg/pet.svg](docs/diagrams/svg/pet.svg)（文字なし、13 言語のドキュメントで同一ファイルを共用、SMIL まばたき・呼吸アニメーション付き）
+
+---
+
 ## 概要
 
 **Ads Platform** は、**29 の広告プラットフォーム**（国内 16 + 国際 13）を連携するマルチプラットフォーム広告管理システムで、広告配信とクロスプラットフォームのデータレポートを統合管理します。
@@ -16,7 +36,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 - **マルチ端末アクセス** — Web 管理画面 (Vue 3)、Flutter PC/Mobile、HarmonyOS
 - **安定性と信頼性** — プラットフォーム呼び出しのサーキットブレーカー/降格/タイムアウト、3 段キャッシュ、高並行最適化、22 のセキュリティ対策
 - **国際化** — 12 言語のドキュメント、バイリンガル UI (ZH/EN)
-- **プロジェクトマスコット** — フクロウ「阿鸮（アーシャオ）」、24 時間 29 のプラットフォームを見守る（[pet.svg](docs/diagrams/svg/pet.svg)）
+- **プロジェクトマスコット** — タコ「阿章（アージャン）」、八本の触手で並行し、24 時間 29 のプラットフォームを守る（[pet.svg](docs/diagrams/svg/pet.svg)）
 
 > アーキテクチャ設計 → [docs/architecture.ja.md](docs/architecture.ja.md)  
 > 機能モジュール → [docs/features.ja.md](docs/features.ja.md)  
@@ -61,25 +81,6 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | Spotify Ads | Spotify | OAuth2 Bearer |
 | Twitch Ads | Twitch | OAuth2 Bearer + ClientId |
 | Netflix Ads | Netflix | OAuth2 client_credentials |
-
----
-
-## プロジェクトマスコット「阿鸮」
-
-<p align="center"><img src="docs/diagrams/svg/pet.svg" width="160" alt="プロジェクトマスコット 阿鸮"></p>
-
-**阿鸮（アーシャオ、xiāo、フクロウ）** は本プロジェクトのマスコットで、フクロウです。昼は眠り夜に活動し、一晩中あらゆるプラットフォームを見張り続けます——それはまさに、このシステムがやっていることです。
-
-| 姿 | 寓意 | 対応する実装 |
-|------|------|---------|
-| 両目が前を向く | 複数端末を同時に監視 | Vue Admin / Flutter / HarmonyOS の 3 端が 1 つの API を共用 |
-| まばたきアニメーション | 周期的なポーリング | 6 つの定期タスク (3/5/10/10/15/55 分) が巡回収集 |
-| 頭部後方のレーダーリング | 継続スキャンで異常を検出 | アラートエンジンの評価 + 予算警告の 3 段階しきい値 |
-| 夜間の見張り | 静かに夜を守り、異変があれば鳴く | 22 項目の防御が静かに稼働し、発動時のみ通知をプッシュ |
-
-阿鸮はすでにコードに統合されています：管理バックエンドの **ログインページ** と **favicon**、Service 側の **`/docs` API ドキュメントページ**、そしてすべてのドキュメントページ。
-
-> SVG ソース [docs/diagrams/svg/pet.svg](docs/diagrams/svg/pet.svg)（文字なし、13 言語のドキュメントで同一ファイルを共用、SMIL まばたきアニメーション付き）
 
 ---
 
@@ -311,7 +312,7 @@ ads-php/
 │   │   ├── ads-tenant/                # マルチテナント管理
 │   │   └── ads-storage/               # ストレージ抽象層 (local/OSS/COS/S3) + CDN プロバイダー
 │   ├── public/                        # 静的リソース (webman 内蔵の静的処理)
-│   │   └── img/pet.svg                # プロジェクトマスコット「阿鸮」、/docs ページで表示
+│   │   └── img/pet.svg                # プロジェクトマスコット「阿章」、/docs ページで表示
 │   ├── scripts/backfill-assets.php    # 既存素材をオブジェクトストレージへバックフィル
 │   ├── support/                       # Erik Stack ユーティリティクラス
 │   │   ├── ControllerTrait.php        # コントローラー共通 trait
@@ -326,7 +327,7 @@ ads-php/
 │   └── start.php                      # サービスエントリ
 ├── admin/                             # 独立管理バックエンド (webman-admin v2 :8789)
 │   ├── public/web/
-│   │   ├── public/pet.svg             # プロジェクトマスコット「阿鸮」、favicon + ログインページ
+│   │   ├── public/pet.svg             # プロジェクトマスコット「阿章」、favicon + ログインページ
 │   │   ├── src/
 │   │   │   ├── views/                 # 21 の Vue ページ
 │   │   │   │   ├── dashboard/         # ダッシュボード (ECharts)
@@ -341,7 +342,7 @@ ads-php/
 │   │   │   │   ├── sync/              # 同期ステータス
 │   │   │   │   ├── bid/               # 自動入札ルール
 │   │   │   │   ├── cdn/               # CDN プロバイダー
-│   │   │   │   ├── login/             # ログインページ (阿鸮)
+│   │   │   │   ├── login/             # ログインページ (阿章)
 │   │   │   │   └── system/            # ユーザー管理 + 監査ログ + システム情報
 │   │   │   ├── api/                   # 15 の API クライアント
 │   │   │   ├── stores/                # 5 の Pinia Store

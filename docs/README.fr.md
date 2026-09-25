@@ -4,6 +4,26 @@
 
 Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
+## Mascotte du projet « 阿章 »
+
+<p align="center"><img src="docs/diagrams/svg/pet.svg" width="160" alt="Mascotte du projet 阿章"></p>
+
+**阿章** (zhāng, « pieuvre ») est la mascotte de ce projet : une pieuvre. Elle lance ses huit tentacules d'un seul élan, chacun à son poste, et les tend simultanément vers 29 plateformes — exactement ce que fait ce système.
+
+| Image | Symbole | Implémentation correspondante |
+|------|------|---------|
+| Huit tentacules | Huit plugins, chacun à son poste, tous en parallèle | ads-account / ads-alert / ads-api / ads-platform / ads-report / ads-storage / ads-task / ads-tenant |
+| Ventouses des tentacules | Les données s'agrègent en chemin | 29 plateformes → l'API unifiée `/api/v1` |
+| Deux yeux tournés vers l'avant | Plusieurs clients surveillent l'écran en même temps | Vue Admin / Flutter / HarmonyOS : les trois clients partagent une seule API |
+| Clignement + respiration | Interrogation périodique et garde continue | 6 tâches planifiées (3/5/10/10/15/55 minutes) en collecte cyclique ; 22 protections fonctionnant en silence |
+| 29 nœuds sur l'anneau extérieur | 29 plateformes en ligne en permanence | 16 nationales + 13 internationales, toutes sous surveillance |
+
+阿章 est déjà intégrée au code : la **page de connexion** et le **favicon** du back-office, la **page de documentation API `/docs`** du Service, ainsi que toutes les pages de documentation.
+
+> Code source SVG [docs/diagrams/svg/pet.svg](docs/diagrams/svg/pet.svg) (sans texte, partagé par la documentation en 13 langues ; contient une animation SMIL de clignement et de respiration)
+
+---
+
 ## Vue d'ensemble
 
 **Ads Platform** est un système de gestion publicitaire multi-plateformes qui intègre **29 plateformes publicitaires** (16 nationales + 13 internationales), offrant une gestion unifiée de la diffusion publicitaire et des rapports de données inter-plateformes.
@@ -16,7 +36,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 - **Accès multi-appareils** — admin Web (Vue 3), Flutter PC/Mobile, HarmonyOS
 - **Stabilité & fiabilité** — circuit breaker/dégradation/timeout pour les appels plateforme, cache à 3 niveaux, optimisations haute concurrence, 22 protections de sécurité
 - **Internationalisation** — documentation en 12 langues, interface bilingue (ZH/EN)
-- **Mascotte du projet** — le hibou « 阿鸮 », en veille 24 h/24 sur les 29 plateformes ([pet.svg](docs/diagrams/svg/pet.svg))
+- **Mascotte du projet** — la pieuvre « 阿章 », huit bras à l'œuvre en parallèle, 24 h/24 sur les 29 plateformes ([pet.svg](docs/diagrams/svg/pet.svg))
 
 > Conception de l'architecture → [docs/architecture.fr.md](docs/architecture.fr.md)
 > Modules fonctionnels → [docs/features.fr.md](docs/features.fr.md)
@@ -61,25 +81,6 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | Spotify Ads | Spotify | OAuth2 Bearer |
 | Twitch Ads | Twitch | OAuth2 Bearer + ClientId |
 | Netflix Ads | Netflix | OAuth2 client_credentials |
-
----
-
-## Mascotte du projet « 阿鸮 »
-
-<p align="center"><img src="docs/diagrams/svg/pet.svg" width="160" alt="Mascotte du projet 阿鸮"></p>
-
-**阿鸮** (xiāo, « hibou ») est la mascotte de ce projet : un hibou. Il dort le jour et veille la nuit, l'œil rivé sur chaque plateforme toute la nuit — exactement ce que fait ce système.
-
-| Image | Symbole | Implémentation correspondante |
-|------|------|---------|
-| Deux yeux tournés vers l'avant | Plusieurs clients surveillent l'écran en même temps | Vue Admin / Flutter / HarmonyOS : les trois clients partagent une seule API |
-| Animation de clignement | Interrogation périodique | 6 tâches planifiées (3/5/10/10/15/55 minutes) en collecte cyclique |
-| Anneau radar derrière la tête | Analyse continue pour détecter les anomalies | Évaluation du moteur d'alerte + seuils en trois paliers de l'alerte budgétaire |
-| Veille nocturne | Garde silencieuse, ne crie qu'en cas de problème | 22 protections fonctionnant en silence, notification poussée uniquement en cas de déclenchement |
-
-阿鸮 est déjà intégré au code : la **page de connexion** et le **favicon** du back-office, la **page de documentation API `/docs`** du Service, ainsi que toutes les pages de documentation.
-
-> Code source SVG [docs/diagrams/svg/pet.svg](docs/diagrams/svg/pet.svg) (sans texte, partagé par la documentation en 13 langues ; contient une animation de clignement SMIL)
 
 ---
 
@@ -311,7 +312,7 @@ ads-php/
 │   │   ├── ads-tenant/                # Gestion multi-locataires
 │   │   └── ads-storage/               # Couche d'abstraction de stockage (local/OSS/COS/S3) + fournisseurs CDN
 │   ├── public/                        # Ressources statiques (gestion statique intégrée à webman)
-│   │   └── img/pet.svg                # Mascotte du projet « 阿鸮 », affichée sur la page /docs
+│   │   └── img/pet.svg                # Mascotte du projet « 阿章 », affichée sur la page /docs
 │   ├── scripts/backfill-assets.php    # Transférer les ressources existantes vers le stockage objet
 │   ├── support/                       # Classes utilitaires Erik Stack
 │   │   ├── ControllerTrait.php        # Trait commun des contrôleurs
@@ -326,7 +327,7 @@ ads-php/
 │   └── start.php                      # Point d'entrée du service
 ├── admin/                             # Back-office indépendant (webman-admin v2 :8789)
 │   ├── public/web/
-│   │   ├── public/pet.svg             # Mascotte du projet « 阿鸮 », favicon + page de connexion
+│   │   ├── public/pet.svg             # Mascotte du projet « 阿章 », favicon + page de connexion
 │   │   ├── src/
 │   │   │   ├── views/                 # 21 pages Vue
 │   │   │   │   ├── dashboard/         # Tableau de bord (ECharts)
@@ -341,7 +342,7 @@ ads-php/
 │   │   │   │   ├── sync/              # État de synchronisation
 │   │   │   │   ├── bid/               # Règles d'enchères automatiques
 │   │   │   │   ├── cdn/               # Fournisseurs CDN
-│   │   │   │   ├── login/             # Page de connexion (阿鸮)
+│   │   │   │   ├── login/             # Page de connexion (阿章)
 │   │   │   │   └── system/            # Gestion des utilisateurs + journaux d'audit + informations système
 │   │   │   ├── api/                   # 15 clients API
 │   │   │   ├── stores/                # 5 stores Pinia

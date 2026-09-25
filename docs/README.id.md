@@ -4,6 +4,26 @@
 
 Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
+## Maskot Proyek「阿章」
+
+<p align="center"><img src="docs/diagrams/svg/pet.svg" width="160" alt="Maskot proyek 阿章"></p>
+
+**阿章**（zhāng, "gurita"）adalah maskot proyek ini: seekor gurita. Delapan tentakelnya masing-masing mengurus tugasnya sendiri sambil menjangkau 29 platform sekaligus — persis seperti yang dilakukan sistem ini.
+
+| Wujud | Makna | Implementasi terkait |
+|------|------|---------|
+| Delapan tentakel | Delapan plugin, masing-masing mengurus tugasnya sendiri, semuanya berjalan paralel | ads-account / ads-alert / ads-api / ads-platform / ads-report / ads-storage / ads-task / ads-tenant |
+| Alat isap tentakel | Data menempel dan terakumulasi di sepanjang perjalanan | 29 platform → `/api/v1` terpadu |
+| Kedua mata menatap ke depan | Memantau banyak layar sekaligus | Tiga klien Vue Admin / Flutter / HarmonyOS berbagi satu set API |
+| Berkedip + naik-turun | Polling berkala dan penjagaan senyap | 6 tugas terjadwal (3/5/10/10/15/55 menit) mengumpulkan data secara berulang; 22 perlindungan berjalan senyap |
+| 29 simpul di cincin luar | 29 platform selalu online | 16 domestik + 13 internasional, setiap satu diawasi |
+
+阿章 telah diintegrasikan ke dalam kode: **halaman login** dan **favicon** panel admin, **halaman dokumentasi API `/docs`** di sisi Service, serta seluruh halaman dokumentasi.
+
+> Sumber SVG [docs/diagrams/svg/pet.svg](docs/diagrams/svg/pet.svg)（tanpa teks, satu berkas yang sama dipakai bersama oleh dokumentasi 13 bahasa; berisi animasi SMIL berkedip dan bernapas）
+
+---
+
 ## Ringkasan
 
 **Ads Platform** adalah sistem manajemen iklan multi-platform yang mengintegrasikan **29 platform iklan** (16 dalam negeri + 13 internasional), dengan pengelolaan penayangan iklan dan laporan data lintas-platform yang terpadu.
@@ -16,7 +36,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 - **Akses Multi-Perangkat** — admin web (Vue 3), Flutter PC/Mobile, HarmonyOS
 - **Stabilitas & Keandalan** — circuit breaker/degradasi/timeout panggilan platform, cache 3 tingkat, optimasi konkurensi tinggi, 22 perlindungan keamanan
 - **Internasionalisasi** — dokumentasi 12 bahasa, UI bilingual (ZH/EN)
-- **Maskot Proyek** — burung hantu「阿鸮」, berjaga 24 jam untuk 29 platform（[pet.svg](docs/diagrams/svg/pet.svg)）
+- **Maskot Proyek** — gurita「阿章」, delapan tentakel bekerja paralel, berjaga 24 jam untuk 29 platform（[pet.svg](docs/diagrams/svg/pet.svg)）
 
 > Desain arsitektur → [docs/architecture.id.md](docs/architecture.id.md)  
 > Modul fitur → [docs/features.id.md](docs/features.id.md)  
@@ -61,25 +81,6 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | Spotify Ads | Spotify | OAuth2 Bearer |
 | Twitch Ads | Twitch | OAuth2 Bearer + ClientId |
 | Netflix Ads | Netflix | OAuth2 client_credentials |
-
----
-
-## Maskot Proyek「阿鸮」
-
-<p align="center"><img src="docs/diagrams/svg/pet.svg" width="160" alt="Maskot proyek 阿鸮"></p>
-
-**阿鸮**（xiāo, "burung hantu"）adalah maskot proyek ini: seekor burung hantu. Ia tidur di siang hari dan berjaga di malam hari, mengawasi setiap platform sepanjang malam — persis seperti yang dilakukan sistem ini.
-
-| Wujud | Makna | Implementasi terkait |
-|------|------|---------|
-| Kedua mata menatap ke depan | Memantau banyak layar sekaligus | Tiga klien Vue Admin / Flutter / HarmonyOS berbagi satu set API |
-| Animasi berkedip | Polling berkala | 6 tugas terjadwal (3/5/10/10/15/55 menit) mengumpulkan data secara berulang |
-| Cincin radar di belakang kepala | Pemindaian berkelanjutan untuk menemukan anomali | Evaluasi mesin peringatan + ambang batas tiga tahap peringatan anggaran |
-| Berjaga di malam hari | Menjaga dalam senyap, bersuara hanya saat ada masalah | 22 perlindungan berjalan senyap, notifikasi hanya dikirim saat terpicu |
-
-阿鸮 telah diintegrasikan ke dalam kode: **halaman login** dan **favicon** panel admin, **halaman dokumentasi API `/docs`** di sisi Service, serta seluruh halaman dokumentasi.
-
-> Sumber SVG [docs/diagrams/svg/pet.svg](docs/diagrams/svg/pet.svg)（tanpa teks, satu berkas yang sama dipakai bersama oleh dokumentasi 13 bahasa; berisi animasi kedip SMIL）
 
 ---
 
@@ -311,7 +312,7 @@ ads-php/
 │   │   ├── ads-tenant/                # Manajemen multi-tenant
 │   │   └── ads-storage/               # Lapisan abstraksi penyimpanan (local/OSS/COS/S3) + penyedia CDN
 │   ├── public/                        # Aset statis (penanganan statis bawaan webman)
-│   │   └── img/pet.svg                # Maskot proyek「阿鸮」, ditampilkan di halaman /docs
+│   │   └── img/pet.svg                # Maskot proyek「阿章」, ditampilkan di halaman /docs
 │   ├── scripts/backfill-assets.php    # Backfill aset lama ke object storage
 │   ├── support/                       # Kelas utilitas Erik Stack
 │   │   ├── ControllerTrait.php        # Trait umum controller
@@ -326,7 +327,7 @@ ads-php/
 │   └── start.php                      # Titik masuk layanan
 ├── admin/                             # Panel admin independen (webman-admin v2 :8789)
 │   ├── public/web/
-│   │   ├── public/pet.svg             # Maskot proyek「阿鸮」, favicon + halaman login
+│   │   ├── public/pet.svg             # Maskot proyek「阿章」, favicon + halaman login
 │   │   ├── src/
 │   │   │   ├── views/                 # 21 halaman Vue
 │   │   │   │   ├── dashboard/         # Dasbor (ECharts)
@@ -341,7 +342,7 @@ ads-php/
 │   │   │   │   ├── sync/              # Status sinkronisasi
 │   │   │   │   ├── bid/               # Aturan penawaran otomatis
 │   │   │   │   ├── cdn/               # Penyedia CDN
-│   │   │   │   ├── login/             # Halaman login (阿鸮)
+│   │   │   │   ├── login/             # Halaman login (阿章)
 │   │   │   │   └── system/            # Manajemen pengguna + log audit + informasi sistem
 │   │   │   ├── api/                   # 15 klien API
 │   │   │   ├── stores/                # 5 Pinia Store
