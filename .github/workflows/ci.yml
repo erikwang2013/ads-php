@@ -56,6 +56,10 @@ jobs:
           mysql -h 127.0.0.1 -u root -ptest ads_test < install.sql
           mysql -h 127.0.0.1 -u root -ptest ads_test -e "SHOW TABLES" | tail -n +2 | wc -l
       - name: Run tests
+        # tests/bootstrap.php 用 getenv('DB_PASSWORD') 拼连接串（缺省为空串），
+        # 而上面的 mysql 服务要求 root/test，不传会 1045 Access denied。
+        env:
+          DB_PASSWORD: test
         run: cd service && ./vendor/bin/phpunit
 
   typescript:
