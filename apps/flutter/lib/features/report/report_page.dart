@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
-import 'package:dio/dio.dart';
 import '../../shared/api/api_client.dart';
 
 class ReportPage extends ConsumerStatefulWidget {
@@ -175,7 +174,7 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                     barWidth: 2,
                     belowBarData: BarAreaData(
                       show: true,
-                      color: Colors.blue.withOpacity(0.1),
+                      color: Colors.blue.withValues(alpha: 0.1),
                     ),
                   ),
                 ],

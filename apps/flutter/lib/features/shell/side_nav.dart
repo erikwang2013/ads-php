@@ -223,7 +223,7 @@ class _NavTile extends StatelessWidget {
       trailing: trailing,
       selected: active,
       selectedTileColor:
-          Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+          Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
       onTap: onTap,
     );
   }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:dio/dio.dart';
 import '../../shared/api/api_client.dart';
 
 class AccountPage extends ConsumerStatefulWidget {
@@ -180,7 +179,7 @@ class _AccountPageState extends ConsumerState<AccountPage> {
             : Colors.grey;
     return Chip(
       label: Text(s, style: const TextStyle(fontSize: 12)),
-      backgroundColor: color.withOpacity(0.1),
+      backgroundColor: color.withValues(alpha: 0.1),
       side: BorderSide(color: color),
     );
   }

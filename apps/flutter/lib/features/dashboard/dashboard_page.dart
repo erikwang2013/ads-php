@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 import '../../shared/api/api_client.dart';
-import 'package:dio/dio.dart';
 
 class DashboardPage extends ConsumerStatefulWidget {
   const DashboardPage({super.key});
@@ -250,7 +249,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                             barWidth: 2,
                             belowBarData: BarAreaData(
                               show: true,
-                              color: Colors.blue.withOpacity(0.1),
+                              color: Colors.blue.withValues(alpha: 0.1),
                             ),
                           ),
                         ],

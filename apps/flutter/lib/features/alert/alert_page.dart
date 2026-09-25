@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:dio/dio.dart';
 import '../../shared/api/api_client.dart';
 import 'package:intl/intl.dart';
 
@@ -179,7 +178,7 @@ class _AlertPageState extends ConsumerState<AlertPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: color),
       ),
@@ -211,7 +210,7 @@ class _AlertPageState extends ConsumerState<AlertPage> {
             : Colors.grey;
     return Chip(
       label: Text(s, style: const TextStyle(fontSize: 12)),
-      backgroundColor: color.withOpacity(0.1),
+      backgroundColor: color.withValues(alpha: 0.1),
       side: BorderSide(color: color),
     );
   }
