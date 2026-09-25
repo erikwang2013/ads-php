@@ -233,7 +233,7 @@ Las tres versiones comparten una pila tecnológica unificada:
 
 | Capa | Tecnología |
 |----|------|
-| Framework de backend | webman v2, PHP 8.2+ |
+| Framework de backend | webman v2, PHP 8.4+ |
 | Base de datos | MySQL 8.0 (InnoDB, utf8mb4) |
 | Caché | Redis 7 |
 | ORM | Illuminate Database (Laravel Eloquent) |

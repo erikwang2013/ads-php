@@ -233,7 +233,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 | 层 | 技术 |
 |----|------|
-| 后端框架 | webman v2, PHP 8.2+ |
+| 后端框架 | webman v2, PHP 8.4+ |
 | 数据库 | MySQL 8.0 (InnoDB, utf8mb4) |
 | 缓存 | Redis 7 |
 | ORM | Illuminate Database (Laravel Eloquent) |

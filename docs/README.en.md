@@ -88,7 +88,7 @@ A-Zhang is already integrated into the code: the admin panel **login page** and 
 
 | Layer | Technology | Notes |
 |-------|-----------|-------|
-| Server | webman v2 + PHP 8.2+ | 8 plugins, 76 API endpoints |
+| Server | webman v2 + PHP 8.4+ | 8 plugins, 76 API endpoints |
 | Database | MySQL 8.0 | 29 tables, `ads_` prefix, Snowflake BIGINT PK |
 | Cache | Redis 7 | 3-tier cache (L1 memory / L2 APCu / L3 Redis), rate limiting, Pub/Sub, message queue |
 | Search | Elasticsearch | webman-scout auto index sync (configured) |

@@ -88,7 +88,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 | レイヤー | 技術 | 説明 |
 |----|------|------|
-| サーバー側 | webman v2 + PHP 8.2+ | 8 プラグイン、76 API エンドポイント |
+| サーバー側 | webman v2 + PHP 8.4+ | 8 プラグイン、76 API エンドポイント |
 | データベース | MySQL 8.0 | 29 テーブル、ads_ プレフィックス、Snowflake BIGINT 主キー |
 | キャッシュ | Redis 7 | 3 段キャッシュ (L1メモリ/L2 APCu/L3 Redis)、レート制限カウント、Pub/Sub、メッセージキュー |
 | 検索 | Elasticsearch | webman-scout 自動インデックス同期（設定済み） |

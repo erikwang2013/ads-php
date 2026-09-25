@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "aec2e9b797ddede0b4d2f6fe9cb58939",
+    "content-hash": "d9afcdf70e535676b41a195acc7320a1",
     "packages": [
         {
             "name": "aliyun/aliyun-oss-php-sdk",
@@ -8545,7 +8545,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=8.2",
+        "php": ">=8.4",
         "ext-bcmath": "*"
     },
     "platform-dev": {},

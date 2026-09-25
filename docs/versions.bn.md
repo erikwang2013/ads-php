@@ -233,7 +233,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 | লেয়ার | প্রযুক্তি |
 |----|------|
-| ব্যাকএন্ড ফ্রেমওয়ার্ক | webman v2, PHP 8.2+ |
+| ব্যাকএন্ড ফ্রেমওয়ার্ক | webman v2, PHP 8.4+ |
 | ডেটাবেস | MySQL 8.0 (InnoDB, utf8mb4) |
 | ক্যাশ | Redis 7 |
 | ORM | Illuminate Database (Laravel Eloquent) |

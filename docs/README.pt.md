@@ -88,7 +88,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 | Camada | Tecnologia | Descrição |
 |----|------|------|
-| Backend | webman v2 + PHP 8.2+ | 8 plugins, 76 endpoints de API |
+| Backend | webman v2 + PHP 8.4+ | 8 plugins, 76 endpoints de API |
 | Banco de dados | MySQL 8.0 | 29 tabelas, prefixo ads_, chave primária Snowflake BIGINT |
 | Cache | Redis 7 | Cache de três níveis (L1 memória/L2 APCu/L3 Redis), contagem de rate limit, Pub/Sub, fila de mensagens |
 | Busca | Elasticsearch | Sincronização automática de índice webman-scout (configurado) |

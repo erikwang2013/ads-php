@@ -88,7 +88,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 | 계층 | 기술 | 설명 |
 |----|------|------|
-| 서버 | webman v2 + PHP 8.2+ | 8개 플러그인, 76 API 엔드포인트 |
+| 서버 | webman v2 + PHP 8.4+ | 8개 플러그인, 76 API 엔드포인트 |
 | 데이터베이스 | MySQL 8.0 | 29개 테이블, ads_ 접두사, Snowflake BIGINT 기본 키 |
 | 캐시 | Redis 7 | 3단계 캐시 (L1 메모리/L2 APCu/L3 Redis), 속도 제한 카운터, Pub/Sub, 메시지 큐 |
 | 검색 | Elasticsearch | webman-scout 자동 인덱스 동기화 (구성됨) |

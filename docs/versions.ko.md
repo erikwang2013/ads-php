@@ -233,7 +233,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 | 계층 | 기술 |
 |----|------|
-| 백엔드 프레임워크 | webman v2, PHP 8.2+ |
+| 백엔드 프레임워크 | webman v2, PHP 8.4+ |
 | 데이터베이스 | MySQL 8.0 (InnoDB, utf8mb4) |
 | 캐시 | Redis 7 |
 | ORM | Illuminate Database (Laravel Eloquent) |

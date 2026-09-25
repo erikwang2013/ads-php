@@ -88,7 +88,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 | স্তর | প্রযুক্তি | বিবরণ |
 |----|------|------|
-| সার্ভার | webman v2 + PHP 8.2+ | 8টি প্লাগইন, 76 API এন্ডপয়েন্ট |
+| সার্ভার | webman v2 + PHP 8.4+ | 8টি প্লাগইন, 76 API এন্ডপয়েন্ট |
 | ডেটাবেস | MySQL 8.0 | 29টি টেবিল, ads_ প্রিফিক্স, Snowflake BIGINT প্রাইমারি কী |
 | ক্যাশ | Redis 7 | থ্রি-লেভেল ক্যাশ (L1 মেমরি/L2 APCu/L3 Redis)、রেট লিমিট কাউন্টার、Pub/Sub、মেসেজ কিউ |
 | সার্চ | Elasticsearch | webman-scout অটো ইনডেক্স সিঙ্ক (কনফিগারড) |

@@ -301,10 +301,13 @@ CREATE TABLE IF NOT EXISTS `ads_notifications` (
     `type` VARCHAR(32) NOT NULL DEFAULT 'alert',
     `title` VARCHAR(255) NOT NULL,
     `content` TEXT,
+    `ref_type` VARCHAR(32) DEFAULT NULL,
+    `ref_id` BIGINT UNSIGNED DEFAULT NULL,
     `is_read` TINYINT DEFAULT 0,
     `rule_id` BIGINT UNSIGNED DEFAULT NULL,
     `log_id` BIGINT UNSIGNED DEFAULT NULL,
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX `idx_tenant_read` (`tenant_id`, `is_read`),
     INDEX `idx_created` (`created_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

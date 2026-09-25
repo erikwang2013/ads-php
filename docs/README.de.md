@@ -88,7 +88,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 | Ebene | Technologie | Beschreibung |
 |----|------|------|
-| Server | webman v2 + PHP 8.2+ | 8 Plugins, 76 API-Endpunkte |
+| Server | webman v2 + PHP 8.4+ | 8 Plugins, 76 API-Endpunkte |
 | Datenbank | MySQL 8.0 | 29 Tabellen, ads_-Präfix, Snowflake-BIGINT-Primärschlüssel |
 | Cache | Redis 7 | Drei-Stufen-Cache (L1 Speicher/L2 APCu/L3 Redis), Ratenbegrenzungszähler, Pub/Sub, Nachrichtenwarteschlange |
 | Suche | Elasticsearch | webman-scout automatische Indexsynchronisierung (konfiguriert) |

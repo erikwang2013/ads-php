@@ -88,7 +88,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 | Capa | Tecnología | Descripción |
 |----|------|------|
-| Servidor | webman v2 + PHP 8.2+ | 8 plugins, 76 endpoints de API |
+| Servidor | webman v2 + PHP 8.4+ | 8 plugins, 76 endpoints de API |
 | Base de datos | MySQL 8.0 | 29 tablas, prefijo ads_, claves primarias BIGINT Snowflake |
 | Caché | Redis 7 | Caché de tres niveles (L1 memoria / L2 APCu / L3 Redis), contador de limitación de tráfico, Pub/Sub, cola de mensajes |
 | Búsqueda | Elasticsearch | Sincronización automática de índice webman-scout (configurado) |

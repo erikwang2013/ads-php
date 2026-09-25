@@ -2,7 +2,7 @@
   "name": "ads/admin",
   "type": "project",
   "require": {
-    "php": ">=8.2",
+    "php": ">=8.4",
     "workerman/webman-framework": "^2.0",
     "webman/admin": "^2.0",
     "vlucas/phpdotenv": "^5.0",

@@ -88,7 +88,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 | 层 | 技术 | 说明 |
 |----|------|------|
-| 服务端 | webman v2 + PHP 8.2+ | 8 个插件，76 API 端点 |
+| 服务端 | webman v2 + PHP 8.4+ | 8 个插件，76 API 端点 |
 | 数据库 | MySQL 8.0 | 29 张表，ads_ 前缀，Snowflake BIGINT 主键 |
 | 缓存 | Redis 7 | 三级缓存 (L1内存/L2 APCu/L3 Redis)、限流计数、Pub/Sub、消息队列 |
 | 搜索 | Elasticsearch | webman-scout 自动索引同步（已配置） |

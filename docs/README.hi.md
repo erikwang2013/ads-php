@@ -88,7 +88,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 | परत | तकनीक | विवरण |
 |----|------|------|
-| सर्वर-साइड | webman v2 + PHP 8.2+ | 8 प्लगइन, 76 API एंडपॉइंट |
+| सर्वर-साइड | webman v2 + PHP 8.4+ | 8 प्लगइन, 76 API एंडपॉइंट |
 | डेटाबेस | MySQL 8.0 | 29 टेबल, ads_ प्रीफ़िक्स, Snowflake BIGINT प्राइमरी की |
 | कैश | Redis 7 | त्रि-स्तरीय कैश (L1 मेमोरी/L2 APCu/L3 Redis), रेट-लिमिट काउंटिंग, Pub/Sub, मैसेज क्यू |
 | सर्च | Elasticsearch | webman-scout स्वचालित इंडेक्स सिंक (कॉन्फ़िगर किया गया) |

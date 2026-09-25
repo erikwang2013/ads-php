@@ -14,7 +14,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: '8.4'
       - name: Check PHP syntax
         run: |
           # php -l 逐文件打印 "No syntax errors detected in <file>"；出错时 stdout 有
@@ -46,7 +46,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: '8.4'
       - name: Install dependencies
         run: cd service && composer install --no-interaction
       - name: Load schema

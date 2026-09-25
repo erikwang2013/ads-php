@@ -233,7 +233,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 | 層 | 技術 |
 |----|------|
-| バックエンドフレームワーク | webman v2, PHP 8.2+ |
+| バックエンドフレームワーク | webman v2, PHP 8.4+ |
 | データベース | MySQL 8.0 (InnoDB, utf8mb4) |
 | キャッシュ | Redis 7 |
 | ORM | Illuminate Database (Laravel Eloquent) |

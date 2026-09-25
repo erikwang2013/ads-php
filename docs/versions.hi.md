@@ -233,7 +233,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 | परत | तकनीक |
 |----|------|
-| बैकएंड फ्रेमवर्क | webman v2, PHP 8.2+ |
+| बैकएंड फ्रेमवर्क | webman v2, PHP 8.4+ |
 | डेटाबेस | MySQL 8.0 (InnoDB, utf8mb4) |
 | कैश | Redis 7 |
 | ORM | Illuminate Database (Laravel Eloquent) |

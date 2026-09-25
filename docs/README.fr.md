@@ -88,7 +88,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 | Couche | Technologie | Description |
 |----|------|------|
-| Serveur | webman v2 + PHP 8.2+ | 8 plugins, 76 points de terminaison API |
+| Serveur | webman v2 + PHP 8.4+ | 8 plugins, 76 points de terminaison API |
 | Base de données | MySQL 8.0 | 29 tables, préfixe ads_, clés primaires BIGINT Snowflake |
 | Cache | Redis 7 | Cache à trois niveaux (L1 mémoire / L2 APCu / L3 Redis), compteurs de limitation, Pub/Sub, file de messages |
 | Recherche | Elasticsearch | Synchronisation d'index automatique webman-scout (configurée) |

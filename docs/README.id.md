@@ -88,7 +88,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 | Lapisan | Teknologi | Keterangan |
 |----|------|------|
-| Server | webman v2 + PHP 8.2+ | 8 plugin, 76 endpoint API |
+| Server | webman v2 + PHP 8.4+ | 8 plugin, 76 endpoint API |
 | Database | MySQL 8.0 | 29 tabel, prefiks ads_, primary key Snowflake BIGINT |
 | Cache | Redis 7 | Cache tiga tingkat (L1 memori/L2 APCu/L3 Redis), penghitung pembatasan, Pub/Sub, antrean pesan |
 | Pencarian | Elasticsearch | Sinkronisasi indeks otomatis webman-scout (sudah dikonfigurasi) |

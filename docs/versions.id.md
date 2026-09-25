@@ -233,7 +233,7 @@ Ketiga versi berbagi tumpukan teknologi terpadu:
 
 | Lapisan | Teknologi |
 |----|------|
-| Framework backend | webman v2, PHP 8.2+ |
+| Framework backend | webman v2, PHP 8.4+ |
 | Database | MySQL 8.0 (InnoDB, utf8mb4) |
 | Cache | Redis 7 |
 | ORM | Illuminate Database (Laravel Eloquent) |

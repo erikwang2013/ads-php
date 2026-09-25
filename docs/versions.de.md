@@ -233,7 +233,7 @@ Alle drei Versionen teilen sich einen einheitlichen Technologie-Stack:
 
 | Ebene | Technologie |
 |----|------|
-| Backend-Framework | webman v2, PHP 8.2+ |
+| Backend-Framework | webman v2, PHP 8.4+ |
 | Datenbank | MySQL 8.0 (InnoDB, utf8mb4) |
 | Cache | Redis 7 |
 | ORM | Illuminate Database (Laravel Eloquent) |

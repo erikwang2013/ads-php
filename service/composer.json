@@ -27,7 +27,7 @@
         }
     ],
     "require": {
-        "php": ">=8.2",
+        "php": ">=8.4",
         "ext-bcmath": "*",
         "workerman/webman-framework": "^2.0",
         "workerman/crontab": "^1.0",
