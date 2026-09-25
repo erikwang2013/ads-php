@@ -16,6 +16,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 - **Accès multi-appareils** — admin Web (Vue 3), Flutter PC/Mobile, HarmonyOS
 - **Stabilité & fiabilité** — circuit breaker/dégradation/timeout pour les appels plateforme, cache à 3 niveaux, optimisations haute concurrence, 22 protections de sécurité
 - **Internationalisation** — documentation en 12 langues, interface bilingue (ZH/EN)
+- **Mascotte du projet** — le hibou « 阿鸮 », en veille 24 h/24 sur les 29 plateformes ([pet.svg](docs/diagrams/svg/pet.svg))
 
 > Conception de l'architecture → [docs/architecture.fr.md](docs/architecture.fr.md)
 > Modules fonctionnels → [docs/features.fr.md](docs/features.fr.md)
@@ -63,15 +64,34 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 ---
 
+## Mascotte du projet « 阿鸮 »
+
+<p align="center"><img src="docs/diagrams/svg/pet.svg" width="160" alt="Mascotte du projet 阿鸮"></p>
+
+**阿鸮** (xiāo, « hibou ») est la mascotte de ce projet : un hibou. Il dort le jour et veille la nuit, l'œil rivé sur chaque plateforme toute la nuit — exactement ce que fait ce système.
+
+| Image | Symbole | Implémentation correspondante |
+|------|------|---------|
+| Deux yeux tournés vers l'avant | Plusieurs clients surveillent l'écran en même temps | Vue Admin / Flutter / HarmonyOS : les trois clients partagent une seule API |
+| Animation de clignement | Interrogation périodique | 6 tâches planifiées (3/5/10/10/15/55 minutes) en collecte cyclique |
+| Anneau radar derrière la tête | Analyse continue pour détecter les anomalies | Évaluation du moteur d'alerte + seuils en trois paliers de l'alerte budgétaire |
+| Veille nocturne | Garde silencieuse, ne crie qu'en cas de problème | 22 protections fonctionnant en silence, notification poussée uniquement en cas de déclenchement |
+
+阿鸮 est déjà intégré au code : la **page de connexion** et le **favicon** du back-office, la **page de documentation API `/docs`** du Service, ainsi que toutes les pages de documentation.
+
+> Code source SVG [docs/diagrams/svg/pet.svg](docs/diagrams/svg/pet.svg) (sans texte, partagé par la documentation en 13 langues ; contient une animation de clignement SMIL)
+
+---
+
 ## Pile technologique
 
 | Couche | Technologie | Description |
 |----|------|------|
-| Serveur | webman v2 + PHP 8.2+ | 8 plugins, 75+ points de terminaison API |
+| Serveur | webman v2 + PHP 8.2+ | 8 plugins, 76 points de terminaison API |
 | Base de données | MySQL 8.0 | 29 tables, préfixe ads_, clés primaires BIGINT Snowflake |
 | Cache | Redis 7 | Cache à trois niveaux (L1 mémoire / L2 APCu / L3 Redis), compteurs de limitation, Pub/Sub, file de messages |
 | Recherche | Elasticsearch | Synchronisation d'index automatique webman-scout (configurée) |
-| Admin | webman-admin v2 + Vue 3 + TypeScript + Element Plus | Backend PHP (port 8789), SPA accédant directement à l'API métier (port 8788), 19 pages, visualisation ECharts |
+| Admin | webman-admin v2 + Vue 3 + TypeScript + Element Plus | Backend PHP (port 8789), SPA accédant directement à l'API métier (port 8788), 21 pages, visualisation ECharts |
 | Flutter | Dart 3 + Riverpod + GoRouter + fl_chart | Responsive PC/Mobile, mise en page Desktop Shell, 12 pages |
 | HarmonyOS | ArkTS + ArkUI | 6 pages implémentées, client HTTP prêt |
 | Déploiement | Docker + Nginx + GHCR | Démarrage en une commande avec Docker Compose, build et push automatiques via GitHub Actions |
@@ -274,8 +294,8 @@ Guide d'utilisation → [docs/usage.fr.md](docs/usage.fr.md)
 ads-php/
 ├── service/                           # Service métier côté utilisateur (webman v2 :8788)
 │   ├── plugin/
-│   │   ├── ads-api/                   # REST API (61 points de terminaison, routage par version)
-│   │   │   ├── controller/v1/         # 17 contrôleurs
+│   │   ├── ads-api/                   # REST API (76 points de terminaison, routage par version /api/v1)
+│   │   │   ├── controller/v1/         # 21 contrôleurs (sous-répertoire admin/ inclus)
 │   │   │   ├── middleware/            # 15 middlewares
 │   │   │   ├── config/route.php       # Définition des routes
 │   │   ├── ads-platform/              # Cœur des adaptateurs de plateformes
@@ -290,6 +310,8 @@ ads-php/
 │   │   ├── ads-report/                # Moteur de rapports (CSV/Excel/PDF) + moteur d'attribution + calendrier de diffusion
 │   │   ├── ads-tenant/                # Gestion multi-locataires
 │   │   └── ads-storage/               # Couche d'abstraction de stockage (local/OSS/COS/S3) + fournisseurs CDN
+│   ├── public/                        # Ressources statiques (gestion statique intégrée à webman)
+│   │   └── img/pet.svg                # Mascotte du projet « 阿鸮 », affichée sur la page /docs
 │   ├── scripts/backfill-assets.php    # Transférer les ressources existantes vers le stockage objet
 │   ├── support/                       # Classes utilitaires Erik Stack
 │   │   ├── ControllerTrait.php        # Trait commun des contrôleurs
@@ -303,20 +325,28 @@ ads-php/
 │   │   └── Integration/               # Tests d'intégration (Auth, Health)
 │   └── start.php                      # Point d'entrée du service
 ├── admin/                             # Back-office indépendant (webman-admin v2 :8789)
-│   ├── public/web/src/
-│   │   ├── views/                     # 15 pages Vue
-│   │   │   ├── dashboard/             # Tableau de bord (ECharts)
-│   │   │   ├── campaign/              # Plans publicitaires
-│   │   │   ├── adgroup/               # Groupes d'annonces
-│   │   │   ├── creative/              # Créations publicitaires
-│   │   │   ├── report/                # Analyse de rapports + export
-│   │   │   ├── alert/                 # Règles d'alerte + journaux
-│   │   │   ├── notification/          # Centre de notifications
-│   │   │   ├── bid/                   # Règles d'enchères automatiques
-│   │   │   └── system/                # Gestion des utilisateurs + journaux d'audit
-│   │   ├── api/                       # 9 clients API
-│   │   ├── stores/                    # 4 stores Pinia
-│   │   └── components/                # Composants partagés (ListPageLayout, etc.)
+│   ├── public/web/
+│   │   ├── public/pet.svg             # Mascotte du projet « 阿鸮 », favicon + page de connexion
+│   │   ├── src/
+│   │   │   ├── views/                 # 21 pages Vue
+│   │   │   │   ├── dashboard/         # Tableau de bord (ECharts)
+│   │   │   │   ├── campaign/          # Plans publicitaires
+│   │   │   │   ├── adgroup/           # Groupes d'annonces
+│   │   │   │   ├── creative/          # Créations publicitaires
+│   │   │   │   ├── account/           # Gestion des comptes + liaison
+│   │   │   │   ├── asset/             # Bibliothèque de ressources
+│   │   │   │   ├── report/            # Analyse de rapports + export + attribution + calendrier de diffusion
+│   │   │   │   ├── alert/             # Règles d'alerte + journaux
+│   │   │   │   ├── notification/      # Centre de notifications
+│   │   │   │   ├── sync/              # État de synchronisation
+│   │   │   │   ├── bid/               # Règles d'enchères automatiques
+│   │   │   │   ├── cdn/               # Fournisseurs CDN
+│   │   │   │   ├── login/             # Page de connexion (阿鸮)
+│   │   │   │   └── system/            # Gestion des utilisateurs + journaux d'audit + informations système
+│   │   │   ├── api/                   # 15 clients API
+│   │   │   ├── stores/                # 5 stores Pinia
+│   │   │   └── components/            # Composants partagés (ListPageLayout, etc. — 8 au total)
+│   │   └── dist/                      # Artefacts de build (non versionnés, construits par la CI)
 │   ├── app/                           # Backend PHP (controller/middleware)
 │   └── config/                        # Configuration Admin
 ├── apps/
@@ -330,6 +360,11 @@ ads-php/
 ├── docker/                            # Configuration Docker & Nginx
 ├── .github/workflows/                 # CI (syntaxe→tests→TS→Docker) + CD (build push)
 ├── docs/                              # Documents de conception, plans d'implémentation, Skills
+│   ├── architecture.md                # Conception de l'architecture (avec schémas d'architecture / flux de requêtes / architecture de sécurité)
+│   ├── features.md                    # Conception fonctionnelle (21 modules, avec schéma des modules fonctionnels)
+│   ├── usage.md                       # Guide d'utilisation (avec schéma du cycle de vie des données)
+│   ├── diagrams/svg/                  # 5 jeux de diagrammes × 13 langues + pet.svg (mascotte du projet)
+│   └── skills/                        # 143 compétences de projet réutilisables
 ├── docker-compose.yml
 ├── Dockerfile / Dockerfile.admin / Dockerfile.admin-php
 └── Makefile

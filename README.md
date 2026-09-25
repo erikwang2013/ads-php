@@ -16,6 +16,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 - **多端访问** — Web 管理后台 (Vue 3)、Flutter PC/Mobile、HarmonyOS
 - **稳定可靠** — 平台调用熔断/降级/超时、三级缓存、高并发优化、22 项安全防护
 - **国际化** — 12 语言文档、界面中英双语
+- **项目宠物** — 猫头鹰「阿鸮」，24 小时值守 29 个平台（[pet.svg](docs/diagrams/svg/pet.svg)）
 
 > 架构设计 → [docs/architecture.md](docs/architecture.md)  
 > 功能模块 → [docs/features.md](docs/features.md)  
@@ -63,15 +64,34 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 ---
 
+## 项目宠物「阿鸮」
+
+<p align="center"><img src="docs/diagrams/svg/pet.svg" width="160" alt="项目宠物 阿鸮"></p>
+
+**阿鸮**（xiāo）是本项目的吉祥物：一只猫头鹰。它昼伏夜出，整夜盯着每一个平台——正是这套系统在做的事。
+
+| 形象 | 寓意 | 对应实现 |
+|------|------|---------|
+| 双目前视 | 多端同时盯屏 | Vue Admin / Flutter / HarmonyOS 三端共用一套 API |
+| 眨眼动画 | 周期性轮询 | 6 个定时任务（3/5/10/10/15/55 分钟）循环采集 |
+| 头后雷达环 | 持续扫描发现异常 | 告警引擎求值 + 预算预警三段阈值 |
+| 夜间值守 | 无声守夜，出事才叫 | 22 项防护静默运行，触发才推送通知 |
+
+阿鸮已整合进代码：管理后台 **登录页** 与 **favicon**、Service 端 **`/docs` API 文档页**，以及全部文档页。
+
+> SVG 源码 [docs/diagrams/svg/pet.svg](docs/diagrams/svg/pet.svg)（无文字，13 种语言文档共用同一份；含 SMIL 眨眼动画）
+
+---
+
 ## 技术栈
 
 | 层 | 技术 | 说明 |
 |----|------|------|
-| 服务端 | webman v2 + PHP 8.2+ | 8 个插件，75+ API 端点 |
+| 服务端 | webman v2 + PHP 8.2+ | 8 个插件，76 API 端点 |
 | 数据库 | MySQL 8.0 | 29 张表，ads_ 前缀，Snowflake BIGINT 主键 |
 | 缓存 | Redis 7 | 三级缓存 (L1内存/L2 APCu/L3 Redis)、限流计数、Pub/Sub、消息队列 |
 | 搜索 | Elasticsearch | webman-scout 自动索引同步（已配置） |
-| 管理后台 | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP 后端(端口 8789)，SPA 直连业务 API(端口 8788)，19 页面，ECharts 可视化 |
+| 管理后台 | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP 后端(端口 8789)，SPA 直连业务 API(端口 8788)，21 页面，ECharts 可视化 |
 | Flutter | Dart 3 + Riverpod + GoRouter + fl_chart | PC/Mobile 响应式，Desktop Shell 布局，12 页面 |
 | HarmonyOS | ArkTS + ArkUI | 6 个页面已实现，HTTP 客户端已就绪 |
 | 部署 | Docker + Nginx + GHCR | Docker Compose 一键启动，GitHub Actions 自动构建推送 |
@@ -274,8 +294,8 @@ cd admin/public/web && npx vue-tsc --noEmit   # 零错误
 ads-php/
 ├── service/                           # 用户端业务服务 (webman v2 :8788)
 │   ├── plugin/
-│   │   ├── ads-api/                   # REST API (61 端点，版本路由)
-│   │   │   ├── controller/v1/         # 17 个控制器
+│   │   ├── ads-api/                   # REST API (76 端点，版本路由 /api/v1)
+│   │   │   ├── controller/v1/         # 21 个控制器 (含 admin/ 子目录)
 │   │   │   ├── middleware/            # 15 个中间件
 │   │   │   ├── config/route.php       # 路由定义
 │   │   ├── ads-platform/              # 平台适配器核心
@@ -290,6 +310,8 @@ ads-php/
 │   │   ├── ads-report/                # 报表引擎 (CSV/Excel/PDF) + 归因引擎 + 投放日历
 │   │   ├── ads-tenant/                # 多租户管理
 │   │   └── ads-storage/               # 存储抽象层 (local/OSS/COS/S3) + CDN 服务商
+│   ├── public/                        # 静态资源 (webman 内置静态处理)
+│   │   └── img/pet.svg                # 项目宠物「阿鸮」，/docs 页展示
 │   ├── scripts/backfill-assets.php    # 存量素材回填对象存储
 │   ├── support/                       # Erik Stack 工具类
 │   │   ├── ControllerTrait.php        # 控制器公共 trait
@@ -303,20 +325,28 @@ ads-php/
 │   │   └── Integration/               # 集成测试 (Auth, Health, API)
 │   └── start.php                      # 服务入口
 ├── admin/                             # 独立管理后台 (webman-admin v2 :8789)
-│   ├── public/web/src/
-│   │   ├── views/                     # 15 个 Vue 页面
-│   │   │   ├── dashboard/             # 仪表盘 (ECharts)
-│   │   │   ├── campaign/              # 广告计划
-│   │   │   ├── adgroup/               # 广告组
-│   │   │   ├── creative/              # 广告创意
-│   │   │   ├── report/                # 报表分析 + 导出
-│   │   │   ├── alert/                 # 告警规则 + 记录
-│   │   │   ├── notification/          # 通知中心
-│   │   │   ├── bid/                   # 自动出价规则
-│   │   │   └── system/                # 用户管理 + 审计日志
-│   │   ├── api/                       # 9 个 API 客户端
-│   │   ├── stores/                    # 4 个 Pinia Store
-│   │   └── components/                # 共享组件 (ListPageLayout 等)
+│   ├── public/web/
+│   │   ├── public/pet.svg             # 项目宠物「阿鸮」，favicon + 登录页
+│   │   ├── src/
+│   │   │   ├── views/                 # 21 个 Vue 页面
+│   │   │   │   ├── dashboard/         # 仪表盘 (ECharts)
+│   │   │   │   ├── campaign/          # 广告计划
+│   │   │   │   ├── adgroup/           # 广告组
+│   │   │   │   ├── creative/          # 广告创意
+│   │   │   │   ├── account/           # 账户管理 + 绑定
+│   │   │   │   ├── asset/             # 素材库
+│   │   │   │   ├── report/            # 报表分析 + 导出 + 归因 + 投放日历
+│   │   │   │   ├── alert/             # 告警规则 + 记录
+│   │   │   │   ├── notification/      # 通知中心
+│   │   │   │   ├── sync/              # 同步状态
+│   │   │   │   ├── bid/               # 自动出价规则
+│   │   │   │   ├── cdn/               # CDN 服务商
+│   │   │   │   ├── login/             # 登录页 (阿鸮)
+│   │   │   │   └── system/            # 用户管理 + 审计日志 + 系统信息
+│   │   │   ├── api/                   # 15 个 API 客户端
+│   │   │   ├── stores/                # 5 个 Pinia Store
+│   │   │   └── components/            # 共享组件 (ListPageLayout 等 8 个)
+│   │   └── dist/                      # 构建产物 (不入库，CI 构建)
 │   ├── app/                           # PHP 后端 (controller/middleware)
 │   └── config/                        # Admin 配置
 ├── apps/
@@ -330,6 +360,11 @@ ads-php/
 ├── docker/                            # Docker & Nginx 配置
 ├── .github/workflows/                 # CI (语法→测试→TS→Docker) + CD (构建推送)
 ├── docs/                              # 设计文档、实施计划、Skills
+│   ├── architecture.md                # 架构设计 (含架构图/请求流程图/安全架构图)
+│   ├── features.md                    # 功能设计 (21 模块，含功能模块图)
+│   ├── usage.md                       # 使用说明 (含数据生命周期图)
+│   ├── diagrams/svg/                  # 5 类图表 × 13 语言 + pet.svg 项目宠物
+│   └── skills/                        # 143 个可复用项目技能
 ├── docker-compose.yml
 ├── Dockerfile / Dockerfile.admin / Dockerfile.admin-php
 └── Makefile

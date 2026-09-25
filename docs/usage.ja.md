@@ -88,6 +88,8 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 タスク設定は `service/plugin/ads-task/config/cron.php` にあり、頻度はそこで変更できます。同期状態は「データ同期」ページで確認でき、アカウントごとの ON/OFF は「アカウント管理」にあります。
 
+![データライフサイクル図](diagrams/svg/data-lifecycle.ja.svg)
+
 ---
 
 ## 5. レポート分析

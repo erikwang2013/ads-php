@@ -16,6 +16,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 - **الوصول متعدد الأطراف** — لوحة تحكم ويب (Vue 3)، Flutter PC/Mobile، HarmonyOS
 - **الاستقرار والموثوقية** — قاطع الدائرة/التدهور/المهلة لاستدعاءات المنصة، تخزين مؤقت 3 مستويات، تحسينات التزامن العالي، 22 حماية أمنية
 - **التدويل** — وثائق بـ 12 لغة، واجهة ثنائية اللغة (ZH/EN)
+- **تميمة المشروع** — البومة «阿鸮»، تراقب 29 منصة على مدار 24 ساعة ([pet.svg](docs/diagrams/svg/pet.svg))
 
 > البنية المعمارية → [docs/architecture.ar.md](docs/architecture.ar.md)  
 > الوحدات الوظيفية → [docs/features.ar.md](docs/features.ar.md)  
@@ -63,15 +64,34 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 ---
 
+## تميمة المشروع «阿鸮»
+
+<p align="center"><img src="docs/diagrams/svg/pet.svg" width="160" alt="تميمة المشروع 阿鸮"></p>
+
+**阿鸮** (xiāo، «بومة») هي تميمة هذا المشروع: بومة. تنام نهارًا وتصحو ليلًا، وتسهر تراقب كل منصة طوال الليل — وهذا تحديدًا ما يفعله هذا النظام.
+
+| الشكل | الدلالة | التنفيذ المقابل |
+|------|------|---------|
+| عينان تنظران إلى الأمام | مراقبة عدة أطراف في آن واحد | Vue Admin / Flutter / HarmonyOS ثلاثة أطراف تتشارك مجموعة API واحدة |
+| حركة رمش العين | استقصاء دوري | 6 مهام مجدولة (3/5/10/10/15/55 دقيقة) تجمع البيانات في دورة |
+| حلقة الرادار خلف الرأس | مسح مستمر لاكتشاف الحالات الشاذة | تقييم محرك التنبيهات + ثلاث عتبات لإنذار الميزانية |
+| حراسة ليلية | سهر صامت، لا تصيح إلا عند وقوع مشكلة | 22 حماية تعمل بصمت، ولا يُدفع الإشعار إلا عند التفعيل |
+
+تم دمج 阿鸮 في الكود: **صفحة تسجيل الدخول** و**favicon** في لوحة الإدارة، و**صفحة توثيق API `/docs`** في طرف Service، وكذلك جميع صفحات الوثائق.
+
+> الكود المصدري SVG [docs/diagrams/svg/pet.svg](docs/diagrams/svg/pet.svg) (بلا نص، نسخة واحدة مشتركة لوثائق 13 لغة؛ يتضمن حركة رمش SMIL)
+
+---
+
 ## حزمة التقنيات
 
 | الطبقة | التقنية | الوصف |
 |----|------|------|
-| الخادم | webman v2 + PHP 8.2+ | 8 إضافات، 75+ نقطة نهاية API |
+| الخادم | webman v2 + PHP 8.2+ | 8 إضافات، 76 نقطة نهاية API |
 | قاعدة البيانات | MySQL 8.0 | 29 جدولًا، بادئة ads_، مفاتيح رئيسية Snowflake BIGINT |
 | التخزين المؤقت | Redis 7 | تخزين مؤقت ثلاثي المستويات (L1 ذاكرة/L2 APCu/L3 Redis)、عدادات تحديد المعدل وPub/Sub وقائمة انتظار الرسائل |
 | البحث | Elasticsearch | مزامنة فهرسة تلقائية عبر webman-scout (مُهيأ) |
-| لوحة الإدارة | webman-admin v2 + Vue 3 + TypeScript + Element Plus | خلفية PHP (المنفذ 8789)، SPA يتصل مباشرة بـ API الأعمال (المنفذ 8788)، 19 صفحة، تصوير ECharts |
+| لوحة الإدارة | webman-admin v2 + Vue 3 + TypeScript + Element Plus | خلفية PHP (المنفذ 8789)، SPA يتصل مباشرة بـ API الأعمال (المنفذ 8788)، 21 صفحة، تصوير ECharts |
 | Flutter | Dart 3 + Riverpod + GoRouter + fl_chart | متجاوب PC/Mobile، تخطيط Desktop Shell، 12 صفحة |
 | HarmonyOS | ArkTS + ArkUI | 6 صفحات منفذة، عميل HTTP جاهز |
 | النشر | Docker + Nginx + GHCR | تشغيل بنقرة واحدة عبر Docker Compose، بناء ودفع تلقائي عبر GitHub Actions |
@@ -272,64 +292,79 @@ cd admin/public/web && npx vue-tsc --noEmit   # 零错误
 
 ```
 ads-php/
-├── service/                           # 用户端业务服务 (webman v2 :8788)
+├── service/                           # خدمة الأعمال لطرف المستخدم (webman v2 :8788)
 │   ├── plugin/
-│   │   ├── ads-api/                   # REST API (61 端点，版本路由)
-│   │   │   ├── controller/v1/         # 17 个控制器
-│   │   │   ├── middleware/            # 15 个中间件
-│   │   │   ├── config/route.php       # 路由定义
-│   │   ├── ads-platform/              # 平台适配器核心
-│   │   │   ├── adapter/               # 29 个平台适配器
+│   │   ├── ads-api/                   # REST API (76 نقطة نهاية، مسارات مُصدَّرة /api/v1)
+│   │   │   ├── controller/v1/         # 21 متحكمًا (يشمل المجلد الفرعي admin/)
+│   │   │   ├── middleware/            # 15 طبقة وسيطة
+│   │   │   ├── config/route.php       # تعريفات المسارات
+│   │   ├── ads-platform/              # نواة محولات المنصات
+│   │   │   ├── adapter/               # 29 محول منصة
 │   │   │   ├── src/                   # AdapterRegistry, CampaignData
 │   │   │   ├── model/                 # BidRule, BidLog, TargetingTemplate
 │   │   │   ├── service/               # BidEngine, ReportBuilder
-│   │   │   └── migration/             # SQL 迁移 + 性能索引
-│   │   ├── ads-account/               # OAuth 账户管理
-│   │   ├── ads-task/                  # 定时任务调度 (6 cron)
-│   │   ├── ads-alert/                 # 告警监控引擎 + 预算预警
-│   │   ├── ads-report/                # 报表引擎 (CSV/Excel/PDF) + 归因引擎 + 投放日历
-│   │   ├── ads-tenant/                # 多租户管理
-│   │   └── ads-storage/               # 存储抽象层 (local/OSS/COS/S3) + CDN 服务商
-│   ├── scripts/backfill-assets.php    # 存量素材回填对象存储
-│   ├── support/                       # Erik Stack 工具类
-│   │   ├── ControllerTrait.php        # 控制器公共 trait
-│   │   ├── JwtService.php             # JWT 包装类
-│   │   ├── CacheService.php           # Redis 缓存服务
-│   │   ├── ExceptionHandler.php       # API 异常处理器
-│   │   └── ApiResponse.php            # 统一响应格式
-│   ├── config/                        # 全局配置 (DB/Redis/Log/Middleware)
-│   ├── tests/                         # PHPUnit 测试 (288 tests)
-│   │   ├── Unit/                      # 单元测试 (Middleware, Task)
-│   │   └── Integration/               # 集成测试 (Auth, Health)
-│   └── start.php                      # 服务入口
-├── admin/                             # 独立管理后台 (webman-admin v2 :8789)
-│   ├── public/web/src/
-│   │   ├── views/                     # 15 个 Vue 页面
-│   │   │   ├── dashboard/             # 仪表盘 (ECharts)
-│   │   │   ├── campaign/              # 广告计划
-│   │   │   ├── adgroup/               # 广告组
-│   │   │   ├── creative/              # 广告创意
-│   │   │   ├── report/                # 报表分析 + 导出
-│   │   │   ├── alert/                 # 告警规则 + 记录
-│   │   │   ├── notification/          # 通知中心
-│   │   │   ├── bid/                   # 自动出价规则
-│   │   │   └── system/                # 用户管理 + 审计日志
-│   │   ├── api/                       # 9 个 API 客户端
-│   │   ├── stores/                    # 4 个 Pinia Store
-│   │   └── components/                # 共享组件 (ListPageLayout 等)
-│   ├── app/                           # PHP 后端 (controller/middleware)
-│   └── config/                        # Admin 配置
+│   │   │   └── migration/             # ترحيل SQL + فهارس الأداء
+│   │   ├── ads-account/               # إدارة حسابات OAuth
+│   │   ├── ads-task/                  # جدولة المهام المجدولة (6 cron)
+│   │   ├── ads-alert/                 # محرك مراقبة التنبيهات + إنذار الميزانية
+│   │   ├── ads-report/                # محرك التقارير (CSV/Excel/PDF) + محرك الإسناد + تقويم النشر
+│   │   ├── ads-tenant/                # إدارة متعددة المستأجرين
+│   │   └── ads-storage/               # طبقة تجريد التخزين (local/OSS/COS/S3) + مزودو CDN
+│   ├── public/                        # موارد ثابتة (معالجة webman المدمجة للملفات الثابتة)
+│   │   └── img/pet.svg                # تميمة المشروع «阿鸮»، تُعرض في صفحة /docs
+│   ├── scripts/backfill-assets.php    # إعادة تعبئة المواد الحالية إلى التخزين الكائني
+│   ├── support/                       # أدوات Erik Stack
+│   │   ├── ControllerTrait.php        # trait مشترك للمتحكمات
+│   │   ├── JwtService.php             # غلاف JWT
+│   │   ├── CacheService.php           # خدمة التخزين المؤقت Redis
+│   │   ├── ExceptionHandler.php       # معالج استثناءات API
+│   │   └── ApiResponse.php            # صيغة استجابة موحدة
+│   ├── config/                        # إعدادات عامة (DB/Redis/Log/Middleware)
+│   ├── tests/                         # اختبارات PHPUnit (288 tests)
+│   │   ├── Unit/                      # اختبارات الوحدة (Middleware, Task, Engines)
+│   │   └── Integration/               # اختبارات التكامل (Auth, Health, API)
+│   └── start.php                      # نقطة دخول الخدمة
+├── admin/                             # لوحة إدارة مستقلة (webman-admin v2 :8789)
+│   ├── public/web/
+│   │   ├── public/pet.svg             # تميمة المشروع «阿鸮»، favicon + صفحة تسجيل الدخول
+│   │   ├── src/
+│   │   │   ├── views/                 # 21 صفحة Vue
+│   │   │   │   ├── dashboard/         # لوحة المعلومات (ECharts)
+│   │   │   │   ├── campaign/          # الحملات الإعلانية
+│   │   │   │   ├── adgroup/           # مجموعات الإعلانات
+│   │   │   │   ├── creative/          # الإبداعات الإعلانية
+│   │   │   │   ├── account/           # إدارة الحسابات + الربط
+│   │   │   │   ├── asset/             # مكتبة المواد
+│   │   │   │   ├── report/            # تحليل التقارير + التصدير + الإسناد + تقويم النشر
+│   │   │   │   ├── alert/             # قواعد التنبيه + السجلات
+│   │   │   │   ├── notification/      # مركز الإشعارات
+│   │   │   │   ├── sync/              # حالة المزامنة
+│   │   │   │   ├── bid/               # قواعد المزايدة التلقائية
+│   │   │   │   ├── cdn/               # مزودو CDN
+│   │   │   │   ├── login/             # صفحة تسجيل الدخول (阿鸮)
+│   │   │   │   └── system/            # إدارة المستخدمين + سجل التدقيق + معلومات النظام
+│   │   │   ├── api/                   # 15 عميل API
+│   │   │   ├── stores/                # 5 مخازن Pinia
+│   │   │   └── components/            # مكونات مشتركة (ListPageLayout و8 غيرها)
+│   │   └── dist/                      # مخرجات البناء (غير مُودعة، يُبنى عبر CI)
+│   ├── app/                           # خلفية PHP (controller/middleware)
+│   └── config/                        # إعدادات Admin
 ├── apps/
 │   ├── flutter/                       # Flutter Desktop App
 │   │   └── lib/
-│   │       ├── features/              # 12 个功能页面 + Shell 布局
-│   │       ├── config/menu_config.dart # 两级菜单配置
-│   │       ├── router.dart            # GoRouter (ShellRoute + 路由守卫)
+│   │       ├── features/              # 12 صفحة وظيفية + تخطيط Shell
+│   │       ├── config/menu_config.dart # إعداد القائمة ذات المستويين
+│   │       ├── router.dart            # GoRouter (ShellRoute + حارس المسارات)
 │   │       └── stores/                # Riverpod Auth Provider
-│   └── harmonyos/                     # HarmonyOS (API Client 就绪)
-├── docker/                            # Docker & Nginx 配置
-├── .github/workflows/                 # CI (语法→测试→TS→Docker) + CD (构建推送)
-├── docs/                              # 设计文档、实施计划、Skills
+│   └── harmonyos/                     # HarmonyOS (عميل API جاهز)
+├── docker/                            # إعدادات Docker & Nginx
+├── .github/workflows/                 # CI (النحو→الاختبارات→TS→Docker) + CD (البناء والدفع)
+├── docs/                              # وثائق التصميم، خطط التنفيذ، Skills
+│   ├── architecture.md                # تصميم البنية (يشمل مخطط البنية/مخطط تدفق الطلبات/مخطط البنية الأمنية)
+│   ├── features.md                    # تصميم الوظائف (21 وحدة، يشمل مخطط الوحدات الوظيفية)
+│   ├── usage.md                       # دليل الاستخدام (يشمل مخطط دورة حياة البيانات)
+│   ├── diagrams/svg/                  # 5 مجموعات مخططات × 13 لغة + pet.svg تميمة المشروع
+│   └── skills/                        # 143 مهارة مشروع قابلة لإعادة الاستخدام
 ├── docker-compose.yml
 ├── Dockerfile / Dockerfile.admin / Dockerfile.admin-php
 └── Makefile

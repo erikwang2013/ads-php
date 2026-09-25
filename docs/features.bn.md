@@ -32,8 +32,11 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 18 | হেলথ চেক | HealthController | 2 | — |
 | 19 | ক্যাপচা | CaptchaController | 2 | — |
 | 20 | API ডকুমেন্টেশন | DocController | 1 | — |
+| 21 | CDN প্রদানকারী | CdnProviderController | 8 | CdnProviderList |
 
-**মোট**: 21 মডিউল, 75+ রাউট, 19টি Vue পেজ
+**মোট**: 21 মডিউল, 76 রাউট, 21টি Vue পেজ
+
+![ফাংশনাল মডিউল ডায়াগ্রাম](diagrams/svg/functional-modules.bn.svg)
 
 ---
 

@@ -10,6 +10,8 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 다중 플랫폼 광고 관리 시스템으로, **29개 광고 플랫폼**을 연동하며 집행 관리, 플랫폼 간 보고서, 경보 모니터링, 자동 입찰, 타겟팅을 지원합니다. SaaS 멀티 테넌트, 대행 운영, 자체 사용 3가지 모드를 지원합니다.
 
+![시스템 아키텍처 다이어그램](diagrams/svg/architecture.ko.svg)
+
 ---
 
 ## 2. 배포 아키텍처
@@ -49,6 +51,8 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 ---
 
 ## 3. 요청 처리 파이프라인
+
+![요청 흐름 다이어그램](diagrams/svg/request-flow.ko.svg)
 
 ### 3.1 Service 측 (15개 미들웨어)
 
@@ -106,9 +110,9 @@ ads-php/
 │   │   └── ExceptionHandler.php           # JSON 异常渲染
 │   ├── plugin/
 │   │   ├── ads-api/                       # REST API 层
-│   │   │   ├── controller/v1/             # 14 个控制器
-│   │   │   ├── middleware/                # 7 个中间件
-│   │   │   ├── config/route.php           # 45+ 路由
+│   │   │   ├── controller/v1/             # 21 个控制器 (含 admin/ 子目录)
+│   │   │   ├── middleware/                # 15 个中间件
+│   │   │   ├── config/route.php           # 76 路由
 │   │   ├── ads-platform/                  # 平台适配器核心
 │   │   │   ├── adapter/                   # 29 个平台适配器
 │   │   │   ├── src/                       # AdapterRegistry, CampaignData
@@ -116,11 +120,13 @@ ads-php/
 │   │   │   ├── service/                   # BidEngine
 │   │   │   └── migration/                # SQL DDL + 性能索引
 │   │   ├── ads-account/                   # OAuth 账户 + 平台账户
-│   │   ├── ads-task/                      # 5 个 cron 任务
+│   │   ├── ads-task/                      # 6 个 cron 任务
 │   │   ├── ads-alert/                     # 告警引擎 + 通知
 │   │   ├── ads-report/                    # 报表引擎 (CSV/Excel/PDF)
 │   │   ├── ads-tenant/                    # 多租户
 │   │   └── ads-storage/                   # 스토리지 추상화 (local/OSS/COS/S3) + CDN 프로바이더
+│   ├── public/                            # 静态资源 (webman 内置静态处理)
+│   │   └── img/pet.svg                    # 项目宠物「阿鸮」，/docs 页展示
 │   ├── tests/                             # PHPUnit
 │   │   ├── Unit/Middleware/               # 中间件测试
 │   │   ├── Unit/Task/                     # 任务测试 (规划)
@@ -133,10 +139,11 @@ ads-php/
 │   │   ├── service/                       # AuditService, ServiceProxy
 │   │   └── support/                       # HashidsService
 │   ├── public/web/                        # Vue 3 + TS SPA
-│   │   └── src/
-│   │       ├── views/                     # 14 页面 (dashboard/campaign/adgroup/creative/report/alert/notification/bid/system)
-│   │       ├── api/                       # 9 个 API 客户端
-│   │       ├── stores/                    # 4 个 Pinia Store
+│   │   ├── public/pet.svg                 # 项目宠物「阿鸮」，favicon + 登录页
+│   │   ├── src/
+│   │       ├── views/                     # 21 页面 (dashboard/campaign/adgroup/creative/account/asset/report/alert/notification/sync/bid/cdn/login/system)
+│   │       ├── api/                       # 15 个 API 客户端
+│   │       ├── stores/                    # 5 个 Pinia Store
 │   │       └── components/                # ListPageLayout 等共享组件
 │   └── config/                            # Admin 配置
 ├── apps/
@@ -150,7 +157,7 @@ ads-php/
 │   └── harmonyos/                         # HarmonyOS (API Client 就绪)
 ├── docker/                                # Nginx 配置 + Dockerfiles
 ├── .github/workflows/                     # CI (语法→测试→TS→Docker) + CD (构建推送)
-└── docs/                                  # 设计文档
+└── docs/                                  # 设计文档 + diagrams/svg/ 图表 ×13 语言 + pet.svg 项目宠物
 ```
 
 ---
@@ -185,6 +192,8 @@ ads-php/
 ---
 
 ## 6. 보안 아키텍처
+
+![보안 아키텍처 다이어그램](diagrams/svg/security.ko.svg)
 
 ### 6.1 보호 계층
 

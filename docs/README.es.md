@@ -16,6 +16,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 - **Acceso multidispositivo** — administración web (Vue 3), Flutter PC/Mobile, HarmonyOS
 - **Estabilidad y fiabilidad** — interruptor automático/degradación/timeout en llamadas a plataformas, caché de 3 niveles, optimizaciones de alta concurrencia, 22 protecciones de seguridad
 - **Internacionalización** — documentación en 12 idiomas, interfaz bilingüe (ZH/EN)
+- **Mascota del proyecto** — el búho «阿鸮», de guardia 24 horas en 29 plataformas ([pet.svg](docs/diagrams/svg/pet.svg))
 
 > Diseño de arquitectura → [docs/architecture.es.md](docs/architecture.es.md)  
 > Módulos funcionales → [docs/features.es.md](docs/features.es.md)  
@@ -63,15 +64,34 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 ---
 
+## Mascota del proyecto «阿鸮»
+
+<p align="center"><img src="docs/diagrams/svg/pet.svg" width="160" alt="Mascota del proyecto 阿鸮"></p>
+
+**阿鸮** (xiāo, «búho») es la mascota del proyecto: un búho. Duerme de día y vive de noche, vigilando cada plataforma durante toda la noche — justo lo que hace este sistema.
+
+| Imagen | Significado | Implementación correspondiente |
+|------|------|---------|
+| Ambos ojos al frente | Vigilancia simultánea de varias pantallas | Vue Admin / Flutter / HarmonyOS: los tres clientes comparten una misma API |
+| Animación de parpadeo | Sondeo periódico | 6 tareas programadas (3/5/10/10/15/55 minutos) de recolección cíclica |
+| Anillo de radar tras la cabeza | Escaneo continuo para detectar anomalías | Evaluación del motor de alertas + tres umbrales de aviso de presupuesto |
+| Vigilancia nocturna | Guardia silenciosa, solo avisa cuando hay problemas | 22 protecciones en ejecución silenciosa, notifican solo al activarse |
+
+阿鸮 ya está integrada en el código: **página de inicio de sesión** y **favicon** del panel de administración, la **página de documentación de API `/docs`** del lado Service, y todas las páginas de documentación.
+
+> Código fuente SVG [docs/diagrams/svg/pet.svg](docs/diagrams/svg/pet.svg) (sin texto, compartido por la documentación en 13 idiomas; incluye animación de parpadeo SMIL)
+
+---
+
 ## Pila tecnológica
 
 | Capa | Tecnología | Descripción |
 |----|------|------|
-| Servidor | webman v2 + PHP 8.2+ | 8 plugins, 75+ endpoints de API |
+| Servidor | webman v2 + PHP 8.2+ | 8 plugins, 76 endpoints de API |
 | Base de datos | MySQL 8.0 | 29 tablas, prefijo ads_, claves primarias BIGINT Snowflake |
 | Caché | Redis 7 | Caché de tres niveles (L1 memoria / L2 APCu / L3 Redis), contador de limitación de tráfico, Pub/Sub, cola de mensajes |
 | Búsqueda | Elasticsearch | Sincronización automática de índice webman-scout (configurado) |
-| Panel de administración | webman-admin v2 + Vue 3 + TypeScript + Element Plus | Backend PHP (puerto 8789), SPA conecta directamente a la API de negocio (puerto 8788), 19 páginas, visualización ECharts |
+| Panel de administración | webman-admin v2 + Vue 3 + TypeScript + Element Plus | Backend PHP (puerto 8789), SPA conecta directamente a la API de negocio (puerto 8788), 21 páginas, visualización ECharts |
 | Flutter | Dart 3 + Riverpod + GoRouter + fl_chart | Responsive PC/Móvil, diseño Shell de escritorio, 12 páginas |
 | HarmonyOS | ArkTS + ArkUI | 6 páginas implementadas, cliente HTTP listo |
 | Despliegue | Docker + Nginx + GHCR | Docker Compose de un solo clic, GitHub Actions construcción y publicación automática |
@@ -274,8 +294,8 @@ Guía de uso → [docs/usage.es.md](docs/usage.es.md)
 ads-php/
 ├── service/                           # Servicio de negocio del lado usuario (webman v2 :8788)
 │   ├── plugin/
-│   │   ├── ads-api/                   # REST API (61 endpoints, rutas por versión)
-│   │   │   ├── controller/v1/         # 17 controladores
+│   │   ├── ads-api/                   # REST API (76 endpoints, rutas por versión /api/v1)
+│   │   │   ├── controller/v1/         # 21 controladores (incl. subdirectorio admin/)
 │   │   │   ├── middleware/            # 15 middlewares
 │   │   │   ├── config/route.php       # Definición de rutas
 │   │   ├── ads-platform/              # Núcleo de adaptadores de plataforma
@@ -290,6 +310,8 @@ ads-php/
 │   │   ├── ads-report/                # Motor de reportes (CSV/Excel/PDF) + motor de atribución + calendario de campañas
 │   │   ├── ads-tenant/                # Gestión multi-tenant
 │   │   └── ads-storage/               # Capa de abstracción de almacenamiento (local/OSS/COS/S3) + proveedores CDN
+│   ├── public/                        # Recursos estáticos (gestión estática integrada de webman)
+│   │   └── img/pet.svg                # Mascota del proyecto «阿鸮», mostrada en la página /docs
 │   ├── scripts/backfill-assets.php    # Volcar materiales existentes al almacenamiento de objetos
 │   ├── support/                       # Clases de utilidades Erik Stack
 │   │   ├── ControllerTrait.php        # Trait común de controladores
@@ -303,33 +325,46 @@ ads-php/
 │   │   └── Integration/               # Pruebas de integración (Auth, Health)
 │   └── start.php                      # Punto de entrada del servicio
 ├── admin/                             # Panel de administración independiente (webman-admin v2 :8789)
-│   ├── public/web/src/
-│   │   ├── views/                     # 15 páginas Vue
-│   │   │   ├── dashboard/             # Panel de control (ECharts)
-│   │   │   ├── campaign/              # Campañas publicitarias
-│   │   │   ├── adgroup/               # Grupos de anuncios
-│   │   │   ├── creative/              # Creatividades publicitarias
-│   │   │   ├── report/                # Análisis de reportes + exportación
-│   │   │   ├── alert/                 # Reglas de alerta + registros
-│   │   │   ├── notification/          # Centro de notificaciones
-│   │   │   ├── bid/                   # Reglas de oferta automática
-│   │   │   └── system/                # Gestión de usuarios + logs de auditoría
-│   │   ├── api/                       # 9 clientes de API
-│   │   ├── stores/                    # 4 Pinia Stores
-│   │   └── components/                # Componentes compartidos (ListPageLayout, etc.)
+│   ├── public/web/
+│   │   ├── public/pet.svg             # Mascota del proyecto «阿鸮», favicon + página de inicio de sesión
+│   │   ├── src/
+│   │   │   ├── views/                 # 21 páginas Vue
+│   │   │   │   ├── dashboard/         # Panel de control (ECharts)
+│   │   │   │   ├── campaign/          # Campañas publicitarias
+│   │   │   │   ├── adgroup/           # Grupos de anuncios
+│   │   │   │   ├── creative/          # Creatividades publicitarias
+│   │   │   │   ├── account/           # Gestión de cuentas + vinculación
+│   │   │   │   ├── asset/             # Biblioteca de materiales
+│   │   │   │   ├── report/            # Análisis de reportes + exportación + atribución + calendario de campañas
+│   │   │   │   ├── alert/             # Reglas de alerta + registros
+│   │   │   │   ├── notification/      # Centro de notificaciones
+│   │   │   │   ├── sync/              # Estado de sincronización
+│   │   │   │   ├── bid/               # Reglas de oferta automática
+│   │   │   │   ├── cdn/               # Proveedores CDN
+│   │   │   │   ├── login/             # Página de inicio de sesión (阿鸮)
+│   │   │   │   └── system/            # Gestión de usuarios + logs de auditoría + información del sistema
+│   │   │   ├── api/                   # 15 clientes de API
+│   │   │   ├── stores/                # 5 Pinia Stores
+│   │   │   └── components/            # Componentes compartidos (ListPageLayout, etc., 8 en total)
+│   │   └── dist/                      # Artefactos de compilación (no versionados, compilados por CI)
 │   ├── app/                           # Backend PHP (controller/middleware)
 │   └── config/                        # Configuración de Admin
 ├── apps/
 │   ├── flutter/                       # Aplicación de escritorio Flutter
 │   │   └── lib/
 │   │       ├── features/              # 12 páginas funcionales + diseño Shell
-│   │       ├── config/menu_config.dart # Configuración de menú de dos niveles
+│   │       ├── config/menu_config.dart# Configuración de menú de dos niveles
 │   │       ├── router.dart            # GoRouter (ShellRoute + guardas de ruta)
 │   │       └── stores/                # Riverpod Auth Provider
 │   └── harmonyos/                     # HarmonyOS (API Client listo)
 ├── docker/                            # Configuración de Docker y Nginx
 ├── .github/workflows/                 # CI (sintaxis→tests→TS→Docker) + CD (build y push)
 ├── docs/                              # Documentos de diseño, planes de implementación, Skills
+│   ├── architecture.md                # Diseño de arquitectura (con diagramas de arquitectura/flujo de solicitudes/seguridad)
+│   ├── features.md                    # Diseño funcional (21 módulos, con diagrama de módulos funcionales)
+│   ├── usage.md                       # Guía de uso (con diagrama del ciclo de vida de datos)
+│   ├── diagrams/svg/                  # 5 tipos de diagramas × 13 idiomas + pet.svg mascota del proyecto
+│   └── skills/                        # 143 skills de proyecto reutilizables
 ├── docker-compose.yml
 ├── Dockerfile / Dockerfile.admin / Dockerfile.admin-php
 └── Makefile

@@ -32,8 +32,11 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 18 | Проверка здоровья | HealthController | 2 | — |
 | 19 | Капча | CaptchaController | 2 | — |
 | 20 | API-документация | DocController | 1 | — |
+| 21 | CDN-провайдеры | CdnProviderController | 8 | CdnProviderList |
 
-**Итого**: 21 модуль, 75+ маршрутов, 19 Vue-страниц
+**Итого**: 21 модуль, 76 маршрутов, 21 Vue-страниц
+
+![Диаграмма функциональных модулей](diagrams/svg/functional-modules.ru.svg)
 
 ---
 

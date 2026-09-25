@@ -16,6 +16,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 - **다중 단말 접근** — 웹 관리자 (Vue 3), Flutter PC/Mobile, HarmonyOS
 - **안정성 및 신뢰성** — 플랫폼 호출 서킷 브레이커/다운그레이드/타임아웃, 3단계 캐시, 고동시성 최적화, 22개 보안 보호
 - **국제화** — 12개 언어 문서, 중영 이중 언어 인터페이스
+- **프로젝트 펫** — 부엉이「아샤오(阿鸮)」, 24시간 동안 29개 플랫폼을 지킵니다（[pet.svg](docs/diagrams/svg/pet.svg)）
 
 > 아키텍처 설계 → [docs/architecture.md](docs/architecture.ko.md)  
 > 기능 모듈 → [docs/features.md](docs/features.ko.md)  
@@ -63,15 +64,34 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 ---
 
+## 프로젝트 펫「아샤오(阿鸮)」
+
+<p align="center"><img src="docs/diagrams/svg/pet.svg" width="160" alt="프로젝트 마스코트 阿鸮"></p>
+
+**아샤오**（xiāo, 부엉이）는 이 프로젝트의 마스코트입니다: 부엉이 한 마리. 낮에는 숨어 있다가 밤에 나와, 밤새 모든 플랫폼을 지켜봅니다—바로 이 시스템이 하는 일입니다.
+
+| 모습 | 의미 | 대응 구현 |
+|------|------|---------|
+| 두 눈 정면 응시 | 여러 단말이 동시에 화면 주시 | Vue Admin / Flutter / HarmonyOS 3개 단말이 하나의 API 공유 |
+| 눈 깜빡임 애니메이션 | 주기적 폴링 | 6개 예약 작업 (3/5/10/10/15/55분) 순환 수집 |
+| 머리 뒤 레이더 링 | 지속 스캔으로 이상 발견 | 경보 엔진 평가 + 예산 경보 3단계 임계값 |
+| 야간 근무 | 소리 없이 지키다, 문제가 생기면 울림 | 22개 보호 기능 무음 실행, 트리거 시에만 푸시 알림 |
+
+아샤오는 이미 코드에 통합되었습니다: 관리 백엔드 **로그인 페이지**와 **favicon**, Service 측 **`/docs` API 문서 페이지**, 그리고 모든 문서 페이지.
+
+> SVG 소스 [docs/diagrams/svg/pet.svg](docs/diagrams/svg/pet.svg)（텍스트 없음, 13개 언어 문서가 동일본을 공유; SMIL 눈 깜빡임 애니메이션 포함）
+
+---
+
 ## 기술 스택
 
 | 계층 | 기술 | 설명 |
 |----|------|------|
-| 서버 | webman v2 + PHP 8.2+ | 8개 플러그인, 75+ API 엔드포인트 |
+| 서버 | webman v2 + PHP 8.2+ | 8개 플러그인, 76 API 엔드포인트 |
 | 데이터베이스 | MySQL 8.0 | 29개 테이블, ads_ 접두사, Snowflake BIGINT 기본 키 |
 | 캐시 | Redis 7 | 3단계 캐시 (L1 메모리/L2 APCu/L3 Redis), 속도 제한 카운터, Pub/Sub, 메시지 큐 |
 | 검색 | Elasticsearch | webman-scout 자동 인덱스 동기화 (구성됨) |
-| 관리 백엔드 | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP 백엔드(포트 8789), SPA에서 비즈니스 API 직접 호출(포트 8788), 19개 페이지, ECharts 시각화 |
+| 관리 백엔드 | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP 백엔드(포트 8789), SPA에서 비즈니스 API 직접 호출(포트 8788), 21개 페이지, ECharts 시각화 |
 | Flutter | Dart 3 + Riverpod + GoRouter + fl_chart | PC/Mobile 반응형, Desktop Shell 레이아웃, 12개 페이지 |
 | HarmonyOS | ArkTS + ArkUI | 6개 페이지 구현 완료, HTTP 클라이언트 준비 완료 |
 | 배포 | Docker + Nginx + GHCR | Docker Compose 원클릭 시작, GitHub Actions 자동 빌드/푸시 |
@@ -274,8 +294,8 @@ cd admin/public/web && npx vue-tsc --noEmit   # 오류 0개
 ads-php/
 ├── service/                           # 사용자 측 비즈니스 서비스 (webman v2 :8788)
 │   ├── plugin/
-│   │   ├── ads-api/                   # REST API (61 엔드포인트, 버전 라우팅)
-│   │   │   ├── controller/v1/         # 17개 컨트롤러
+│   │   ├── ads-api/                   # REST API (76 엔드포인트, 버전 라우팅 /api/v1)
+│   │   │   ├── controller/v1/         # 21개 컨트롤러 (admin/ 하위 디렉터리 포함)
 │   │   │   ├── middleware/            # 15개 미들웨어
 │   │   │   ├── config/route.php       # 라우트 정의
 │   │   ├── ads-platform/              # 플랫폼 어댑터 코어
@@ -290,6 +310,8 @@ ads-php/
 │   │   ├── ads-report/                # 보고서 엔진 (CSV/Excel/PDF) + 기여도 엔진 + 집행 캘린더
 │   │   ├── ads-tenant/                # 멀티 테넌트 관리
 │   │   └── ads-storage/               # 스토리지 추상화 계층 (local/OSS/COS/S3) + CDN 프로바이더
+│   ├── public/                        # 정적 리소스 (webman 내장 정적 처리)
+│   │   └── img/pet.svg                # 프로젝트 펫「아샤오」, /docs 페이지 표시
 │   ├── scripts/backfill-assets.php    # 기존 소재를 객체 스토리지로 백필
 │   ├── support/                       # Erik Stack 유틸리티 클래스
 │   │   ├── ControllerTrait.php        # 컨트롤러 공용 trait
@@ -300,23 +322,31 @@ ads-php/
 │   ├── config/                        # 전역 설정 (DB/Redis/Log/Middleware)
 │   ├── tests/                         # PHPUnit 테스트 (288 tests)
 │   │   ├── Unit/                      # 단위 테스트 (Middleware, Task)
-│   │   └── Integration/               # 통합 테스트 (Auth, Health)
+│   │   └── Integration/               # 통합 테스트 (Auth, Health, API)
 │   └── start.php                      # 서비스 진입점
 ├── admin/                             # 독립 관리 백엔드 (webman-admin v2 :8789)
-│   ├── public/web/src/
-│   │   ├── views/                     # 15개 Vue 페이지
-│   │   │   ├── dashboard/             # 대시보드 (ECharts)
-│   │   │   ├── campaign/              # 광고 캠페인
-│   │   │   ├── adgroup/               # 광고 그룹
-│   │   │   ├── creative/              # 광고 소재
-│   │   │   ├── report/                # 보고서 분석 + 내보내기
-│   │   │   ├── alert/                 # 경보 규칙 + 기록
-│   │   │   ├── notification/          # 알림 센터
-│   │   │   ├── bid/                   # 자동 입찰 규칙
-│   │   │   └── system/                # 사용자 관리 + 감사 로그
-│   │   ├── api/                       # 9개 API 클라이언트
-│   │   ├── stores/                    # 4개 Pinia Store
-│   │   └── components/                # 공유 컴포넌트 (ListPageLayout 등)
+│   ├── public/web/
+│   │   ├── public/pet.svg             # 프로젝트 펫「아샤오」, favicon + 로그인 페이지
+│   │   ├── src/
+│   │   │   ├── views/                 # 21개 Vue 페이지
+│   │   │   │   ├── dashboard/         # 대시보드 (ECharts)
+│   │   │   │   ├── campaign/          # 광고 캠페인
+│   │   │   │   ├── adgroup/           # 광고 그룹
+│   │   │   │   ├── creative/          # 광고 소재
+│   │   │   │   ├── account/           # 계정 관리 + 연동
+│   │   │   │   ├── asset/             # 소재 라이브러리
+│   │   │   │   ├── report/            # 보고서 분석 + 내보내기 + 기여도 + 집행 캘린더
+│   │   │   │   ├── alert/             # 경보 규칙 + 기록
+│   │   │   │   ├── notification/      # 알림 센터
+│   │   │   │   ├── sync/              # 동기화 상태
+│   │   │   │   ├── bid/               # 자동 입찰 규칙
+│   │   │   │   ├── cdn/               # CDN 프로바이더
+│   │   │   │   ├── login/             # 로그인 페이지 (아샤오)
+│   │   │   │   └── system/            # 사용자 관리 + 감사 로그 + 시스템 정보
+│   │   │   ├── api/                   # 15개 API 클라이언트
+│   │   │   ├── stores/                # 5개 Pinia Store
+│   │   │   └── components/            # 공유 컴포넌트 (ListPageLayout 등 8개)
+│   │   └── dist/                      # 빌드 산출물 (미커밋, CI 빌드)
 │   ├── app/                           # PHP 백엔드 (controller/middleware)
 │   └── config/                        # Admin 설정
 ├── apps/
@@ -330,6 +360,11 @@ ads-php/
 ├── docker/                            # Docker & Nginx 설정
 ├── .github/workflows/                 # CI (문법→테스트→TS→Docker) + CD (빌드/푸시)
 ├── docs/                              # 설계 문서, 구현 계획, Skills
+│   ├── architecture.md                # 아키텍처 설계 (아키텍처 다이어그램/요청 흐름 다이어그램/보안 아키텍처 다이어그램 포함)
+│   ├── features.md                    # 기능 설계 (21개 모듈, 기능 모듈 다이어그램 포함)
+│   ├── usage.md                       # 사용 안내 (데이터 수명주기 다이어그램 포함)
+│   ├── diagrams/svg/                  # 5종 다이어그램 × 13개 언어 + pet.svg 프로젝트 펫
+│   └── skills/                        # 143개 재사용 가능한 프로젝트 스킬
 ├── docker-compose.yml
 ├── Dockerfile / Dockerfile.admin / Dockerfile.admin-php
 └── Makefile

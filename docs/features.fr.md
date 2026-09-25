@@ -32,8 +32,11 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 18 | Vérification de santé | HealthController | 2 | — |
 | 19 | Captcha | CaptchaController | 2 | — |
 | 20 | Documentation API | DocController | 1 | — |
+| 21 | Fournisseurs CDN | CdnProviderController | 8 | CdnProviderList |
 
-**Total** : 21 modules, 75+ routes, 19 pages Vue
+**Total** : 21 modules, 76 routes, 21 pages Vue
+
+![Schéma des modules fonctionnels](diagrams/svg/functional-modules.fr.svg)
 
 ---
 

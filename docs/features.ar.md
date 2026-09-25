@@ -32,8 +32,11 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 18 | فحص الصحة | HealthController | 2 | — |
 | 19 | رمز التحقق | CaptchaController | 2 | — |
 | 20 | وثائق API | DocController | 1 | — |
+| 21 | مزودو CDN | CdnProviderController | 8 | CdnProviderList |
 
-**الإجمالي**: 21 وحدة، 75+ مسارًا، 19 صفحة Vue
+**الإجمالي**: 21 وحدة، 76 مسارًا، 21 صفحة Vue
+
+![مخطط الوحدات الوظيفية](diagrams/svg/functional-modules.ar.svg)
 
 ---
 

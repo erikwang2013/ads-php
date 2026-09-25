@@ -88,6 +88,8 @@ Sinkronisasi digerakkan oleh 6 tugas terjadwal (dijadwalkan dalam proses oleh pl
 
 Konfigurasi tugas ada di `service/plugin/ads-task/config/cron.php`; frekuensinya dapat diubah. Status sinkronisasi terlihat di halaman « Sinkronisasi Data »; sakelar per akun ada di « Manajemen Akun ».
 
+![Diagram Siklus Hidup Data](diagrams/svg/data-lifecycle.id.svg)
+
 ---
 
 ## 5. Analisis Laporan

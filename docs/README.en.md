@@ -16,6 +16,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 - **Multi-Device Access** — Web admin (Vue 3), Flutter PC/Mobile, HarmonyOS
 - **Stability & Reliability** — platform call circuit breaker/degradation/timeout, 3-tier cache, high-concurrency optimizations, 22 security protections
 - **Internationalization** — 12-language docs, bilingual UI (ZH/EN)
+- **Project Mascot** — the owl "A-Xiao (阿鸮)", on duty 24/7 across 29 platforms ([pet.svg](docs/diagrams/svg/pet.svg))
 
 > Architecture → [docs/architecture.en.md](docs/architecture.en.md)  
 > Features → [docs/features.en.md](docs/features.en.md)  
@@ -63,15 +64,34 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 ---
 
+## Project Mascot "A-Xiao (阿鸮)"
+
+<p align="center"><img src="docs/diagrams/svg/pet.svg" width="160" alt="Project mascot A-Xiao"></p>
+
+**A-Xiao (阿鸮)** (xiāo, "owl") is this project's mascot: an owl. It rests by day and comes out at night, watching every platform all night long — exactly what this system does.
+
+| Appearance | Meaning | Implementation |
+|------------|---------|----------------|
+| Both eyes facing forward | Watching many screens at once | Vue Admin / Flutter / HarmonyOS share a single API |
+| Blinking animation | Periodic polling | 6 cron jobs (3/5/10/10/15/55 min) loop the collection |
+| Radar ring behind the head | Continuous scanning for anomalies | Alert engine evaluation + 3-tier budget alert thresholds |
+| Night watch | Silent vigil, speaks only when something happens | 22 protections run silently, push a notification only on trigger |
+
+A-Xiao is already integrated into the code: the admin panel **login page** and **favicon**, the Service **`/docs` API docs page**, and every documentation page.
+
+> SVG source [docs/diagrams/svg/pet.svg](docs/diagrams/svg/pet.svg) (no text; shared by all 13 language versions of the docs; includes a SMIL blinking animation)
+
+---
+
 ## Tech Stack
 
 | Layer | Technology | Notes |
 |-------|-----------|-------|
-| Server | webman v2 + PHP 8.2+ | 8 plugins, 75+ API endpoints |
+| Server | webman v2 + PHP 8.2+ | 8 plugins, 76 API endpoints |
 | Database | MySQL 8.0 | 29 tables, `ads_` prefix, Snowflake BIGINT PK |
 | Cache | Redis 7 | 3-tier cache (L1 memory / L2 APCu / L3 Redis), rate limiting, Pub/Sub, message queue |
 | Search | Elasticsearch | webman-scout auto index sync (configured) |
-| Admin Panel | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP backend (port 8789), SPA calls business API directly (port 8788), 19 pages, ECharts |
+| Admin Panel | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP backend (port 8789), SPA calls business API directly (port 8788), 21 pages, ECharts |
 | Flutter | Dart 3 + Riverpod + GoRouter + fl_chart | PC/Mobile responsive, Desktop Shell layout, 12 pages |
 | HarmonyOS | ArkTS + ArkUI | 6 pages implemented, HTTP client ready |
 | Deployment | Docker + Nginx + GHCR | Docker Compose one-command start, GitHub Actions CI/CD |
@@ -274,9 +294,9 @@ Usage Guide → [docs/usage.en.md](docs/usage.en.md)
 ads-php/
 ├── service/                           # Business API service (webman v2 :8788)
 │   ├── plugin/
-│   │   ├── ads-api/                   # REST API (45+ endpoints, versioned routes)
-│   │   │   ├── controller/v1/         # 14 controllers
-│   │   │   ├── middleware/            # 7 middleware
+│   │   ├── ads-api/                   # REST API (76 endpoints, versioned routes /api/v1)
+│   │   │   ├── controller/v1/         # 21 controllers (incl. admin/ subdirectory)
+│   │   │   ├── middleware/            # 15 middleware
 │   │   │   ├── config/route.php       # Route definitions
 │   │   ├── ads-platform/              # Platform adapter core
 │   │   │   ├── adapter/               # 29 platform adapters
@@ -290,6 +310,8 @@ ads-php/
 │   │   ├── ads-report/                # Reporting engine (CSV/Excel/PDF) + attribution + calendar
 │   │   ├── ads-tenant/                # Multi-tenant management
 │   │   └── ads-storage/               # Storage abstraction (local/OSS/COS/S3) + CDN providers
+│   ├── public/                        # Static assets (webman built-in static handling)
+│   │   └── img/pet.svg                # Project mascot "A-Xiao (阿鸮)", shown on the /docs page
 │   ├── scripts/backfill-assets.php    # Backfill existing assets to object storage
 │   ├── support/                       # Erik Stack utilities
 │   │   ├── ControllerTrait.php        # Controller shared trait
@@ -303,20 +325,28 @@ ads-php/
 │   │   └── Integration/               # Integration tests (Auth, Health)
 │   └── start.php                      # Service entry point
 ├── admin/                             # Standalone admin panel (webman-admin v2 :8789)
-│   ├── public/web/src/
-│   │   ├── views/                     # 15 Vue pages
-│   │   │   ├── dashboard/             # Dashboard (ECharts)
-│   │   │   ├── campaign/              # Campaigns
-│   │   │   ├── adgroup/               # Ad Groups
-│   │   │   ├── creative/              # Creatives
-│   │   │   ├── report/                # Reports + export
-│   │   │   ├── alert/                 # Alert rules + logs
-│   │   │   ├── notification/          # Notification center
-│   │   │   ├── bid/                   # Auto-bid rules
-│   │   │   └── system/                # User management + audit logs
-│   │   ├── api/                       # 9 API clients
-│   │   ├── stores/                    # 4 Pinia stores
-│   │   └── components/                # Shared components (ListPageLayout etc.)
+│   ├── public/web/
+│   │   ├── public/pet.svg             # Project mascot "A-Xiao (阿鸮)", favicon + login page
+│   │   ├── src/
+│   │   │   ├── views/                 # 21 Vue pages
+│   │   │   │   ├── dashboard/         # Dashboard (ECharts)
+│   │   │   │   ├── campaign/          # Campaigns
+│   │   │   │   ├── adgroup/           # Ad Groups
+│   │   │   │   ├── creative/          # Creatives
+│   │   │   │   ├── account/           # Account management + binding
+│   │   │   │   ├── asset/             # Asset library
+│   │   │   │   ├── report/            # Reports + export + attribution + calendar
+│   │   │   │   ├── alert/             # Alert rules + logs
+│   │   │   │   ├── notification/      # Notification center
+│   │   │   │   ├── sync/              # Sync status
+│   │   │   │   ├── bid/               # Auto-bid rules
+│   │   │   │   ├── cdn/               # CDN providers
+│   │   │   │   ├── login/             # Login page (A-Xiao)
+│   │   │   │   └── system/            # User management + audit logs + system info
+│   │   │   ├── api/                   # 15 API clients
+│   │   │   ├── stores/                # 5 Pinia stores
+│   │   │   └── components/            # Shared components (ListPageLayout etc., 8 total)
+│   │   └── dist/                      # Build output (not committed, built by CI)
 │   ├── app/                           # PHP backend (controller/middleware)
 │   └── config/                        # Admin config
 ├── apps/
@@ -330,6 +360,11 @@ ads-php/
 ├── docker/                            # Docker & Nginx config
 ├── .github/workflows/                 # CI (lint→test→TS→Docker) + CD (build→push)
 ├── docs/                              # Design docs, implementation plans, Skills
+│   ├── architecture.md                # Architecture design (incl. architecture / request-flow / security diagrams)
+│   ├── features.md                    # Feature design (21 modules, incl. functional modules diagram)
+│   ├── usage.md                       # Usage guide (incl. data lifecycle diagram)
+│   ├── diagrams/svg/                  # 5 diagram sets × 13 languages + pet.svg mascot
+│   └── skills/                        # 143 reusable project skills
 ├── docker-compose.yml
 ├── Dockerfile / Dockerfile.admin / Dockerfile.admin-php
 └── Makefile

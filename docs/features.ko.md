@@ -32,8 +32,11 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 18 | 헬스 체크 | HealthController | 2 | — |
 | 19 | 캡차 | CaptchaController | 2 | — |
 | 20 | API 문서 | DocController | 1 | — |
+| 21 | CDN 제공업체 | CdnProviderController | 8 | CdnProviderList |
 
-**합계**: 21 모듈, 75+ 라우트, 19 Vue 페이지
+**합계**: 21 모듈, 76 라우트, 21 Vue 페이지
+
+![기능 모듈 다이어그램](diagrams/svg/functional-modules.ko.svg)
 
 ---
 

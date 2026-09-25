@@ -23,8 +23,8 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 9 | 通知中心 | NotificationController | 4 | NotificationList |
 | 10 | 自动出价 | BidRuleController | 5 | BidRuleList |
 | 11 | 定向模板 | TargetingTemplateController | 5 | — |
-| 12 | 系统管理 | AdminUserController, AuditLogController | 5 | UserManage, AuditLog |
-| 13 | 数据同步 | DataSyncTask, TokenRefreshTask, RetrySyncTask | — | — |
+| 12 | 系统管理 | AdminUserController, AuditLogController | 5 | UserManage, AuditLog, SystemInfo |
+| 13 | 数据同步 | DataSyncTask, TokenRefreshTask, RetrySyncTask | — | SyncStatus |
 | 14 | 素材库 | AssetController | 6 | AssetGallery |
 | 15 | 预算预警 | BudgetAlertService + BudgetCheckTask | 1 | — |
 | 16 | 投放日历 | CalendarService | 1 | CampaignCalendar |
@@ -34,7 +34,9 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 20 | API 文档 | DocController | 1 | — |
 | 21 | CDN 服务商 | CdnProviderController | 8 | CdnProviderList |
 
-**合计**: 21 模块, 75+ 路由, 19 Vue 页面
+**合计**: 21 模块, 76 路由, 21 Vue 页面
+
+![功能模块图](diagrams/svg/functional-modules.svg)
 
 ---
 

@@ -10,6 +10,8 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 Sistem manajemen periklanan multi-platform, terhubung dengan **29 platform iklan**, mencakup manajemen penayangan, laporan lintas-platform, pemantauan peringatan, penawaran otomatis, dan penargetan audiens. Mendukung tiga mode: SaaS multi-tenant, operasi agensi, dan penggunaan pribadi.
 
+![Diagram Arsitektur Sistem](diagrams/svg/architecture.id.svg)
+
 ---
 
 ## 2. Arsitektur Deployment
@@ -49,6 +51,8 @@ Sistem manajemen periklanan multi-platform, terhubung dengan **29 platform iklan
 ---
 
 ## 3. Pipeline Pemrosesan Request
+
+![Diagram Alur Permintaan](diagrams/svg/request-flow.id.svg)
 
 ### 3.1 Sisi Service (15 lapisan middleware)
 
@@ -106,9 +110,9 @@ ads-php/
 │   │   └── ExceptionHandler.php           # JSON 异常渲染
 │   ├── plugin/
 │   │   ├── ads-api/                       # REST API 层
-│   │   │   ├── controller/v1/             # 14 个控制器
-│   │   │   ├── middleware/                # 7 个中间件
-│   │   │   ├── config/route.php           # 45+ 路由
+│   │   │   ├── controller/v1/             # 21 个控制器 (含 admin/ 子目录)
+│   │   │   ├── middleware/                # 15 个中间件
+│   │   │   ├── config/route.php           # 76 路由
 │   │   ├── ads-platform/                  # 平台适配器核心
 │   │   │   ├── adapter/                   # 29 个平台适配器
 │   │   │   ├── src/                       # AdapterRegistry, CampaignData
@@ -116,11 +120,13 @@ ads-php/
 │   │   │   ├── service/                   # BidEngine
 │   │   │   └── migration/                # SQL DDL + 性能索引
 │   │   ├── ads-account/                   # OAuth 账户 + 平台账户
-│   │   ├── ads-task/                      # 5 个 cron 任务
+│   │   ├── ads-task/                      # 6 个 cron 任务
 │   │   ├── ads-alert/                     # 告警引擎 + 通知
 │   │   ├── ads-report/                    # 报表引擎 (CSV/Excel/PDF)
 │   │   ├── ads-tenant/                    # 多租户
 │   │   └── ads-storage/                   # Abstraksi penyimpanan (local/OSS/COS/S3) + penyedia CDN
+│   ├── public/                            # 静态资源 (webman 内置静态处理)
+│   │   └── img/pet.svg                    # 项目宠物「阿鸮」，/docs 页展示
 │   ├── tests/                             # PHPUnit
 │   │   ├── Unit/Middleware/               # 中间件测试
 │   │   ├── Unit/Task/                     # 任务测试 (规划)
@@ -133,10 +139,11 @@ ads-php/
 │   │   ├── service/                       # AuditService, ServiceProxy
 │   │   └── support/                       # HashidsService
 │   ├── public/web/                        # Vue 3 + TS SPA
-│   │   └── src/
-│   │       ├── views/                     # 14 页面 (dashboard/campaign/adgroup/creative/report/alert/notification/bid/system)
-│   │       ├── api/                       # 9 个 API 客户端
-│   │       ├── stores/                    # 4 个 Pinia Store
+│   │   ├── public/pet.svg                 # 项目宠物「阿鸮」，favicon + 登录页
+│   │   ├── src/
+│   │       ├── views/                     # 21 页面 (dashboard/campaign/adgroup/creative/account/asset/report/alert/notification/sync/bid/cdn/login/system)
+│   │       ├── api/                       # 15 个 API 客户端
+│   │       ├── stores/                    # 5 个 Pinia Store
 │   │       └── components/                # ListPageLayout 等共享组件
 │   └── config/                            # Admin 配置
 ├── apps/
@@ -150,7 +157,7 @@ ads-php/
 │   └── harmonyos/                         # HarmonyOS (API Client 就绪)
 ├── docker/                                # Nginx 配置 + Dockerfiles
 ├── .github/workflows/                     # CI (语法→测试→TS→Docker) + CD (构建推送)
-└── docs/                                  # 设计文档
+└── docs/                                  # 设计文档 + diagrams/svg/ 图表 ×13 语言 + pet.svg 项目宠物
 ```
 
 ---
@@ -185,6 +192,8 @@ ads-php/
 ---
 
 ## 6. Arsitektur Keamanan
+
+![Diagram Arsitektur Keamanan](diagrams/svg/security.id.svg)
 
 ### 6.1 Lapisan Pertahanan
 

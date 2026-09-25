@@ -101,8 +101,9 @@ class DocController
         $html .= '.extra{font-family:monospace;font-size:12px;color:#888;background:#f5f5f5;padding:2px 6px;border-radius:3px}';
         $html .= '.auth{font-size:11px;color:#28a745;margin-left:4px}';
         $html .= '.toc{margin-bottom:20px}.toc a{color:#409EFF;text-decoration:none;margin-right:16px}';
-        $html .= 'footer{text-align:center;color:#aaa;margin-top:40px;font-size:12px}</style></head><body>';
-        $html .= '<h1>Ads Platform API</h1>';
+        $html .= 'footer{text-align:center;color:#aaa;margin-top:40px;font-size:12px}';
+        $html .= '.pet{width:52px;height:52px;vertical-align:middle;margin-right:12px}</style></head><body>';
+        $html .= '<h1><img class="pet" src="/img/pet.svg" alt="阿鸮" title="阿鸮 — 值守 29 个平台">Ads Platform API</h1>';
         $html .= '<p>Base URL: <code>/api/v1</code> | Header: <code>X-Client-Platform: web</code> | 版本号固定于路径（v1 为当前版本）</p>';
         $html .= '<p class="toc"><b>跳转：</b>';
         foreach (array_keys($sections) as $s) $html .= '<a href="#' . $s . '">' . $s . '</a>';

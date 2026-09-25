@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { api } from './index'
+import { api, versionedPath } from './index'
 
 const raw = axios.create({
   baseURL: '/api',

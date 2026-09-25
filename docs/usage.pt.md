@@ -88,6 +88,8 @@ A sincronização é conduzida por 6 tarefas agendadas (agendadas no processo pe
 
 A configuração das tarefas está em `service/plugin/ads-task/config/cron.php`; as frequências podem ser modificadas. O status da sincronização é visível na página « Sincronização de dados »; os interruptores por conta estão em « Gerenciamento de contas ».
 
+![Diagrama do ciclo de vida dos dados](diagrams/svg/data-lifecycle.pt.svg)
+
 ---
 
 ## 5. Análise de relatórios

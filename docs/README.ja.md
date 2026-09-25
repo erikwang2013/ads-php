@@ -16,6 +16,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 - **マルチ端末アクセス** — Web 管理画面 (Vue 3)、Flutter PC/Mobile、HarmonyOS
 - **安定性と信頼性** — プラットフォーム呼び出しのサーキットブレーカー/降格/タイムアウト、3 段キャッシュ、高並行最適化、22 のセキュリティ対策
 - **国際化** — 12 言語のドキュメント、バイリンガル UI (ZH/EN)
+- **プロジェクトマスコット** — フクロウ「阿鸮（アーシャオ）」、24 時間 29 のプラットフォームを見守る（[pet.svg](docs/diagrams/svg/pet.svg)）
 
 > アーキテクチャ設計 → [docs/architecture.ja.md](docs/architecture.ja.md)  
 > 機能モジュール → [docs/features.ja.md](docs/features.ja.md)  
@@ -63,15 +64,34 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 ---
 
+## プロジェクトマスコット「阿鸮」
+
+<p align="center"><img src="docs/diagrams/svg/pet.svg" width="160" alt="プロジェクトマスコット 阿鸮"></p>
+
+**阿鸮（アーシャオ、xiāo、フクロウ）** は本プロジェクトのマスコットで、フクロウです。昼は眠り夜に活動し、一晩中あらゆるプラットフォームを見張り続けます——それはまさに、このシステムがやっていることです。
+
+| 姿 | 寓意 | 対応する実装 |
+|------|------|---------|
+| 両目が前を向く | 複数端末を同時に監視 | Vue Admin / Flutter / HarmonyOS の 3 端が 1 つの API を共用 |
+| まばたきアニメーション | 周期的なポーリング | 6 つの定期タスク (3/5/10/10/15/55 分) が巡回収集 |
+| 頭部後方のレーダーリング | 継続スキャンで異常を検出 | アラートエンジンの評価 + 予算警告の 3 段階しきい値 |
+| 夜間の見張り | 静かに夜を守り、異変があれば鳴く | 22 項目の防御が静かに稼働し、発動時のみ通知をプッシュ |
+
+阿鸮はすでにコードに統合されています：管理バックエンドの **ログインページ** と **favicon**、Service 側の **`/docs` API ドキュメントページ**、そしてすべてのドキュメントページ。
+
+> SVG ソース [docs/diagrams/svg/pet.svg](docs/diagrams/svg/pet.svg)（文字なし、13 言語のドキュメントで同一ファイルを共用、SMIL まばたきアニメーション付き）
+
+---
+
 ## 技術スタック
 
 | レイヤー | 技術 | 説明 |
 |----|------|------|
-| サーバー側 | webman v2 + PHP 8.2+ | 8 プラグイン、75+ API エンドポイント |
+| サーバー側 | webman v2 + PHP 8.2+ | 8 プラグイン、76 API エンドポイント |
 | データベース | MySQL 8.0 | 29 テーブル、ads_ プレフィックス、Snowflake BIGINT 主キー |
 | キャッシュ | Redis 7 | 3 段キャッシュ (L1メモリ/L2 APCu/L3 Redis)、レート制限カウント、Pub/Sub、メッセージキュー |
 | 検索 | Elasticsearch | webman-scout 自動インデックス同期（設定済み） |
-| 管理バックエンド | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP バックエンド(ポート 8789)、SPA は業務 API(ポート 8788)に直結、19 ページ、ECharts ビジュアライゼーション |
+| 管理バックエンド | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP バックエンド(ポート 8789)、SPA は業務 API(ポート 8788)に直結、21 ページ、ECharts ビジュアライゼーション |
 | Flutter | Dart 3 + Riverpod + GoRouter + fl_chart | PC/Mobile レスポンシブ、Desktop Shell レイアウト、12 ページ |
 | HarmonyOS | ArkTS + ArkUI | 6 ページ実装済み、HTTP クライアント準備完了 |
 | デプロイ | Docker + Nginx + GHCR | Docker Compose ワンクリック起動、GitHub Actions 自動ビルド・プッシュ |
@@ -274,8 +294,8 @@ cd admin/public/web && npx vue-tsc --noEmit   # エラーゼロ
 ads-php/
 ├── service/                           # ユーザー向け業務サービス (webman v2 :8788)
 │   ├── plugin/
-│   │   ├── ads-api/                   # REST API (61 エンドポイント、バージョンルーティング)
-│   │   │   ├── controller/v1/         # 17 コントローラー
+│   │   ├── ads-api/                   # REST API (76 エンドポイント、バージョンルーティング /api/v1)
+│   │   │   ├── controller/v1/         # 21 コントローラー (admin/ サブディレクトリ含む)
 │   │   │   ├── middleware/            # 15 ミドルウェア
 │   │   │   ├── config/route.php       # ルート定義
 │   │   ├── ads-platform/              # プラットフォームアダプターのコア
@@ -290,6 +310,8 @@ ads-php/
 │   │   ├── ads-report/                # レポートエンジン (CSV/Excel/PDF) + アトリビューションエンジン + 配信カレンダー
 │   │   ├── ads-tenant/                # マルチテナント管理
 │   │   └── ads-storage/               # ストレージ抽象層 (local/OSS/COS/S3) + CDN プロバイダー
+│   ├── public/                        # 静的リソース (webman 内蔵の静的処理)
+│   │   └── img/pet.svg                # プロジェクトマスコット「阿鸮」、/docs ページで表示
 │   ├── scripts/backfill-assets.php    # 既存素材をオブジェクトストレージへバックフィル
 │   ├── support/                       # Erik Stack ユーティリティクラス
 │   │   ├── ControllerTrait.php        # コントローラー共通 trait
@@ -299,24 +321,32 @@ ads-php/
 │   │   └── ApiResponse.php            # 統一レスポンス形式
 │   ├── config/                        # グローバル設定 (DB/Redis/Log/Middleware)
 │   ├── tests/                         # PHPUnit テスト (288 tests)
-│   │   ├── Unit/                      # ユニットテスト (Middleware, Task)
-│   │   └── Integration/               # 統合テスト (Auth, Health)
+│   │   ├── Unit/                      # ユニットテスト (Middleware, Task, Engines)
+│   │   └── Integration/               # 統合テスト (Auth, Health, API)
 │   └── start.php                      # サービスエントリ
 ├── admin/                             # 独立管理バックエンド (webman-admin v2 :8789)
-│   ├── public/web/src/
-│   │   ├── views/                     # 15 の Vue ページ
-│   │   │   ├── dashboard/             # ダッシュボード (ECharts)
-│   │   │   ├── campaign/              # 広告プラン
-│   │   │   ├── adgroup/               # 広告グループ
-│   │   │   ├── creative/              # 広告クリエイティブ
-│   │   │   ├── report/                # レポート分析 + エクスポート
-│   │   │   ├── alert/                 # アラートルール + 記録
-│   │   │   ├── notification/          # 通知センター
-│   │   │   ├── bid/                   # 自動入札ルール
-│   │   │   └── system/                # ユーザー管理 + 監査ログ
-│   │   ├── api/                       # 9 の API クライアント
-│   │   ├── stores/                    # 4 の Pinia Store
-│   │   └── components/                # 共有コンポーネント (ListPageLayout など)
+│   ├── public/web/
+│   │   ├── public/pet.svg             # プロジェクトマスコット「阿鸮」、favicon + ログインページ
+│   │   ├── src/
+│   │   │   ├── views/                 # 21 の Vue ページ
+│   │   │   │   ├── dashboard/         # ダッシュボード (ECharts)
+│   │   │   │   ├── campaign/          # 広告プラン
+│   │   │   │   ├── adgroup/           # 広告グループ
+│   │   │   │   ├── creative/          # 広告クリエイティブ
+│   │   │   │   ├── account/           # アカウント管理 + 連携
+│   │   │   │   ├── asset/             # 素材ライブラリ
+│   │   │   │   ├── report/            # レポート分析 + エクスポート + アトリビューション + 配信カレンダー
+│   │   │   │   ├── alert/             # アラートルール + 記録
+│   │   │   │   ├── notification/      # 通知センター
+│   │   │   │   ├── sync/              # 同期ステータス
+│   │   │   │   ├── bid/               # 自動入札ルール
+│   │   │   │   ├── cdn/               # CDN プロバイダー
+│   │   │   │   ├── login/             # ログインページ (阿鸮)
+│   │   │   │   └── system/            # ユーザー管理 + 監査ログ + システム情報
+│   │   │   ├── api/                   # 15 の API クライアント
+│   │   │   ├── stores/                # 5 の Pinia Store
+│   │   │   └── components/            # 共有コンポーネント (ListPageLayout など 8 個)
+│   │   └── dist/                      # ビルド成果物 (未コミット、CI ビルド)
 │   ├── app/                           # PHP バックエンド (controller/middleware)
 │   └── config/                        # Admin 設定
 ├── apps/
@@ -330,6 +360,11 @@ ads-php/
 ├── docker/                            # Docker & Nginx 設定
 ├── .github/workflows/                 # CI (構文→テスト→TS→Docker) + CD (ビルド・プッシュ)
 ├── docs/                              # 設計ドキュメント、実装計画、Skills
+│   ├── architecture.md                # アーキテクチャ設計 (アーキテクチャ図/リクエストフロー図/セキュリティアーキテクチャ図を含む)
+│   ├── features.md                    # 機能設計 (21 モジュール、機能モジュール図を含む)
+│   ├── usage.md                       # 使用説明 (データライフサイクル図を含む)
+│   ├── diagrams/svg/                  # 5 種類の図表 × 13 言語 + pet.svg プロジェクトマスコット
+│   └── skills/                        # 143 の再利用可能なプロジェクトスキル
 ├── docker-compose.yml
 ├── Dockerfile / Dockerfile.admin / Dockerfile.admin-php
 └── Makefile

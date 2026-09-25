@@ -88,6 +88,8 @@ Synchronization is driven by 6 scheduled tasks (scheduled in-process by the webm
 
 Task configuration lives in `service/plugin/ads-task/config/cron.php`; frequencies can be modified there. Sync status is visible on the "Data Sync" page; per-account on/off switches are in "Account Management".
 
+![Data Lifecycle Diagram](diagrams/svg/data-lifecycle.en.svg)
+
 ---
 
 ## 5. Report Analytics

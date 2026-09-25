@@ -16,6 +16,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 - **Akses Multi-Perangkat** — admin web (Vue 3), Flutter PC/Mobile, HarmonyOS
 - **Stabilitas & Keandalan** — circuit breaker/degradasi/timeout panggilan platform, cache 3 tingkat, optimasi konkurensi tinggi, 22 perlindungan keamanan
 - **Internasionalisasi** — dokumentasi 12 bahasa, UI bilingual (ZH/EN)
+- **Maskot Proyek** — burung hantu「阿鸮」, berjaga 24 jam untuk 29 platform（[pet.svg](docs/diagrams/svg/pet.svg)）
 
 > Desain arsitektur → [docs/architecture.id.md](docs/architecture.id.md)  
 > Modul fitur → [docs/features.id.md](docs/features.id.md)  
@@ -63,15 +64,34 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 ---
 
+## Maskot Proyek「阿鸮」
+
+<p align="center"><img src="docs/diagrams/svg/pet.svg" width="160" alt="Maskot proyek 阿鸮"></p>
+
+**阿鸮**（xiāo, "burung hantu"）adalah maskot proyek ini: seekor burung hantu. Ia tidur di siang hari dan berjaga di malam hari, mengawasi setiap platform sepanjang malam — persis seperti yang dilakukan sistem ini.
+
+| Wujud | Makna | Implementasi terkait |
+|------|------|---------|
+| Kedua mata menatap ke depan | Memantau banyak layar sekaligus | Tiga klien Vue Admin / Flutter / HarmonyOS berbagi satu set API |
+| Animasi berkedip | Polling berkala | 6 tugas terjadwal (3/5/10/10/15/55 menit) mengumpulkan data secara berulang |
+| Cincin radar di belakang kepala | Pemindaian berkelanjutan untuk menemukan anomali | Evaluasi mesin peringatan + ambang batas tiga tahap peringatan anggaran |
+| Berjaga di malam hari | Menjaga dalam senyap, bersuara hanya saat ada masalah | 22 perlindungan berjalan senyap, notifikasi hanya dikirim saat terpicu |
+
+阿鸮 telah diintegrasikan ke dalam kode: **halaman login** dan **favicon** panel admin, **halaman dokumentasi API `/docs`** di sisi Service, serta seluruh halaman dokumentasi.
+
+> Sumber SVG [docs/diagrams/svg/pet.svg](docs/diagrams/svg/pet.svg)（tanpa teks, satu berkas yang sama dipakai bersama oleh dokumentasi 13 bahasa; berisi animasi kedip SMIL）
+
+---
+
 ## Tumpukan Teknologi
 
 | Lapisan | Teknologi | Keterangan |
 |----|------|------|
-| Server | webman v2 + PHP 8.2+ | 8 plugin, 75+ endpoint API |
+| Server | webman v2 + PHP 8.2+ | 8 plugin, 76 endpoint API |
 | Database | MySQL 8.0 | 29 tabel, prefiks ads_, primary key Snowflake BIGINT |
 | Cache | Redis 7 | Cache tiga tingkat (L1 memori/L2 APCu/L3 Redis), penghitung pembatasan, Pub/Sub, antrean pesan |
 | Pencarian | Elasticsearch | Sinkronisasi indeks otomatis webman-scout (sudah dikonfigurasi) |
-| Panel Admin | webman-admin v2 + Vue 3 + TypeScript + Element Plus | Backend PHP (port 8789), SPA terhubung langsung ke API bisnis (port 8788), 19 halaman, visualisasi ECharts |
+| Panel Admin | webman-admin v2 + Vue 3 + TypeScript + Element Plus | Backend PHP (port 8789), SPA terhubung langsung ke API bisnis (port 8788), 21 halaman, visualisasi ECharts |
 | Flutter | Dart 3 + Riverpod + GoRouter + fl_chart | Responsif PC/Mobile, tata letak Desktop Shell, 12 halaman |
 | HarmonyOS | ArkTS + ArkUI | 6 halaman telah diimplementasikan, klien HTTP siap |
 | Deployment | Docker + Nginx + GHCR | Docker Compose satu perintah, GitHub Actions build & push otomatis |
@@ -274,8 +294,8 @@ Panduan Penggunaan → [docs/usage.id.md](docs/usage.id.md)
 ads-php/
 ├── service/                           # Layanan bisnis sisi pengguna (webman v2 :8788)
 │   ├── plugin/
-│   │   ├── ads-api/                   # REST API (61 endpoint, rute ber-versi)
-│   │   │   ├── controller/v1/         # 17 controller
+│   │   ├── ads-api/                   # REST API (76 endpoint, rute ber-versi /api/v1)
+│   │   │   ├── controller/v1/         # 21 controller (termasuk subdirektori admin/)
 │   │   │   ├── middleware/            # 15 middleware
 │   │   │   ├── config/route.php       # Definisi rute
 │   │   ├── ads-platform/              # Inti adaptor platform
@@ -290,6 +310,8 @@ ads-php/
 │   │   ├── ads-report/                # Mesin laporan (CSV/Excel/PDF) + mesin atribusi + kalender penayangan
 │   │   ├── ads-tenant/                # Manajemen multi-tenant
 │   │   └── ads-storage/               # Lapisan abstraksi penyimpanan (local/OSS/COS/S3) + penyedia CDN
+│   ├── public/                        # Aset statis (penanganan statis bawaan webman)
+│   │   └── img/pet.svg                # Maskot proyek「阿鸮」, ditampilkan di halaman /docs
 │   ├── scripts/backfill-assets.php    # Backfill aset lama ke object storage
 │   ├── support/                       # Kelas utilitas Erik Stack
 │   │   ├── ControllerTrait.php        # Trait umum controller
@@ -303,20 +325,28 @@ ads-php/
 │   │   └── Integration/               # Integration test (Auth, Health)
 │   └── start.php                      # Titik masuk layanan
 ├── admin/                             # Panel admin independen (webman-admin v2 :8789)
-│   ├── public/web/src/
-│   │   ├── views/                     # 15 halaman Vue
-│   │   │   ├── dashboard/             # Dasbor (ECharts)
-│   │   │   ├── campaign/              # Kampanye iklan
-│   │   │   ├── adgroup/               # Grup iklan
-│   │   │   ├── creative/              # Kreatif iklan
-│   │   │   ├── report/                # Analisis laporan + ekspor
-│   │   │   ├── alert/                 # Aturan peringatan + catatan
-│   │   │   ├── notification/          # Pusat notifikasi
-│   │   │   ├── bid/                   # Aturan penawaran otomatis
-│   │   │   └── system/                # Manajemen pengguna + log audit
-│   │   ├── api/                       # 9 klien API
-│   │   ├── stores/                    # 4 Pinia Store
-│   │   └── components/                # Komponen bersama (ListPageLayout dll.)
+│   ├── public/web/
+│   │   ├── public/pet.svg             # Maskot proyek「阿鸮」, favicon + halaman login
+│   │   ├── src/
+│   │   │   ├── views/                 # 21 halaman Vue
+│   │   │   │   ├── dashboard/         # Dasbor (ECharts)
+│   │   │   │   ├── campaign/          # Kampanye iklan
+│   │   │   │   ├── adgroup/           # Grup iklan
+│   │   │   │   ├── creative/          # Kreatif iklan
+│   │   │   │   ├── account/           # Manajemen akun + penautan
+│   │   │   │   ├── asset/             # Pustaka materi
+│   │   │   │   ├── report/            # Analisis laporan + ekspor + atribusi + kalender penayangan
+│   │   │   │   ├── alert/             # Aturan peringatan + catatan
+│   │   │   │   ├── notification/      # Pusat notifikasi
+│   │   │   │   ├── sync/              # Status sinkronisasi
+│   │   │   │   ├── bid/               # Aturan penawaran otomatis
+│   │   │   │   ├── cdn/               # Penyedia CDN
+│   │   │   │   ├── login/             # Halaman login (阿鸮)
+│   │   │   │   └── system/            # Manajemen pengguna + log audit + informasi sistem
+│   │   │   ├── api/                   # 15 klien API
+│   │   │   ├── stores/                # 5 Pinia Store
+│   │   │   └── components/            # Komponen bersama (ListPageLayout dll. 8 buah)
+│   │   └── dist/                      # Hasil build (tidak masuk repo, dibangun oleh CI)
 │   ├── app/                           # Backend PHP (controller/middleware)
 │   └── config/                        # Konfigurasi Admin
 ├── apps/
@@ -330,6 +360,11 @@ ads-php/
 ├── docker/                            # Konfigurasi Docker & Nginx
 ├── .github/workflows/                 # CI (syntax→test→TS→Docker) + CD (build & push)
 ├── docs/                              # Dokumen desain, rencana implementasi, Skills
+│   ├── architecture.md                # Desain arsitektur (termasuk diagram arsitektur/alur permintaan/keamanan)
+│   ├── features.md                    # Desain fitur (21 modul, termasuk diagram modul fungsi)
+│   ├── usage.md                       # Panduan penggunaan (termasuk diagram siklus hidup data)
+│   ├── diagrams/svg/                  # 5 jenis diagram × 13 bahasa + pet.svg maskot proyek
+│   └── skills/                        # 143 skill proyek yang dapat digunakan kembali
 ├── docker-compose.yml
 ├── Dockerfile / Dockerfile.admin / Dockerfile.admin-php
 └── Makefile

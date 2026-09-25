@@ -32,8 +32,11 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 18 | ヘルスチェック | HealthController | 2 | — |
 | 19 | 認証コード | CaptchaController | 2 | — |
 | 20 | API ドキュメント | DocController | 1 | — |
+| 21 | CDN プロバイダー | CdnProviderController | 8 | CdnProviderList |
 
-**合計**: 21 モジュール, 75+ ルート, 19 Vue ページ
+**合計**: 21 モジュール, 76 ルート, 21 Vue ページ
+
+![機能モジュール図](diagrams/svg/functional-modules.ja.svg)
 
 ---
 

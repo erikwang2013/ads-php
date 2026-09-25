@@ -16,6 +16,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 - **Acesso multidispositivo** — painel web (Vue 3), Flutter PC/Mobile, HarmonyOS
 - **Estabilidade e confiabilidade** — disjuntor/redução de capacidade/timeout em chamadas de plataforma, cache de 3 níveis, otimizações de alta concorrência, 22 proteções de segurança
 - **Internacionalização** — documentação em 12 idiomas, interface bilíngue (ZH/EN)
+- **Mascote do projeto** — a coruja "阿鸮", vigiando 29 plataformas 24 horas por dia ([pet.svg](docs/diagrams/svg/pet.svg))
 
 > Design de arquitetura → [docs/architecture.md](docs/architecture.pt.md)  
 > Módulos de funcionalidades → [docs/features.md](docs/features.pt.md)  
@@ -63,15 +64,34 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 ---
 
+## Mascote do projeto "阿鸮"
+
+<p align="center"><img src="docs/diagrams/svg/pet.svg" width="160" alt="Mascote do projeto 阿鸮"></p>
+
+**阿鸮** (xiāo, «coruja») é o mascote deste projeto: uma coruja. Dorme de dia e vive à noite, vigiando cada plataforma a noite inteira — exatamente o que este sistema faz.
+
+| Imagem | Significado | Implementação correspondente |
+|------|------|---------|
+| Olhos voltados para a frente | Vários clientes olhando a tela ao mesmo tempo | Vue Admin / Flutter / HarmonyOS: os três clientes compartilham uma única API |
+| Animação de piscar | Polling periódico | 6 tarefas agendadas (3/5/10/10/15/55 minutos) coletando em ciclo |
+| Anel de radar atrás da cabeça | Varredura contínua em busca de anomalias | Avaliação do motor de alertas + três limiares de aviso de orçamento |
+| Vigília noturna | Guarda silenciosa, só dá sinal quando há problema | 22 proteções rodando em silêncio, notificação só quando disparadas |
+
+阿鸮 já está integrado ao código: **página de login** e **favicon** do painel administrativo, a **página de documentação da API `/docs`** do lado Service, e todas as páginas de documentação.
+
+> Código-fonte SVG [docs/diagrams/svg/pet.svg](docs/diagrams/svg/pet.svg) (sem texto, a mesma versão é compartilhada pela documentação em 13 idiomas; inclui animação de piscar SMIL)
+
+---
+
 ## Stack de tecnologia
 
 | Camada | Tecnologia | Descrição |
 |----|------|------|
-| Backend | webman v2 + PHP 8.2+ | 8 plugins, 75+ endpoints de API |
+| Backend | webman v2 + PHP 8.2+ | 8 plugins, 76 endpoints de API |
 | Banco de dados | MySQL 8.0 | 29 tabelas, prefixo ads_, chave primária Snowflake BIGINT |
 | Cache | Redis 7 | Cache de três níveis (L1 memória/L2 APCu/L3 Redis), contagem de rate limit, Pub/Sub, fila de mensagens |
 | Busca | Elasticsearch | Sincronização automática de índice webman-scout (configurado) |
-| Admin | webman-admin v2 + Vue 3 + TypeScript + Element Plus | Backend PHP (porta 8789), SPA conecta direto à API de negócio (porta 8788), 19 páginas, visualização ECharts |
+| Admin | webman-admin v2 + Vue 3 + TypeScript + Element Plus | Backend PHP (porta 8789), SPA conecta direto à API de negócio (porta 8788), 21 páginas, visualização ECharts |
 | Flutter | Dart 3 + Riverpod + GoRouter + fl_chart | Responsivo PC/Mobile, layout Desktop Shell, 12 páginas |
 | HarmonyOS | ArkTS + ArkUI | 6 páginas implementadas, cliente HTTP pronto |
 | Implantação | Docker + Nginx + GHCR | Docker Compose com um clique, GitHub Actions compila e publica automaticamente |
@@ -272,64 +292,79 @@ Guia de uso → [docs/usage.pt.md](docs/usage.pt.md)
 
 ```
 ads-php/
-├── service/                           # 用户端业务服务 (webman v2 :8788)
+├── service/                           # Serviço de API de negócio do usuário (webman v2 :8788)
 │   ├── plugin/
-│   │   ├── ads-api/                   # REST API (61 端点，版本路由)
-│   │   │   ├── controller/v1/         # 17 个控制器
-│   │   │   ├── middleware/            # 15 个中间件
-│   │   │   ├── config/route.php       # 路由定义
-│   │   ├── ads-platform/              # 平台适配器核心
-│   │   │   ├── adapter/               # 29 个平台适配器
+│   │   ├── ads-api/                   # REST API (76 endpoints, rotas versionadas /api/v1)
+│   │   │   ├── controller/v1/         # 21 controladores (incl. subdiretório admin/)
+│   │   │   ├── middleware/            # 15 middlewares
+│   │   │   ├── config/route.php       # Definições de rotas
+│   │   ├── ads-platform/              # Núcleo dos adaptadores de plataforma
+│   │   │   ├── adapter/               # 29 adaptadores de plataforma
 │   │   │   ├── src/                   # AdapterRegistry, CampaignData
 │   │   │   ├── model/                 # BidRule, BidLog, TargetingTemplate
 │   │   │   ├── service/               # BidEngine, ReportBuilder
-│   │   │   └── migration/             # SQL 迁移 + 性能索引
-│   │   ├── ads-account/               # OAuth 账户管理
-│   │   ├── ads-task/                  # 定时任务调度 (6 cron)
-│   │   ├── ads-alert/                 # 告警监控引擎 + 预算预警
-│   │   ├── ads-report/                # 报表引擎 (CSV/Excel/PDF) + 归因引擎 + 投放日历
-│   │   ├── ads-tenant/                # 多租户管理
+│   │   │   └── migration/             # Migrações SQL + índices de performance
+│   │   ├── ads-account/               # Gerenciamento de contas OAuth
+│   │   ├── ads-task/                  # Agendamento de tarefas (6 cron)
+│   │   ├── ads-alert/                 # Motor de monitoramento de alertas + aviso de orçamento
+│   │   ├── ads-report/                # Motor de relatórios (CSV/Excel/PDF) + atribuição + calendário de veiculação
+│   │   ├── ads-tenant/                # Gerenciamento multitenant
 │   │   └── ads-storage/               # Camada de abstração de armazenamento (local/OSS/COS/S3) + provedores CDN
+│   ├── public/                        # Recursos estáticos (tratamento estático nativo do webman)
+│   │   └── img/pet.svg                # Mascote do projeto "阿鸮", exibido na página /docs
 │   ├── scripts/backfill-assets.php    # Migrar materiais existentes para o armazenamento de objetos
-│   ├── support/                       # Erik Stack 工具类
-│   │   ├── ControllerTrait.php        # 控制器公共 trait
-│   │   ├── JwtService.php             # JWT 包装类
-│   │   ├── CacheService.php           # Redis 缓存服务
-│   │   ├── ExceptionHandler.php       # API 异常处理器
-│   │   └── ApiResponse.php            # 统一响应格式
-│   ├── config/                        # 全局配置 (DB/Redis/Log/Middleware)
-│   ├── tests/                         # PHPUnit 测试 (288 tests)
-│   │   ├── Unit/                      # 单元测试 (Middleware, Task)
-│   │   └── Integration/               # 集成测试 (Auth, Health)
-│   └── start.php                      # 服务入口
-├── admin/                             # 独立管理后台 (webman-admin v2 :8789)
-│   ├── public/web/src/
-│   │   ├── views/                     # 15 个 Vue 页面
-│   │   │   ├── dashboard/             # 仪表盘 (ECharts)
-│   │   │   ├── campaign/              # 广告计划
-│   │   │   ├── adgroup/               # 广告组
-│   │   │   ├── creative/              # 广告创意
-│   │   │   ├── report/                # 报表分析 + 导出
-│   │   │   ├── alert/                 # 告警规则 + 记录
-│   │   │   ├── notification/          # 通知中心
-│   │   │   ├── bid/                   # 自动出价规则
-│   │   │   └── system/                # 用户管理 + 审计日志
-│   │   ├── api/                       # 9 个 API 客户端
-│   │   ├── stores/                    # 4 个 Pinia Store
-│   │   └── components/                # 共享组件 (ListPageLayout 等)
-│   ├── app/                           # PHP 后端 (controller/middleware)
-│   └── config/                        # Admin 配置
+│   ├── support/                       # Classes utilitárias do Erik Stack
+│   │   ├── ControllerTrait.php        # Trait compartilhado de controladores
+│   │   ├── JwtService.php             # Wrapper JWT
+│   │   ├── CacheService.php           # Serviço de cache Redis
+│   │   ├── ExceptionHandler.php       # Tratador de exceções da API
+│   │   └── ApiResponse.php            # Formato de resposta unificado
+│   ├── config/                        # Configuração global (DB/Redis/Log/Middleware)
+│   ├── tests/                         # Testes PHPUnit (288 tests)
+│   │   ├── Unit/                      # Testes unitários (Middleware, Task, Engines)
+│   │   └── Integration/               # Testes de integração (Auth, Health, API)
+│   └── start.php                      # Ponto de entrada do serviço
+├── admin/                             # Painel administrativo independente (webman-admin v2 :8789)
+│   ├── public/web/
+│   │   ├── public/pet.svg             # Mascote do projeto "阿鸮", favicon + página de login
+│   │   ├── src/
+│   │   │   ├── views/                 # 21 páginas Vue
+│   │   │   │   ├── dashboard/         # Painel (ECharts)
+│   │   │   │   ├── campaign/          # Campanhas
+│   │   │   │   ├── adgroup/           # Grupos de anúncios
+│   │   │   │   ├── creative/          # Criativos
+│   │   │   │   ├── account/           # Gerenciamento de contas + vinculação
+│   │   │   │   ├── asset/             # Biblioteca de materiais
+│   │   │   │   ├── report/            # Relatórios + exportação + atribuição + calendário de veiculação
+│   │   │   │   ├── alert/             # Regras de alerta + registros
+│   │   │   │   ├── notification/      # Central de notificações
+│   │   │   │   ├── sync/              # Status de sincronização
+│   │   │   │   ├── bid/               # Regras de lance automático
+│   │   │   │   ├── cdn/               # Provedores CDN
+│   │   │   │   ├── login/             # Página de login (阿鸮)
+│   │   │   │   └── system/            # Gerenciamento de usuários + log de auditoria + informações do sistema
+│   │   │   ├── api/                   # 15 clientes de API
+│   │   │   ├── stores/                # 5 Pinia Store
+│   │   │   └── components/            # Componentes compartilhados (ListPageLayout etc., 8 no total)
+│   │   └── dist/                      # Artefatos de build (não versionados, compilados pela CI)
+│   ├── app/                           # Backend PHP (controller/middleware)
+│   └── config/                        # Configuração do Admin
 ├── apps/
 │   ├── flutter/                       # Flutter Desktop App
 │   │   └── lib/
-│   │       ├── features/              # 12 个功能页面 + Shell 布局
-│   │       ├── config/menu_config.dart # 两级菜单配置
-│   │       ├── router.dart            # GoRouter (ShellRoute + 路由守卫)
-│   │       └── stores/                # Riverpod Auth Provider
-│   └── harmonyos/                     # HarmonyOS (API Client 就绪)
-├── docker/                            # Docker & Nginx 配置
-├── .github/workflows/                 # CI (语法→测试→TS→Docker) + CD (构建推送)
-├── docs/                              # 设计文档、实施计划、Skills
+│   │       ├── features/              # 12 páginas funcionais + layout Shell
+│   │       ├── config/menu_config.dart # Configuração de menu de dois níveis
+│   │       ├── router.dart            # GoRouter (ShellRoute + guarda de rotas)
+│   │       └── stores/                # Provider de autenticação Riverpod
+│   └── harmonyos/                     # HarmonyOS (cliente de API pronto)
+├── docker/                            # Configurações de Docker & Nginx
+├── .github/workflows/                 # CI (sintaxe→testes→TS→Docker) + CD (build e push)
+├── docs/                              # Documentos de design, planos de implementação, Skills
+│   ├── architecture.md                # Design de arquitetura (diagrama de arquitetura/fluxo de requisições/segurança)
+│   ├── features.md                    # Design de funcionalidades (21 módulos, com diagrama de módulos funcionais)
+│   ├── usage.md                       # Guia de uso (com diagrama do ciclo de vida dos dados)
+│   ├── diagrams/svg/                  # 5 categorias de diagramas × 13 idiomas + pet.svg mascote do projeto
+│   └── skills/                        # 143 habilidades de projeto reutilizáveis
 ├── docker-compose.yml
 ├── Dockerfile / Dockerfile.admin / Dockerfile.admin-php
 └── Makefile

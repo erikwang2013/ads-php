@@ -32,8 +32,11 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 18 | Health check | HealthController | 2 | — |
 | 19 | Kode verifikasi | CaptchaController | 2 | — |
 | 20 | Dokumentasi API | DocController | 1 | — |
+| 21 | Penyedia CDN | CdnProviderController | 8 | CdnProviderList |
 
-**Total**: 21 modul, 75+ route, 19 halaman Vue
+**Total**: 21 modul, 76 route, 21 halaman Vue
+
+![Diagram Modul Fungsi](diagrams/svg/functional-modules.id.svg)
 
 ---
 

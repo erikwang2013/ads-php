@@ -16,6 +16,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 - **मल्टी-एंड एक्सेस** — वेब एडमिन (Vue 3), Flutter PC/Mobile, HarmonyOS
 - **स्थिरता और विश्वसनीयता** — प्लेटफ़ॉर्म कॉल सर्किट ब्रेकर/डिग्रेडेशन/टाइमआउट, 3-स्तरीय कैश, उच्च समवर्ती अनुकूलन, 22 सुरक्षा उपाय
 - **अंतर्राष्ट्रीयकरण** — 12 भाषाओं में दस्तावेज़, द्विभाषी UI (ZH/EN)
+- **प्रोजेक्ट शुभंकर** — उल्लू「阿鸮」, 29 प्लेटफ़ॉर्मों पर 24 घंटे तैनात（[pet.svg](docs/diagrams/svg/pet.svg)）
 
 > आर्किटेक्चर डिज़ाइन → [docs/architecture.hi.md](docs/architecture.hi.md)  
 > फ़ंक्शन मॉड्यूल → [docs/features.hi.md](docs/features.hi.md)  
@@ -63,15 +64,34 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 ---
 
+## प्रोजेक्ट शुभंकर「阿鸮」
+
+<p align="center"><img src="docs/diagrams/svg/pet.svg" width="160" alt="प्रोजेक्ट शुभंकर 阿鸮"></p>
+
+**阿鸮**（xiāo, «उल्लू»）इस प्रोजेक्ट का शुभंकर है: एक उल्लू। यह दिन में छिपा रहता है और रात भर जागता है, हर प्लेटफ़ॉर्म पर नज़र रखता है——यही काम यह प्रणाली करती है।
+
+| रूप | अर्थ | संबंधित कार्यान्वयन |
+|------|------|---------|
+| दोनों आँखें सामने | कई एंड एक साथ स्क्रीन पर नज़र | Vue Admin / Flutter / HarmonyOS तीनों एंड एक ही API साझा करते हैं |
+| पलक झपकने का एनिमेशन | आवधिक पोलिंग | 6 निर्धारित कार्य (3/5/10/10/15/55 मिनट) चक्रीय संग्रह |
+| सिर के पीछे रडार रिंग | निरंतर स्कैन से विसंगति की खोज | अलर्ट इंजन मूल्यांकन + बजट चेतावनी तीन-स्तरीय थ्रेशोल्ड |
+| रात्रि ड्यूटी | मौन पहरा, समस्या होने पर ही आवाज़ | 22 सुरक्षा उपाय मौन रूप से चलते हैं, ट्रिगर होने पर ही सूचना पुश |
+
+阿鸮 कोड में एकीकृत है: एडमिन पैनल का **लॉगिन पेज** और **favicon**, Service एंड का **`/docs` API दस्तावेज़ पेज**, तथा सभी दस्तावेज़ पेज।
+
+> SVG स्रोत [docs/diagrams/svg/pet.svg](docs/diagrams/svg/pet.svg)（पाठ रहित, 13 भाषाओं के दस्तावेज़ एक ही फ़ाइल साझा करते हैं; SMIL पलक एनिमेशन सहित）
+
+---
+
 ## तकनीकी स्टैक
 
 | परत | तकनीक | विवरण |
 |----|------|------|
-| सर्वर-साइड | webman v2 + PHP 8.2+ | 8 प्लगइन, 75+ API एंडपॉइंट |
+| सर्वर-साइड | webman v2 + PHP 8.2+ | 8 प्लगइन, 76 API एंडपॉइंट |
 | डेटाबेस | MySQL 8.0 | 29 टेबल, ads_ प्रीफ़िक्स, Snowflake BIGINT प्राइमरी की |
 | कैश | Redis 7 | त्रि-स्तरीय कैश (L1 मेमोरी/L2 APCu/L3 Redis), रेट-लिमिट काउंटिंग, Pub/Sub, मैसेज क्यू |
 | सर्च | Elasticsearch | webman-scout स्वचालित इंडेक्स सिंक (कॉन्फ़िगर किया गया) |
-| एडमिन पैनल | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP बैकएंड (पोर्ट 8789), SPA सीधे बिज़नेस API से जुड़ता है (पोर्ट 8788), 19 पेज, ECharts विज़ुअलाइज़ेशन |
+| एडमिन पैनल | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP बैकएंड (पोर्ट 8789), SPA सीधे बिज़नेस API से जुड़ता है (पोर्ट 8788), 21 पेज, ECharts विज़ुअलाइज़ेशन |
 | Flutter | Dart 3 + Riverpod + GoRouter + fl_chart | PC/Mobile रिस्पॉन्सिव, Desktop Shell लेआउट, 12 पेज |
 | HarmonyOS | ArkTS + ArkUI | 6 पेज लागू, HTTP क्लाइंट तैयार |
 | डिप्लॉयमेंट | Docker + Nginx + GHCR | Docker Compose वन-क्लिक स्टार्ट, GitHub Actions स्वचालित बिल्ड और पुश |
@@ -272,64 +292,79 @@ cd admin/public/web && npx vue-tsc --noEmit   # 零错误
 
 ```
 ads-php/
-├── service/                           # 用户端业务服务 (webman v2 :8788)
+├── service/                           # उपयोगकर्ता-साइड बिज़नेस सेवा (webman v2 :8788)
 │   ├── plugin/
-│   │   ├── ads-api/                   # REST API (61 端点，版本路由)
-│   │   │   ├── controller/v1/         # 17 个控制器
-│   │   │   ├── middleware/            # 15 个中间件
-│   │   │   ├── config/route.php       # 路由定义
-│   │   ├── ads-platform/              # 平台适配器核心
-│   │   │   ├── adapter/               # 29 个平台适配器
+│   │   ├── ads-api/                   # REST API (76 एंडपॉइंट, वर्शन रूट /api/v1)
+│   │   │   ├── controller/v1/         # 21 कंट्रोलर (admin/ सबडायरेक्टरी सहित)
+│   │   │   ├── middleware/            # 15 मिडलवेयर
+│   │   │   ├── config/route.php       # रूट परिभाषा
+│   │   ├── ads-platform/              # प्लेटफ़ॉर्म एडाप्टर कोर
+│   │   │   ├── adapter/               # 29 प्लेटफ़ॉर्म एडाप्टर
 │   │   │   ├── src/                   # AdapterRegistry, CampaignData
 │   │   │   ├── model/                 # BidRule, BidLog, TargetingTemplate
 │   │   │   ├── service/               # BidEngine, ReportBuilder
-│   │   │   └── migration/             # SQL 迁移 + 性能索引
-│   │   ├── ads-account/               # OAuth 账户管理
-│   │   ├── ads-task/                  # 定时任务调度 (6 cron)
-│   │   ├── ads-alert/                 # 告警监控引擎 + 预算预警
-│   │   ├── ads-report/                # 报表引擎 (CSV/Excel/PDF) + 归因引擎 + 投放日历
-│   │   ├── ads-tenant/                # 多租户管理
+│   │   │   └── migration/             # SQL माइग्रेशन + परफ़ॉर्मेंस इंडेक्स
+│   │   ├── ads-account/               # OAuth खाता प्रबंधन
+│   │   ├── ads-task/                  # निर्धारित कार्य शेड्यूलिंग (6 cron)
+│   │   ├── ads-alert/                 # अलर्ट मॉनिटरिंग इंजन + बजट चेतावनी
+│   │   ├── ads-report/                # रिपोर्ट इंजन (CSV/Excel/PDF) + एट्रिब्यूशन इंजन + डिलीवरी कैलेंडर
+│   │   ├── ads-tenant/                # मल्टी-टेनेंट प्रबंधन
 │   │   └── ads-storage/               # स्टोरेज एब्स्ट्रैक्शन लेयर (local/OSS/COS/S3) + CDN प्रोवाइडर
+│   ├── public/                        # स्टैटिक संसाधन (webman अंतर्निहित स्टैटिक हैंडलिंग)
+│   │   └── img/pet.svg                # प्रोजेक्ट शुभंकर「阿鸮」, /docs पेज पर प्रदर्शित
 │   ├── scripts/backfill-assets.php    # मौजूदा एसेट को ऑब्जेक्ट स्टोरेज में बैकफ़िल करें
-│   ├── support/                       # Erik Stack 工具类
-│   │   ├── ControllerTrait.php        # 控制器公共 trait
-│   │   ├── JwtService.php             # JWT 包装类
-│   │   ├── CacheService.php           # Redis 缓存服务
-│   │   ├── ExceptionHandler.php       # API 异常处理器
-│   │   └── ApiResponse.php            # 统一响应格式
-│   ├── config/                        # 全局配置 (DB/Redis/Log/Middleware)
-│   ├── tests/                         # PHPUnit 测试 (288 tests)
-│   │   ├── Unit/                      # 单元测试 (Middleware, Task)
-│   │   └── Integration/               # 集成测试 (Auth, Health)
-│   └── start.php                      # 服务入口
-├── admin/                             # 独立管理后台 (webman-admin v2 :8789)
-│   ├── public/web/src/
-│   │   ├── views/                     # 15 个 Vue 页面
-│   │   │   ├── dashboard/             # 仪表盘 (ECharts)
-│   │   │   ├── campaign/              # 广告计划
-│   │   │   ├── adgroup/               # 广告组
-│   │   │   ├── creative/              # 广告创意
-│   │   │   ├── report/                # 报表分析 + 导出
-│   │   │   ├── alert/                 # 告警规则 + 记录
-│   │   │   ├── notification/          # 通知中心
-│   │   │   ├── bid/                   # 自动出价规则
-│   │   │   └── system/                # 用户管理 + 审计日志
-│   │   ├── api/                       # 9 个 API 客户端
-│   │   ├── stores/                    # 4 个 Pinia Store
-│   │   └── components/                # 共享组件 (ListPageLayout 等)
-│   ├── app/                           # PHP 后端 (controller/middleware)
-│   └── config/                        # Admin 配置
+│   ├── support/                       # Erik Stack यूटिलिटी क्लास
+│   │   ├── ControllerTrait.php        # कंट्रोलर साझा trait
+│   │   ├── JwtService.php             # JWT रैपर क्लास
+│   │   ├── CacheService.php           # Redis कैश सेवा
+│   │   ├── ExceptionHandler.php       # API अपवाद हैंडलर
+│   │   └── ApiResponse.php            # एकीकृत प्रतिक्रिया प्रारूप
+│   ├── config/                        # ग्लोबल कॉन्फ़िगरेशन (DB/Redis/Log/Middleware)
+│   ├── tests/                         # PHPUnit टेस्ट (288 tests)
+│   │   ├── Unit/                      # यूनिट टेस्ट (Middleware, Task, Engines)
+│   │   └── Integration/               # इंटीग्रेशन टेस्ट (Auth, Health, API)
+│   └── start.php                      # सेवा प्रवेश बिंदु
+├── admin/                             # स्वतंत्र एडमिन पैनल (webman-admin v2 :8789)
+│   ├── public/web/
+│   │   ├── public/pet.svg             # प्रोजेक्ट शुभंकर「阿鸮」, favicon + लॉगिन पेज
+│   │   ├── src/
+│   │   │   ├── views/                 # 21 Vue पेज
+│   │   │   │   ├── dashboard/         # डैशबोर्ड (ECharts)
+│   │   │   │   ├── campaign/          # विज्ञापन कैंपेन
+│   │   │   │   ├── adgroup/           # विज्ञापन समूह
+│   │   │   │   ├── creative/          # विज्ञापन क्रिएटिव
+│   │   │   │   ├── account/           # खाता प्रबंधन + बाइंडिंग
+│   │   │   │   ├── asset/             # एसेट लाइब्रेरी
+│   │   │   │   ├── report/            # रिपोर्ट विश्लेषण + निर्यात + एट्रिब्यूशन + डिलीवरी कैलेंडर
+│   │   │   │   ├── alert/             # अलर्ट नियम + रिकॉर्ड
+│   │   │   │   ├── notification/      # नोटिफिकेशन केंद्र
+│   │   │   │   ├── sync/              # सिंक स्थिति
+│   │   │   │   ├── bid/               # स्वचालित बिडिंग नियम
+│   │   │   │   ├── cdn/               # CDN प्रोवाइडर
+│   │   │   │   ├── login/             # लॉगिन पेज (阿鸮)
+│   │   │   │   └── system/            # उपयोगकर्ता प्रबंधन + ऑडिट लॉग + सिस्टम जानकारी
+│   │   │   ├── api/                   # 15 API क्लाइंट
+│   │   │   ├── stores/                # 5 Pinia Store
+│   │   │   └── components/            # साझा कंपोनेंट (ListPageLayout आदि, कुल 8)
+│   │   └── dist/                      # बिल्ड आउटपुट (रिपॉज़िटरी में नहीं, CI द्वारा बिल्ड)
+│   ├── app/                           # PHP बैकएंड (controller/middleware)
+│   └── config/                        # Admin कॉन्फ़िगरेशन
 ├── apps/
 │   ├── flutter/                       # Flutter Desktop App
 │   │   └── lib/
-│   │       ├── features/              # 12 个功能页面 + Shell 布局
-│   │       ├── config/menu_config.dart # 两级菜单配置
-│   │       ├── router.dart            # GoRouter (ShellRoute + 路由守卫)
+│   │       ├── features/              # 12 फ़ंक्शन पेज + Shell लेआउट
+│   │       ├── config/menu_config.dart # दो-स्तरीय मेनू कॉन्फ़िगरेशन
+│   │       ├── router.dart            # GoRouter (ShellRoute + रूट गार्ड)
 │   │       └── stores/                # Riverpod Auth Provider
-│   └── harmonyos/                     # HarmonyOS (API Client 就绪)
-├── docker/                            # Docker & Nginx 配置
-├── .github/workflows/                 # CI (语法→测试→TS→Docker) + CD (构建推送)
-├── docs/                              # 设计文档、实施计划、Skills
+│   └── harmonyos/                     # HarmonyOS (API Client तैयार)
+├── docker/                            # Docker & Nginx कॉन्फ़िगरेशन
+├── .github/workflows/                 # CI (सिंटैक्स→टेस्ट→TS→Docker) + CD (बिल्ड और पुश)
+├── docs/                              # डिज़ाइन दस्तावेज़, कार्यान्वयन योजनाएँ, Skills
+│   ├── architecture.md                # आर्किटेक्चर डिज़ाइन (आर्किटेक्चर/अनुरोध-प्रवाह/सुरक्षा आरेख सहित)
+│   ├── features.md                    # फ़ंक्शन डिज़ाइन (21 मॉड्यूल, फ़ंक्शन मॉड्यूल आरेख सहित)
+│   ├── usage.md                       # उपयोग मार्गदर्शिका (डेटा जीवनचक्र आरेख सहित)
+│   ├── diagrams/svg/                  # 5 प्रकार के आरेख × 13 भाषाएँ + pet.svg प्रोजेक्ट शुभंकर
+│   └── skills/                        # 143 पुन: प्रयोज्य प्रोजेक्ट स्किल्स
 ├── docker-compose.yml
 ├── Dockerfile / Dockerfile.admin / Dockerfile.admin-php
 └── Makefile

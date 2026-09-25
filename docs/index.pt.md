@@ -11,12 +11,14 @@ docs/
 ├── usage.md                                # 使用说明文档 (安装后使用流程)
 ├── versions.md                             # 三版本对比
 ├── apidoc-header.md                        # hg/apidoc 通用规范头部
-├── diagrams/                               # Mermaid 可视化图表 (5 个)
+├── diagrams/                               # Mermaid 可视化图表 (5 个) + 项目宠物
 │   ├── architecture.md                     #   系统架构图 (C4 容器级拓扑)
 │   ├── request-flow.md                     #   请求流程图 (15+10 层中间件管道)
 │   ├── functional-modules.md               #   功能模块图 (21 模块依赖+数据流)
 │   ├── data-lifecycle.md                   #   数据生命周期图 (6 阶段+甘特图+缓存状态机)
-│   └── security.md                         #   安全架构图
+│   ├── security.md                         #   安全架构图
+│   └── svg/                                #   渲染产物: <name>.svg + 12 语言 <name>.<lang>.svg
+│       └── pet.svg                         #   项目宠物「阿鸮」(无文字，全语言共用)
 ├── skills/                                 # 可复用项目技能 (11 个)
 │   ├── adapter-generator.md                # 生成平台适配器模板
 │   ├── admin-page-generator.md             # 生成 Vue3 管理后台页面

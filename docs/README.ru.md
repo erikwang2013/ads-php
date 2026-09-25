@@ -16,6 +16,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 - **Доступ с нескольких устройств** — веб-админка (Vue 3), Flutter PC/Mobile, HarmonyOS
 - **Стабильность и надежность** — circuit breaker/деградация/таймаут при вызовах платформ, трёхуровневый кэш, оптимизации высокой нагрузки, 22 меры безопасности
 - **Интернационализация** — документация на 12 языках, двуязычный интерфейс (ZH/EN)
+- **Талисман проекта** — сова «阿鸮», круглосуточная вахта на 29 платформах ([pet.svg](docs/diagrams/svg/pet.svg))
 
 > Архитектура → [docs/architecture.ru.md](docs/architecture.ru.md)  
 > Функциональные модули → [docs/features.ru.md](docs/features.ru.md)  
@@ -63,15 +64,34 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 ---
 
+## Талисман проекта «阿鸮»
+
+<p align="center"><img src="docs/diagrams/svg/pet.svg" width="160" alt="Талисман проекта 阿鸮"></p>
+
+**阿鸮** (xiāo, «сова») — талисман этого проекта: сова. Днём она спит, а ночью не сводит глаз с каждой платформы — ровно то, чем занимается эта система.
+
+| Образ | Смысл | Реализация |
+|------|------|---------|
+| Взгляд вперёд обоими глазами | Одновременное наблюдение за несколькими клиентами | Vue Admin / Flutter / HarmonyOS — три клиента на одном API |
+| Анимация моргания | Периодический опрос | 6 плановых задач (3/5/10/10/15/55 минут) циклического сбора |
+| Радарное кольцо за головой | Непрерывное сканирование и обнаружение аномалий | Вычисление движком оповещений + три уровня порогов предупреждения о бюджете |
+| Ночная вахта | Тихая охрана, крик только при происшествии | 22 меры защиты работают молча, уведомление отправляется только при срабатывании |
+
+阿鸮 уже стала частью кода: **страница входа** и **favicon** админ-панели, **страница API-документации `/docs`** на стороне Service, а также все страницы документации.
+
+> Исходник SVG [docs/diagrams/svg/pet.svg](docs/diagrams/svg/pet.svg) (без текста, один общий файл для документации на 13 языках; содержит SMIL-анимацию моргания)
+
+---
+
 ## Технологический стек
 
 | Слой | Технология | Описание |
 |----|------|------|
-| Сервер | webman v2 + PHP 8.2+ | 8 плагинов, 75+ API-эндпоинтов |
+| Сервер | webman v2 + PHP 8.2+ | 8 плагинов, 76 API-эндпоинтов |
 | База данных | MySQL 8.0 | 29 таблиц, префикс ads_, Snowflake BIGINT первичные ключи |
 | Кэш | Redis 7 | Трёхуровневый кэш (L1 память/L2 APCu/L3 Redis)、лимитирование запросов、Pub/Sub、очередь сообщений |
 | Поиск | Elasticsearch | webman-scout автоматическая синхронизация индексов (настроено) |
-| Админ-панель | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP-бэкенд (порт 8789), SPA напрямую обращается к бизнес-API (порт 8788), 19 страниц, визуализация ECharts |
+| Админ-панель | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP-бэкенд (порт 8789), SPA напрямую обращается к бизнес-API (порт 8788), 21 страница, визуализация ECharts |
 | Flutter | Dart 3 + Riverpod + GoRouter + fl_chart | PC/Mobile адаптивно, макет Desktop Shell, 12 страниц |
 | HarmonyOS | ArkTS + ArkUI | Реализовано 6 страниц, HTTP-клиент готов |
 | Деплой | Docker + Nginx + GHCR | Docker Compose одним кликом, GitHub Actions автоматическая сборка и публикация |
@@ -272,64 +292,79 @@ cd admin/public/web && npx vue-tsc --noEmit   # 零错误
 
 ```
 ads-php/
-├── service/                           # 用户端业务服务 (webman v2 :8788)
+├── service/                           # Пользовательский бизнес-сервис (webman v2 :8788)
 │   ├── plugin/
-│   │   ├── ads-api/                   # REST API (61 端点，版本路由)
-│   │   │   ├── controller/v1/         # 17 个控制器
-│   │   │   ├── middleware/            # 15 个中间件
-│   │   │   ├── config/route.php       # 路由定义
-│   │   ├── ads-platform/              # 平台适配器核心
-│   │   │   ├── adapter/               # 29 个平台适配器
+│   │   ├── ads-api/                   # REST API (76 эндпоинтов, версионные маршруты /api/v1)
+│   │   │   ├── controller/v1/         # 21 контроллер (включая подкаталог admin/)
+│   │   │   ├── middleware/            # 15 middleware
+│   │   │   ├── config/route.php       # Определение маршрутов
+│   │   ├── ads-platform/              # Ядро адаптеров платформ
+│   │   │   ├── adapter/               # 29 адаптеров рекламных платформ
 │   │   │   ├── src/                   # AdapterRegistry, CampaignData
 │   │   │   ├── model/                 # BidRule, BidLog, TargetingTemplate
 │   │   │   ├── service/               # BidEngine, ReportBuilder
-│   │   │   └── migration/             # SQL 迁移 + 性能索引
-│   │   ├── ads-account/               # OAuth 账户管理
-│   │   ├── ads-task/                  # 定时任务调度 (6 cron)
-│   │   ├── ads-alert/                 # 告警监控引擎 + 预算预警
-│   │   ├── ads-report/                # 报表引擎 (CSV/Excel/PDF) + 归因引擎 + 投放日历
-│   │   ├── ads-tenant/                # 多租户管理
+│   │   │   └── migration/             # SQL-миграции + индексы производительности
+│   │   ├── ads-account/               # Управление OAuth-аккаунтами
+│   │   ├── ads-task/                  # Планировщик задач (6 cron)
+│   │   ├── ads-alert/                 # Движок мониторинга оповещений + предупреждения о бюджете
+│   │   ├── ads-report/                # Движок отчётов (CSV/Excel/PDF) + движок атрибуции + календарь кампаний
+│   │   ├── ads-tenant/                # Мультитенантность
 │   │   └── ads-storage/               # Слой абстракции хранилища (local/OSS/COS/S3) + CDN-провайдеры
+│   ├── public/                        # Статические ресурсы (встроенная обработка статики webman)
+│   │   └── img/pet.svg                # Талисман проекта «阿鸮», показывается на странице /docs
 │   ├── scripts/backfill-assets.php    # Перенос существующих материалов в объектное хранилище
-│   ├── support/                       # Erik Stack 工具类
-│   │   ├── ControllerTrait.php        # 控制器公共 trait
-│   │   ├── JwtService.php             # JWT 包装类
-│   │   ├── CacheService.php           # Redis 缓存服务
-│   │   ├── ExceptionHandler.php       # API 异常处理器
-│   │   └── ApiResponse.php            # 统一响应格式
-│   ├── config/                        # 全局配置 (DB/Redis/Log/Middleware)
-│   ├── tests/                         # PHPUnit 测试 (288 tests)
-│   │   ├── Unit/                      # 单元测试 (Middleware, Task)
-│   │   └── Integration/               # 集成测试 (Auth, Health)
-│   └── start.php                      # 服务入口
-├── admin/                             # 独立管理后台 (webman-admin v2 :8789)
-│   ├── public/web/src/
-│   │   ├── views/                     # 15 个 Vue 页面
-│   │   │   ├── dashboard/             # 仪表盘 (ECharts)
-│   │   │   ├── campaign/              # 广告计划
-│   │   │   ├── adgroup/               # 广告组
-│   │   │   ├── creative/              # 广告创意
-│   │   │   ├── report/                # 报表分析 + 导出
-│   │   │   ├── alert/                 # 告警规则 + 记录
-│   │   │   ├── notification/          # 通知中心
-│   │   │   ├── bid/                   # 自动出价规则
-│   │   │   └── system/                # 用户管理 + 审计日志
-│   │   ├── api/                       # 9 个 API 客户端
-│   │   ├── stores/                    # 4 个 Pinia Store
-│   │   └── components/                # 共享组件 (ListPageLayout 等)
-│   ├── app/                           # PHP 后端 (controller/middleware)
-│   └── config/                        # Admin 配置
+│   ├── support/                       # Утилитарные классы Erik Stack
+│   │   ├── ControllerTrait.php        # Общий trait контроллеров
+│   │   ├── JwtService.php             # Обёртка JWT
+│   │   ├── CacheService.php           # Сервис кэша Redis
+│   │   ├── ExceptionHandler.php       # Обработчик исключений API
+│   │   └── ApiResponse.php            # Единый формат ответа
+│   ├── config/                        # Глобальная конфигурация (DB/Redis/Log/Middleware)
+│   ├── tests/                         # Тесты PHPUnit (288 tests)
+│   │   ├── Unit/                      # Модульные тесты (Middleware, Task, Engines)
+│   │   └── Integration/               # Интеграционные тесты (Auth, Health, API)
+│   └── start.php                      # Точка входа сервиса
+├── admin/                             # Отдельная админ-панель (webman-admin v2 :8789)
+│   ├── public/web/
+│   │   ├── public/pet.svg             # Талисман проекта «阿鸮», favicon + страница входа
+│   │   ├── src/
+│   │   │   ├── views/                 # 21 страница Vue
+│   │   │   │   ├── dashboard/         # Дашборд (ECharts)
+│   │   │   │   ├── campaign/          # Рекламные кампании
+│   │   │   │   ├── adgroup/           # Группы объявлений
+│   │   │   │   ├── creative/          # Креативы
+│   │   │   │   ├── account/           # Управление аккаунтами + привязка
+│   │   │   │   ├── asset/             # Библиотека материалов
+│   │   │   │   ├── report/            # Аналитика отчётов + экспорт + атрибуция + календарь кампаний
+│   │   │   │   ├── alert/             # Правила оповещений + записи
+│   │   │   │   ├── notification/      # Центр уведомлений
+│   │   │   │   ├── sync/              # Состояние синхронизации
+│   │   │   │   ├── bid/               # Правила автобеттинга
+│   │   │   │   ├── cdn/               # CDN-провайдеры
+│   │   │   │   ├── login/             # Страница входа (阿鸮)
+│   │   │   │   └── system/            # Управление пользователями + журнал аудита + системная информация
+│   │   │   ├── api/                   # 15 API-клиентов
+│   │   │   ├── stores/                # 5 Pinia Store
+│   │   │   └── components/            # Общие компоненты (ListPageLayout и др., 8 шт.)
+│   │   └── dist/                      # Артефакты сборки (не в репозитории, собирается в CI)
+│   ├── app/                           # PHP-бэкенд (controller/middleware)
+│   └── config/                        # Конфигурация Admin
 ├── apps/
 │   ├── flutter/                       # Flutter Desktop App
 │   │   └── lib/
-│   │       ├── features/              # 12 个功能页面 + Shell 布局
-│   │       ├── config/menu_config.dart # 两级菜单配置
-│   │       ├── router.dart            # GoRouter (ShellRoute + 路由守卫)
+│   │       ├── features/              # 12 функциональных страниц + Shell-макет
+│   │       ├── config/menu_config.dart # Конфигурация двухуровневого меню
+│   │       ├── router.dart            # GoRouter (ShellRoute + guard-маршруты)
 │   │       └── stores/                # Riverpod Auth Provider
-│   └── harmonyos/                     # HarmonyOS (API Client 就绪)
-├── docker/                            # Docker & Nginx 配置
-├── .github/workflows/                 # CI (语法→测试→TS→Docker) + CD (构建推送)
-├── docs/                              # 设计文档、实施计划、Skills
+│   └── harmonyos/                     # HarmonyOS (API Client готов)
+├── docker/                            # Конфигурация Docker & Nginx
+├── .github/workflows/                 # CI (синтаксис→тесты→TS→Docker) + CD (сборка-публикация)
+├── docs/                              # Проектные документы, планы внедрения, Skills
+│   ├── architecture.md                # Архитектура (диаграммы архитектуры/потока запросов/безопасности)
+│   ├── features.md                    # Функциональный дизайн (21 модуль, схема функциональных модулей)
+│   ├── usage.md                       # Руководство по использованию (диаграмма жизненного цикла данных)
+│   ├── diagrams/svg/                  # 5 наборов диаграмм × 13 языков + pet.svg (талисман проекта)
+│   └── skills/                        # 143 переиспользуемых навыка проекта
 ├── docker-compose.yml
 ├── Dockerfile / Dockerfile.admin / Dockerfile.admin-php
 └── Makefile

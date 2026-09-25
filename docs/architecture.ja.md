@@ -10,6 +10,8 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 マルチプラットフォーム広告管理システム。**29 の広告プラットフォーム**に連携し、配信管理、クロスプラットフォームレポート、アラート監視、自動入札、オーディエンスターゲティングをカバー。SaaS マルチテナント、代理運用、自社利用の 3 モードに対応。
 
+![システムアーキテクチャ図](diagrams/svg/architecture.ja.svg)
+
 ---
 
 ## 2. デプロイアーキテクチャ
@@ -49,6 +51,8 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 ---
 
 ## 3. リクエスト処理パイプライン
+
+![リクエストフロー図](diagrams/svg/request-flow.ja.svg)
 
 ### 3.1 Service 側 (15 層ミドルウェア)
 
@@ -106,9 +110,9 @@ ads-php/
 │   │   └── ExceptionHandler.php           # JSON 例外レンダリング
 │   ├── plugin/
 │   │   ├── ads-api/                       # REST API 層
-│   │   │   ├── controller/v1/             # 14 コントローラー
-│   │   │   ├── middleware/                # 7 ミドルウェア
-│   │   │   ├── config/route.php           # 45+ ルート
+│   │   │   ├── controller/v1/             # 21 コントローラー (admin/ サブディレクトリ含む)
+│   │   │   ├── middleware/                # 15 ミドルウェア
+│   │   │   ├── config/route.php           # 76 ルート
 │   │   ├── ads-platform/                  # プラットフォームアダプターコア
 │   │   │   ├── adapter/                   # 29 プラットフォームアダプター
 │   │   │   ├── src/                       # AdapterRegistry, CampaignData
@@ -116,11 +120,13 @@ ads-php/
 │   │   │   ├── service/                   # BidEngine
 │   │   │   └── migration/                # SQL DDL + パフォーマンスインデックス
 │   │   ├── ads-account/                   # OAuth アカウント + プラットフォームアカウント
-│   │   ├── ads-task/                      # 5 の cron タスク
+│   │   ├── ads-task/                      # 6 つの cron タスク
 │   │   ├── ads-alert/                     # アラートエンジン + 通知
 │   │   ├── ads-report/                    # レポートエンジン (CSV/Excel/PDF)
 │   │   ├── ads-tenant/                    # マルチテナント
 │   │   └── ads-storage/                   # ストレージ抽象化 (local/OSS/COS/S3) + CDN プロバイダー
+│   ├── public/                            # 静的リソース (webman 内蔵静的処理)
+│   │   └── img/pet.svg                    # プロジェクトマスコット「阿鸮」、/docs ページで表示
 │   ├── tests/                             # PHPUnit
 │   │   ├── Unit/Middleware/               # ミドルウェアテスト
 │   │   ├── Unit/Task/                     # タスクテスト (計画)
@@ -133,10 +139,11 @@ ads-php/
 │   │   ├── service/                       # AuditService, ServiceProxy
 │   │   └── support/                       # HashidsService
 │   ├── public/web/                        # Vue 3 + TS SPA
-│   │   └── src/
-│   │       ├── views/                     # 14 ページ (dashboard/campaign/adgroup/creative/report/alert/notification/bid/system)
-│   │       ├── api/                       # 9 の API クライアント
-│   │       ├── stores/                    # 4 の Pinia Store
+│   │   ├── public/pet.svg                 # プロジェクトマスコット「阿鸮」、favicon + ログインページ
+│   │   ├── src/
+│   │       ├── views/                     # 21 ページ (dashboard/campaign/adgroup/creative/account/asset/report/alert/notification/sync/bid/cdn/login/system)
+│   │       ├── api/                       # 15 の API クライアント
+│   │       ├── stores/                    # 5 つの Pinia Store
 │   │       └── components/                # ListPageLayout などの共有コンポーネント
 │   └── config/                            # Admin 設定
 ├── apps/
@@ -150,7 +157,7 @@ ads-php/
 │   └── harmonyos/                         # HarmonyOS (API Client 準備完了)
 ├── docker/                                # Nginx 設定 + Dockerfiles
 ├── .github/workflows/                     # CI (構文→テスト→TS→Docker) + CD (ビルド・プッシュ)
-└── docs/                                  # 設計ドキュメント
+└── docs/                                  # 設計ドキュメント + diagrams/svg/ 図表 ×13 言語 + pet.svg マスコット
 ```
 
 ---
@@ -185,6 +192,8 @@ ads-php/
 ---
 
 ## 6. セキュリティアーキテクチャ
+
+![セキュリティアーキテクチャ図](diagrams/svg/security.ja.svg)
 
 ### 6.1 防御レイヤー
 

@@ -88,6 +88,8 @@ Die Synchronisierung wird von 6 geplanten Aufgaben gesteuert (prozessintern übe
 
 Die Aufgabenkonfiguration liegt in `service/plugin/ads-task/config/cron.php`; Frequenzen sind dort änderbar. Der Synchronisierungsstatus ist auf der Seite „Datensynchronisierung" sichtbar; Ein-/Ausschalter pro Konto in „Kontoverwaltung".
 
+![Datenlebenszyklus-Diagramm](diagrams/svg/data-lifecycle.de.svg)
+
 ---
 
 ## 5. Berichtsanalyse

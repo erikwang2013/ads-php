@@ -88,6 +88,8 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 توجد تهيئة المهام في `service/plugin/ads-task/config/cron.php`؛ ويمكن تعديل التكرارات هناك. تظهر حالة المزامنة في صفحة « مزامنة البيانات »؛ ومفاتيح التشغيل لكل حساب في « إدارة الحسابات ».
 
+![مخطط دورة حياة البيانات](diagrams/svg/data-lifecycle.ar.svg)
+
 ---
 
 ## 5. تحليل التقارير

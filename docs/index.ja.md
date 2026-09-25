@@ -11,12 +11,14 @@ docs/
 ├── usage.md                                # 使用说明文档 (安装后使用流程)
 ├── versions.md                             # 3 バージョン比較
 ├── apidoc-header.md                        # hg/apidoc 共通仕様ヘッダー
-├── diagrams/                               # Mermaid 可視化チャート (5 個)
+├── diagrams/                               # Mermaid 可視化チャート (5 個) + プロジェクトペット
 │   ├── architecture.md                     #   システムアーキテクチャ図 (C4 コンテナレベルトポロジ)
 │   ├── request-flow.md                     #   リクエストフロー図 (15+10 層ミドルウェアパイプライン)
 │   ├── functional-modules.md               #   機能モジュール図 (21 モジュール依存関係+データフロー)
 │   ├── data-lifecycle.md                   #   データライフサイクル図 (6 段階+ガントチャート+キャッシュ状態遷移図)
-│   └── security.md                         #   セキュリティアーキテクチャ図
+│   ├── security.md                         #   セキュリティアーキテクチャ図
+│   └── svg/                                #   レンダリング成果物: <name>.svg + 12 言語 <name>.<lang>.svg
+│       └── pet.svg                         #   プロジェクトペット「阿鸮」(テキストなし、全言語共通)
 ├── skills/                                 # 再利用可能なプロジェクトスキル (11 個)
 │   ├── adapter-generator.md                # プラットフォームアダプターテンプレート生成
 │   ├── admin-page-generator.md             # Vue3 管理バックエンドページ生成

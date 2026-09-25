@@ -16,6 +16,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 - **মাল্টি-এন্ড অ্যাক্সেস** — ওয়েব অ্যাডমিন (Vue 3), Flutter PC/Mobile, HarmonyOS
 - **স্থিতিশীলতা ও নির্ভরযোগ্যতা** — প্ল্যাটফর্ম কল সার্কিট ব্রেকার/ডিগ্রেডেশন/টাইমআউট, 3-স্তর ক্যাশ, উচ্চ সমবর্তী অপ্টিমাইজেশন, 22টি নিরাপত্তা সুরক্ষা
 - **আন্তর্জাতিককরণ** — 12 ভাষায় ডকুমেন্টেশন, দ্বিভাষিক UI (ZH/EN)
+- **প্রজেক্ট মাসকট** — পেঁচা「阿鸮」, 24 ঘন্টা 29টি প্ল্যাটফর্ম পাহারা দেয় ([pet.svg](docs/diagrams/svg/pet.svg))
 
 > আর্কিটেকচার ডিজাইন → [docs/architecture.bn.md](docs/architecture.bn.md)  
 > ফিচার মডিউল → [docs/features.bn.md](docs/features.bn.md)  
@@ -63,15 +64,34 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 ---
 
+## প্রজেক্ট মাসকট「阿鸮」
+
+<p align="center"><img src="docs/diagrams/svg/pet.svg" width="160" alt="প্রকল্প মাসকট 阿鸮"></p>
+
+**阿鸮** (xiāo, «পেঁচা») এই প্রকল্পের মাসকট: একটি পেঁচা। সে দিনে ঘুমায়, রাতে জেগে থাকে — সারা রাত প্রতিটি প্ল্যাটফর্মের দিকে চোখ রাখে, ঠিক যা এই সিস্টেম করে।
+
+| রূপ | তাৎপর্য | সংশ্লিষ্ট বাস্তবায়ন |
+|------|------|---------|
+| দুই চোখ সামনের দিকে | একসাথে একাধিক এন্ডে নজর | Vue Admin / Flutter / HarmonyOS তিন এন্ডে একটিই API |
+| চোখের পলক অ্যানিমেশন | পর্যায়ক্রমিক পোলিং | 6টি নির্ধারিত টাস্ক (3/5/10/10/15/55 মিনিট) চক্রাকারে ডেটা সংগ্রহ |
+| মাথার পিছনে রাডার রিং | নিরবচ্ছিন্ন স্ক্যানে অস্বাভাবিকতা শনাক্ত | অ্যালার্ট ইঞ্জিন ইভ্যালুয়েশন + বাজেট সতর্কতার তিন-স্তরের থ্রেশহোল্ড |
+| রাতের পাহারা | নীরব প্রহরা, সমস্যা হলেই ডাকে | 22টি সুরক্ষা নীরবে চলে, ট্রিগার হলেই নোটিফিকেশন পুশ |
+
+阿鸮 কোডে একীভূত হয়েছে: অ্যাডমিন প্যানেলের **লগইন পেজ** ও **favicon**, Service এন্ডের **`/docs` API ডকুমেন্টেশন পেজ**, এবং সব ডকুমেন্টেশন পেজ।
+
+> SVG সোর্স [docs/diagrams/svg/pet.svg](docs/diagrams/svg/pet.svg) (টেক্সট নেই, 13 ভাষার ডকুমেন্টেশন একই ফাইল শেয়ার করে; SMIL চোখের পলক অ্যানিমেশন সহ)
+
+---
+
 ## টেক স্ট্যাক
 
 | স্তর | প্রযুক্তি | বিবরণ |
 |----|------|------|
-| সার্ভার | webman v2 + PHP 8.2+ | 8টি প্লাগইন, 75+ API এন্ডপয়েন্ট |
+| সার্ভার | webman v2 + PHP 8.2+ | 8টি প্লাগইন, 76 API এন্ডপয়েন্ট |
 | ডেটাবেস | MySQL 8.0 | 29টি টেবিল, ads_ প্রিফিক্স, Snowflake BIGINT প্রাইমারি কী |
 | ক্যাশ | Redis 7 | থ্রি-লেভেল ক্যাশ (L1 মেমরি/L2 APCu/L3 Redis)、রেট লিমিট কাউন্টার、Pub/Sub、মেসেজ কিউ |
 | সার্চ | Elasticsearch | webman-scout অটো ইনডেক্স সিঙ্ক (কনফিগারড) |
-| অ্যাডমিন প্যানেল | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP ব্যাকএন্ড (পোর্ট 8789)、SPA সরাসরি বিজনেস API (পোর্ট 8788) সংযোগ, 19টি পেজ, ECharts ভিজুয়ালাইজেশন |
+| অ্যাডমিন প্যানেল | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP ব্যাকএন্ড (পোর্ট 8789)、SPA সরাসরি বিজনেস API (পোর্ট 8788) সংযোগ, 21টি পেজ, ECharts ভিজুয়ালাইজেশন |
 | Flutter | Dart 3 + Riverpod + GoRouter + fl_chart | PC/Mobile রেসপনসিভ, Desktop Shell লেআউট, 12টি পেজ |
 | HarmonyOS | ArkTS + ArkUI | 6টি পেজ বাস্তবায়িত, HTTP ক্লায়েন্ট প্রস্তুত |
 | ডিপ্লয়মেন্ট | Docker + Nginx + GHCR | Docker Compose ওয়ান-ক্লিক স্টার্ট, GitHub Actions অটো বিল্ড ও পুশ |
@@ -272,64 +292,79 @@ cd admin/public/web && npx vue-tsc --noEmit   # 零错误
 
 ```
 ads-php/
-├── service/                           # 用户端业务服务 (webman v2 :8788)
+├── service/                           # ইউজার-সাইড বিজনেস সার্ভিস (webman v2 :8788)
 │   ├── plugin/
-│   │   ├── ads-api/                   # REST API (61 端点，版本路由)
-│   │   │   ├── controller/v1/         # 17 个控制器
-│   │   │   ├── middleware/            # 15 个中间件
-│   │   │   ├── config/route.php       # 路由定义
-│   │   ├── ads-platform/              # 平台适配器核心
-│   │   │   ├── adapter/               # 29 个平台适配器
+│   │   ├── ads-api/                   # REST API (76 এন্ডপয়েন্ট, ভার্সনড রুট /api/v1)
+│   │   │   ├── controller/v1/         # 21টি কন্ট্রোলার (admin/ সাবডিরেক্টরি সহ)
+│   │   │   ├── middleware/            # 15টি মিডলওয়্যার
+│   │   │   ├── config/route.php       # রুট ডেফিনিশন
+│   │   ├── ads-platform/              # প্ল্যাটফর্ম অ্যাডাপ্টার কোর
+│   │   │   ├── adapter/               # 29টি প্ল্যাটফর্ম অ্যাডাপ্টার
 │   │   │   ├── src/                   # AdapterRegistry, CampaignData
 │   │   │   ├── model/                 # BidRule, BidLog, TargetingTemplate
 │   │   │   ├── service/               # BidEngine, ReportBuilder
-│   │   │   └── migration/             # SQL 迁移 + 性能索引
-│   │   ├── ads-account/               # OAuth 账户管理
-│   │   ├── ads-task/                  # 定时任务调度 (6 cron)
-│   │   ├── ads-alert/                 # 告警监控引擎 + 预算预警
-│   │   ├── ads-report/                # 报表引擎 (CSV/Excel/PDF) + 归因引擎 + 投放日历
-│   │   ├── ads-tenant/                # 多租户管理
-│   │   └── ads-storage/               # 存储抽象层 (local/OSS/COS/S3) + CDN 服务商
-│   ├── scripts/backfill-assets.php    # 存量素材回填对象存储
-│   ├── support/                       # Erik Stack 工具类
-│   │   ├── ControllerTrait.php        # 控制器公共 trait
-│   │   ├── JwtService.php             # JWT 包装类
-│   │   ├── CacheService.php           # Redis 缓存服务
-│   │   ├── ExceptionHandler.php       # API 异常处理器
-│   │   └── ApiResponse.php            # 统一响应格式
-│   ├── config/                        # 全局配置 (DB/Redis/Log/Middleware)
-│   ├── tests/                         # PHPUnit 测试 (288 tests)
-│   │   ├── Unit/                      # 单元测试 (Middleware, Task)
-│   │   └── Integration/               # 集成测试 (Auth, Health)
-│   └── start.php                      # 服务入口
-├── admin/                             # 独立管理后台 (webman-admin v2 :8789)
-│   ├── public/web/src/
-│   │   ├── views/                     # 15 个 Vue 页面
-│   │   │   ├── dashboard/             # 仪表盘 (ECharts)
-│   │   │   ├── campaign/              # 广告计划
-│   │   │   ├── adgroup/               # 广告组
-│   │   │   ├── creative/              # 广告创意
-│   │   │   ├── report/                # 报表分析 + 导出
-│   │   │   ├── alert/                 # 告警规则 + 记录
-│   │   │   ├── notification/          # 通知中心
-│   │   │   ├── bid/                   # 自动出价规则
-│   │   │   └── system/                # 用户管理 + 审计日志
-│   │   ├── api/                       # 9 个 API 客户端
-│   │   ├── stores/                    # 4 个 Pinia Store
-│   │   └── components/                # 共享组件 (ListPageLayout 等)
-│   ├── app/                           # PHP 后端 (controller/middleware)
-│   └── config/                        # Admin 配置
+│   │   │   └── migration/             # SQL মাইগ্রেশন + পারফরম্যান্স ইনডেক্স
+│   │   ├── ads-account/               # OAuth অ্যাকাউন্ট ম্যানেজমেন্ট
+│   │   ├── ads-task/                  # শিডিউলড টাস্ক (6 cron)
+│   │   ├── ads-alert/                 # অ্যালার্ট মনিটরিং ইঞ্জিন + বাজেট সতর্কতা
+│   │   ├── ads-report/                # রিপোর্ট ইঞ্জিন (CSV/Excel/PDF) + অ্যাট্রিবিউশন ইঞ্জিন + ক্যাম্পেইন ক্যালেন্ডার
+│   │   ├── ads-tenant/                # মাল্টি-টেন্যান্ট ম্যানেজমেন্ট
+│   │   └── ads-storage/               # স্টোরেজ অ্যাবস্ট্রাকশন লেয়ার (local/OSS/COS/S3) + CDN প্রোভাইডার
+│   ├── public/                        # স্ট্যাটিক রিসোর্স (webman বিল্ট-ইন স্ট্যাটিক হ্যান্ডলিং)
+│   │   └── img/pet.svg                # প্রজেক্ট মাসকট「阿鸮」, /docs পেজে প্রদর্শিত
+│   ├── scripts/backfill-assets.php    # বিদ্যমান অ্যাসেট অবজেক্ট স্টোরেজে ব্যাকফিল
+│   ├── support/                       # Erik Stack ইউটিলিটি ক্লাস
+│   │   ├── ControllerTrait.php        # কন্ট্রোলারের কমন trait
+│   │   ├── JwtService.php             # JWT র‍্যাপার ক্লাস
+│   │   ├── CacheService.php           # Redis ক্যাশ সার্ভিস
+│   │   ├── ExceptionHandler.php       # API এক্সেপশন হ্যান্ডলার
+│   │   └── ApiResponse.php            # ইউনিফাইড রেসপন্স ফরম্যাট
+│   ├── config/                        # গ্লোবাল কনফিগ (DB/Redis/Log/Middleware)
+│   ├── tests/                         # PHPUnit টেস্ট (288 tests)
+│   │   ├── Unit/                      # ইউনিট টেস্ট (Middleware, Task, Engines)
+│   │   └── Integration/               # ইন্টিগ্রেশন টেস্ট (Auth, Health, API)
+│   └── start.php                      # সার্ভিস এন্ট্রি
+├── admin/                             # আলাদা অ্যাডমিন প্যানেল (webman-admin v2 :8789)
+│   ├── public/web/
+│   │   ├── public/pet.svg             # প্রজেক্ট মাসকট「阿鸮」, favicon + লগইন পেজ
+│   │   ├── src/
+│   │   │   ├── views/                 # 21টি Vue পেজ
+│   │   │   │   ├── dashboard/         # ড্যাশবোর্ড (ECharts)
+│   │   │   │   ├── campaign/          # বিজ্ঞাপন প্ল্যান
+│   │   │   │   ├── adgroup/           # অ্যাড গ্রুপ
+│   │   │   │   ├── creative/          # বিজ্ঞাপন ক্রিয়েটিভ
+│   │   │   │   ├── account/           # অ্যাকাউন্ট ম্যানেজমেন্ট + বাইন্ডিং
+│   │   │   │   ├── asset/             # অ্যাসেট লাইব্রেরি
+│   │   │   │   ├── report/            # রিপোর্ট অ্যানালাইসিস + রপ্তানি + অ্যাট্রিবিউশন + ক্যাম্পেইন ক্যালেন্ডার
+│   │   │   │   ├── alert/             # অ্যালার্ট রুল + রেকর্ড
+│   │   │   │   ├── notification/      # নোটিফিকেশন সেন্টার
+│   │   │   │   ├── sync/              # সিঙ্ক স্ট্যাটাস
+│   │   │   │   ├── bid/               # অটো বিডিং রুল
+│   │   │   │   ├── cdn/               # CDN প্রোভাইডার
+│   │   │   │   ├── login/             # লগইন পেজ (阿鸮)
+│   │   │   │   └── system/            # ইউজার ম্যানেজমেন্ট + অডিট লগ + সিস্টেম ইনফো
+│   │   │   ├── api/                   # 15টি API ক্লায়েন্ট
+│   │   │   ├── stores/                # 5টি Pinia Store
+│   │   │   └── components/            # শেয়ার্ড কম্পোনেন্ট (ListPageLayout সহ 8টি)
+│   │   └── dist/                      # বিল্ড আউটপুট (কমিট হয় না, CI বিল্ড করে)
+│   ├── app/                           # PHP ব্যাকএন্ড (controller/middleware)
+│   └── config/                        # Admin কনফিগ
 ├── apps/
 │   ├── flutter/                       # Flutter Desktop App
 │   │   └── lib/
-│   │       ├── features/              # 12 个功能页面 + Shell 布局
-│   │       ├── config/menu_config.dart # 两级菜单配置
-│   │       ├── router.dart            # GoRouter (ShellRoute + 路由守卫)
+│   │       ├── features/              # 12টি ফিচার পেজ + Shell লেআউট
+│   │       ├── config/menu_config.dart # দুই-স্তরের মেনু কনফিগ
+│   │       ├── router.dart            # GoRouter (ShellRoute + রুট গার্ড)
 │   │       └── stores/                # Riverpod Auth Provider
-│   └── harmonyos/                     # HarmonyOS (API Client 就绪)
-├── docker/                            # Docker & Nginx 配置
-├── .github/workflows/                 # CI (语法→测试→TS→Docker) + CD (构建推送)
-├── docs/                              # 设计文档、实施计划、Skills
+│   └── harmonyos/                     # HarmonyOS (API Client প্রস্তুত)
+├── docker/                            # Docker ও Nginx কনফিগ
+├── .github/workflows/                 # CI (সিনট্যাক্স→টেস্ট→TS→Docker) + CD (বিল্ড ও পুশ)
+├── docs/                              # ডিজাইন ডকুমেন্ট, ইমপ্লিমেন্টেশন প্ল্যান, Skills
+│   ├── architecture.md                # আর্কিটেকচার ডিজাইন (আর্কিটেকচার ডায়াগ্রাম/রিকোয়েস্ট ফ্লো ডায়াগ্রাম/সিকিউরিটি আর্কিটেকচার ডায়াগ্রাম সহ)
+│   ├── features.md                    # ফিচার ডিজাইন (21টি মডিউল, ফাংশনাল মডিউল ডায়াগ্রাম সহ)
+│   ├── usage.md                       # ব্যবহার নির্দেশিকা (ডেটা লাইফসাইকেল ডায়াগ্রাম সহ)
+│   ├── diagrams/svg/                  # 5 ধরনের ডায়াগ্রাম × 13 ভাষা + pet.svg প্রজেক্ট মাসকট
+│   └── skills/                        # 143টি পুনঃব্যবহারযোগ্য প্রজেক্ট স্কিল
 ├── docker-compose.yml
 ├── Dockerfile / Dockerfile.admin / Dockerfile.admin-php
 └── Makefile

@@ -88,6 +88,8 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 任务配置位于 `service/plugin/ads-task/config/cron.php`，可修改频率。同步状态可在「数据同步」页面查看，账户级启停开关在「账户管理」。
 
+![数据生命周期图](diagrams/svg/data-lifecycle.svg)
+
 ---
 
 ## 5. 报表分析

@@ -88,6 +88,8 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 작업 구성은 `service/plugin/ads-task/config/cron.php`에 있으며 빈도를 수정할 수 있습니다. 동기화 상태는 « 데이터 동기화 » 페이지에서 확인할 수 있고, 계정별 ON/OFF 스위치는 « 계정 관리 »에 있습니다.
 
+![데이터 수명주기 다이어그램](diagrams/svg/data-lifecycle.ko.svg)
+
 ---
 
 ## 5. 보고서 분석

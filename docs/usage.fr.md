@@ -88,6 +88,8 @@ La synchronisation est pilotée par 6 tâches planifiées (planifiées dans le p
 
 La configuration des tâches se trouve dans `service/plugin/ads-task/config/cron.php` ; les fréquences sont modifiables. L'état de synchronisation est visible sur la page « Synchronisation des données » ; les interrupteurs par compte se trouvent dans « Gestion des comptes ».
 
+![Schéma du cycle de vie des données](diagrams/svg/data-lifecycle.fr.svg)
+
 ---
 
 ## 5. Analyse des rapports

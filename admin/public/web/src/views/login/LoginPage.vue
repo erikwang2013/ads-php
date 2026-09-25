@@ -1,6 +1,7 @@
 <template>
   <div class="login-container">
     <div class="login-card">
+      <img class="pet" src="/pet.svg" alt="阿鸮" />
       <h2>广告管理系统</h2>
       <el-form ref="formRef" :model="form" :rules="rules" size="large">
         <el-form-item prop="username">
@@ -77,5 +78,6 @@ function onCaptchaVerified(data: {token: string, offset: number}) {
   background: #f0f2f5;
 }
 .login-card { width: 400px; padding: 40px; background: #fff; border-radius: 8px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
+.pet { display: block; width: 96px; height: 96px; margin: 0 auto 4px; }
 .login-card h2 { text-align: center; margin-bottom: 30px; color: #303133; }
 </style>
