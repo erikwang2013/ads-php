@@ -14,7 +14,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 |------|------|---------|
 | 八条触手 | 六个插件各司其职、并行不悖 | ads-account / ads-api / ads-platform / ads-storage / ads-task / ads-tenant |
 | 触手吸盘 | 数据一路吸附汇总 | 29 家平台 → 统一 `/api/v1` |
-| 双目前视 | 多端同时盯屏 | Vue Admin / Flutter / HarmonyOS 三端共用一套 API |
+| 双目前视 | 单端聚焦 | Vue 3 管理后台统一查看 |
 | 眨眼 + 起伏 | 周期性轮询与守护 | 4 个定时任务（3/5/10/55 分钟）循环采集；22 项防护静默运行 |
 | 外环 29 个节点 | 29 个平台常驻在线 | 16 国内 + 13 国际，逐个盯住 |
 
@@ -56,7 +56,7 @@ SVG / PNG）**不是开源资产**，版权归作者所有。未经书面许可�
 - **数据概览** — 仪表盘跨平台指标汇总
 - **素材库** — 图片/视频素材管理、画廊预览
 - **素材存储** — 本地/阿里云 OSS/腾讯云 COS/S3 兼容多驱动（环境变量配置）
-- **多端访问** — Web 管理后台 (Vue 3)、Flutter PC/Mobile、HarmonyOS
+- **管理后台** — Vue 3 + TypeScript + Element Plus
 - **稳定可靠** — 平台调用熔断/降级/超时、三级缓存、高并发优化、22 项安全防护
 - **国际化** — 界面中英双语
 - **项目宠物** — 章鱼「阿章」，八爪并行，24 小时值守 29 个平台（[pet.svg](assets/diagrams/pet.svg)）
@@ -113,8 +113,6 @@ SVG / PNG）**不是开源资产**，版权归作者所有。未经书面许可�
 | 数据库 | MySQL 8.0 | 19 张表，ads_ 前缀，Snowflake BIGINT 主键 |
 | 缓存 | Redis 7 | 三级缓存 (L1内存/L2 APCu/L3 Redis)、限流计数、Pub/Sub |
 | 管理后台 | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP 后端(端口 8789)，SPA 直连业务 API(端口 8788)，9 页面，ECharts 可视化 |
-| Flutter | Dart 3 + Riverpod + GoRouter + fl_chart | PC/Mobile 响应式，Desktop Shell 布局，3 页面 |
-| HarmonyOS | ArkTS + ArkUI | 3 个页面已实现，HTTP 客户端已就绪 |
 | 部署 | Docker + Nginx + GHCR | Docker Compose 一键启动，GitHub Actions 自动构建推送 |
 
 ## 架构图
@@ -163,8 +161,6 @@ SVG / PNG）**不是开源资产**，版权归作者所有。未经书面许可�
 |----|------|---------|
 | Admin | vue-i18n v9 | TopBar 语言下拉菜单，localStorage 持久化 |
 | Service API | `erik\support\I18n` | Accept-Language 请求头 / `?lang=` 参数 |
-| Flutter | AppLocalizations + Delegate | 系统语言自动检测 |
-| HarmonyOS | StringResources | `setLang()` 切换 |
 
 ## 安全
 
@@ -288,12 +284,6 @@ cd service && composer install && php start.php start
 # 管理后台 (端口 5173)
 cd admin/public/web && npm install && npm run dev
 
-# Flutter App
-cd apps/flutter && flutter run -d chrome  # Web PC
-# HarmonyOS App
-# 使用 DevEco Studio 打开 apps/harmonyos 目录
-cd apps/flutter && flutter run -d android # Mobile
-
 # TypeScript 检查
 cd admin/public/web && npx vue-tsc --noEmit   # 零错误
 ```
@@ -349,14 +339,6 @@ ads-php/
 │   │   └── dist/                      # 构建产物 (不入库，CI 构建)
 │   ├── app/                           # PHP 后端 (controller/middleware)
 │   └── config/                        # Admin 配置
-├── apps/
-│   ├── flutter/                       # Flutter Desktop App
-│   │   └── lib/
-│   │       ├── features/              # 3 个功能页面 + Shell 布局
-│   │       ├── config/menu_config.dart # 两级菜单配置
-│   │       ├── router.dart            # GoRouter (ShellRoute + 路由守卫)
-│   │       └── stores/                # Riverpod Auth Provider
-│   └── harmonyos/                     # HarmonyOS (API Client 就绪)
 ├── docker/                            # Docker & Nginx 配置
 ├── .github/workflows/                 # CI (语法→测试→TS→Docker) + CD (构建推送)
 ├── assets/                            # 公开视觉资产（版权归属见 ASSETS-LICENSE.md）
@@ -411,9 +393,6 @@ cd service && ./vendor/bin/phpunit
 ```bash
 # TypeScript 检查
 cd admin/public/web && npx vue-tsc --noEmit   # 零错误
-
-# Dart 分析
-cd apps/flutter && dart analyze   # 零错误
 ```
 
 ## CI/CD
