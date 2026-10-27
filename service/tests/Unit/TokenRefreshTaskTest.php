@@ -52,7 +52,7 @@ class TokenRefreshTaskTest extends SqliteTestCase
         AdapterRegistry::register($this->adapter);
 
         $this->exec('CREATE TABLE ads_platform_accounts (
-            id INTEGER PRIMARY KEY AUTOINCREMENT, tenant_id INT, platform TEXT, account_name TEXT,
+            id INTEGER PRIMARY KEY AUTOINCREMENT, platform TEXT, account_name TEXT,
             account_id_on_platform TEXT, access_token TEXT, refresh_token TEXT, status INT,
             token_expires_at TEXT, last_sync_at TEXT, sync_enabled INT, created_at TEXT, updated_at TEXT)');
     }
@@ -68,8 +68,7 @@ class TokenRefreshTaskTest extends SqliteTestCase
 
     private function seedAccount(array $overrides = []): PlatformAccount
     {
-        $account = new PlatformAccount(array_merge([
-            'tenant_id' => 1, 'platform' => 'spyrefresh', 'account_name' => 'acc',
+        $account = new PlatformAccount(array_merge([ 'platform' => 'spyrefresh', 'account_name' => 'acc',
             'account_id_on_platform' => 'adv-1', 'access_token' => 'old', 'refresh_token' => 'rt-old',
             'status' => 1, 'token_expires_at' => Carbon::now()->subHour(), // 已过期
         ], $overrides));

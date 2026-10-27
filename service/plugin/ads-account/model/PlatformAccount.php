@@ -26,11 +26,6 @@ class PlatformAccount extends Model
         'refresh_token' => Encryptable::class,
     ];
 
-    public function tenant()
-    {
-        return $this->belongsTo(\plugin\ads_tenant\model\Tenant::class, 'tenant_id');
-    }
-
     public function isTokenExpired(): bool
     {
         if (!$this->token_expires_at) return false;

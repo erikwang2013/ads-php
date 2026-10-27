@@ -7,7 +7,7 @@
  * 请求流：Request → CORS → SecurityHeaders → AttackGuard → ClientPlatform → RateLimit → SQLGuard → Validation → ResponseTime → Encryption → Controller
  *
  * 每个中间件职责：
- *   CorsMiddleware            — 跨域请求处理，支持 X-Tenant-Id / X-Encrypted 自定义头
+ *   CorsMiddleware            — 跨域请求处理，支持 X-Encrypted 自定义头
  *   SecurityHeadersMiddleware — 安全响应头（X-Frame-Options, X-Content-Type-Options, HSTS 等）
  *   AttackGuardMiddleware     — XSS/路径遍历/请求头注入/Body大小/Content-Type 检测拦截
  *   ClientPlatformMiddleware  — 操作来源端识别
@@ -19,7 +19,6 @@
  *
  * 以下中间件在路由层单独注册（非全局）：
  *   AuthMiddleware            — JWT Bearer Token 认证
- *   TenantIdentify            — 多租户解析（X-Tenant-Id 头 / Session）
  */
 
 return [

@@ -54,7 +54,6 @@
             "plugin\\ads_platform\\": "plugin/ads-platform/",
             "plugin\\ads_account\\": "plugin/ads-account/",
             "plugin\\ads_api\\": "plugin/ads-api/",
-            "plugin\\ads_tenant\\": "plugin/ads-tenant/",
             "plugin\\ads_task\\": "plugin/ads-task/",
             "plugin\\ads_storage\\": "plugin/ads-storage/"
         }

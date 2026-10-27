@@ -25,7 +25,6 @@ use plugin\ads_platform\src\ReportRequest;
 abstract class ApiTestCase extends TestCase
 {
     protected int $userId = 9999;
-    protected int $tenantId = 1;
 
     /** 被测试写入的业务表，setUp 时清空保证用例可重复 */
     protected const DIRTY_TABLES = [
@@ -41,21 +40,10 @@ abstract class ApiTestCase extends TestCase
         \app\support\ApiResponse::setLang('zh-CN');
 
         CacheService::flush('cache:');
-        $this->seedTenant();
         $this->registerMockAdapter();
         foreach (self::DIRTY_TABLES as $table) {
             DB::table($table)->delete();
         }
-    }
-
-    protected function seedTenant(): void
-    {
-        DB::table('ads_tenants')->updateOrInsert(['id' => $this->tenantId], [
-            'id'     => $this->tenantId,
-            'name'   => 'Test Tenant',
-            'plan'   => 'enterprise',
-            'status' => 1,
-        ]);
     }
 
     /** 注入 mock 适配器，隔离外部广告平台（juliang/google/... 均不可达） */
@@ -136,18 +124,17 @@ abstract class ApiTestCase extends TestCase
         return new Request("$method $path HTTP/1.1\r\n$raw\r\n$jsonBody");
     }
 
-    /** 已认证请求（userId/tenantId 由中间件在真实运行时注入，此处直接赋值） */
+    /** 已认证请求（userId 由中间件在真实运行时注入，此处直接赋值） */
     protected function authedRequest(string $method, string $path, array $body = [], array $headers = [], array $query = []): Request
     {
         $request = $this->makeRequest($method, $path, $body, $headers, $query);
         $request->userId = $this->userId;
-        $request->tenantId = $this->tenantId;
         return $request;
     }
 
     protected function token(array $payload = []): string
     {
-        return JwtService::encode(array_merge(['uid' => $this->userId, 'tid' => $this->tenantId], $payload));
+        return JwtService::encode(array_merge(['uid' => $this->userId], $payload));
     }
 
     protected function json(Response $response): array
@@ -184,7 +171,6 @@ abstract class ApiTestCase extends TestCase
         $id = $overrides['id'] ?? $this->nextId();
         DB::table('ads_campaigns')->insert(array_merge([
             'id'                   => $id,
-            'tenant_id'            => $this->tenantId,
             'platform_account_id'  => $this->seedAccount(),
             'platform'             => 'mock',
             'platform_campaign_id' => 'pc-seed-1',
@@ -205,7 +191,6 @@ abstract class ApiTestCase extends TestCase
         $id = $overrides['id'] ?? $this->nextId();
         DB::table('ads_platform_accounts')->insert(array_merge([
             'id'                     => $id,
-            'tenant_id'              => $this->tenantId,
             'platform'               => 'mock',
             'account_id_on_platform' => 'mock-acc-' . substr(bin2hex(random_bytes(4)), 0, 8),
             'account_name'           => 'Mock Account',

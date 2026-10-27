@@ -64,7 +64,6 @@ class AuthApiTest extends ApiTestCase
         $body = $this->assertSuccess((new AuthController())->me($request));
         $this->assertEquals($this->userId, $body['data']['id']);
         $this->assertEquals('testuser', $body['data']['username']);
-        $this->assertEquals($this->tenantId, $body['data']['tenant_id']);
     }
 
     public function testMeWithoutLogin(): void
@@ -133,11 +132,11 @@ class AuthApiTest extends ApiTestCase
 
         $seen = null;
         $response = $middleware->process($request, function (Request $r) use (&$seen) {
-            $seen = ['uid' => $r->userId, 'tid' => $r->tenantId];
+            $seen = ['uid' => $r->userId];
             return new Response(200);
         });
 
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals(['uid' => $this->userId, 'tid' => $this->tenantId], $seen);
+        $this->assertEquals(['uid' => $this->userId], $seen);
     }
 }

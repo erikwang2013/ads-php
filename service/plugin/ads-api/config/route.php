@@ -13,7 +13,6 @@ use plugin\ads_api\controller\v1\CampaignController;
 use plugin\ads_api\controller\v1\AssetController;
 use plugin\ads_api\controller\v1\DashboardController;
 use plugin\ads_api\controller\v1\SyncController;
-use plugin\ads_api\controller\v1\TenantController;
 
 // API 版本号固定在路由路径中：/api/v1/... → plugin\ads_api\controller\v1\*。
 // 新增版本时注册独立分组（如 /api/v2 → controller\v2\*）。
@@ -58,8 +57,4 @@ Webman\Route::group('/api/v1', function () {
     Webman\Route::get('/sync/status', [SyncController::class, 'status']);
     Webman\Route::get('/sync/errors', [SyncController::class, 'errors']);
 
-    // 转化数据采集 (Phase 10 Task 2)
-
-    // 多租户配额 (Phase 10 Task 4)
-    Webman\Route::get('/tenant/quota', [TenantController::class, 'quota']);
 })->middleware([AuthMiddleware::class]);

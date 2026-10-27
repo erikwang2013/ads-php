@@ -22,15 +22,13 @@ class DashboardController
      */
     public function summary(Request $request): \Webman\Http\Response
     {
-        $tenantId = $request->tenantId ?? 1;
         $dateStart = $request->get('date_start', date('Y-m-d'));
         $dateEnd   = $request->get('date_end', date('Y-m-d'));
 
-        $cacheKey = CacheService::dashboardKey($tenantId, $dateStart, $dateEnd);
+        $cacheKey = CacheService::dashboardKey($dateStart, $dateEnd);
 
-        $data = CacheService::remember($cacheKey, 300, function () use ($tenantId, $dateStart, $dateEnd) {
+        $data = CacheService::remember($cacheKey, 300, function () use ($dateStart, $dateEnd) {
             $overview = (array) DB::table('ads_report_metrics')
-                ->where('tenant_id', $tenantId)
                 ->whereBetween('date', [$dateStart, $dateEnd])
                 ->selectRaw('COALESCE(SUM(cost), 0) as total_cost')
                 ->selectRaw('COALESCE(SUM(impressions), 0) as total_impressions')
@@ -43,7 +41,6 @@ class DashboardController
                 ->first();
 
             $byPlatform = DB::table('ads_report_metrics')
-                ->where('tenant_id', $tenantId)
                 ->whereBetween('date', [$dateStart, $dateEnd])
                 ->groupBy('platform')
                 ->select('platform')
@@ -55,7 +52,6 @@ class DashboardController
                 ->get();
 
             $daily = DB::table('ads_report_metrics')
-                ->where('tenant_id', $tenantId)
                 ->whereBetween('date', [$dateStart, $dateEnd])
                 ->groupBy('date', 'platform')
                 ->orderBy('date')

@@ -25,11 +25,9 @@ class SyncController
      */
     public function status(Request $request): \Webman\Http\Response
     {
-        $tenantId = $request->tenantId ?? 1;
         $now = now();
 
         $accounts = DB::table('ads_platform_accounts')
-            ->where('tenant_id', $tenantId)
             ->where('sync_enabled', 1)
             ->orderBy('id')
             ->get(['id', 'account_name', 'platform', 'last_sync_at']);
@@ -96,17 +94,14 @@ class SyncController
      * @Url("/api/v1/sync/errors")
      * @Method("GET")
      *
-     * 分页返回 ads_sync_errors，join ads_platform_accounts 取 account_name，
-     * 并按账户 tenant_id 隔离。
+     * 分页返回 ads_sync_errors，join ads_platform_accounts 取 account_name。
      */
     public function errors(Request $request): \Webman\Http\Response
     {
-        $tenantId = $request->tenantId ?? 1;
         $this->allowedSorts = ['id', 'retry_count', 'next_retry_at', 'created_at'];
 
         $query = DB::table('ads_sync_errors')
             ->join('ads_platform_accounts as a', 'a.id', '=', 'ads_sync_errors.platform_account_id')
-            ->where('a.tenant_id', $tenantId)
             ->select(
                 'ads_sync_errors.id',
                 'ads_sync_errors.platform_account_id',

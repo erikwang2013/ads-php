@@ -36,7 +36,6 @@ class DataSyncTask
                             'platform_campaign_id' => $row['platform_campaign_id'],
                         ],
                         [
-                            'tenant_id'   => $account->tenant_id,
                             'platform'    => $account->platform,
                             'name'        => $row['name'] ?? '',
                             'daily_budget'=> $row['daily_budget'] ?? 0,
@@ -116,7 +115,6 @@ class DataSyncTask
 
                     DB::table('ads_report_metrics')->updateOrInsert(
                         [
-                            'tenant_id'           => $account->tenant_id,
                             'platform'            => $account->platform,
                             'platform_account_id' => $account->id,
                             'campaign_id'         => $campaignId,
@@ -177,7 +175,6 @@ class DataSyncTask
                     'platform_campaign_id' => $row['platform_campaign_id'],
                 ],
                 [
-                    'tenant_id'   => $account->tenant_id,
                     'platform'    => $account->platform,
                     'name'        => $row['name'] ?? '',
                     'daily_budget'=> $row['daily_budget'] ?? 0,
@@ -257,7 +254,6 @@ class DataSyncTask
 
             DB::table('ads_report_metrics')->updateOrInsert(
                 [
-                    'tenant_id'           => $account->tenant_id,
                     'platform'            => $account->platform,
                     'platform_account_id' => $account->id,
                     'campaign_id'         => $campaignId,

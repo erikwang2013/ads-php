@@ -60,7 +60,6 @@ class PlatformController
         $url = $adapter->buildAuthUrl($redirectUri, $state);
 
         AuthToken::create([
-            'tenant_id'   => $request->tenantId ?? 1,
             'platform'    => $code,
             'state'       => $state,
             'redirect_uri'=> $redirectUri,
@@ -84,7 +83,6 @@ class PlatformController
         try {
             $oauth = new OAuthService();
             $account = $oauth->handleCallback(
-                $request->tenantId ?? 1,
                 $code,
                 $state,
                 $authCode

@@ -22,12 +22,9 @@ class CampaignController
     public function index(Request $request): \Webman\Http\Response
     {
         $this->allowedSorts = ['id', 'name', 'platform', 'daily_budget', 'status', 'created_at', 'updated_at', 'cost'];
-        $tenantId = $this->tenantId($request);
         $query = DB::table('ads_campaigns as c')
-            ->where('c.tenant_id', $tenantId)
             ->leftJoinSub(
                 DB::table('ads_report_metrics')
-                    ->where('tenant_id', $tenantId)
                     ->where('date', date('Y-m-d'))
                     ->select('campaign_id')
                     ->selectRaw('COALESCE(SUM(cost), 0) as cost')
@@ -50,7 +47,6 @@ class CampaignController
         [$items, $total, $page, $perPage] = $this->paginate($request, $query);
 
         $summary = (array) DB::table('ads_report_metrics')
-            ->where('tenant_id', $tenantId)
             ->where('date', date('Y-m-d'))
             ->selectRaw('COALESCE(SUM(cost), 0) as total_cost')
             ->selectRaw('COALESCE(SUM(impressions), 0) as total_impressions')

@@ -36,7 +36,6 @@ class CampaignApiTest extends ApiTestCase
         $accountId = DB::table('ads_campaigns')->find($campaignId)->platform_account_id;
         DB::table('ads_report_metrics')->insert([
             'id'                  => $this->nextId(),
-            'tenant_id'           => $this->tenantId,
             'platform_account_id' => $accountId,
             'platform'            => 'mock',
             'campaign_id'         => $campaignId,

@@ -6,32 +6,11 @@
 -- ============================================================================
 
 -- ============================================================================
--- 1. 租户系统 (ads-tenant)
--- ============================================================================
-
-CREATE TABLE IF NOT EXISTS `ads_tenants` (
-    `id` BIGINT UNSIGNED PRIMARY KEY,
-    `name` VARCHAR(100) NOT NULL,
-    `domain` VARCHAR(255) DEFAULT NULL,
-    `db_type` ENUM('shared','dedicated') DEFAULT 'shared',
-    `db_config` JSON NULL,
-    `plan` ENUM('free','pro','enterprise') DEFAULT 'free',
-    `status` TINYINT DEFAULT 1,
-    INDEX `idx_domain_status` (`domain`, `status`),
-    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
-    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-INSERT INTO `ads_tenants` (`id`, `name`, `plan`) VALUES (1, '默认租户', 'enterprise')
-ON DUPLICATE KEY UPDATE `name` = VALUES(`name`);
-
--- ============================================================================
--- 2. 平台账号 (ads-account)
+-- 1. 平台账号 (ads-account)
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS `ads_platform_accounts` (
     `id` BIGINT UNSIGNED PRIMARY KEY,
-    `tenant_id` BIGINT UNSIGNED NOT NULL,
     `platform` VARCHAR(32) NOT NULL,
     `account_id_on_platform` VARCHAR(128) NOT NULL,
     `account_name` VARCHAR(255) DEFAULT NULL,
@@ -43,13 +22,12 @@ CREATE TABLE IF NOT EXISTS `ads_platform_accounts` (
     `last_sync_at` DATETIME DEFAULT NULL,
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    UNIQUE KEY `uk_platform_account` (`tenant_id`, `platform`, `account_id_on_platform`),
-    INDEX `idx_tenant_platform` (`tenant_id`, `platform`)
+    UNIQUE KEY `uk_platform_account` (`platform`, `account_id_on_platform`),
+    INDEX `idx_platform` (`platform`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `ads_auth_tokens` (
     `id` BIGINT UNSIGNED PRIMARY KEY,
-    `tenant_id` BIGINT UNSIGNED NOT NULL,
     `platform` VARCHAR(32) NOT NULL,
     `state` VARCHAR(64) NOT NULL,
     `redirect_uri` VARCHAR(512) DEFAULT NULL,
@@ -59,12 +37,11 @@ CREATE TABLE IF NOT EXISTS `ads_auth_tokens` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ============================================================================
--- 3. 投放与指标数据表 (平台同步，只读)
+-- 2. 投放与指标数据表 (平台同步，只读)
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS `ads_campaigns` (
     `id` BIGINT UNSIGNED PRIMARY KEY,
-    `tenant_id` BIGINT UNSIGNED NOT NULL,
     `platform_account_id` BIGINT UNSIGNED NOT NULL,
     `platform` VARCHAR(32) NOT NULL,
     `platform_campaign_id` VARCHAR(128) NOT NULL,
@@ -78,8 +55,7 @@ CREATE TABLE IF NOT EXISTS `ads_campaigns` (
     `synced_at` DATETIME DEFAULT NULL,
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    UNIQUE KEY `uk_platform_campaign` (`platform_account_id`, `platform_campaign_id`),
-    INDEX `idx_tenant` (`tenant_id`)
+    UNIQUE KEY `uk_platform_campaign` (`platform_account_id`, `platform_campaign_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `ads_ad_groups` (
@@ -114,7 +90,6 @@ CREATE TABLE IF NOT EXISTS `ads_creatives` (
 
 CREATE TABLE IF NOT EXISTS `ads_report_metrics` (
     `id` BIGINT UNSIGNED PRIMARY KEY,
-    `tenant_id` BIGINT UNSIGNED NOT NULL,
     `platform_account_id` BIGINT UNSIGNED NOT NULL,
     `platform` VARCHAR(32) NOT NULL,
     `campaign_id` BIGINT UNSIGNED DEFAULT NULL,
@@ -131,18 +106,17 @@ CREATE TABLE IF NOT EXISTS `ads_report_metrics` (
     `cpc` DECIMAL(10,2) DEFAULT 0,
     `cvr` DECIMAL(10,6) DEFAULT 0,
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE KEY `uk_report` (`tenant_id`, `platform`, `platform_account_id`, `campaign_id`, `ad_group_id`, `creative_id`, `date`, `granularity`),
+    UNIQUE KEY `uk_report` (`platform`, `platform_account_id`, `campaign_id`, `ad_group_id`, `creative_id`, `date`, `granularity`),
     INDEX `idx_date` (`date`),
     INDEX `idx_campaign_date` (`campaign_id`, `date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ============================================================================
--- 4. 素材库 (ads-platform / assets)
+-- 3. 素材库 (ads-platform / assets)
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS `ads_assets` (
     `id` BIGINT UNSIGNED PRIMARY KEY,
-    `tenant_id` BIGINT UNSIGNED NOT NULL,
     `type` VARCHAR(16) NOT NULL DEFAULT 'image',
     `filename` VARCHAR(255) NOT NULL,
     `mime_type` VARCHAR(128) NOT NULL,
@@ -152,12 +126,12 @@ CREATE TABLE IF NOT EXISTS `ads_assets` (
     `height` INT UNSIGNED DEFAULT 0,
     `campaign_id` BIGINT UNSIGNED DEFAULT NULL,
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
-    INDEX `idx_tenant_type` (`tenant_id`, `type`),
+    INDEX `idx_type` (`type`),
     INDEX `idx_created` (`created_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ============================================================================
--- 5. 同步错误 (ads-task)
+-- 4. 同步错误 (ads-task)
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS `ads_sync_errors` (
@@ -173,7 +147,7 @@ CREATE TABLE IF NOT EXISTS `ads_sync_errors` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ============================================================================
--- 6. Webman Admin 后台表
+-- 5. Webman Admin 后台表
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS `wa_admin_roles` (
@@ -304,7 +278,7 @@ INSERT INTO `wa_options` VALUES
 ON DUPLICATE KEY UPDATE `name` = VALUES(`name`);
 
 -- ============================================================================
--- 7. 性能索引（在表创建完成后执行，使用存储过程保证幂等）
+-- 6. 性能索引（在表创建完成后执行，使用存储过程保证幂等）
 -- ============================================================================
 
 DROP PROCEDURE IF EXISTS ads_add_index;
@@ -323,9 +297,7 @@ BEGIN
 END //
 DELIMITER ;
 
-CALL ads_add_index('ads_campaigns', 'idx_tenant_platform', 'tenant_id, platform');
 CALL ads_add_index('ads_ad_groups', 'idx_campaign_status', 'campaign_id, status');
 CALL ads_add_index('ads_creatives', 'idx_adgroup_media', 'ad_group_id, media_type');
-CALL ads_add_index('ads_report_metrics', 'idx_tenant_date', 'tenant_id, date');
 
 DROP PROCEDURE IF EXISTS ads_add_index;

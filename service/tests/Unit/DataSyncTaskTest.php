@@ -56,11 +56,11 @@ class DataSyncTaskTest extends SqliteTestCase
         AdapterRegistry::register(new SpySyncAdapter());
 
         $this->exec('CREATE TABLE ads_platform_accounts (
-            id INTEGER PRIMARY KEY AUTOINCREMENT, tenant_id INT, platform TEXT, account_name TEXT,
+            id INTEGER PRIMARY KEY AUTOINCREMENT, platform TEXT, account_name TEXT,
             account_id_on_platform TEXT, access_token TEXT, refresh_token TEXT, status INT,
             token_expires_at TEXT, last_sync_at TEXT, sync_enabled INT, created_at TEXT, updated_at TEXT)');
         $this->exec('CREATE TABLE ads_campaigns (
-            id INTEGER PRIMARY KEY AUTOINCREMENT, tenant_id INT, platform TEXT, name TEXT,
+            id INTEGER PRIMARY KEY AUTOINCREMENT, platform TEXT, name TEXT,
             platform_account_id INT, platform_campaign_id TEXT, daily_budget INT, status TEXT,
             extra TEXT, synced_at TEXT, created_at TEXT, updated_at TEXT)');
         $this->exec('CREATE TABLE ads_ad_groups (
@@ -72,7 +72,7 @@ class DataSyncTaskTest extends SqliteTestCase
             title TEXT, description TEXT, media_type TEXT, media_urls TEXT, landing_url TEXT,
             extra TEXT, created_at TEXT, updated_at TEXT)');
         $this->exec('CREATE TABLE ads_report_metrics (
-            id INTEGER PRIMARY KEY AUTOINCREMENT, tenant_id INT, platform TEXT,
+            id INTEGER PRIMARY KEY AUTOINCREMENT, platform TEXT,
             platform_account_id INT, campaign_id INT, date TEXT, granularity TEXT,
             cost INT, impressions INT, clicks INT, conversions INT, ctr REAL, cpc REAL, cpm REAL, cvr REAL)');
         $this->exec('CREATE TABLE ads_sync_errors (
@@ -91,8 +91,7 @@ class DataSyncTaskTest extends SqliteTestCase
 
     private function seedAccount(): PlatformAccount
     {
-        $account = new PlatformAccount([
-            'tenant_id' => 1, 'platform' => 'spysync', 'account_name' => 'Sync Acc',
+        $account = new PlatformAccount([ 'platform' => 'spysync', 'account_name' => 'Sync Acc',
             'account_id_on_platform' => 'acc-1', 'access_token' => 'tok', 'refresh_token' => '',
             'status' => 1, 'sync_enabled' => true,
         ]);

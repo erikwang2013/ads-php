@@ -60,7 +60,6 @@ class AssetController
         $id = \plugin\ads_platform\model\Campaign::snowflakeId();
         DB::table('ads_assets')->insert([
             'id'           => $id,
-            'tenant_id'    => $request->tenantId ?? 1,
             'type'         => $mediaType,
             'filename'     => $file->getUploadName(),
             'mime_type'    => $file->getUploadMimeType(),
@@ -82,8 +81,7 @@ class AssetController
      */
     public function index(Request $request): Response
     {
-        $tenantId = $this->tenantId($request);
-        $query = DB::table('ads_assets')->where('tenant_id', $tenantId);
+        $query = DB::table('ads_assets');
         if ($type = $request->get('type')) $query->where('type', $type);
 
         $this->allowedSorts = ['id', 'type', 'size', 'created_at'];
@@ -104,7 +102,7 @@ class AssetController
      */
     public function show(Request $request, int $id): Response
     {
-        $asset = DB::table('ads_assets')->where('tenant_id', $this->tenantId($request))->find($id);
+        $asset = DB::table('ads_assets')->find($id);
         if (!$asset) return ApiResponse::error('Asset not found');
         $asset->url = $this->presentUrl((string) $asset->url);
         return ApiResponse::success($asset);
@@ -118,7 +116,7 @@ class AssetController
      */
     public function destroy(Request $request, int $id): Response
     {
-        $asset = DB::table('ads_assets')->where('tenant_id', $this->tenantId($request))->find($id);
+        $asset = DB::table('ads_assets')->find($id);
         if (!$asset) return ApiResponse::error('Asset not found');
 
         Storage::deleteUrl((string) $asset->url);

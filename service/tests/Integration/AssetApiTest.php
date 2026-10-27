@@ -17,7 +17,6 @@ class AssetApiTest extends ApiTestCase
         $id = $this->nextId();
         DB::table('ads_assets')->insert(array_merge([
             'id'         => $id,
-            'tenant_id'  => $this->tenantId,
             'type'       => 'image',
             'filename'   => 'banner.png',
             'mime_type'  => 'image/png',

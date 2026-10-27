@@ -14,7 +14,7 @@ use InvalidArgumentException;
 
 class OAuthService
 {
-    public function getAuthUrl(int $tenantId, string $platform, string $redirectUri): array
+    public function getAuthUrl(string $platform, string $redirectUri): array
     {
         $adapter = AdapterRegistry::get($platform);
         if (!$adapter) {
@@ -23,7 +23,6 @@ class OAuthService
 
         $state = bin2hex(random_bytes(16));
         AuthToken::create([
-            'tenant_id'   => $tenantId,
             'platform'    => $platform,
             'state'       => $state,
             'redirect_uri'=> $redirectUri,
@@ -36,10 +35,9 @@ class OAuthService
         ];
     }
 
-    public function handleCallback(int $tenantId, string $platform, string $state, string $code): PlatformAccount
+    public function handleCallback(string $platform, string $state, string $code): PlatformAccount
     {
         $authToken = AuthToken::where('state', $state)
-            ->where('tenant_id', $tenantId)
             ->where('platform', $platform)
             ->first();
 
@@ -55,7 +53,6 @@ class OAuthService
         $tokenData = $adapter->exchangeToken($code, $authToken->redirect_uri);
 
         $account = PlatformAccount::create([
-            'tenant_id'               => $tenantId,
             'platform'                => $platform,
             'account_id_on_platform'  => $tokenData['advertiser_ids'][0] ?? '0',
             'access_token'            => $tokenData['access_token'],
@@ -71,7 +68,6 @@ class OAuthService
                 foreach ($infos as $info) {
                     PlatformAccount::updateOrCreate(
                         [
-                            'tenant_id'              => $tenantId,
                             'platform'               => $platform,
                             'account_id_on_platform' => $info['account_id_on_platform'],
                         ],

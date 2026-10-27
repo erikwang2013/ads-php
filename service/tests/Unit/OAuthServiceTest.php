@@ -75,10 +75,10 @@ class OAuthServiceTest extends SqliteTestCase
         AdapterRegistry::register($this->adapter);
 
         $this->exec('CREATE TABLE ads_auth_tokens (
-            id TEXT PRIMARY KEY, tenant_id INT, platform TEXT, state TEXT, redirect_uri TEXT,
+            id TEXT PRIMARY KEY, platform TEXT, state TEXT, redirect_uri TEXT,
             expires_at TEXT, created_at TEXT, updated_at TEXT)');
         $this->exec('CREATE TABLE ads_platform_accounts (
-            id INTEGER PRIMARY KEY AUTOINCREMENT, tenant_id INT, platform TEXT, account_name TEXT,
+            id INTEGER PRIMARY KEY AUTOINCREMENT, platform TEXT, account_name TEXT,
             account_id_on_platform TEXT, access_token TEXT, refresh_token TEXT, status INT,
             token_expires_at TEXT, last_sync_at TEXT, sync_enabled INT, created_at TEXT, updated_at TEXT)');
     }
@@ -94,7 +94,7 @@ class OAuthServiceTest extends SqliteTestCase
 
     public function testGetAuthUrlCreatesTokenAndReturnsUrl(): void
     {
-        $result = (new OAuthService())->getAuthUrl(1, 'spyoauth', 'http://cb.example/cb');
+        $result = (new OAuthService())->getAuthUrl('spyoauth', 'http://cb.example/cb');
 
         $this->assertSame(32, strlen($result['state']));
         $this->assertStringContainsString('state=' . $result['state'], $result['auth_url']);
@@ -104,15 +104,15 @@ class OAuthServiceTest extends SqliteTestCase
     public function testGetAuthUrlThrowsForUnsupportedPlatform(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        (new OAuthService())->getAuthUrl(1, 'nope', 'http://cb.example/cb');
+        (new OAuthService())->getAuthUrl('nope', 'http://cb.example/cb');
     }
 
     public function testHandleCallbackExchangesCodeAndCreatesAccounts(): void
     {
         $service = new OAuthService();
-        $state = $service->getAuthUrl(1, 'spyoauth', 'http://cb.example/cb')['state'];
+        $state = $service->getAuthUrl('spyoauth', 'http://cb.example/cb')['state'];
 
-        $account = $service->handleCallback(1, 'spyoauth', $state, 'code-1');
+        $account = $service->handleCallback('spyoauth', $state, 'code-1');
 
         $this->assertSame('adv-1', $account->account_id_on_platform);
         $this->assertSame('at-code-1', $account->access_token);
@@ -125,13 +125,12 @@ class OAuthServiceTest extends SqliteTestCase
     public function testHandleCallbackRejectsInvalidState(): void
     {
         $this->expectException(RuntimeException::class);
-        (new OAuthService())->handleCallback(1, 'spyoauth', 'no-such-state', 'code-1');
+        (new OAuthService())->handleCallback('spyoauth', 'no-such-state', 'code-1');
     }
 
     public function testRefreshAccessTokenUpdatesAccount(): void
     {
-        $account = new PlatformAccount([
-            'tenant_id' => 1, 'platform' => 'spyoauth', 'account_id_on_platform' => 'adv-1',
+        $account = new PlatformAccount([ 'platform' => 'spyoauth', 'account_id_on_platform' => 'adv-1',
             'access_token' => 'old', 'refresh_token' => 'rt-old', 'status' => 1,
         ]);
         $account->save();
@@ -145,8 +144,7 @@ class OAuthServiceTest extends SqliteTestCase
 
     public function testRefreshAccessTokenSkipsAccountWithoutRefreshToken(): void
     {
-        $account = new PlatformAccount([
-            'tenant_id' => 1, 'platform' => 'spyoauth', 'account_id_on_platform' => 'adv-1',
+        $account = new PlatformAccount([ 'platform' => 'spyoauth', 'account_id_on_platform' => 'adv-1',
             'access_token' => 'old', 'refresh_token' => '', 'status' => 1,
         ]);
         $account->save();

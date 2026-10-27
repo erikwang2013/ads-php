@@ -23,11 +23,6 @@ trait ControllerTrait
 {
     protected array $allowedSorts = ['id', 'name', 'status', 'created_at', 'updated_at'];
 
-    protected function tenantId(Request $request): int
-    {
-        return $request->tenantId ?? 1;
-    }
-
     protected function paginate(Request $request, $query, string $table = ''): array
     {
         $sort = $request->get('sort', 'id');

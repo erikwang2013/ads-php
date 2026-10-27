@@ -30,7 +30,6 @@ class AssetStorageTest extends ApiTestCase
             . "Content-Length: " . strlen($body) . "\r\n\r\n" . $body;
         $request = new Request($raw);
         $request->userId = $this->userId;
-        $request->tenantId = $this->tenantId;
         return $request;
     }
 
@@ -56,27 +55,6 @@ class AssetStorageTest extends ApiTestCase
         $this->assertSuccess($controller->destroy($this->authedRequest('DELETE', '/api/assets/' . $body['data']['id']), (int) $body['data']['id']));
         $this->assertEquals(0, DB::table('ads_assets')->count());
         $this->assertFileDoesNotExist(public_path() . $url);
-    }
-
-    public function testShowAndDestroyAreTenantScoped(): void
-    {
-        $controller = new AssetController();
-        $body = $this->assertSuccess(
-            $controller->upload($this->multipartUploadRequest('/api/assets/upload', 'test.png', 'image/png', 'x'))
-        );
-        $id = (int) $body['data']['id'];
-
-        // tenant 2 不能查看 tenant 1 的素材
-        $other = $this->authedRequest('GET', "/api/assets/{$id}");
-        $other->tenantId = 2;
-        $this->assertError($controller->show($other, $id), 1);
-
-        // tenant 2 不能删除:对象与 DB 行都保留
-        $del = $this->authedRequest('DELETE', "/api/assets/{$id}");
-        $del->tenantId = 2;
-        $this->assertError($controller->destroy($del, $id), 1);
-        $this->assertEquals(1, DB::table('ads_assets')->count());
-        $this->assertFileExists(public_path() . $body['data']['url']);
     }
 
     public function testStorageDispatchDefaultsToLocal(): void

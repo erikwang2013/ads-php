@@ -24,7 +24,6 @@ class AuthMiddleware implements MiddlewareInterface
         try {
             $payload = Jwt::verify($token);
             $request->userId = $payload['uid'];
-            $request->tenantId = $payload['tid'] ?? 1;
 
             // Token binding: verify IP + User-Agent
             if (!empty($payload['_ip']) && $payload['_ip'] !== $request->getRealIp()) {

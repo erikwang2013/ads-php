@@ -12,7 +12,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 | 形象 | 寓意 | 对应实现 |
 |------|------|---------|
-| 八条触手 | 六个插件各司其职、并行不悖 | ads-account / ads-api / ads-platform / ads-storage / ads-task / ads-tenant |
+| 八条触手 | 五个插件各司其职、并行不悖 | ads-account / ads-api / ads-platform / ads-storage / ads-task |
 | 触手吸盘 | 数据一路吸附汇总 | 29 家平台 → 统一 `/api/v1` |
 | 双目前视 | 单端聚焦 | Vue 3 管理后台统一查看 |
 | 眨眼 + 起伏 | 周期性轮询与守护 | 3 个定时任务（3/10/55 分钟）循环采集；22 项防护静默运行 |
@@ -109,8 +109,8 @@ SVG / PNG）**不是开源资产**，版权归作者所有。未经书面许可�
 
 | 层 | 技术 | 说明 |
 |----|------|------|
-| 服务端 | webman v2 + PHP 8.4+ | 6 个插件，24 API 端点 |
-| 数据库 | MySQL 8.0 | 16 张表，ads_ 前缀，Snowflake BIGINT 主键 |
+| 服务端 | webman v2 + PHP 8.4+ | 5 个插件，23 API 端点 |
+| 数据库 | MySQL 8.0 | 15 张表，ads_ 前缀，Snowflake BIGINT 主键 |
 | 缓存 | Redis 7 | 三级缓存 (L1内存/L2 APCu/L3 Redis)、限流计数、Pub/Sub |
 | 管理后台 | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP 后端(端口 8789)，SPA 直连业务 API(端口 8788)，7 页面，ECharts 可视化 |
 | 部署 | Docker + Nginx + GHCR | Docker Compose 一键启动，GitHub Actions 自动构建推送 |
@@ -254,7 +254,7 @@ cd admin && composer install && php start.php start
 1. **数据库连接** — 填写 MySQL 主机、端口、数据库名、用户名密码，支持连接测试
 2. **Redis 配置** — 填写 Redis 连接信息（可选）
 3. **管理员账户** — 设置后台登录用户名、密码、显示名称
-4. **一键安装** — 自动建库、执行 `install.sql` 创建 16 张表并写入种子数据、设置管理员账号
+4. **一键安装** — 自动建库、执行 `install.sql` 创建 15 张表并写入种子数据、设置管理员账号
 
 安装完成后访问 `/` 进入管理后台，使用设置的用户名和密码登录。
 
@@ -304,7 +304,6 @@ ads-php/
 │   │   │   └── model/                 # Campaign
 │   │   ├── ads-account/               # OAuth 账户管理
 │   │   ├── ads-task/                  # 定时任务调度 (3 cron)
-│   │   ├── ads-tenant/                # 多租户管理
 │   │   └── ads-storage/               # 本地素材存储
 │   ├── public/                        # 静态资源 (webman 内置静态处理)
 │   │   └── img/                       # 公共静态图片
@@ -315,7 +314,7 @@ ads-php/
 │   │   ├── ExceptionHandler.php       # API 异常处理器
 │   │   └── ApiResponse.php            # 统一响应格式
 │   ├── config/                        # 全局配置 (DB/Redis/Log/Middleware)
-│   ├── tests/                         # PHPUnit 测试 (151 tests)
+│   ├── tests/                         # PHPUnit 测试 (145 tests)
 │   │   ├── Unit/                      # 单元测试 (Middleware, Task, Engines)
 │   │   └── Integration/               # 集成测试 (Auth, Health, API)
 │   └── start.php                      # 服务入口
@@ -330,7 +329,7 @@ ads-php/
 │   │   │   │   ├── sync/              # 同步状态
 │   │   │   │   ├── login/             # 登录页 (阿章)
 │   │   │   │   └── system/            # 系统信息
-│   │   │   ├── api/                   # 10 个 API 客户端
+│   │   │   ├── api/                   # 8 个 API 客户端
 │   │   │   ├── stores/                # 4 个 Pinia Store
 │   │   │   └── components/            # 共享组件 (ListPageLayout 等 6 个)
 │   │   └── dist/                      # 构建产物 (不入库，CI 构建)
@@ -357,7 +356,6 @@ ads-php/
 
 | 分类 | 表名 | 用途 |
 |------|------|------|
-| 基础 | `ads_tenants` | 多租户 |
 | 账户 | `ads_platform_accounts`, `ads_auth_tokens` | OAuth 平台账户 |
 | 投放数据 | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | 平台同步的只读投放层级 |
 | 指标 | `ads_report_metrics` | 仪表盘使用的同步指标 |
@@ -380,10 +378,10 @@ ads-php/
 
 ```bash
 cd service && ./vendor/bin/phpunit
-# 151 测试 / 375 断言
+# 145 测试 / 350 断言
 ```
 
-**覆盖范围**: 14 个中间件 · 6 插件业务层 (账户/平台/任务/租户/存储) · API 集成测试 (24 路由) · UI E2E (9 页面)
+**覆盖范围**: 14 个中间件 · 5 插件业务层 (账户/平台/任务/存储) · API 集成测试 (23 路由) · UI E2E (9 页面)
 
 **测试报告**: 覆盖 PHP 单元 / API 自动化 / UI E2E / Go N/A / Rust N/A + Bug 汇总）
 

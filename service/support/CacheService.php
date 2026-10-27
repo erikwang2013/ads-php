@@ -74,13 +74,8 @@ class CacheService
         } catch (\Throwable $e) {}
     }
 
-    public static function dashboardKey(int $tenantId, string $dateStart, string $dateEnd): string
+    public static function dashboardKey(string $dateStart, string $dateEnd): string
     {
-        return "cache:dashboard:{$tenantId}:{$dateStart}:{$dateEnd}";
-    }
-
-    public static function campaignListKey(int $tenantId, array $filters, int $page): string
-    {
-        return 'cache:campaigns:' . $tenantId . ':' . md5(json_encode($filters)) . ':' . $page;
+        return "cache:dashboard:{$dateStart}:{$dateEnd}";
     }
 }

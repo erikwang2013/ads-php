@@ -32,7 +32,6 @@ class AuthController
 
         $username = trim($request->post('username', ''));
         $password = $request->post('password', '');
-        $tenantId = (int) $request->post('tenant_id', 1);
 
         if ($username === '' || $password === '') {
             return ApiResponse::error('用户名和密码不能为空', 1001);
@@ -43,7 +42,7 @@ class AuthController
             return ApiResponse::error('用户名或密码错误', 1001);
         }
 
-        $token = Jwt::encode(['uid' => 1, 'tid' => $tenantId]);
+        $token = Jwt::encode(['uid' => 1]);
 
         return ApiResponse::success([
             'access_token' => $token,
@@ -78,7 +77,6 @@ class AuthController
             'name'      => (string) env('API_NAME', '管理员'),
             'email'     => '',
             'role'      => 'admin',
-            'tenant_id' => $request->tenantId ?? 1,
         ]);
     }
 
