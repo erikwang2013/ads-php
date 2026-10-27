@@ -2,16 +2,15 @@
 /**
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
  *
- * 健康检查 / 文档 / 验证码（无需认证的公开端点）。
+ * 健康检查 / 验证码（无需认证的公开端点）。
  */
 
 namespace Tests\Integration;
 
 use plugin\ads_api\controller\v1\HealthController;
-use plugin\ads_api\controller\v1\DocController;
 use plugin\ads_api\controller\v1\CaptchaController;
 
-class HealthDocApiTest extends ApiTestCase
+class HealthApiTest extends ApiTestCase
 {
     public function testPing(): void
     {
@@ -29,15 +28,6 @@ class HealthDocApiTest extends ApiTestCase
         $this->assertEquals('degraded', $body['status']);
         $this->assertEquals('ok', $body['checks']['database']);
         $this->assertEquals('unavailable', $body['checks']['redis']);
-    }
-
-    public function testDocs(): void
-    {
-        $response = (new DocController())->index();
-        $this->assertEquals(200, $response->getStatusCode());
-        $html = $response->rawBody();
-        $this->assertStringContainsString('/health', $html);
-        $this->assertStringContainsString('/api/v1/auth/login', $html);
     }
 
     public function testCaptchaGenerate(): void

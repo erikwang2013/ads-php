@@ -11,10 +11,6 @@
       <el-icon><DataAnalysis /></el-icon>
       <span>仪表盘</span>
     </el-menu-item>
-    <el-menu-item index="/docs" @click="openDocs">
-      <el-icon><Document /></el-icon>
-      <span>API 文档</span>
-    </el-menu-item>
     <el-menu-item index="/accounts">
       <el-icon><User /></el-icon>
       <span>账户管理</span>
@@ -33,21 +29,7 @@
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import { DataAnalysis, User, Document, Setting } from '@element-plus/icons-vue'
+import { DataAnalysis, User, Setting } from '@element-plus/icons-vue'
 defineProps<{ collapsed: boolean }>()
 const route = useRoute()
-
-function openDocs() {
-  window.open('/docs', '_blank')
-}
 </script>
-
-<style scoped>
-.nav-badge {
-  margin-left: 8px;
-}
-.nav-badge :deep(.el-badge__content) {
-  position: static;
-  transform: none;
-}
-</style>

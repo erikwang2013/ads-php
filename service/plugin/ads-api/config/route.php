@@ -12,13 +12,12 @@ use plugin\ads_api\controller\v1\AccountController;
 use plugin\ads_api\controller\v1\CampaignController;
 use plugin\ads_api\controller\v1\AssetController;
 use plugin\ads_api\controller\v1\DashboardController;
-use plugin\ads_api\controller\v1\DocController;
 use plugin\ads_api\controller\v1\SyncController;
 use plugin\ads_api\controller\v1\TenantController;
 
 // API 版本号固定在路由路径中：/api/v1/... → plugin\ads_api\controller\v1\*。
 // 新增版本时注册独立分组（如 /api/v2 → controller\v2\*）。
-// /health、/ping、/docs 为无版本公开端点。
+// /health、/ping 为无版本公开端点。
 
 // Captcha (public)
 Webman\Route::get('/api/v1/captcha/generate', [CaptchaController::class, 'generate']);
@@ -29,7 +28,6 @@ Webman\Route::get('/health', [HealthController::class, 'health']);
 Webman\Route::get('/ping', [HealthController::class, 'ping']);
 
 // Public routes
-Webman\Route::get('/docs', [DocController::class, 'index']);
 Webman\Route::post('/api/v1/auth/login', [AuthController::class, 'login']);
 Webman\Route::get('/api/v1/platforms', [PlatformController::class, 'index']);
 

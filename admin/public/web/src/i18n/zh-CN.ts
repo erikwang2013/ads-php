@@ -3,7 +3,7 @@
  */
 export default {
   app: { title: '广告管理系统', copyright: 'Copyright (c) 2026 erik' },
-  nav: { dashboard: '仪表盘', accounts: '账户管理', system: '系统管理', userManage: '用户管理', auditLog: '审计日志', apiDocs: 'API 文档', syncStatus: '同步状态' },
+  nav: { dashboard: '仪表盘', accounts: '账户管理', system: '系统管理', userManage: '用户管理', auditLog: '审计日志', syncStatus: '同步状态' },
   login: { title: '广告管理系统', username: '用户名', password: '密码', login: '登 录', usernameRequired: '请输入用户名', passwordRequired: '请输入密码' },
   dashboard: { title: '仪表盘', todayCost: '今日花费', impressions: '展示量', clicks: '点击量', ctr: '点击率', cvr: '转化率', avgCpa: '平均CPA', platformCost: '平台花费占比', topCampaigns: 'TOP10 广告计划', trend: '花费趋势', last7days: '最近7天', last30days: '最近30天', today: '今天', yesterday: '昨天', vsYesterday: '较昨日' },
   account: { title: '平台账户', bind: '绑定新账户', platform: '平台', accountName: '账户名称', platformAccountId: '平台账户ID', status: '状态', lastSync: '最近同步', actions: '操作', sync: '同步', unbind: '解绑', normal: '正常', disabled: '已禁用', notSynced: '未同步', syncTriggered: '同步已触发', unbindConfirm: '确定要解绑该账户吗？', unbindSuccess: '已解绑', bindTitle: '绑定平台账户', selectPlatform: '选择平台', authorizeLogin: '授权登录', complete: '完成绑定', next: '下一步', goAuth: '前往授权', callbackUrl: '回调地址', bindSuccess: '绑定成功', viewAccounts: '查看账户列表', continueBind: '继续绑定' },

@@ -21,7 +21,7 @@ use Webman\MiddlewareInterface;
 class ReplayGuardMiddleware implements MiddlewareInterface
 {
     protected int $timeWindow = 300; // ±5 minutes
-    protected array $skipPaths = ['/health', '/ping', '/docs'];
+    protected array $skipPaths = ['/health', '/ping'];
 
     public function process(Request $request, callable $handler): Response
     {

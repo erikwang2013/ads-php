@@ -18,7 +18,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 眨眼 + 起伏 | 周期性轮询与守护 | 4 个定时任务（3/5/10/55 分钟）循环采集；22 项防护静默运行 |
 | 外环 29 个节点 | 29 个平台常驻在线 | 16 国内 + 13 国际，逐个盯住 |
 
-阿章已整合进代码：管理后台 **登录页** 与 **favicon**、Service 端 **`/docs` API 文档页**，以及全部文档页。
+阿章已整合进代码：管理后台 **登录页** 与 **favicon**。
 
 > SVG 源码 [assets/diagrams/pet.svg](assets/diagrams/pet.svg)（无文字，13 种语言文档共用同一份；含 SMIL 眨眼与呼吸动画）
 
@@ -320,7 +320,7 @@ ads-php/
 │   │   ├── ads-tenant/                # 多租户管理
 │   │   └── ads-storage/               # 存储抽象层 (local/OSS/COS/S3)
 │   ├── public/                        # 静态资源 (webman 内置静态处理)
-│   │   └── img/pet.svg                # 项目宠物「阿章」，/docs 页展示
+│   │   └── img/                       # 公共静态图片
 │   ├── scripts/backfill-assets.php    # 存量素材回填对象存储
 │   ├── support/                       # Erik Stack 工具类
 │   │   ├── ControllerTrait.php        # 控制器公共 trait
@@ -329,7 +329,7 @@ ads-php/
 │   │   ├── ExceptionHandler.php       # API 异常处理器
 │   │   └── ApiResponse.php            # 统一响应格式
 │   ├── config/                        # 全局配置 (DB/Redis/Log/Middleware)
-│   ├── tests/                         # PHPUnit 测试 (154 tests)
+│   ├── tests/                         # PHPUnit 测试 (153 tests)
 │   │   ├── Unit/                      # 单元测试 (Middleware, Task, Engines)
 │   │   └── Integration/               # 集成测试 (Auth, Health, API)
 │   └── start.php                      # 服务入口
@@ -402,7 +402,7 @@ ads-php/
 
 ```bash
 cd service && ./vendor/bin/phpunit
-# 154 测试 / 385 断言
+# 153 测试 / 382 断言
 ```
 
 **覆盖范围**: 14 个中间件 · 6 插件业务层 (账户/平台/任务/租户/存储) · API 集成测试 (26 路由) · UI E2E (9 页面)
