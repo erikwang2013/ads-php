@@ -17,14 +17,6 @@
           style="width: 260px; margin-right: 12px;"
           @change="reload"
         />
-        <el-button @click="handleExportPdf" :loading="exportingPdf">
-          <el-icon style="margin-right: 4px;"><Printer /></el-icon>
-          导出PDF
-        </el-button>
-        <el-button @click="handleExportExcel" :loading="exportingExcel">
-          <el-icon style="margin-right: 4px;"><Download /></el-icon>
-          导出Excel
-        </el-button>
       </div>
     </div>
 
@@ -118,8 +110,6 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
-import { Printer, Download } from '@element-plus/icons-vue'
 import VChart from 'vue-echarts'
 import { use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
@@ -129,7 +119,6 @@ import MetricCard from '@/components/MetricCard.vue'
 import PlatformBadge from '@/components/PlatformBadge.vue'
 import { formatFen } from '@/utils/format'
 import { dashboardApi } from '@/api/dashboard'
-import { exportApi } from '@/api/export'
 import { campaignApi } from '@/api/campaign'
 
 use([CanvasRenderer, LineChart, PieChart, BarChart, GridComponent, TooltipComponent, LegendComponent])
@@ -138,8 +127,6 @@ const overview = ref<any>(null)
 const byPlatform = ref<any[]>([])
 const daily = ref<any[]>([])
 const topCampaigns = ref<any[]>([])
-const exportingPdf = ref(false)
-const exportingExcel = ref(false)
 
 // Date range — default last 7 days
 const dateRange = ref<[string, string]>([
@@ -309,68 +296,6 @@ const kpiComparison = computed(() => {
     return { ...item, changePct, direction }
   })
 })
-
-// --- Export handlers ---
-const buildParams = () => {
-  const params: Record<string, any> = { format: 'pdf' }
-  if (dateRange.value && dateRange.value.length === 2) {
-    params.date_start = dateRange.value[0]
-    params.date_end = dateRange.value[1]
-  }
-  return params
-}
-
-const downloadBlob = (blob: Blob, filename: string) => {
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename
-  document.body.appendChild(a)
-  a.click()
-  document.body.removeChild(a)
-  URL.revokeObjectURL(url)
-}
-
-const handleExportPdf = async () => {
-  exportingPdf.value = true
-  try {
-    const params = buildParams()
-    const response = await exportApi.exportDashboard(params)
-    const blob = response.data instanceof Blob ? response.data : new Blob([response.data])
-    downloadBlob(blob, 'dashboard_' + formatDate(new Date()) + '.pdf')
-    ElMessage.success('PDF导出成功')
-  } catch (err: any) {
-    ElMessage.error('PDF导出失败: ' + (err.message || '未知错误'))
-  } finally {
-    exportingPdf.value = false
-  }
-}
-
-const handleExportExcel = async () => {
-  exportingExcel.value = true
-  try {
-    const params = buildParams()
-    params.format = 'excel'
-    const response = await exportApi.exportReport(params)
-    const blob = response.data instanceof Blob ? response.data : new Blob([response.data])
-    downloadBlob(blob, 'dashboard_' + formatDate(new Date()) + '.xls')
-    ElMessage.success('Excel导出成功')
-  } catch (err: any) {
-    ElMessage.error('Excel导出失败: ' + (err.message || '未知错误'))
-  } finally {
-    exportingExcel.value = false
-  }
-}
-
-const formatDate = (d: Date) => {
-  const y = d.getFullYear()
-  const m = String(d.getMonth() + 1).padStart(2, '0')
-  const day = String(d.getDate()).padStart(2, '0')
-  const h = String(d.getHours()).padStart(2, '0')
-  const min = String(d.getMinutes()).padStart(2, '0')
-  const s = String(d.getSeconds()).padStart(2, '0')
-  return `${y}${m}${day}${h}${min}${s}`
-}
 
 // --- Data loading ---
 const loadData = async () => {

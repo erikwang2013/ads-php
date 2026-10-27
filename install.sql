@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS `ads_auth_tokens` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ============================================================================
--- 3. 投放数据表 (ads-platform / campaigns，只读同步)
+-- 3. 投放与指标数据表 (平台同步，只读)
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS `ads_campaigns` (
@@ -134,14 +134,6 @@ CREATE TABLE IF NOT EXISTS `ads_report_metrics` (
     UNIQUE KEY `uk_report` (`tenant_id`, `platform`, `platform_account_id`, `campaign_id`, `ad_group_id`, `creative_id`, `date`, `granularity`),
     INDEX `idx_date` (`date`),
     INDEX `idx_campaign_date` (`campaign_id`, `date`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE IF NOT EXISTS `ads_report_extras` (
-    `id` BIGINT UNSIGNED PRIMARY KEY,
-    `report_metric_id` BIGINT UNSIGNED NOT NULL,
-    `platform` VARCHAR(32) NOT NULL,
-    `extra` JSON NULL,
-    FOREIGN KEY (`report_metric_id`) REFERENCES `ads_report_metrics`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ============================================================================

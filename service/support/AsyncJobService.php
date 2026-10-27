@@ -5,7 +5,7 @@
  * AsyncJobService — pushes long-running tasks to Redis queue for async processing.
  *
  * Uses webman/redis-queue (already in composer.json).
- * Decouples HTTP request from heavy operations like data sync, report generation.
+ * Decouples HTTP request from heavy operations like data sync and notifications.
  *
  * Usage:
  *   AsyncJobService::dispatch('sync', ['account_id' => 123]);
@@ -16,7 +16,7 @@ namespace erik\support;
 class AsyncJobService
 {
     protected const QUEUE_KEY = 'queue:async:';
-    protected static array $queues = ['sync', 'report', 'export', 'notification'];
+    protected static array $queues = ['sync', 'notification'];
 
     public static function dispatch(string $queue, array $payload): bool
     {

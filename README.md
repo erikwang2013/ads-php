@@ -50,10 +50,10 @@ SVG / PNG）**不是开源资产**，版权归作者所有。未经书面许可�
 
 ## 概述
 
-**Ads Platform** 是一套多平台广告数据管理系统，对接 **29 个广告平台**（国内 16 家 + 国际 13 家），统一管理多平台账户与跨平台数据报表。
+**Ads Platform** 是一套多平台广告数据管理系统，对接 **29 个广告平台**（国内 16 家 + 国际 13 家），统一管理多平台账户与投放数据概览。
 
 - **账户管理** — OAuth 授权与多平台账户绑定
-- **数据报表** — 跨平台指标汇总、CSV/Excel/PDF 导出
+- **数据概览** — 仪表盘跨平台指标汇总
 - **素材库** — 图片/视频素材管理、画廊预览
 - **全球加速** — 素材分发（本地/阿里云 OSS/腾讯云 COS/S3 兼容多驱动，环境变量配置）
 - **监控告警** — 告警规则引擎、多渠道推送、定时任务自动同步
@@ -110,13 +110,13 @@ SVG / PNG）**不是开源资产**，版权归作者所有。未经书面许可�
 
 | 层 | 技术 | 说明 |
 |----|------|------|
-| 服务端 | webman v2 + PHP 8.4+ | 8 个插件，42 API 端点 |
-| 数据库 | MySQL 8.0 | 24 张表，ads_ 前缀，Snowflake BIGINT 主键 |
+| 服务端 | webman v2 + PHP 8.4+ | 8 个插件，39 API 端点 |
+| 数据库 | MySQL 8.0 | 23 张表，ads_ 前缀，Snowflake BIGINT 主键 |
 | 缓存 | Redis 7 | 三级缓存 (L1内存/L2 APCu/L3 Redis)、限流计数、Pub/Sub、消息队列 |
 | 搜索 | Elasticsearch | webman-scout 自动索引同步（已配置） |
-| 管理后台 | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP 后端(端口 8789)，SPA 直连业务 API(端口 8788)，14 页面，ECharts 可视化 |
-| Flutter | Dart 3 + Riverpod + GoRouter + fl_chart | PC/Mobile 响应式，Desktop Shell 布局，7 页面 |
-| HarmonyOS | ArkTS + ArkUI | 5 个页面已实现，HTTP 客户端已就绪 |
+| 管理后台 | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP 后端(端口 8789)，SPA 直连业务 API(端口 8788)，12 页面，ECharts 可视化 |
+| Flutter | Dart 3 + Riverpod + GoRouter + fl_chart | PC/Mobile 响应式，Desktop Shell 布局，5 页面 |
+| HarmonyOS | ArkTS + ArkUI | 4 个页面已实现，HTTP 客户端已就绪 |
 | 部署 | Docker + Nginx + GHCR | Docker Compose 一键启动，GitHub Actions 自动构建推送 |
 
 ## 架构图
@@ -138,7 +138,7 @@ SVG / PNG）**不是开源资产**，版权归作者所有。未经书面许可�
 
 ## 架构说明
 
-- **`service/`** — webman v2 用户端业务 API 服务，监听端口 **8788**。处理广告平台对接、OAuth 授权、数据同步、报表引擎、告警监控等业务逻辑。
+- **`service/`** — webman v2 用户端业务 API 服务，监听端口 **8788**。处理广告平台对接、OAuth 授权、数据同步、仪表盘指标、告警监控等业务逻辑。
 - **`admin/`** — webman-admin v2 独立管理后台，监听端口 **8789**。包含 PHP 后端（认证鉴权、用户管理、系统配置）和 Vue 3 SPA 前端。
 - **管理后台与业务服务的通信** — Vue SPA 通过 axios（baseURL `/api`）直连 service API；admin 专属路由（`/api/admin/*`）由 admin PHP 后端（8789）提供服务，Nginx 按路径分流。
 - **开发模式** — Vite dev server (端口 5173) 将 `/api` 代理至 service:8788；admin PHP 后端在 8789 提供 session 认证和 SPA 静态服务。
@@ -239,7 +239,7 @@ CORS → SecurityHeaders → AttackGuard → ClientPlatform → Version → Rate
 | DB 连接池 | `PDO::ATTR_PERSISTENT` 持久连接 + 时区初始化预热 | `config/database.php` |
 | Redis 连接池 | `persistent` 持久连接 + 读写分离 `readonly` 配置 | `config/redis.php` |
 | 三级缓存 | L1 进程内存 → L2 APCu 共享内存 → L3 Redis | `support/CacheService.php` |
-| 消息队列异步 | Redis List 4 通道 (sync/report/export/notification) | `support/AsyncJobService.php` |
+| 消息队列异步 | Redis List 2 通道 (sync/notification) | `support/AsyncJobService.php` |
 | Nginx 分级限流 | 30r/s + burst 20 + 20 并发连接 + keepalive 32 | `docker/nginx/admin.conf` |
 | 水平扩展 | upstream 多实例 + 故障转移 + sticky session | `docker/nginx/admin.conf` |
 | CDN 加速 | 静态资源 `expires 30d` + `immutable` + `gzip_static` | `docker/nginx/admin.conf` |
@@ -264,7 +264,7 @@ cd admin && composer install && php start.php start
 1. **数据库连接** — 填写 MySQL 主机、端口、数据库名、用户名密码，支持连接测试
 2. **Redis 配置** — 填写 Redis 连接信息（可选）
 3. **管理员账户** — 设置后台登录用户名、密码、显示名称
-4. **一键安装** — 自动建库、执行 `install.sql` 创建 24 张表并写入种子数据、更新管理员密码
+4. **一键安装** — 自动建库、执行 `install.sql` 创建 23 张表并写入种子数据、更新管理员密码
 
 安装完成后访问 `/` 进入管理后台，使用设置的用户名和密码登录。
 
@@ -321,7 +321,7 @@ ads-php/
 │   │   ├── ads-account/               # OAuth 账户管理
 │   │   ├── ads-task/                  # 定时任务调度 (4 cron)
 │   │   ├── ads-alert/                 # 告警监控引擎
-│   │   ├── ads-report/                # 报表引擎 (CSV/Excel/PDF)
+│   │   ├── ads-report/                # 转化追踪
 │   │   ├── ads-tenant/                # 多租户管理
 │   │   └── ads-storage/               # 存储抽象层 (local/OSS/COS/S3)
 │   ├── public/                        # 静态资源 (webman 内置静态处理)
@@ -334,7 +334,7 @@ ads-php/
 │   │   ├── ExceptionHandler.php       # API 异常处理器
 │   │   └── ApiResponse.php            # 统一响应格式
 │   ├── config/                        # 全局配置 (DB/Redis/Log/Middleware)
-│   ├── tests/                         # PHPUnit 测试 (217 tests)
+│   ├── tests/                         # PHPUnit 测试 (204 tests)
 │   │   ├── Unit/                      # 单元测试 (Middleware, Task, Engines)
 │   │   └── Integration/               # 集成测试 (Auth, Health, API)
 │   └── start.php                      # 服务入口
@@ -342,17 +342,16 @@ ads-php/
 │   ├── public/web/
 │   │   ├── public/pet.svg             # 项目宠物「阿章」，favicon + 登录页
 │   │   ├── src/
-│   │   │   ├── views/                 # 14 个 Vue 页面
+│   │   │   ├── views/                 # 12 个 Vue 页面
 │   │   │   │   ├── dashboard/         # 仪表盘 (ECharts)
 │   │   │   │   ├── account/           # 账户管理 + 绑定
 │   │   │   │   ├── asset/             # 素材库
-│   │   │   │   ├── report/            # 报表分析 + 导出
 │   │   │   │   ├── alert/             # 告警规则 + 记录
 │   │   │   │   ├── notification/      # 通知中心
 │   │   │   │   ├── sync/              # 同步状态
 │   │   │   │   ├── login/             # 登录页 (阿章)
 │   │   │   │   └── system/            # 用户管理 + 审计日志 + 系统信息
-│   │   │   ├── api/                   # 12 个 API 客户端
+│   │   │   ├── api/                   # 11 个 API 客户端
 │   │   │   ├── stores/                # 5 个 Pinia Store
 │   │   │   └── components/            # 共享组件 (ListPageLayout 等 8 个)
 │   │   └── dist/                      # 构建产物 (不入库，CI 构建)
@@ -390,7 +389,7 @@ ads-php/
 | 基础 | `ads_tenants` | 多租户 |
 | 账户 | `ads_platform_accounts`, `ads_auth_tokens` | OAuth 平台账户 |
 | 投放数据 | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | 平台同步的只读投放层级 |
-| 报表 | `ads_report_metrics`, `ads_report_extras` | 统一报表指标 |
+| 指标 | `ads_report_metrics` | 仪表盘/告警使用的同步指标 |
 | 素材 | `ads_assets` | 创意素材库 |
 | 转化 | `ads_conversions` | 转化回传数据 |
 | 告警 | `ads_alert_rules`, `ads_alert_logs` | 告警监控 |
@@ -404,7 +403,7 @@ ads-php/
 | 任务 | 频率 | 功能 |
 |------|------|------|
 | TokenRefreshTask | 每 55 分钟 | 扫描过期 OAuth Token，自动刷新 |
-| DataSyncTask | 每 10 分钟 | 拉取各平台计划+广告组+创意+报表，写入统一表，清除缓存 |
+| DataSyncTask | 每 10 分钟 | 拉取各平台计划+广告组+创意+指标，写入统一表，清除缓存 |
 | AlertCheckTask | 每 5 分钟 | 遍历启用告警规则，评估阈值，触发推送 |
 | RetrySyncTask | 每 3 分钟 | 重试失败的同步任务（最多3次，指数退避） |
 
@@ -414,10 +413,10 @@ ads-php/
 
 ```bash
 cd service && ./vendor/bin/phpunit
-# 217 测试 / 595 断言
+# 204 测试 / 557 断言
 ```
 
-**覆盖范围**: 14 个中间件 · 8 插件业务层 (账户/告警/平台/报表/任务/租户/存储) · 引擎 (Alert/Report) · API 集成测试 (42 路由) · UI E2E (14 页面)
+**覆盖范围**: 14 个中间件 · 8 插件业务层 (账户/告警/平台/转化/任务/租户/存储) · 引擎 (Alert) · API 集成测试 (39 路由) · UI E2E (12 页面)
 
 **测试报告**: 覆盖 PHP 单元 / API 自动化 / UI E2E / Go N/A / Rust N/A + Bug 汇总）
 

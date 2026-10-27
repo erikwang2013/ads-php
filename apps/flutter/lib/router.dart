@@ -2,12 +2,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'features/auth/login_page.dart';
 import 'features/dashboard/dashboard_page.dart';
-import 'features/report/report_page.dart';
 import 'features/account/account_page.dart';
 import 'features/alert/alert_page.dart';
 import 'features/shell/app_shell.dart';
 import 'features/notification/notification_list_page.dart';
-import 'features/report/report_view_page.dart';
 import 'stores/auth_provider.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -37,14 +35,6 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/accounts',
             builder: (_, __) => const AccountPage(),
-          ),
-          GoRoute(
-            path: '/reports',
-            builder: (_, __) => const ReportPage(),
-          ),
-          GoRoute(
-            path: '/reports/view',
-            builder: (_, __) => const ReportViewPage(),
           ),
           GoRoute(
             path: '/alerts',

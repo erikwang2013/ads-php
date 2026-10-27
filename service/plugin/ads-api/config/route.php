@@ -12,10 +12,8 @@ use plugin\ads_api\controller\v1\AccountController;
 use plugin\ads_api\controller\v1\CampaignController;
 use plugin\ads_api\controller\v1\AssetController;
 use plugin\ads_api\controller\v1\DashboardController;
-use plugin\ads_api\controller\v1\ReportController;
 use plugin\ads_api\controller\v1\AlertController;
 use plugin\ads_api\controller\v1\NotificationController;
-use plugin\ads_api\controller\v1\ExportController;
 use plugin\ads_api\controller\v1\DocController;
 use plugin\ads_api\controller\v1\SyncController;
 use plugin\ads_api\controller\v1\ConversionController;
@@ -54,9 +52,6 @@ Webman\Route::group('/api/v1', function () {
     Webman\Route::get('/campaigns', [CampaignController::class, 'index']);
 
     Webman\Route::get('/reports/summary', [DashboardController::class, 'summary']);
-    Webman\Route::get('/reports/custom', [ReportController::class, 'custom']);
-    Webman\Route::get('/reports/export', [ExportController::class, 'export']);
-    Webman\Route::get('/reports/export-dashboard', [ExportController::class, 'exportDashboard']);
 
     Webman\Route::get('/alerts/rules', [AlertController::class, 'rules']);
     Webman\Route::post('/alerts/rules', [AlertController::class, 'createRule']);

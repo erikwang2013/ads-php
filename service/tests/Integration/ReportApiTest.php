@@ -2,15 +2,13 @@
 /**
  * Copyright (c) 2026 erik <erik@erik.xyz} — https://erik.xyz
  *
- * 报表：汇总 / 自定义报表 / 导出。
+ * 仪表盘汇总。
  */
 
 namespace Tests\Integration;
 
 use Illuminate\Database\Capsule\Manager as DB;
 use plugin\ads_api\controller\v1\DashboardController;
-use plugin\ads_api\controller\v1\ReportController;
-use plugin\ads_api\controller\v1\ExportController;
 
 class ReportApiTest extends ApiTestCase
 {
@@ -57,38 +55,5 @@ class ReportApiTest extends ApiTestCase
         $this->assertNotEmpty($body['data']['by_platform']);
         $this->assertEquals(50, $body['data']['daily'][0]['clicks']);
         $this->assertEquals(2, $body['data']['daily'][0]['conversions']);
-    }
-
-    public function testCustomReport(): void
-    {
-        $this->seedMetrics();
-        $request = $this->authedRequest('GET', '/api/reports/custom', [], [], [
-            'date_start' => date('Y-m-01'),
-            'date_end'   => date('Y-m-d'),
-        ]);
-        $body = $this->assertSuccess((new ReportController())->custom($request));
-        $this->assertArrayHasKey('data', $body);
-    }
-
-    public function testExportCsv(): void
-    {
-        $this->seedMetrics();
-        $request = $this->authedRequest('GET', '/api/reports/export', [], [], ['format' => 'csv']);
-
-        // Response::file() 依赖 App::request()（If-Modified-Since 判断）
-        \Workerman\Coroutine\Context::set(\Webman\Http\Request::class, $request);
-
-        $response = (new ExportController())->export($request);
-
-        // 文件响应经 withFile 流式发送：文件生成成功返回 200，失败返回 404 body
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertNotEquals(404, $response->getStatusCode());
-    }
-
-    public function testExportDashboardUnsupportedFormat(): void
-    {
-        $request = $this->authedRequest('GET', '/api/reports/export-dashboard', [], [], ['format' => 'jpg']);
-        $body = $this->json((new ExportController())->exportDashboard($request));
-        $this->assertEquals(1, $body['code']);
     }
 }

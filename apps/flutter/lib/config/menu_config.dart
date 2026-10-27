@@ -18,10 +18,6 @@ class MenuItem {
 
 const List<MenuItem> menuConfig = [
   MenuItem(label: '仪表盘', path: '/dashboard', icon: Icons.dashboard),
-  MenuItem(label: '数据报表', icon: Icons.bar_chart, children: [
-    MenuItem(label: '报表分析', path: '/reports/view', icon: Icons.analytics),
-    MenuItem(label: '数据报表', path: '/reports', icon: Icons.bar_chart),
-  ]),
   MenuItem(label: '平台账户', path: '/accounts', icon: Icons.person),
   MenuItem(label: '告警管理', path: '/alerts', icon: Icons.notifications),
   MenuItem(label: '通知中心', path: '/notifications', icon: Icons.markunread),

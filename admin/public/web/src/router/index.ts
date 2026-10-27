@@ -44,22 +44,10 @@ const routes: RouteRecordRaw[] = [
         meta: { title: '告警记录' },
       },
       {
-        path: 'reports/export',
-        name: 'ReportExport',
-        component: () => import('@/views/report/ReportExport.vue'),
-        meta: { title: '报表导出' },
-      },
-      {
         path: 'assets',
         name: 'Assets',
         component: () => import('@/views/asset/AssetGallery.vue'),
         meta: { title: '素材库' },
-      },
-      {
-        path: 'reports/view',
-        name: 'ReportView',
-        component: () => import('@/views/report/ReportView.vue'),
-        meta: { title: '报表分析' },
       },
       {
         path: 'notifications',

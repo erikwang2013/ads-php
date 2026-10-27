@@ -37,11 +37,8 @@ class DocController
             '广告计划' => [
                 ['GET', '/api/v1/campaigns', '计划列表（筛选/排序/分页）', true, '?platform=juliang&status=enabled&sort=cost&page=1&per_page=20'],
             ],
-            '报表' => [
+            '仪表盘' => [
                 ['GET', '/api/v1/reports/summary', '仪表盘汇总（缓存 5min）', true, '?date_start=2026-05-01&date_end=2026-05-21'],
-                ['GET', '/api/v1/reports/custom', '自定义多维度报表', true, '?dimensions[]=platform&metrics[]=cost&metrics[]=clicks&date_start=2026-05-01&date_end=2026-05-21'],
-                ['GET', '/api/v1/reports/export', '导出 CSV/Excel', true, '?format=csv&date_start=2026-05-01&date_end=2026-05-21'],
-                ['GET', '/api/v1/reports/export-dashboard', '导出仪表盘 PDF', true, '?date_start=2026-05-01&date_end=2026-05-21'],
             ],
             '告警' => [
                 ['GET', '/api/v1/alerts/rules', '告警规则列表（缓存 2min）', true, ''],

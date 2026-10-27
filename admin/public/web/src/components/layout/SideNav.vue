@@ -15,14 +15,6 @@
       <el-icon><Document /></el-icon>
       <span>API 文档</span>
     </el-menu-item>
-    <el-sub-menu index="reports">
-      <template #title>
-        <el-icon><DataAnalysis /></el-icon>
-        <span>数据报表</span>
-      </template>
-      <el-menu-item index="/reports/view">报表分析</el-menu-item>
-      <el-menu-item index="/reports/export">报表导出</el-menu-item>
-    </el-sub-menu>
     <el-menu-item index="/notifications">
       <el-icon><Bell /></el-icon>
       <span>通知中心</span>
