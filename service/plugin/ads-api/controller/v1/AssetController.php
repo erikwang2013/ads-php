@@ -18,7 +18,7 @@ class AssetController
     protected int $maxImageSize = 5242880;   // 5 MiB
     protected int $maxVideoSize = 52428800;  // 50 MiB
 
-    /** DB 中始终存相对路径,读取时按当前存储驱动补全公开 URL */
+    /** DB 中始终存相对路径,读取时补全本地公开 URL */
     protected function presentUrl(string $url): string
     {
         $prefix = '/uploads/assets/';
@@ -52,7 +52,7 @@ class AssetController
         $ext = pathinfo($file->getUploadName(), PATHINFO_EXTENSION) ?: 'bin';
         $key = date('Ymd') . '/' . bin2hex(random_bytes(16)) . '.' . $ext;
         Storage::put($key, $file);
-        // DB 存相对路径,读取时按驱动补全
+        // DB 存相对路径,读取时补全
         $url = '/uploads/assets/' . $key;
 
         $mediaType = $isVideo ? 'video' : 'image';
@@ -121,82 +121,9 @@ class AssetController
         $asset = DB::table('ads_assets')->where('tenant_id', $this->tenantId($request))->find($id);
         if (!$asset) return ApiResponse::error('Asset not found');
 
-        // url→key 解析下沉到各 driver(对象存储 URL 无 /uploads/assets 前缀)
         Storage::deleteUrl((string) $asset->url);
 
         DB::table('ads_assets')->where('id', $id)->delete();
         return ApiResponse::success(null, 'Deleted');
-    }
-
-    /**
-     * @Title("预签名直传地址")
-     * @Group("素材库")
-     * @Url("/api/v1/assets/presign")
-     * @Method("POST")
-     */
-    public function presign(Request $request): Response
-    {
-        $filename = trim((string) ($request->post('filename') ?? ''));
-        $mime = strtolower((string) ($request->post('mime_type') ?? ''));
-        if ($filename === '' || !in_array($mime, $this->allowedTypes, true)) {
-            return ApiResponse::error('filename and mime_type are required');
-        }
-        $ext = pathinfo($filename, PATHINFO_EXTENSION) ?: 'bin';
-        $key = date('Ymd') . '/' . bin2hex(random_bytes(16)) . '.' . $ext;
-
-        try {
-            $uploadUrl = Storage::signedUrl($key, 3600, $mime);
-        } catch (\Throwable $e) {
-            \support\Log::error('Presign failed: ' . $e->getMessage());
-            return ApiResponse::error('Presigned upload not supported by current storage driver');
-        }
-        return ApiResponse::success([
-            'key'        => $key,
-            'upload_url' => $uploadUrl,
-            'expires_in' => 3600,
-            'url'        => $this->presentUrl('/uploads/assets/' . $key),
-        ]);
-    }
-
-    /**
-     * @Title("登记直传素材")
-     * @Group("素材库")
-     * @Url("/api/v1/assets/register")
-     * @Method("POST")
-     */
-    public function register(Request $request): Response
-    {
-        $key = (string) ($request->post('key') ?? '');
-        $filename = trim((string) ($request->post('filename') ?? ''));
-        $mime = strtolower((string) ($request->post('mime_type') ?? ''));
-        $size = (int) ($request->post('size') ?? 0);
-        // 只接受本系统生成的 key 格式,杜绝路径穿越
-        if (!preg_match('#^\d{8}/[0-9a-f]{32}\.[a-z0-9]{1,10}$#', $key)) {
-            return ApiResponse::error('Invalid key');
-        }
-        if (!in_array($mime, $this->allowedTypes, true) || $size <= 0 || $filename === '') {
-            return ApiResponse::error('filename, mime_type and size are required');
-        }
-        $isVideo = str_starts_with($mime, 'video/');
-
-        $id = \plugin\ads_platform\model\Campaign::snowflakeId();
-        DB::table('ads_assets')->insert([
-            'id'         => $id,
-            'tenant_id'  => $request->tenantId ?? 1,
-            'type'       => $isVideo ? 'video' : 'image',
-            'filename'   => $filename,
-            'mime_type'  => $mime,
-            'size'       => $size,
-            'url'        => '/uploads/assets/' . $key,
-            'width'      => 0,
-            'height'     => 0,
-            'created_at' => now(),
-        ]);
-
-        return ApiResponse::success([
-            'id'  => $id,
-            'url' => $this->presentUrl('/uploads/assets/' . $key),
-            'type' => $isVideo ? 'video' : 'image',
-        ], 'Created');
     }
 }

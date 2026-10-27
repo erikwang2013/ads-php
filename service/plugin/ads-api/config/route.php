@@ -51,8 +51,6 @@ Webman\Route::group('/api/v1', function () {
 
     Webman\Route::get('/assets', [AssetController::class, 'index']);
     Webman\Route::post('/assets/upload', [AssetController::class, 'upload']);
-    Webman\Route::post('/assets/presign', [AssetController::class, 'presign']);
-    Webman\Route::post('/assets/register', [AssetController::class, 'register']);
     Webman\Route::get('/assets/{id}', [AssetController::class, 'show']);
     Webman\Route::delete('/assets/{id}', [AssetController::class, 'destroy']);
 

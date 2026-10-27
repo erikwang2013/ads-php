@@ -85,39 +85,4 @@ class AssetStorageTest extends ApiTestCase
         $this->assertEquals('/uploads/assets/x.png', Storage::publicUrl('x.png'));
     }
 
-    public function testPresignRejectedForLocalDriver(): void
-    {
-        $controller = new AssetController();
-        $request = $this->authedRequest('POST', '/api/assets/presign', [
-            'filename'  => 'video.mp4',
-            'mime_type' => 'video/mp4',
-        ]);
-        $this->assertError($controller->presign($request), 1);
-    }
-
-    public function testRegisterCreatesAssetFromDirectUploadKey(): void
-    {
-        $key = date('Ymd') . '/' . str_repeat('a', 32) . '.mp4';
-        $request = $this->authedRequest('POST', '/api/assets/register', [
-            'key'       => $key,
-            'filename'  => 'video.mp4',
-            'mime_type' => 'video/mp4',
-            'size'      => 1024,
-        ]);
-        $body = $this->assertSuccess((new AssetController())->register($request));
-        $this->assertEquals('video', $body['data']['type']);
-        $this->assertEquals('/uploads/assets/' . $key, $body['data']['url']);
-
-        $row = DB::table('ads_assets')->find($body['data']['id']);
-        $this->assertEquals('/uploads/assets/' . $key, $row->url);
-
-        // 非法 key(路径穿越)被拒
-        $bad = $this->authedRequest('POST', '/api/assets/register', [
-            'key'       => '../../etc/passwd',
-            'filename'  => 'x.png',
-            'mime_type' => 'image/png',
-            'size'      => 1,
-        ]);
-        $this->assertError((new AssetController())->register($bad), 1);
-    }
 }

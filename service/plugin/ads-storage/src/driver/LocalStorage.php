@@ -32,15 +32,6 @@ class LocalStorage implements StorageDriver
         return $this->publicUrl($key);
     }
 
-    public function putFile(string $key, string $path): string
-    {
-        $fullPath = $this->dir . '/' . $key;
-        $dir = dirname($fullPath);
-        if (!is_dir($dir)) mkdir($dir, 0755, true);
-        copy($path, $fullPath);
-        return $this->publicUrl($key);
-    }
-
     public function delete(string $key): bool
     {
         $path = $this->dir . '/' . $key;
@@ -51,11 +42,6 @@ class LocalStorage implements StorageDriver
     {
         $key = ltrim(substr((string) $url, strlen('/uploads/assets/')), '/');
         return $key !== '' && $this->delete($key);
-    }
-
-    public function signedUrl(string $key, int $expires, ?string $mime = null): string
-    {
-        throw new \LogicException('Presigned upload is not supported by local driver');
     }
 
     public function publicUrl(string $key): string

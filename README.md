@@ -15,7 +15,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 八条触手 | 六个插件各司其职、并行不悖 | ads-account / ads-api / ads-platform / ads-storage / ads-task / ads-tenant |
 | 触手吸盘 | 数据一路吸附汇总 | 29 家平台 → 统一 `/api/v1` |
 | 双目前视 | 单端聚焦 | Vue 3 管理后台统一查看 |
-| 眨眼 + 起伏 | 周期性轮询与守护 | 4 个定时任务（3/5/10/55 分钟）循环采集；22 项防护静默运行 |
+| 眨眼 + 起伏 | 周期性轮询与守护 | 3 个定时任务（3/10/55 分钟）循环采集；22 项防护静默运行 |
 | 外环 29 个节点 | 29 个平台常驻在线 | 16 国内 + 13 国际，逐个盯住 |
 
 阿章已整合进代码：管理后台 **登录页** 与 **favicon**。
@@ -55,7 +55,7 @@ SVG / PNG）**不是开源资产**，版权归作者所有。未经书面许可�
 - **账户管理** — OAuth 授权与多平台账户绑定
 - **数据概览** — 仪表盘跨平台指标汇总
 - **素材库** — 图片/视频素材管理、画廊预览
-- **素材存储** — 本地/阿里云 OSS/腾讯云 COS/S3 兼容多驱动（环境变量配置）
+- **素材存储** — 本地磁盘存储
 - **管理后台** — Vue 3 + TypeScript + Element Plus
 - **稳定可靠** — 平台调用熔断/降级/超时、三级缓存、高并发优化、22 项安全防护
 - **国际化** — 界面中英双语
@@ -109,7 +109,7 @@ SVG / PNG）**不是开源资产**，版权归作者所有。未经书面许可�
 
 | 层 | 技术 | 说明 |
 |----|------|------|
-| 服务端 | webman v2 + PHP 8.4+ | 6 个插件，26 API 端点 |
+| 服务端 | webman v2 + PHP 8.4+ | 6 个插件，24 API 端点 |
 | 数据库 | MySQL 8.0 | 19 张表，ads_ 前缀，Snowflake BIGINT 主键 |
 | 缓存 | Redis 7 | 三级缓存 (L1内存/L2 APCu/L3 Redis)、限流计数、Pub/Sub |
 | 管理后台 | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP 后端(端口 8789)，SPA 直连业务 API(端口 8788)，9 页面，ECharts 可视化 |
@@ -220,7 +220,7 @@ CORS → SecurityHeaders → AttackGuard → ClientPlatform → RateLimit → Lo
 |------|------|------|
 | 素材库 | 图片/视频上传管理、画廊预览、复制 URL | AssetController + Vue 画廊 |
 | 平台调用弹性 | per-platform 熔断状态机 (5 次失败→OPEN→30s 半开探活)、降级快速失败、29 适配器超时核查 | CircuitBreaker + GuardedAdapter |
-| 素材存储 | 对象存储多驱动 (local/oss/cos/s3)、预签名直传 | ads-storage 插件 |
+| 素材存储 | 本地磁盘存储 | ads-storage 插件 |
 
 ---
 
@@ -307,10 +307,9 @@ ads-php/
 │   │   ├── ads-account/               # OAuth 账户管理
 │   │   ├── ads-task/                  # 定时任务调度 (3 cron)
 │   │   ├── ads-tenant/                # 多租户管理
-│   │   └── ads-storage/               # 存储抽象层 (local/OSS/COS/S3)
+│   │   └── ads-storage/               # 本地素材存储
 │   ├── public/                        # 静态资源 (webman 内置静态处理)
 │   │   └── img/                       # 公共静态图片
-│   ├── scripts/backfill-assets.php    # 存量素材回填对象存储
 │   ├── support/                       # Erik Stack 工具类
 │   │   ├── ControllerTrait.php        # 控制器公共 trait
 │   │   ├── JwtService.php             # JWT 包装类
@@ -318,7 +317,7 @@ ads-php/
 │   │   ├── ExceptionHandler.php       # API 异常处理器
 │   │   └── ApiResponse.php            # 统一响应格式
 │   ├── config/                        # 全局配置 (DB/Redis/Log/Middleware)
-│   ├── tests/                         # PHPUnit 测试 (153 tests)
+│   ├── tests/                         # PHPUnit 测试 (151 tests)
 │   │   ├── Unit/                      # 单元测试 (Middleware, Task, Engines)
 │   │   └── Integration/               # 集成测试 (Auth, Health, API)
 │   └── start.php                      # 服务入口
@@ -383,10 +382,10 @@ ads-php/
 
 ```bash
 cd service && ./vendor/bin/phpunit
-# 153 测试 / 382 断言
+# 151 测试 / 375 断言
 ```
 
-**覆盖范围**: 14 个中间件 · 6 插件业务层 (账户/平台/任务/租户/存储) · API 集成测试 (26 路由) · UI E2E (9 页面)
+**覆盖范围**: 14 个中间件 · 6 插件业务层 (账户/平台/任务/租户/存储) · API 集成测试 (24 路由) · UI E2E (9 页面)
 
 **测试报告**: 覆盖 PHP 单元 / API 自动化 / UI E2E / Go N/A / Rust N/A + Bug 汇总）
 
