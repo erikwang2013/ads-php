@@ -58,7 +58,7 @@ SVG / PNG）**不是开源资产**，版权归作者所有。未经书面许可�
 - **素材存储** — 本地/阿里云 OSS/腾讯云 COS/S3 兼容多驱动（环境变量配置）
 - **多端访问** — Web 管理后台 (Vue 3)、Flutter PC/Mobile、HarmonyOS
 - **稳定可靠** — 平台调用熔断/降级/超时、三级缓存、高并发优化、22 项安全防护
-- **国际化** — 12 语言文档、界面中英双语
+- **国际化** — 界面中英双语
 - **项目宠物** — 章鱼「阿章」，八爪并行，24 小时值守 29 个平台（[pet.svg](assets/diagrams/pet.svg)）
 
 > API 文档：hg/apidoc 自动生成，启动服务后访问 `http://127.0.0.1:8788/apidoc`  
@@ -170,13 +170,13 @@ SVG / PNG）**不是开源资产**，版权归作者所有。未经书面许可�
 
 ## 安全
 
-### Service 端 (14 层全局 + AuthMiddleware)
+### Service 端 (13 层全局 + AuthMiddleware)
 
-CORS → OriginGuard → SecurityHeaders → AttackGuard → ClientPlatform → ReplayGuard → Version → RateLimit → LoginThrottle → SessionLimit → SQLGuard → Validation → ResponseTime → Encryption → AuthMiddleware（路由层）
+CORS → OriginGuard → SecurityHeaders → AttackGuard → ClientPlatform → ReplayGuard → RateLimit → LoginThrottle → SessionLimit → SQLGuard → Validation → ResponseTime → Encryption → AuthMiddleware（路由层）
 
-### Admin 端 (10 层全局 + AuthCheck)
+### Admin 端 (9 层全局 + AuthCheck)
 
-CORS → SecurityHeaders → AttackGuard → ClientPlatform → Version → RateLimit → LoginThrottle → SQLGuard → Validation → CSRF → AuthCheck（路由层）
+CORS → SecurityHeaders → AttackGuard → ClientPlatform → RateLimit → LoginThrottle → SQLGuard → Validation → CSRF → AuthCheck（路由层）
 
 ### 防护能力总览 (22 项)
 
@@ -309,8 +309,8 @@ cd admin/public/web && npx vue-tsc --noEmit   # 零错误
 ads-php/
 ├── service/                           # 用户端业务服务 (webman v2 :8788)
 │   ├── plugin/
-│   │   ├── ads-api/                   # REST API (44 端点，版本路由 /api/v1)
-│   │   │   ├── controller/v1/         # 16 个控制器
+│   │   ├── ads-api/                   # REST API (30 端点，版本路由 /api/v1)
+│   │   │   ├── controller/v1/         # 12 个控制器
 │   │   │   ├── middleware/            # 14 个中间件
 │   │   │   ├── config/route.php       # 路由定义
 │   │   ├── ads-platform/              # 平台适配器核心
@@ -348,15 +348,15 @@ ads-php/
 │   │   │   │   ├── login/             # 登录页 (阿章)
 │   │   │   │   └── system/            # 用户管理 + 审计日志 + 系统信息
 │   │   │   ├── api/                   # 10 个 API 客户端
-│   │   │   ├── stores/                # 5 个 Pinia Store
-│   │   │   └── components/            # 共享组件 (ListPageLayout 等 8 个)
+│   │   │   ├── stores/                # 4 个 Pinia Store
+│   │   │   └── components/            # 共享组件 (ListPageLayout 等 6 个)
 │   │   └── dist/                      # 构建产物 (不入库，CI 构建)
 │   ├── app/                           # PHP 后端 (controller/middleware)
 │   └── config/                        # Admin 配置
 ├── apps/
 │   ├── flutter/                       # Flutter Desktop App
 │   │   └── lib/
-│   │       ├── features/              # 7 个功能页面 + Shell 布局
+│   │       ├── features/              # 4 个功能页面 + Shell 布局
 │   │       ├── config/menu_config.dart # 两级菜单配置
 │   │       ├── router.dart            # GoRouter (ShellRoute + 路由守卫)
 │   │       └── stores/                # Riverpod Auth Provider
@@ -430,24 +430,6 @@ cd apps/flutter && dart analyze   # 零错误
 `.github/dependabot.yml` 每周自动更新 Composer + npm + Docker 依赖。
 
 ---
-
-## Skills
-
-10 个可复用项目技能（开发期内部技能，未随公开仓库发布）：
-
-| Skill | 说明 |
-|------|------|
-| `adapter-generator` | 生成新的广告平台适配器（14 方法模板） |
-| `migration-generator` | 生成 SQL 迁移文件（ads_ 前缀 + BIGINT PK） |
-| `erik-stack` | Erik Stack 8 包集成使用指南 |
-| `admin-page-generator` | 生成 Vue3 管理后台页面 |
-| `api-endpoint` | 添加 RESTful API 端点 |
-| `tdd-workflow` | TDD 验证流程（测试→实现→语法→TypeScript→提交） |
-| `security-middleware` | 添加安全中间件层（接口规范 + 注册 + 现有链参考） |
-| `version-split` | Lite/Standard/Full 三版本拆分（操作步骤 + 配置更新） |
-| `cache-strategy` | 三级缓存策略（L1内存/L2 APCu/L3 Redis + TTL建议） |
-| `high-concurrency` | 高并发 8 项优化（读写分离/连接池/消息队列/水平扩展/静态缓存） |
-
 
 ## 开源不易，欢迎支持
 
