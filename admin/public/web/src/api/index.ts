@@ -22,10 +22,9 @@ interface UnwrappedInstance extends Omit<AxiosInstance, 'request' | 'get' | 'del
 }
 
 // API 版本号固定在 URL 路径上（service 业务 API：/api/v1/...）。
-// '/admin/...' 走 admin 后端（:8789，不版本化），仅 '/admin/cdn/...'
-// 是 service 上的 admin 分组，同样需要 /v1 前缀。
+// '/admin/...' 走 admin 后端（:8789，不版本化）。
 export function versionedPath(url: string): string {
-  if (url.startsWith('/admin') && !url.startsWith('/admin/cdn')) return url
+  if (url.startsWith('/admin')) return url
   return url.startsWith('/v1') ? url : '/v1' + url
 }
 

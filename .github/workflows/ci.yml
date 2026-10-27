@@ -52,7 +52,7 @@ jobs:
       - name: Load schema
         run: |
           # service/plugin/*/migration/*.sql 已合并为仓库根目录的 install.sql
-          # （29 张表 + 种子数据），旧的按目录遍历在仓库里匹配不到任何文件。
+          # （28 张表 + 种子数据），旧的按目录遍历在仓库里匹配不到任何文件。
           mysql -h 127.0.0.1 -u root -ptest ads_test < install.sql
           mysql -h 127.0.0.1 -u root -ptest ads_test -e "SHOW TABLES" | tail -n +2 | wc -l
       - name: Run tests

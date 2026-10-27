@@ -12,26 +12,11 @@ namespace Tests\Integration;
 use Webman\Http\Request;
 use Illuminate\Database\Capsule\Manager as DB;
 use plugin\ads_api\controller\v1\AssetController;
-use plugin\ads_storage\model\CdnProvider;
 use plugin\ads_storage\src\Storage;
 use plugin\ads_storage\src\driver\LocalStorage;
 
 class AssetStorageTest extends ApiTestCase
 {
-    /** 建一个 driver=local + CDN 域名的默认 provider,验证读取时拼接 */
-    protected function seedCdnProvider(string $cdnDomain = 'cdn.example.com'): int
-    {
-        $provider = CdnProvider::create([
-            'name'       => 'Local CDN',
-            'driver'     => 'local',
-            'cdn_domain' => $cdnDomain,
-            'enabled'    => 1,
-            'is_default' => 1,
-            'status'     => 1,
-        ]);
-        return (int) $provider->id;
-    }
-
     protected function multipartUploadRequest(string $path, string $filename, string $mime, string $content): Request
     {
         $boundary = '----asset-test-' . bin2hex(random_bytes(8));
@@ -94,39 +79,10 @@ class AssetStorageTest extends ApiTestCase
         $this->assertFileExists(public_path() . $body['data']['url']);
     }
 
-    public function testStorageDispatchReadsDefaultProvider(): void
+    public function testStorageDispatchDefaultsToLocal(): void
     {
-        $this->seedCdnProvider();
         $this->assertInstanceOf(LocalStorage::class, Storage::driver());
-        // 默认 provider 存在但 driver=local 时,URL 不拼 CDN(本地直出路径)
         $this->assertEquals('/uploads/assets/x.png', Storage::publicUrl('x.png'));
-    }
-
-    public function testCdnDomainJoinedOnReadOnly(): void
-    {
-        $this->seedCdnProvider('cdn.example.com');
-        $png = base64_decode(
-            'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=='
-        );
-        $controller = new AssetController();
-        $body = $this->assertSuccess(
-            $controller->upload($this->multipartUploadRequest('/api/assets/upload', 'test.png', 'image/png', $png))
-        );
-        $url = $body['data']['url'];
-        $this->assertMatchesRegularExpression('#^https://cdn\.example\.com/uploads/assets/\d{8}/[0-9a-f]{32}\.png$#', $url);
-
-        // DB 仍是相对路径
-        $row = DB::table('ads_assets')->find($body['data']['id']);
-        $this->assertMatchesRegularExpression('#^/uploads/assets/\d{8}/[0-9a-f]{32}\.png$#', $row->url);
-
-        // 列表读取时拼接
-        $list = $this->assertSuccess($controller->index($this->authedRequest('GET', '/api/assets')));
-        $this->assertEquals($url, array_values($list['data']['list'])[0]['url']);
-
-        // 删除:文件删除且 DB 行消失
-        $this->assertSuccess($controller->destroy($this->authedRequest('DELETE', '/api/assets/' . $body['data']['id']), (int) $body['data']['id']));
-        $this->assertEquals(0, DB::table('ads_assets')->count());
-        $this->assertFileDoesNotExist(public_path() . substr($row->url, 1));
     }
 
     public function testPresignRejectedForLocalDriver(): void
@@ -141,7 +97,6 @@ class AssetStorageTest extends ApiTestCase
 
     public function testRegisterCreatesAssetFromDirectUploadKey(): void
     {
-        $this->seedCdnProvider();
         $key = date('Ymd') . '/' . str_repeat('a', 32) . '.mp4';
         $request = $this->authedRequest('POST', '/api/assets/register', [
             'key'       => $key,
@@ -151,7 +106,7 @@ class AssetStorageTest extends ApiTestCase
         ]);
         $body = $this->assertSuccess((new AssetController())->register($request));
         $this->assertEquals('video', $body['data']['type']);
-        $this->assertEquals('https://cdn.example.com/uploads/assets/' . $key, $body['data']['url']);
+        $this->assertEquals('/uploads/assets/' . $key, $body['data']['url']);
 
         $row = DB::table('ads_assets')->find($body['data']['id']);
         $this->assertEquals('/uploads/assets/' . $key, $row->url);

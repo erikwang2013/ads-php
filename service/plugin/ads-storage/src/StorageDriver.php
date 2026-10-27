@@ -27,7 +27,4 @@ interface StorageDriver
     public function signedUrl(string $key, int $expires, ?string $mime = null): string;
 
     public function publicUrl(string $key): string;
-
-    /** CDN 缓存刷新,返回成功刷新数;0 = 未配置 CDN 或无缓存 */
-    public function purge(array $urls): int;
 }

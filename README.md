@@ -55,7 +55,7 @@ SVG / PNG）**不是开源资产**，版权归作者所有。未经书面许可�
 - **投放管理** — OAuth 账户授权、广告计划/广告组/创意跨平台统一管理
 - **数据报表** — 跨平台指标汇总、CSV/Excel/PDF 导出、5 模型跨平台归因
 - **智能投放** — 自动出价、预算预警、投放日历 (Gantt)、素材库
-- **全球加速** — 素材 CDN 分发（本地/阿里云 OSS/腾讯云 COS/S3 兼容多驱动，管理端多服务商配置）
+- **全球加速** — 素材分发（本地/阿里云 OSS/腾讯云 COS/S3 兼容多驱动，环境变量配置）
 - **监控告警** — 告警规则引擎、多渠道推送、定时任务自动同步
 - **多端访问** — Web 管理后台 (Vue 3)、Flutter PC/Mobile、HarmonyOS
 - **稳定可靠** — 平台调用熔断/降级/超时、三级缓存、高并发优化、22 项安全防护
@@ -110,11 +110,11 @@ SVG / PNG）**不是开源资产**，版权归作者所有。未经书面许可�
 
 | 层 | 技术 | 说明 |
 |----|------|------|
-| 服务端 | webman v2 + PHP 8.4+ | 8 个插件，76 API 端点 |
-| 数据库 | MySQL 8.0 | 29 张表，ads_ 前缀，Snowflake BIGINT 主键 |
+| 服务端 | webman v2 + PHP 8.4+ | 8 个插件，68 API 端点 |
+| 数据库 | MySQL 8.0 | 28 张表，ads_ 前缀，Snowflake BIGINT 主键 |
 | 缓存 | Redis 7 | 三级缓存 (L1内存/L2 APCu/L3 Redis)、限流计数、Pub/Sub、消息队列 |
 | 搜索 | Elasticsearch | webman-scout 自动索引同步（已配置） |
-| 管理后台 | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP 后端(端口 8789)，SPA 直连业务 API(端口 8788)，21 页面，ECharts 可视化 |
+| 管理后台 | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP 后端(端口 8789)，SPA 直连业务 API(端口 8788)，20 页面，ECharts 可视化 |
 | Flutter | Dart 3 + Riverpod + GoRouter + fl_chart | PC/Mobile 响应式，Desktop Shell 布局，12 页面 |
 | HarmonyOS | ArkTS + ArkUI | 6 个页面已实现，HTTP 客户端已就绪 |
 | 部署 | Docker + Nginx + GHCR | Docker Compose 一键启动，GitHub Actions 自动构建推送 |
@@ -230,7 +230,7 @@ CORS → SecurityHeaders → AttackGuard → ClientPlatform → Version → Rate
 | 投放日历 | 跨平台 Gantt 图、月/周视图、按平台着色 | CalendarService + Vue Gantt |
 | 跨平台归因 | 5 模型归因 (first/last/linear/time_decay/position_based)、30 天回溯 | AttributionEngine + ECharts |
 | 平台调用弹性 | per-platform 熔断状态机 (5 次失败→OPEN→30s 半开探活)、降级快速失败、29 适配器超时核查 | CircuitBreaker + GuardedAdapter |
-| CDN 素材加速 | 对象存储多驱动 (local/oss/cos/s3)、管理端 CDN 服务商管理、预签名直传、删除自动缓存刷新 | ads-storage 插件 + CdnProviderController |
+| 素材存储 | 对象存储多驱动 (local/oss/cos/s3)、预签名直传 | ads-storage 插件 |
 
 ---
 
@@ -267,7 +267,7 @@ cd admin && composer install && php start.php start
 1. **数据库连接** — 填写 MySQL 主机、端口、数据库名、用户名密码，支持连接测试
 2. **Redis 配置** — 填写 Redis 连接信息（可选）
 3. **管理员账户** — 设置后台登录用户名、密码、显示名称
-4. **一键安装** — 自动建库、执行 `install.sql` 创建 29 张表并写入种子数据、更新管理员密码
+4. **一键安装** — 自动建库、执行 `install.sql` 创建 28 张表并写入种子数据、更新管理员密码
 
 安装完成后访问 `/` 进入管理后台，使用设置的用户名和密码登录。
 
@@ -313,9 +313,9 @@ cd admin/public/web && npx vue-tsc --noEmit   # 零错误
 ads-php/
 ├── service/                           # 用户端业务服务 (webman v2 :8788)
 │   ├── plugin/
-│   │   ├── ads-api/                   # REST API (76 端点，版本路由 /api/v1)
-│   │   │   ├── controller/v1/         # 21 个控制器 (含 admin/ 子目录)
-│   │   │   ├── middleware/            # 15 个中间件
+│   │   ├── ads-api/                   # REST API (68 端点，版本路由 /api/v1)
+│   │   │   ├── controller/v1/         # 20 个控制器
+│   │   │   ├── middleware/            # 14 个中间件
 │   │   │   ├── config/route.php       # 路由定义
 │   │   ├── ads-platform/              # 平台适配器核心
 │   │   │   ├── adapter/               # 29 个平台适配器
@@ -328,7 +328,7 @@ ads-php/
 │   │   ├── ads-alert/                 # 告警监控引擎 + 预算预警
 │   │   ├── ads-report/                # 报表引擎 (CSV/Excel/PDF) + 归因引擎 + 投放日历
 │   │   ├── ads-tenant/                # 多租户管理
-│   │   └── ads-storage/               # 存储抽象层 (local/OSS/COS/S3) + CDN 服务商
+│   │   └── ads-storage/               # 存储抽象层 (local/OSS/COS/S3)
 │   ├── public/                        # 静态资源 (webman 内置静态处理)
 │   │   └── img/pet.svg                # 项目宠物「阿章」，/docs 页展示
 │   ├── scripts/backfill-assets.php    # 存量素材回填对象存储
@@ -339,7 +339,7 @@ ads-php/
 │   │   ├── ExceptionHandler.php       # API 异常处理器
 │   │   └── ApiResponse.php            # 统一响应格式
 │   ├── config/                        # 全局配置 (DB/Redis/Log/Middleware)
-│   ├── tests/                         # PHPUnit 测试 (288 tests)
+│   ├── tests/                         # PHPUnit 测试 (270 tests)
 │   │   ├── Unit/                      # 单元测试 (Middleware, Task, Engines)
 │   │   └── Integration/               # 集成测试 (Auth, Health, API)
 │   └── start.php                      # 服务入口
@@ -347,7 +347,7 @@ ads-php/
 │   ├── public/web/
 │   │   ├── public/pet.svg             # 项目宠物「阿章」，favicon + 登录页
 │   │   ├── src/
-│   │   │   ├── views/                 # 21 个 Vue 页面
+│   │   │   ├── views/                 # 20 个 Vue 页面
 │   │   │   │   ├── dashboard/         # 仪表盘 (ECharts)
 │   │   │   │   ├── campaign/          # 广告计划
 │   │   │   │   ├── adgroup/           # 广告组
@@ -359,10 +359,9 @@ ads-php/
 │   │   │   │   ├── notification/      # 通知中心
 │   │   │   │   ├── sync/              # 同步状态
 │   │   │   │   ├── bid/               # 自动出价规则
-│   │   │   │   ├── cdn/               # CDN 服务商
 │   │   │   │   ├── login/             # 登录页 (阿章)
 │   │   │   │   └── system/            # 用户管理 + 审计日志 + 系统信息
-│   │   │   ├── api/                   # 15 个 API 客户端
+│   │   │   ├── api/                   # 14 个 API 客户端
 │   │   │   ├── stores/                # 5 个 Pinia Store
 │   │   │   └── components/            # 共享组件 (ListPageLayout 等 8 个)
 │   │   └── dist/                      # 构建产物 (不入库，CI 构建)
@@ -402,7 +401,6 @@ ads-php/
 | 投放 | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | 广告投放层级 |
 | 报表 | `ads_report_metrics`, `ads_report_extras` | 统一报表指标 |
 | 素材 | `ads_assets` | 创意素材库 |
-| CDN | `ads_cdn_providers` | CDN 服务商配置（凭据加密存储） |
 | 定向 | `ads_targeting_templates` | 受众定向模板 |
 | 归因 | `ads_conversions`, `ads_attribution_results` | 转化追踪 + 归因结果 |
 | 出价 | `ads_bid_rules`, `ads_bid_logs` | 自动出价规则 + 历史 |
@@ -429,10 +427,10 @@ ads-php/
 
 ```bash
 cd service && ./vendor/bin/phpunit
-# 288 测试 / 862 断言
+# 270 测试 / 815 断言
 ```
 
-**覆盖范围**: 14 个中间件 · 8 插件业务层 (账户/告警/平台/报表/任务/租户/存储) · 引擎 (Bid/Alert/Attribution/Report) · API 集成测试 (76 路由) · UI E2E (18 页面)
+**覆盖范围**: 14 个中间件 · 8 插件业务层 (账户/告警/平台/报表/任务/租户/存储) · 引擎 (Bid/Alert/Attribution/Report) · API 集成测试 (68 路由) · UI E2E (18 页面)
 
 **测试报告**: 覆盖 PHP 单元 / API 自动化 / UI E2E / Go N/A / Rust N/A + Bug 汇总）
 

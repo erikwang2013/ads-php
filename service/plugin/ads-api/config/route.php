@@ -4,7 +4,6 @@
  */
 
 use plugin\ads_api\middleware\AuthMiddleware;
-use plugin\ads_api\middleware\AdminMiddleware;
 use plugin\ads_api\controller\v1\AuthController;
 use plugin\ads_api\controller\v1\CaptchaController;
 use plugin\ads_api\controller\v1\HealthController;
@@ -25,7 +24,6 @@ use plugin\ads_api\controller\v1\DocController;
 use plugin\ads_api\controller\v1\SyncController;
 use plugin\ads_api\controller\v1\ConversionController;
 use plugin\ads_api\controller\v1\TenantController;
-use plugin\ads_api\controller\v1\admin\CdnProviderController;
 
 // API 版本号固定在路由路径中：/api/v1/... → plugin\ads_api\controller\v1\*。
 // 新增版本时注册独立分组（如 /api/v2 → controller\v2\*）。
@@ -109,18 +107,6 @@ Webman\Route::group('/api/v1', function () {
     Webman\Route::post('/assets/register', [AssetController::class, 'register']);
     Webman\Route::get('/assets/{id}', [AssetController::class, 'show']);
     Webman\Route::delete('/assets/{id}', [AssetController::class, 'destroy']);
-
-    // CDN 服务商管理 (admin, 仅平台主租户 tenant 1)
-    Webman\Route::group('/admin/cdn', function () {
-        Webman\Route::get('/providers', [CdnProviderController::class, 'index']);
-        Webman\Route::post('/providers', [CdnProviderController::class, 'store']);
-        Webman\Route::put('/providers/{id:\d+}', [CdnProviderController::class, 'update']);
-        Webman\Route::delete('/providers/{id:\d+}', [CdnProviderController::class, 'destroy']);
-        Webman\Route::put('/providers/{id:\d+}/default', [CdnProviderController::class, 'setDefault']);
-        Webman\Route::put('/providers/{id:\d+}/toggle', [CdnProviderController::class, 'toggle']);
-        Webman\Route::post('/providers/{id:\d+}/test', [CdnProviderController::class, 'test']);
-        Webman\Route::post('/providers/{id:\d+}/purge', [CdnProviderController::class, 'purge']);
-    })->middleware([AdminMiddleware::class]);
 
     Webman\Route::get('/reports/attribution', [DashboardController::class, 'attribution']);
     Webman\Route::get('/reports/attribution/models', [DashboardController::class, 'attributionModels']);

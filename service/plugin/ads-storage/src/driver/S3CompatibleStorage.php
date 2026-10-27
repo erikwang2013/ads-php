@@ -7,7 +7,6 @@ namespace plugin\ads_storage\src\driver;
 
 use Aws\S3\S3Client;
 use Webman\Http\UploadFile;
-use plugin\ads_storage\model\CdnProvider;
 use plugin\ads_storage\src\StorageDriver;
 
 /**
@@ -24,17 +23,15 @@ class S3CompatibleStorage implements StorageDriver
     protected string $region = 'auto';
     protected string $endpoint = '';
     protected string $cdnDomain = '';
-    protected string $cdnDriver = '';
 
-    public function __construct(?CdnProvider $provider = null)
+    public function __construct()
     {
-        $this->key = $provider?->access_key ?: (string) env('S3_ACCESS_KEY', '');
-        $this->secret = $provider?->secret_key ?: (string) env('S3_SECRET_KEY', '');
-        $this->bucket = $provider?->bucket ?: (string) env('S3_BUCKET', '');
-        $this->region = $provider?->region ?: (string) env('S3_REGION', 'auto') ?: 'auto';
-        $this->endpoint = $provider?->endpoint ?: (string) env('S3_ENDPOINT', '');
-        $this->cdnDomain = $provider?->cdn_domain ?: (string) env('S3_CDN_DOMAIN', '');
-        $this->cdnDriver = $provider?->cdn_driver ?: '';
+        $this->key = (string) env('S3_ACCESS_KEY', '');
+        $this->secret = (string) env('S3_SECRET_KEY', '');
+        $this->bucket = (string) env('S3_BUCKET', '');
+        $this->region = (string) env('S3_REGION', 'auto') ?: 'auto';
+        $this->endpoint = (string) env('S3_ENDPOINT', '');
+        $this->cdnDomain = (string) env('S3_CDN_DOMAIN', '');
     }
 
     protected function client(): S3Client
@@ -132,11 +129,5 @@ class S3CompatibleStorage implements StorageDriver
         // region=auto(R2 约定)无 endpoint 时按 AWS 默认域处理,避免生成 s3.auto.amazonaws.com 无效域名
         $host = in_array($this->region, ['auto', 'us-east-1'], true) ? 's3.amazonaws.com' : "s3.{$this->region}.amazonaws.com";
         return "https://{$this->bucket}.{$host}/{$path}";
-    }
-
-    public function purge(array $urls): int
-    {
-        // 各 CDN 厂商刷新接口差异大(cloudflare 需 zone id 等),现阶段仅 aliyun 支持
-        return 0;
     }
 }

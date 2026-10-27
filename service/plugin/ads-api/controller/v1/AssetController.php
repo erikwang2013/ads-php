@@ -8,7 +8,6 @@ use Webman\Http\Request;
 use Webman\Http\Response;
 use app\support\ApiResponse;
 use Illuminate\Database\Capsule\Manager as DB;
-use plugin\ads_storage\model\CdnProvider;
 use plugin\ads_storage\src\Storage;
 
 class AssetController
@@ -19,14 +18,12 @@ class AssetController
     protected int $maxImageSize = 5242880;   // 5 MiB
     protected int $maxVideoSize = 52428800;  // 50 MiB
 
-    /** 读取时按默认 provider 的 CDN 域名拼接完整 URL;DB 中始终存相对路径 */
+    /** DB 中始终存相对路径,读取时按当前存储驱动补全公开 URL */
     protected function presentUrl(string $url): string
     {
-        $provider = CdnProvider::defaultProvider();
-        if ($provider?->cdn_domain) {
-            return 'https://' . rtrim($provider->cdn_domain, '/') . '/' . ltrim($url, '/');
-        }
-        return $url;
+        $prefix = '/uploads/assets/';
+        if (!str_starts_with($url, $prefix)) return $url;
+        return Storage::publicUrl(substr($url, strlen($prefix)));
     }
 
         /**
@@ -55,7 +52,7 @@ class AssetController
         $ext = pathinfo($file->getUploadName(), PATHINFO_EXTENSION) ?: 'bin';
         $key = date('Ymd') . '/' . bin2hex(random_bytes(16)) . '.' . $ext;
         Storage::put($key, $file);
-        // DB 存相对路径,CDN 域名读取时拼接
+        // DB 存相对路径,读取时按驱动补全
         $url = '/uploads/assets/' . $key;
 
         $mediaType = $isVideo ? 'video' : 'image';
@@ -126,8 +123,6 @@ class AssetController
 
         // url→key 解析下沉到各 driver(对象存储 URL 无 /uploads/assets 前缀)
         Storage::deleteUrl((string) $asset->url);
-        // 删除源文件后刷新 CDN 缓存,避免失效内容残留
-        Storage::purge([$this->presentUrl((string) $asset->url)]);
 
         DB::table('ads_assets')->where('id', $id)->delete();
         return ApiResponse::success(null, 'Deleted');

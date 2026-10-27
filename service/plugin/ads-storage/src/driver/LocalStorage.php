@@ -6,14 +6,13 @@
 namespace plugin\ads_storage\src\driver;
 
 use Webman\Http\UploadFile;
-use plugin\ads_storage\model\CdnProvider;
 use plugin\ads_storage\src\StorageDriver;
 
 class LocalStorage implements StorageDriver
 {
     protected string $dir;
 
-    public function __construct(?CdnProvider $provider = null)
+    public function __construct()
     {
         $this->dir = public_path() . '/uploads/assets';
         if (!is_dir($this->dir)) mkdir($this->dir, 0755, true);
@@ -62,10 +61,5 @@ class LocalStorage implements StorageDriver
     public function publicUrl(string $key): string
     {
         return '/uploads/assets/' . $key;
-    }
-
-    public function purge(array $urls): int
-    {
-        return count($urls); // 本地直出,无 CDN 缓存
     }
 }
