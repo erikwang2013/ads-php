@@ -18,6 +18,8 @@
 /.github
 # 本地文档资产：仅保留在工作副本，不进入公开仓库（历史 tag 中仍有完整副本）
 docs/
+# 本地工具脚本：仅保留在工作副本，不进入公开仓库
+scripts/
 .claude
 .claude-flow
 .swarm
@@ -78,3 +80,13 @@ apps/flutter/# Android Studio will place build artifacts here
 apps/flutter//android/app/debug
 apps/flutter//android/app/profile
 apps/flutter//android/app/release
+
+# Ruflo local secrets and runtime data
+.claude-flow/data/
+.claude-flow/logs/
+.claude-flow/sessions/
+
+# Codex local configuration
+.codex/
+# Claude Flow runtime data
+# Environment variables
