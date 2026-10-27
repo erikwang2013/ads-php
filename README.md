@@ -111,7 +111,7 @@ SVG / PNG）**不是开源资产**，版权归作者所有。未经书面许可�
 |----|------|------|
 | 服务端 | webman v2 + PHP 8.4+ | 6 个插件，26 API 端点 |
 | 数据库 | MySQL 8.0 | 19 张表，ads_ 前缀，Snowflake BIGINT 主键 |
-| 缓存 | Redis 7 | 三级缓存 (L1内存/L2 APCu/L3 Redis)、限流计数、Pub/Sub、消息队列 |
+| 缓存 | Redis 7 | 三级缓存 (L1内存/L2 APCu/L3 Redis)、限流计数、Pub/Sub |
 | 管理后台 | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP 后端(端口 8789)，SPA 直连业务 API(端口 8788)，9 页面，ECharts 可视化 |
 | Flutter | Dart 3 + Riverpod + GoRouter + fl_chart | PC/Mobile 响应式，Desktop Shell 布局，3 页面 |
 | HarmonyOS | ArkTS + ArkUI | 3 个页面已实现，HTTP 客户端已就绪 |
@@ -236,7 +236,6 @@ CORS → SecurityHeaders → AttackGuard → ClientPlatform → RateLimit → Lo
 | DB 连接池 | `PDO::ATTR_PERSISTENT` 持久连接 + 时区初始化预热 | `config/database.php` |
 | Redis 连接池 | `persistent` 持久连接 + 读写分离 `readonly` 配置 | `config/redis.php` |
 | 三级缓存 | L1 进程内存 → L2 APCu 共享内存 → L3 Redis | `support/CacheService.php` |
-| 消息队列异步 | Redis List 2 通道 (sync/notification) | `support/AsyncJobService.php` |
 | Nginx 分级限流 | 30r/s + burst 20 + 20 并发连接 + keepalive 32 | `docker/nginx/admin.conf` |
 | 水平扩展 | upstream 多实例 + 故障转移 + sticky session | `docker/nginx/admin.conf` |
 | 静态资源缓存 | 静态资源 `expires 30d` + `immutable` + `gzip_static` | `docker/nginx/admin.conf` |
