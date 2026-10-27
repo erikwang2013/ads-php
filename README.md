@@ -339,7 +339,7 @@ ads-php/
 │   │   ├── ExceptionHandler.php       # API 异常处理器
 │   │   └── ApiResponse.php            # 统一响应格式
 │   ├── config/                        # 全局配置 (DB/Redis/Log/Middleware)
-│   ├── tests/                         # PHPUnit 测试 (270 tests)
+│   ├── tests/                         # PHPUnit 测试 (265 tests)
 │   │   ├── Unit/                      # 单元测试 (Middleware, Task, Engines)
 │   │   └── Integration/               # 集成测试 (Auth, Health, API)
 │   └── start.php                      # 服务入口
@@ -427,7 +427,7 @@ ads-php/
 
 ```bash
 cd service && ./vendor/bin/phpunit
-# 270 测试 / 815 断言
+# 265 测试 / 767 断言
 ```
 
 **覆盖范围**: 14 个中间件 · 8 插件业务层 (账户/告警/平台/报表/任务/租户/存储) · 引擎 (Bid/Alert/Attribution/Report) · API 集成测试 (68 路由) · UI E2E (18 页面)
