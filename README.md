@@ -1,12 +1,14 @@
 # Ads Platform — 多平台广告管理系统
 
-（多语言版本文档见历史 tag：`git checkout <tag> -- docs/README.*.md`）
+> **项目概览**：https://package.erik.xyz/ads-php
 
-Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+（多语言版本文档见历史 tag：`git checkout v4.0.0 -- docs/README.*.md`）
+
+Copyright (c) 2026 erik — erik@erik.xyz — https://erik.xyz
 
 ## 项目宠物「阿章」
 
-<p align="center"><img src="assets/diagrams/pet.svg" width="160" alt="项目宠物 阿章"></p>
+![项目宠物 阿章](assets/diagrams/pet.svg)
 
 **阿章**（zhāng）是本项目的吉祥物：一只章鱼。它八爪齐下，每条触手各管一摊、同时伸向 29 个平台——正是这套系统在做的事。
 
@@ -25,18 +27,20 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 ---
 
 
-<!-- pet-expressions:start -->
 ## 项目宠物表情形态 · 阿章
 
-<table align="center">
-<tr><td align="center"><img src="assets/pet-expressions/smile.svg" width="88" alt="笑"><br><b>笑</b><br><code>:emoji-smile:</code></td><td align="center"><img src="assets/pet-expressions/joy.svg" width="88" alt="欢乐"><br><b>欢乐</b><br><code>:emoji-joy:</code></td><td align="center"><img src="assets/pet-expressions/cry.svg" width="88" alt="哭"><br><b>哭</b><br><code>:emoji-cry:</code></td><td align="center"><img src="assets/pet-expressions/depressed.svg" width="88" alt="沮丧"><br><b>沮丧</b><br><code>:emoji-depressed:</code></td><td align="center"><img src="assets/pet-expressions/terrified.svg" width="88" alt="惊恐"><br><b>惊恐</b><br><code>:emoji-terrified:</code></td><td align="center"><img src="assets/pet-expressions/angry.svg" width="88" alt="愤怒"><br><b>愤怒</b><br><code>:emoji-angry:</code></td></tr>
-<tr><td align="center"><img src="assets/pet-expressions/coquettish.svg" width="88" alt="撒娇"><br><b>撒娇</b><br><code>:emoji-coquettish:</code></td><td align="center"><img src="assets/pet-expressions/cute.svg" width="88" alt="卖萌"><br><b>卖萌</b><br><code>:emoji-cute:</code></td><td align="center"><img src="assets/pet-expressions/pleasing.svg" width="88" alt="讨好"><br><b>讨好</b><br><code>:emoji-pleasing:</code></td><td align="center"><img src="assets/pet-expressions/knocking.svg" width="88" alt="敲打"><br><b>敲打</b><br><code>:emoji-knocking:</code></td><td align="center"><img src="assets/pet-expressions/facepalm.svg" width="88" alt="捂脸"><br><b>捂脸</b><br><code>:emoji-facepalm:</code></td><td align="center"><img src="assets/pet-expressions/tongue.svg" width="88" alt="吐舌头"><br><b>吐舌头</b><br><code>:emoji-tongue:</code></td></tr>
-</table>
+| 笑 | 欢乐 | 哭 | 沮丧 | 惊恐 | 愤怒 |
+|---|---|---|---|---|---|
+| ![笑](assets/pet-expressions/smile.svg) | ![欢乐](assets/pet-expressions/joy.svg) | ![哭](assets/pet-expressions/cry.svg) | ![沮丧](assets/pet-expressions/depressed.svg) | ![惊恐](assets/pet-expressions/terrified.svg) | ![愤怒](assets/pet-expressions/angry.svg) |
+| `:emoji-smile:` | `:emoji-joy:` | `:emoji-cry:` | `:emoji-depressed:` | `:emoji-terrified:` | `:emoji-angry:` |
+
+| 撒娇 | 卖萌 | 讨好 | 敲打 | 捂脸 | 吐舌头 |
+|---|---|---|---|---|---|
+| ![撒娇](assets/pet-expressions/coquettish.svg) | ![卖萌](assets/pet-expressions/cute.svg) | ![讨好](assets/pet-expressions/pleasing.svg) | ![敲打](assets/pet-expressions/knocking.svg) | ![捂脸](assets/pet-expressions/facepalm.svg) | ![吐舌头](assets/pet-expressions/tongue.svg) |
+| `:emoji-coquettish:` | `:emoji-cute:` | `:emoji-pleasing:` | `:emoji-knocking:` | `:emoji-facepalm:` | `:emoji-tongue:` |
 
 > 12 种彩色动态形态：笑 / 欢乐 / 哭 / 沮丧 / 惊恐 / 愤怒 / 撒娇 / 卖萌 / 讨好 / 敲打 / 捂脸 / 吐舌头。每个 SVG 自带表情、情绪特效与整体动效，并遵循 `prefers-reduced-motion`。
-<!-- pet-expressions:end -->
 
-<!-- assets-license:start -->
 ## 视觉资产授权 / Visual Assets License
 
 本项目的项目宠物、图片、图标、表情（包括 `assets/pet-expressions/` 等目录下的
@@ -45,7 +49,6 @@ SVG / PNG）**不是开源资产**，版权归作者所有。未经书面许可�
 [ASSETS-LICENSE.md](ASSETS-LICENSE.md)。
 
 > 代码部分仍遵循仓库原有 `LICENSE`；第三方素材（如明确标注的 Go Gopher 等）仍遵循其原许可证。
-<!-- assets-license:end -->
 
 
 ## 概述
@@ -62,7 +65,9 @@ SVG / PNG）**不是开源资产**，版权归作者所有。未经书面许可�
 - **项目宠物** — 章鱼「阿章」，八爪并行，24 小时值守 29 个平台（[pet.svg](assets/diagrams/pet.svg)）
 
 > API 文档：hg/apidoc 自动生成，启动服务后访问 `http://127.0.0.1:8788/apidoc`  
-> 版本对比：Lite 开源 / Standard & Full 联系 erik@erik.xyz
+> 版本对比：[开源版 vs 商业版](#开源版-vs-商业版)
+>
+> 商业授权：Standard / Full 版请联系 erik@erik.xyz
 
 ### 支持的平台
 
@@ -102,6 +107,41 @@ SVG / PNG）**不是开源资产**，版权归作者所有。未经书面许可�
 | Spotify Ads | Spotify | OAuth2 Bearer |
 | Twitch Ads | Twitch | OAuth2 Bearer + ClientId |
 | Netflix Ads | Netflix | OAuth2 client_credentials |
+
+---
+
+## 开源版 vs 商业版
+
+> 商业版授权：**erik@erik.xyz**
+
+本仓库为公开源码的精简版；下表的商业版指完整功能线（Full）。两版共用 29 个平台适配器与核心安全基线，版本号各自独立、不可直接比较。Standard 版功能介于开源版与 Full 之间，具体以授权版本说明为准。
+
+| 维度 | 开源版（本仓库） | 商业版（Full） |
+|------|------------------|----------------|
+| 产品定位 | 轻量账户 / 仪表盘 / 素材 / 数据同步 | 完整投放管理、报表、告警、归因与多租户运营平台 |
+| 授权方式 | 公开源码；个人学习/研究，商业使用需书面授权 | 商业授权（Standard / Full），联系 erik@erik.xyz |
+| 工程规模 | 5 插件 · 9 控制器 · 23 路由 · 15 表 · 7 管理页 | 8 插件 · 21 控制器 · 78 路由 · 29 表 · 21 管理页 |
+| 平台适配器 | 29（16 国内 + 13 国际） | 29（16 国内 + 13 国际） |
+| 账户 OAuth / 数据同步 | ✅ | ✅ |
+| 仪表盘 | ✅ 8 KPI | ✅ 8 KPI + 更多报表视图 |
+| 广告计划 | 只读列表 | CRUD + 启停 + 批量 |
+| 广告组 / 广告创意 | — | CRUD + 启停 / 列表 + 详情 |
+| 自定义报表 / 导出 | — | 多维度报表 + CSV/Excel/PDF |
+| 跨平台归因 | — | 5 模型 · 30 天回溯 |
+| 告警 / 通知 | — | 规则引擎 + 记录 + 通知中心 |
+| 自动出价 / 定向模板 | — | ✅ |
+| 预算预警 / 投放日历 | — | 三段预警 / Gantt 日历 |
+| 转化回传 | — | 转化 API + 数据表 |
+| 素材存储 | 本地磁盘 | 本地 + OSS/COS/S3 + 预签名直传 + CDN 服务商 |
+| 多租户 / 配额 | 单租户 | 租户隔离 + 套餐配额 |
+| 管理端账号 | 单管理员（.env） | RBAC + 用户管理 + 审计日志 |
+| 移动端 | — | Flutter 12 页 + HarmonyOS 6 页 |
+| 测试 | 145 tests / 350 assertions | 300 个测试方法 / 52 个测试文件 |
+| 文档 / 站点 | README | 12 语言文档（639 文件）+ 官网 site |
+| 安全 | 22 项核心防护 | 同左 + 多租户隔离、RBAC、审计 |
+| 版本线 | v4.0.x（精简线） | v3.4.x（完整线） |
+
+**商业授权与交付**：Standard / Full 版授权、私有化部署与定制开发请联系 **erik@erik.xyz**。
 
 ---
 
@@ -408,7 +448,7 @@ cd admin/public/web && npx vue-tsc --noEmit   # 零错误
 
 ## 项目授权 / Project License
 
-Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+Copyright (c) 2026 erik — erik@erik.xyz — https://erik.xyz
 
 - 本项目仅供个人学习、研究使用。
 - 未经作者书面授权，禁止任何形式的商业使用（包括但不限于商业部署、付费服务、二次销售、SaaS 运营及以本项目为基础提供商业服务）。
