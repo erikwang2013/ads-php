@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS `ads_auth_tokens` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ============================================================================
--- 3. 广告投放核心表 (ads-platform / campaigns)
+-- 3. 投放数据表 (ads-platform / campaigns，只读同步)
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS `ads_campaigns` (
@@ -165,23 +165,7 @@ CREATE TABLE IF NOT EXISTS `ads_assets` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ============================================================================
--- 5. 定向模板 (ads-platform / targeting)
--- ============================================================================
-
-CREATE TABLE IF NOT EXISTS `ads_targeting_templates` (
-    `id` BIGINT UNSIGNED PRIMARY KEY,
-    `tenant_id` BIGINT UNSIGNED NOT NULL,
-    `name` VARCHAR(100) NOT NULL,
-    `platform` VARCHAR(32) NOT NULL DEFAULT '',
-    `targeting` JSON NOT NULL,
-    `is_shared` TINYINT DEFAULT 0,
-    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
-    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX `idx_tenant_platform` (`tenant_id`, `platform`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- ============================================================================
--- 6. 转化追踪与归因 (ads-report / conversions)
+-- 5. 转化追踪与归因 (ads-report / conversions)
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS `ads_conversions` (
@@ -215,49 +199,7 @@ CREATE TABLE IF NOT EXISTS `ads_attribution_results` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ============================================================================
--- 7. 自动竞价规则 (ads-platform / bid rules)
--- ============================================================================
-
-CREATE TABLE IF NOT EXISTS `ads_bid_rules` (
-    `id` BIGINT UNSIGNED PRIMARY KEY,
-    `tenant_id` BIGINT UNSIGNED NOT NULL,
-    `name` VARCHAR(100) NOT NULL,
-    `metric` VARCHAR(32) NOT NULL,
-    `condition` VARCHAR(16) NOT NULL,
-    `threshold` DECIMAL(12,2) NOT NULL,
-    `scope` VARCHAR(32) DEFAULT 'tenant',
-    `platform` VARCHAR(32) NULL,
-    `campaign_id` BIGINT UNSIGNED NULL,
-    `action_type` VARCHAR(32) NOT NULL,
-    `adjust_step` INT DEFAULT 0,
-    `budget_min` BIGINT DEFAULT 0,
-    `budget_max` BIGINT DEFAULT 0,
-    `cooldown_minutes` INT DEFAULT 60,
-    `enabled` TINYINT DEFAULT 1,
-    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
-    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX `idx_tenant_enabled` (`tenant_id`, `enabled`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE IF NOT EXISTS `ads_bid_logs` (
-    `id` BIGINT UNSIGNED PRIMARY KEY,
-    `rule_id` BIGINT UNSIGNED NOT NULL,
-    `tenant_id` BIGINT UNSIGNED NOT NULL,
-    `campaign_id` BIGINT UNSIGNED NOT NULL,
-    `metric_value` DECIMAL(12,2) NOT NULL,
-    `old_budget` BIGINT DEFAULT 0,
-    `new_budget` BIGINT DEFAULT 0,
-    `action_type` VARCHAR(32) NOT NULL,
-    `old_status` VARCHAR(32) NULL,
-    `new_status` VARCHAR(32) NULL,
-    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
-    INDEX `idx_rule` (`rule_id`),
-    INDEX `idx_campaign` (`campaign_id`),
-    INDEX `idx_created` (`created_at`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- ============================================================================
--- 8. 告警系统 (ads-alert)
+-- 6. 告警系统 (ads-alert)
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS `ads_alert_rules` (
@@ -313,7 +255,7 @@ CREATE TABLE IF NOT EXISTS `ads_notifications` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ============================================================================
--- 9. 同步错误 (ads-task)
+-- 7. 同步错误 (ads-task)
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS `ads_sync_errors` (
@@ -329,7 +271,7 @@ CREATE TABLE IF NOT EXISTS `ads_sync_errors` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ============================================================================
--- 10. 管理后台 RBAC 表 (admin)
+-- 8. 管理后台 RBAC 表 (admin)
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS `admin_users` (
@@ -384,7 +326,7 @@ CREATE TABLE IF NOT EXISTS `admin_audit_logs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ============================================================================
--- 11. Webman Admin 后台表
+-- 9. Webman Admin 后台表
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS `wa_admin_roles` (
@@ -515,7 +457,7 @@ INSERT INTO `wa_options` VALUES
 ON DUPLICATE KEY UPDATE `name` = VALUES(`name`);
 
 -- ============================================================================
--- 12. 性能索引（在表创建完成后执行，使用存储过程保证幂等）
+-- 10. 性能索引（在表创建完成后执行，使用存储过程保证幂等）
 -- ============================================================================
 
 DROP PROCEDURE IF EXISTS ads_add_index;

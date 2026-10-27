@@ -32,24 +32,6 @@ const routes: RouteRecordRaw[] = [
         meta: { title: '绑定账户' },
       },
       {
-        path: 'campaigns',
-        name: 'Campaigns',
-        component: () => import('@/views/campaign/CampaignList.vue'),
-        meta: { title: '广告计划' },
-      },
-      {
-        path: 'adgroups',
-        name: 'AdGroups',
-        component: () => import('@/views/adgroup/AdGroupList.vue'),
-        meta: { title: '广告组' },
-      },
-      {
-        path: 'creatives',
-        name: 'Creatives',
-        component: () => import('@/views/creative/CreativeList.vue'),
-        meta: { title: '广告创意' },
-      },
-      {
         path: 'alerts',
         name: 'Alerts',
         component: () => import('@/views/alert/AlertRuleList.vue'),
@@ -66,12 +48,6 @@ const routes: RouteRecordRaw[] = [
         name: 'ReportExport',
         component: () => import('@/views/report/ReportExport.vue'),
         meta: { title: '报表导出' },
-      },
-      {
-        path: 'reports/calendar',
-        name: 'CampaignCalendar',
-        component: () => import('@/views/report/CampaignCalendar.vue'),
-        meta: { title: '投放日历' },
       },
       {
         path: 'reports/attribution',

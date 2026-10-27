@@ -10,11 +10,7 @@ use plugin\ads_api\controller\v1\HealthController;
 use plugin\ads_api\controller\v1\PlatformController;
 use plugin\ads_api\controller\v1\AccountController;
 use plugin\ads_api\controller\v1\CampaignController;
-use plugin\ads_api\controller\v1\AdGroupController;
-use plugin\ads_api\controller\v1\CreativeController;
 use plugin\ads_api\controller\v1\AssetController;
-use plugin\ads_api\controller\v1\BidRuleController;
-use plugin\ads_api\controller\v1\TargetingTemplateController;
 use plugin\ads_api\controller\v1\DashboardController;
 use plugin\ads_api\controller\v1\ReportController;
 use plugin\ads_api\controller\v1\AlertController;
@@ -56,20 +52,6 @@ Webman\Route::group('/api/v1', function () {
     Webman\Route::post('/accounts/{id:\d+}/sync', [AccountController::class, 'sync']);
 
     Webman\Route::get('/campaigns', [CampaignController::class, 'index']);
-    Webman\Route::post('/campaigns', [CampaignController::class, 'store']);
-    Webman\Route::get('/campaigns/{id}', [CampaignController::class, 'show']);
-    Webman\Route::put('/campaigns/{id}', [CampaignController::class, 'update']);
-    Webman\Route::post('/campaigns/{id:\d+}/toggle', [CampaignController::class, 'toggle']);
-    Webman\Route::post('/campaigns/batch/toggle', [CampaignController::class, 'batchToggle']);
-
-    Webman\Route::get('/ad-groups', [AdGroupController::class, 'index']);
-    Webman\Route::post('/ad-groups', [AdGroupController::class, 'store']);
-    Webman\Route::get('/ad-groups/{id}', [AdGroupController::class, 'show']);
-    Webman\Route::put('/ad-groups/{id}', [AdGroupController::class, 'update']);
-    Webman\Route::post('/ad-groups/{id:\d+}/toggle', [AdGroupController::class, 'toggle']);
-
-    Webman\Route::get('/creatives', [CreativeController::class, 'index']);
-    Webman\Route::get('/creatives/{id}', [CreativeController::class, 'show']);
 
     Webman\Route::get('/reports/summary', [DashboardController::class, 'summary']);
     Webman\Route::get('/reports/custom', [ReportController::class, 'custom']);
@@ -81,17 +63,6 @@ Webman\Route::group('/api/v1', function () {
     Webman\Route::put('/alerts/rules/{id:\d+}', [AlertController::class, 'updateRule']);
     Webman\Route::delete('/alerts/rules/{id:\d+}', [AlertController::class, 'deleteRule']);
 
-    Webman\Route::get('/bid-rules', [BidRuleController::class, 'index']);
-    Webman\Route::post('/bid-rules', [BidRuleController::class, 'store']);
-    Webman\Route::put('/bid-rules/{id:\d+}', [BidRuleController::class, 'update']);
-    Webman\Route::delete('/bid-rules/{id:\d+}', [BidRuleController::class, 'destroy']);
-    Webman\Route::get('/bid-rules/logs', [BidRuleController::class, 'logs']);
-
-    Webman\Route::get('/targeting-templates', [TargetingTemplateController::class, 'index']);
-    Webman\Route::get('/targeting-templates/{id}', [TargetingTemplateController::class, 'show']);
-    Webman\Route::post('/targeting-templates', [TargetingTemplateController::class, 'store']);
-    Webman\Route::put('/targeting-templates/{id:\d+}', [TargetingTemplateController::class, 'update']);
-    Webman\Route::delete('/targeting-templates/{id:\d+}', [TargetingTemplateController::class, 'destroy']);
     Webman\Route::get('/alerts/logs', [AlertController::class, 'logs']);
     Webman\Route::post('/alerts/logs/{id:\d+}/acknowledge', [AlertController::class, 'acknowledge']);
     Webman\Route::get('/alerts/unread-count', [AlertController::class, 'unreadCount']);
@@ -110,9 +81,6 @@ Webman\Route::group('/api/v1', function () {
 
     Webman\Route::get('/reports/attribution', [DashboardController::class, 'attribution']);
     Webman\Route::get('/reports/attribution/models', [DashboardController::class, 'attributionModels']);
-
-    Webman\Route::get('/reports/calendar', [DashboardController::class, 'calendar']);
-    Webman\Route::get('/reports/budget-alerts', [DashboardController::class, 'budgetAlerts']);
 
     // 同步状态可视化 (Phase 10 Task 1)
     Webman\Route::get('/sync/status', [SyncController::class, 'status']);

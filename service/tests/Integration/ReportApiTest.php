@@ -89,22 +89,6 @@ class ReportApiTest extends ApiTestCase
         $this->assertArrayHasKey('data', $body);
     }
 
-    public function testCalendar(): void
-    {
-        $this->seedCampaign(['start_date' => date('Y-m-d'), 'end_date' => date('Y-m-d')]);
-        $request = $this->authedRequest('GET', '/api/reports/calendar');
-        $body = $this->assertSuccess((new DashboardController())->calendar($request));
-        $this->assertArrayHasKey('data', $body);
-    }
-
-    public function testBudgetAlerts(): void
-    {
-        $this->seedCampaign();
-        $request = $this->authedRequest('GET', '/api/reports/budget-alerts');
-        $body = $this->assertSuccess((new DashboardController())->budgetAlerts($request));
-        $this->assertArrayHasKey('data', $body);
-    }
-
     public function testExportCsv(): void
     {
         $this->seedMetrics();

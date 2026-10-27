@@ -24,14 +24,4 @@ return [
         'handler' => [plugin\ads_task\task\RetrySyncTask::class, 'execute'],
         'rule'    => '*/3 * * * *',
     ],
-    [
-        'name'    => 'BidCheck',
-        'handler' => [plugin\ads_task\task\BidCheckTask::class, 'execute'],
-        'rule'    => '*/10 * * * *',
-    ],
-    [
-        'name'    => 'BudgetCheck',
-        'handler' => [plugin\ads_task\task\BudgetCheckTask::class, 'execute'],
-        'rule'    => '*/15 * * * *',
-    ],
 ];

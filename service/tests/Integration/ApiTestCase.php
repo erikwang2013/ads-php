@@ -30,8 +30,8 @@ abstract class ApiTestCase extends TestCase
     /** 被测试写入的业务表，setUp 时清空保证用例可重复 */
     protected const DIRTY_TABLES = [
         'ads_platform_accounts', 'ads_campaigns', 'ads_ad_groups', 'ads_creatives',
-        'ads_alert_rules', 'ads_alert_logs', 'ads_bid_rules', 'ads_bid_logs',
-        'ads_targeting_templates', 'ads_notifications', 'ads_assets', 'ads_sync_errors',
+        'ads_alert_rules', 'ads_alert_logs',
+        'ads_notifications', 'ads_assets', 'ads_sync_errors',
         'ads_conversions', 'ads_auth_tokens', 'ads_attribution_results', 'ads_report_metrics',
     ];
 

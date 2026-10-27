@@ -126,13 +126,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
         _dashboardData?['overview'] as Map<String, dynamic>? ?? const {};
     final cards = [
       _MetricCard(
-        title: '活跃广告',
-        // summary 无 campaign 维度，保留默认值
-        value: '${_dashboardData?['active_campaigns'] ?? 0}',
-        icon: Icons.campaign,
-        color: Colors.blue,
-      ),
-      _MetricCard(
         title: '今日消耗',
         value: '¥${(overview['total_cost'] ?? 0).toString()}',
         icon: Icons.monetization_on,

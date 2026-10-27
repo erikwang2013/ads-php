@@ -30,14 +30,6 @@ struct DashboardPage {
 
         Row() {
           // Navigation icons as text buttons
-          Text('Campaigns')
-            .fontSize(14)
-            .fontColor('#1677ff')
-            .onClick(() => {
-              router.pushUrl({ url: 'pages/CampaignListPage' });
-            })
-            .margin({ right: 16 })
-
           Text('Accounts')
             .fontSize(14)
             .fontColor('#1677ff')
@@ -168,9 +160,6 @@ struct DashboardPage {
             .padding({ left: 20, top: 24, bottom: 12 })
 
           Row() {
-            this.QuickActionButton('Campaigns', '#1677ff', () => {
-              router.pushUrl({ url: 'pages/CampaignListPage' });
-            })
             this.QuickActionButton('Accounts', '#52c41a', () => {
               router.pushUrl({ url: 'pages/AccountPage' });
             })

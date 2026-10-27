@@ -15,7 +15,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 | 八条触手 | 八个插件各司其职、并行不悖 | ads-account / ads-alert / ads-api / ads-platform / ads-report / ads-storage / ads-task / ads-tenant |
 | 触手吸盘 | 数据一路吸附汇总 | 29 家平台 → 统一 `/api/v1` |
 | 双目前视 | 多端同时盯屏 | Vue Admin / Flutter / HarmonyOS 三端共用一套 API |
-| 眨眼 + 起伏 | 周期性轮询与守护 | 6 个定时任务（3/5/10/10/15/55 分钟）循环采集；22 项防护静默运行 |
+| 眨眼 + 起伏 | 周期性轮询与守护 | 4 个定时任务（3/5/10/55 分钟）循环采集；22 项防护静默运行 |
 | 外环 29 个节点 | 29 个平台常驻在线 | 16 国内 + 13 国际，逐个盯住 |
 
 阿章已整合进代码：管理后台 **登录页** 与 **favicon**、Service 端 **`/docs` API 文档页**，以及全部文档页。
@@ -50,11 +50,11 @@ SVG / PNG）**不是开源资产**，版权归作者所有。未经书面许可�
 
 ## 概述
 
-**Ads Platform** 是一套多平台广告管理系统，对接 **29 个广告平台**（国内 16 家 + 国际 13 家），统一管理广告投放与跨平台数据报表。
+**Ads Platform** 是一套多平台广告数据管理系统，对接 **29 个广告平台**（国内 16 家 + 国际 13 家），统一管理多平台账户与跨平台数据报表。
 
-- **投放管理** — OAuth 账户授权、广告计划/广告组/创意跨平台统一管理
+- **账户管理** — OAuth 授权与多平台账户绑定
 - **数据报表** — 跨平台指标汇总、CSV/Excel/PDF 导出、5 模型跨平台归因
-- **智能投放** — 自动出价、预算预警、投放日历 (Gantt)、素材库
+- **素材库** — 图片/视频素材管理、画廊预览
 - **全球加速** — 素材分发（本地/阿里云 OSS/腾讯云 COS/S3 兼容多驱动，环境变量配置）
 - **监控告警** — 告警规则引擎、多渠道推送、定时任务自动同步
 - **多端访问** — Web 管理后台 (Vue 3)、Flutter PC/Mobile、HarmonyOS
@@ -110,13 +110,13 @@ SVG / PNG）**不是开源资产**，版权归作者所有。未经书面许可�
 
 | 层 | 技术 | 说明 |
 |----|------|------|
-| 服务端 | webman v2 + PHP 8.4+ | 8 个插件，68 API 端点 |
-| 数据库 | MySQL 8.0 | 28 张表，ads_ 前缀，Snowflake BIGINT 主键 |
+| 服务端 | webman v2 + PHP 8.4+ | 8 个插件，44 API 端点 |
+| 数据库 | MySQL 8.0 | 25 张表，ads_ 前缀，Snowflake BIGINT 主键 |
 | 缓存 | Redis 7 | 三级缓存 (L1内存/L2 APCu/L3 Redis)、限流计数、Pub/Sub、消息队列 |
 | 搜索 | Elasticsearch | webman-scout 自动索引同步（已配置） |
-| 管理后台 | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP 后端(端口 8789)，SPA 直连业务 API(端口 8788)，20 页面，ECharts 可视化 |
-| Flutter | Dart 3 + Riverpod + GoRouter + fl_chart | PC/Mobile 响应式，Desktop Shell 布局，12 页面 |
-| HarmonyOS | ArkTS + ArkUI | 6 个页面已实现，HTTP 客户端已就绪 |
+| 管理后台 | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP 后端(端口 8789)，SPA 直连业务 API(端口 8788)，15 页面，ECharts 可视化 |
+| Flutter | Dart 3 + Riverpod + GoRouter + fl_chart | PC/Mobile 响应式，Desktop Shell 布局，7 页面 |
+| HarmonyOS | ArkTS + ArkUI | 5 个页面已实现，HTTP 客户端已就绪 |
 | 部署 | Docker + Nginx + GHCR | Docker Compose 一键启动，GitHub Actions 自动构建推送 |
 
 ## 架构图
@@ -226,8 +226,6 @@ CORS → SecurityHeaders → AttackGuard → ClientPlatform → Version → Rate
 | 功能 | 说明 | 技术 |
 |------|------|------|
 | 素材库 | 图片/视频上传管理、画廊预览、复制 URL | AssetController + Vue 画廊 |
-| 预算预警 | 日预算消耗实时追踪、三段告警 (50/80/100%) | BudgetAlertService + 15min Cron |
-| 投放日历 | 跨平台 Gantt 图、月/周视图、按平台着色 | CalendarService + Vue Gantt |
 | 跨平台归因 | 5 模型归因 (first/last/linear/time_decay/position_based)、30 天回溯 | AttributionEngine + ECharts |
 | 平台调用弹性 | per-platform 熔断状态机 (5 次失败→OPEN→30s 半开探活)、降级快速失败、29 适配器超时核查 | CircuitBreaker + GuardedAdapter |
 | 素材存储 | 对象存储多驱动 (local/oss/cos/s3)、预签名直传 | ads-storage 插件 |
@@ -267,7 +265,7 @@ cd admin && composer install && php start.php start
 1. **数据库连接** — 填写 MySQL 主机、端口、数据库名、用户名密码，支持连接测试
 2. **Redis 配置** — 填写 Redis 连接信息（可选）
 3. **管理员账户** — 设置后台登录用户名、密码、显示名称
-4. **一键安装** — 自动建库、执行 `install.sql` 创建 28 张表并写入种子数据、更新管理员密码
+4. **一键安装** — 自动建库、执行 `install.sql` 创建 25 张表并写入种子数据、更新管理员密码
 
 安装完成后访问 `/` 进入管理后台，使用设置的用户名和密码登录。
 
@@ -313,20 +311,18 @@ cd admin/public/web && npx vue-tsc --noEmit   # 零错误
 ads-php/
 ├── service/                           # 用户端业务服务 (webman v2 :8788)
 │   ├── plugin/
-│   │   ├── ads-api/                   # REST API (68 端点，版本路由 /api/v1)
-│   │   │   ├── controller/v1/         # 20 个控制器
+│   │   ├── ads-api/                   # REST API (44 端点，版本路由 /api/v1)
+│   │   │   ├── controller/v1/         # 16 个控制器
 │   │   │   ├── middleware/            # 14 个中间件
 │   │   │   ├── config/route.php       # 路由定义
 │   │   ├── ads-platform/              # 平台适配器核心
 │   │   │   ├── adapter/               # 29 个平台适配器
 │   │   │   ├── src/                   # AdapterRegistry, CampaignData
-│   │   │   ├── model/                 # BidRule, BidLog, TargetingTemplate
-│   │   │   ├── service/               # BidEngine, ReportBuilder
-│   │   │   └── migration/             # SQL 迁移 + 性能索引
+│   │   │   └── model/                 # Campaign
 │   │   ├── ads-account/               # OAuth 账户管理
-│   │   ├── ads-task/                  # 定时任务调度 (6 cron)
-│   │   ├── ads-alert/                 # 告警监控引擎 + 预算预警
-│   │   ├── ads-report/                # 报表引擎 (CSV/Excel/PDF) + 归因引擎 + 投放日历
+│   │   ├── ads-task/                  # 定时任务调度 (4 cron)
+│   │   ├── ads-alert/                 # 告警监控引擎
+│   │   ├── ads-report/                # 报表引擎 (CSV/Excel/PDF) + 归因引擎
 │   │   ├── ads-tenant/                # 多租户管理
 │   │   └── ads-storage/               # 存储抽象层 (local/OSS/COS/S3)
 │   ├── public/                        # 静态资源 (webman 内置静态处理)
@@ -339,7 +335,7 @@ ads-php/
 │   │   ├── ExceptionHandler.php       # API 异常处理器
 │   │   └── ApiResponse.php            # 统一响应格式
 │   ├── config/                        # 全局配置 (DB/Redis/Log/Middleware)
-│   ├── tests/                         # PHPUnit 测试 (265 tests)
+│   ├── tests/                         # PHPUnit 测试 (229 tests)
 │   │   ├── Unit/                      # 单元测试 (Middleware, Task, Engines)
 │   │   └── Integration/               # 集成测试 (Auth, Health, API)
 │   └── start.php                      # 服务入口
@@ -347,21 +343,17 @@ ads-php/
 │   ├── public/web/
 │   │   ├── public/pet.svg             # 项目宠物「阿章」，favicon + 登录页
 │   │   ├── src/
-│   │   │   ├── views/                 # 20 个 Vue 页面
+│   │   │   ├── views/                 # 15 个 Vue 页面
 │   │   │   │   ├── dashboard/         # 仪表盘 (ECharts)
-│   │   │   │   ├── campaign/          # 广告计划
-│   │   │   │   ├── adgroup/           # 广告组
-│   │   │   │   ├── creative/          # 广告创意
 │   │   │   │   ├── account/           # 账户管理 + 绑定
 │   │   │   │   ├── asset/             # 素材库
-│   │   │   │   ├── report/            # 报表分析 + 导出 + 归因 + 投放日历
+│   │   │   │   ├── report/            # 报表分析 + 导出 + 归因
 │   │   │   │   ├── alert/             # 告警规则 + 记录
 │   │   │   │   ├── notification/      # 通知中心
 │   │   │   │   ├── sync/              # 同步状态
-│   │   │   │   ├── bid/               # 自动出价规则
 │   │   │   │   ├── login/             # 登录页 (阿章)
 │   │   │   │   └── system/            # 用户管理 + 审计日志 + 系统信息
-│   │   │   ├── api/                   # 14 个 API 客户端
+│   │   │   ├── api/                   # 12 个 API 客户端
 │   │   │   ├── stores/                # 5 个 Pinia Store
 │   │   │   └── components/            # 共享组件 (ListPageLayout 等 8 个)
 │   │   └── dist/                      # 构建产物 (不入库，CI 构建)
@@ -370,7 +362,7 @@ ads-php/
 ├── apps/
 │   ├── flutter/                       # Flutter Desktop App
 │   │   └── lib/
-│   │       ├── features/              # 12 个功能页面 + Shell 布局
+│   │       ├── features/              # 7 个功能页面 + Shell 布局
 │   │       ├── config/menu_config.dart # 两级菜单配置
 │   │       ├── router.dart            # GoRouter (ShellRoute + 路由守卫)
 │   │       └── stores/                # Riverpod Auth Provider
@@ -398,12 +390,10 @@ ads-php/
 |------|------|------|
 | 基础 | `ads_tenants` | 多租户 |
 | 账户 | `ads_platform_accounts`, `ads_auth_tokens` | OAuth 平台账户 |
-| 投放 | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | 广告投放层级 |
+| 投放数据 | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | 平台同步的只读投放层级 |
 | 报表 | `ads_report_metrics`, `ads_report_extras` | 统一报表指标 |
 | 素材 | `ads_assets` | 创意素材库 |
-| 定向 | `ads_targeting_templates` | 受众定向模板 |
 | 归因 | `ads_conversions`, `ads_attribution_results` | 转化追踪 + 归因结果 |
-| 出价 | `ads_bid_rules`, `ads_bid_logs` | 自动出价规则 + 历史 |
 | 告警 | `ads_alert_rules`, `ads_alert_logs` | 告警监控 |
 | 通知 | `ads_notifications` | 站内通知 |
 | 系统 | `ads_sync_errors`, `admin_users`, `admin_roles`, `admin_audit_logs` | 同步错误、RBAC、审计 |
@@ -417,8 +407,6 @@ ads-php/
 | TokenRefreshTask | 每 55 分钟 | 扫描过期 OAuth Token，自动刷新 |
 | DataSyncTask | 每 10 分钟 | 拉取各平台计划+广告组+创意+报表，写入统一表，清除缓存 |
 | AlertCheckTask | 每 5 分钟 | 遍历启用告警规则，评估阈值，触发推送 |
-| BidCheckTask | 每 10 分钟 | 遍历自动出价规则，查询指标，执行预算调整/启停 |
-| BudgetCheckTask | 每 15 分钟 | 遍历投放中计划，日预算消耗追踪、三段预警 (50/80/100%) |
 | RetrySyncTask | 每 3 分钟 | 重试失败的同步任务（最多3次，指数退避） |
 
 ---
@@ -427,10 +415,10 @@ ads-php/
 
 ```bash
 cd service && ./vendor/bin/phpunit
-# 265 测试 / 767 断言
+# 229 测试 / 634 断言
 ```
 
-**覆盖范围**: 14 个中间件 · 8 插件业务层 (账户/告警/平台/报表/任务/租户/存储) · 引擎 (Bid/Alert/Attribution/Report) · API 集成测试 (68 路由) · UI E2E (18 页面)
+**覆盖范围**: 14 个中间件 · 8 插件业务层 (账户/告警/平台/报表/任务/租户/存储) · 引擎 (Alert/Attribution/Report) · API 集成测试 (44 路由) · UI E2E (15 页面)
 
 **测试报告**: 覆盖 PHP 单元 / API 自动化 / UI E2E / Go N/A / Rust N/A + Bug 汇总）
 

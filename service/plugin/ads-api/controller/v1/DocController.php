@@ -36,22 +36,6 @@ class DocController
             ],
             '广告计划' => [
                 ['GET', '/api/v1/campaigns', '计划列表（筛选/排序/分页）', true, '?platform=juliang&status=enabled&sort=cost&page=1&per_page=20'],
-                ['POST', '/api/v1/campaigns', '创建广告计划', true, '{"platform":"juliang","platform_account_id":"...","name":"测试计划","daily_budget":20000}'],
-                ['GET', '/api/v1/campaigns/:id', '计划详情（含今日指标）', true, ''],
-                ['PUT', '/api/v1/campaigns/:id', '更新计划', true, '{"name":"新名称"}'],
-                ['POST', '/api/v1/campaigns/:id/toggle', '启停计划', true, '{"enabled":false}'],
-                ['POST', '/api/v1/campaigns/batch/toggle', '批量启停', true, '{"ids":[1,2,3],"enabled":false}'],
-            ],
-            '广告组' => [
-                ['GET', '/api/v1/ad-groups', '广告组列表', true, '?campaign_id=1&status=enabled&page=1&per_page=20'],
-                ['POST', '/api/v1/ad-groups', '创建广告组（支持定位模板）', true, '{"campaign_id":1,"name":"测试组","bid_amount":100,"bid_type":"cpc","targeting_template_id":1}'],
-                ['GET', '/api/v1/ad-groups/:id', '广告组详情', true, ''],
-                ['PUT', '/api/v1/ad-groups/:id', '更新广告组', true, '{"name":"新名称","targeting":{...}}'],
-                ['POST', '/api/v1/ad-groups/:id/toggle', '启停广告组', true, '{"enabled":false}'],
-            ],
-            '创意' => [
-                ['GET', '/api/v1/creatives', '创意列表', true, '?ad_group_id=1&media_type=image&page=1&per_page=20'],
-                ['GET', '/api/v1/creatives/:id', '创意详情', true, ''],
             ],
             '报表' => [
                 ['GET', '/api/v1/reports/summary', '仪表盘汇总（缓存 5min）', true, '?date_start=2026-05-01&date_end=2026-05-21'],
@@ -73,20 +57,6 @@ class DocController
                 ['GET', '/api/v1/notifications/unread-count', '未读通知数量', true, ''],
                 ['POST', '/api/v1/notifications/:id/read', '标记单条已读', true, ''],
                 ['POST', '/api/v1/notifications/read-all', '全部已读', true, ''],
-            ],
-            '自动出价' => [
-                ['GET', '/api/v1/bid-rules', '出价规则列表', true, ''],
-                ['POST', '/api/v1/bid-rules', '创建出价规则', true, '{"name":"花费超限降预算","metric":"cost","condition":"gt","threshold":5000,"action_type":"adjust_budget","adjust_step":-2000,"cooldown_minutes":60}'],
-                ['PUT', '/api/v1/bid-rules/:id', '更新出价规则', true, ''],
-                ['DELETE', '/api/v1/bid-rules/:id', '删除出价规则', true, ''],
-                ['GET', '/api/v1/bid-rules/logs', '出价调整历史', true, '?rule_id=1'],
-            ],
-            '定向模板' => [
-                ['GET', '/api/v1/targeting-templates', '定向模板列表', true, '?platform=juliang'],
-                ['GET', '/api/v1/targeting-templates/:id', '模板详情', true, ''],
-                ['POST', '/api/v1/targeting-templates', '创建定向模板', true, '{"name":"核心受众","platform":"","targeting":{"age":{"min":18,"max":45}}}'],
-                ['PUT', '/api/v1/targeting-templates/:id', '更新定向模板', true, ''],
-                ['DELETE', '/api/v1/targeting-templates/:id', '删除定向模板', true, ''],
             ],
         ];
 

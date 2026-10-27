@@ -12,7 +12,6 @@ class AppLocalizations {
   static const _localizedValues = <String, Map<String, String>>{
     'appTitle':    {'zh': '广告管理系统', 'en': 'Ads Platform'},
     'dashboard':   {'zh': '仪表盘', 'en': 'Dashboard'},
-    'campaigns':   {'zh': '广告计划', 'en': 'Campaigns'},
     'reports':     {'zh': '数据报表', 'en': 'Reports'},
     'accounts':    {'zh': '平台账户', 'en': 'Accounts'},
     'alerts':      {'zh': '告警管理', 'en': 'Alerts'},

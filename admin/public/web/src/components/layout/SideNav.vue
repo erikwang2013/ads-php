@@ -15,15 +15,6 @@
       <el-icon><Document /></el-icon>
       <span>API 文档</span>
     </el-menu-item>
-    <el-sub-menu index="ads">
-      <template #title>
-        <el-icon><Promotion /></el-icon>
-        <span>广告管理</span>
-      </template>
-      <el-menu-item index="/campaigns">广告计划</el-menu-item>
-      <el-menu-item index="/adgroups">广告组</el-menu-item>
-      <el-menu-item index="/creatives">广告创意</el-menu-item>
-    </el-sub-menu>
     <el-sub-menu index="reports">
       <template #title>
         <el-icon><DataAnalysis /></el-icon>
@@ -31,7 +22,6 @@
       </template>
       <el-menu-item index="/reports/view">报表分析</el-menu-item>
       <el-menu-item index="/reports/export">报表导出</el-menu-item>
-      <el-menu-item index="/reports/calendar">投放日历</el-menu-item>
       <el-menu-item index="/reports/attribution">归因分析</el-menu-item>
     </el-sub-menu>
     <el-menu-item index="/notifications">
@@ -66,7 +56,7 @@
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import { DataAnalysis, Promotion, User, Bell, Document, Setting } from '@element-plus/icons-vue'
+import { DataAnalysis, User, Bell, Document, Setting } from '@element-plus/icons-vue'
 import { useAlertStore } from '@/stores/alert'
 import { useNotificationStore } from '@/stores/notification'
 defineProps<{ collapsed: boolean }>()
