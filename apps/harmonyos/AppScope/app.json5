@@ -1,0 +1,11 @@
+// Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+{
+  "app": {
+    "bundleName": "com.erik.adsapp",
+    "vendor": "erik",
+    "versionCode": 1,
+    "versionName": "1.0.0",
+    "icon": "$media:app_icon",
+    "label": "$string:app_name"
+  }
+}

@@ -1,0 +1,37 @@
+<?php
+/**
+ * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+ */
+
+return [
+    [
+        'name'    => 'TokenRefresh',
+        'handler' => [plugin\ads_task\task\TokenRefreshTask::class, 'execute'],
+        'rule'    => '55 */1 * * *',
+    ],
+    [
+        'name'    => 'DataSync',
+        'handler' => [plugin\ads_task\task\DataSyncTask::class, 'execute'],
+        'rule'    => '*/10 * * * *',
+    ],
+    [
+        'name'    => 'AlertCheck',
+        'handler' => [plugin\ads_task\task\AlertCheckTask::class, 'execute'],
+        'rule'    => '*/5 * * * *',
+    ],
+    [
+        'name'    => 'RetrySync',
+        'handler' => [plugin\ads_task\task\RetrySyncTask::class, 'execute'],
+        'rule'    => '*/3 * * * *',
+    ],
+    [
+        'name'    => 'BidCheck',
+        'handler' => [plugin\ads_task\task\BidCheckTask::class, 'execute'],
+        'rule'    => '*/10 * * * *',
+    ],
+    [
+        'name'    => 'BudgetCheck',
+        'handler' => [plugin\ads_task\task\BudgetCheckTask::class, 'execute'],
+        'rule'    => '*/15 * * * *',
+    ],
+];

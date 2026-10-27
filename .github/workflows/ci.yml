@@ -1,0 +1,111 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  php-syntax:
+    name: PHP Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+      - name: Check PHP syntax
+        run: |
+          # php -l 逐文件打印 "No syntax errors detected in <file>"；出错时 stdout 有
+          # "Errors parsing <file>"、stderr 有 "PHP Parse error: ..."，故过滤后非空即为失败。
+          # 注意不能写成 `php -l ... | grep -v "No syntax errors"`：全是干净文件时 grep 无输出、
+          # 退出码 1，配合 bash -e 会把"检查通过"判成失败（反之有语法错误时 grep 命中、退出 0，反而放行）。
+          out=$(find service admin -name "*.php" -not -path "*/vendor/*" -exec php -l {} \; 2>&1 \
+                | grep -v "No syntax errors" || true)
+          if [ -n "$out" ]; then
+            echo "$out"
+            echo "::error::PHP 语法检查未通过"
+            exit 1
+          fi
+          echo "PHP 语法检查通过"
+
+  php-tests:
+    name: PHPUnit Tests
+    runs-on: ubuntu-latest
+    needs: php-syntax
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: test
+          MYSQL_DATABASE: ads_test
+        ports: ['3306:3306']
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+      - name: Install dependencies
+        run: cd service && composer install --no-interaction
+      - name: Load schema
+        run: |
+          # service/plugin/*/migration/*.sql 已合并为仓库根目录的 install.sql
+          # （29 张表 + 种子数据），旧的按目录遍历在仓库里匹配不到任何文件。
+          mysql -h 127.0.0.1 -u root -ptest ads_test < install.sql
+          mysql -h 127.0.0.1 -u root -ptest ads_test -e "SHOW TABLES" | tail -n +2 | wc -l
+      - name: Run tests
+        # tests/bootstrap.php 用 getenv('DB_PASSWORD') 拼连接串（缺省为空串），
+        # 而上面的 mysql 服务要求 root/test，不传会 1045 Access denied。
+        env:
+          DB_PASSWORD: test
+        run: cd service && ./vendor/bin/phpunit
+
+  typescript:
+    name: TypeScript Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: cd admin/public/web && npm ci
+      - name: Type check
+        run: cd admin/public/web && npx vue-tsc --noEmit
+
+  # 移动端 CI 打包（Phase 10 Task 3）
+  # 构建目标选择（依据 apps/flutter/pubspec.yaml 与源码现状）：
+  # - pubspec sdk: '>=3.2.0 <4.0.0'，subosito/flutter-action channel: stable 满足约束
+  # - 项目仅脚手架了 linux/macos/windows 平台目录（无 web/），lib/main.dart 直接 import 'dart:io'
+  #   并依赖 window_manager 桌面插件 → flutter build web 无法通过，放弃 web 构建
+  # - 仓库当前无测试（无 test/ 目录与 *_test.dart）→ flutter test 无内容可跑
+  # - 故以 flutter analyze 作为 CI 构建验证（依赖解析 + 静态分析通过即视为构建校验通过）
+  # - HarmonyOS 跳过原因：无标准 Linux CI 工具链，hvigor 构建依赖 DevEco Studio/SDK
+  #   （无官方 Linux 发行版），本期不做 HarmonyOS 打包 job，仅在此标注
+  flutter-build:
+    name: Flutter Build (Analyze)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: Install dependencies
+        working-directory: apps/flutter
+        run: flutter pub get
+      - name: Analyze (build verification)
+        working-directory: apps/flutter
+        run: flutter analyze
+
+  docker-build:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    needs: [php-tests, typescript]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build PHP image
+        run: docker build -t ads-php -f Dockerfile .
+      - name: Build Admin image
+        run: docker build -t ads-admin -f Dockerfile.admin .

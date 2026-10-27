@@ -1,0 +1,30 @@
+{
+  "name": "ads-admin",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@element-plus/icons-vue": "^2.3",
+    "axios": "^1.20",
+    "dayjs": "^1.11",
+    "echarts": "^5.5",
+    "element-plus": "^2.8",
+    "pinia": "^4.0",
+    "vue": "^3.5",
+    "vue-echarts": "^7.0",
+    "vue-i18n": "^9.14.4",
+    "vue-router": "^4.4"
+  },
+  "devDependencies": {
+    "@types/node": "^26.4",
+    "@vitejs/plugin-vue": "^6.0",
+    "typescript": "^5.5",
+    "vite": "^8.2",
+    "vue-tsc": "^2.1"
+  }
+}

@@ -1,0 +1,79 @@
+{
+    "name": "ads/service",
+    "type": "project",
+    "require-dev": {
+        "phpunit/phpunit": "^10.0",
+        "hg/apidoc": "^5.3"
+    },
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "aliyun/aliyun-oss-php-sdk",
+                "version": "2.6.0",
+                "dist": {
+                    "url": "https://codeload.github.com/aliyun/aliyun-oss-php-sdk/tar.gz/refs/tags/v2.6.0",
+                    "type": "tar"
+                },
+                "autoload": {
+                    "psr-4": {
+                        "OSS\\": "src/OSS"
+                    }
+                },
+                "require": {
+                    "php": ">=7.4"
+                }
+            }
+        }
+    ],
+    "require": {
+        "php": ">=8.4",
+        "ext-bcmath": "*",
+        "workerman/webman-framework": "^2.0",
+        "workerman/crontab": "^1.0",
+        "illuminate/database": "^11.0",
+        "illuminate/redis": "^11.0",
+        "webman/redis-queue": "^2.0",
+        "firebase/php-jwt": "7.0.5 as 6.11.1",
+        "vlucas/phpdotenv": "^5.0",
+        "monolog/monolog": "^3.10",
+        "illuminate/pagination": "^11.51",
+        "erikwang2013/snowflake-php": "^2.0",
+        "erikwang2013/hashids": "^1.0",
+        "erikwang2013/jwt-webman": "^2.0",
+        "erikwang2013/encryption": "^1.0",
+        "erikwang2013/encryptable": "^2.0",
+        "erikwang2013/webman-scout": "^2.0",
+        "erikwang2013/season": "^2.0",
+        "erikwang2013/poster-php": "^1.0",
+        "webman/redis": "^2.1",
+        "aliyun/aliyun-oss-php-sdk": "^2.6",
+        "aws/aws-sdk-php": "^3.300"
+    },
+    "autoload": {
+        "psr-4": {
+            "app\\": "",
+            "erik\\support\\": "support/",
+            "plugin\\ads_platform\\": "plugin/ads-platform/",
+            "plugin\\ads_account\\": "plugin/ads-account/",
+            "plugin\\ads_api\\": "plugin/ads-api/",
+            "plugin\\ads_tenant\\": "plugin/ads-tenant/",
+            "plugin\\ads_report\\": "plugin/ads-report/",
+            "plugin\\ads_alert\\": "plugin/ads-alert/",
+            "plugin\\ads_task\\": "plugin/ads-task/",
+            "plugin\\ads_storage\\": "plugin/ads-storage/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "config": {
+        "allow-plugins": {
+            "erikwang2013/encryptable": true
+        }
+    }
+}
