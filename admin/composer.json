@@ -11,7 +11,6 @@
     "erikwang2013/season": "^2.0",
     "erikwang2013/encryption": "^1.0",
     "erikwang2013/encryptable": "^2.0",
-    "erikwang2013/webman-scout": "^2.0",
     "erikwang2013/jwt-webman": "^2.0",
     "erikwang2013/poster-php": "^1.0",
     "firebase/php-jwt": "7.0.5 as 6.11.1"

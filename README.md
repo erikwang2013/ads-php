@@ -112,7 +112,6 @@ SVG / PNG）**不是开源资产**，版权归作者所有。未经书面许可�
 | 服务端 | webman v2 + PHP 8.4+ | 6 个插件，26 API 端点 |
 | 数据库 | MySQL 8.0 | 19 张表，ads_ 前缀，Snowflake BIGINT 主键 |
 | 缓存 | Redis 7 | 三级缓存 (L1内存/L2 APCu/L3 Redis)、限流计数、Pub/Sub、消息队列 |
-| 搜索 | Elasticsearch | webman-scout 自动索引同步（已配置） |
 | 管理后台 | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP 后端(端口 8789)，SPA 直连业务 API(端口 8788)，9 页面，ECharts 可视化 |
 | Flutter | Dart 3 + Riverpod + GoRouter + fl_chart | PC/Mobile 响应式，Desktop Shell 布局，3 页面 |
 | HarmonyOS | ArkTS + ArkUI | 3 个页面已实现，HTTP 客户端已就绪 |
@@ -152,7 +151,6 @@ SVG / PNG）**不是开源资产**，版权归作者所有。未经书面许可�
 | `erikwang2013/jwt-webman` | JWT 认证令牌 |
 | `erikwang2013/encryption` | API 层敏感数据加解密 |
 | `erikwang2013/encryptable` | DB 字段级自动加解密 |
-| `erikwang2013/webman-scout` | Elasticsearch 数据同步 |
 | `erikwang2013/season` | 国家旗帜标识 |
 | `erikwang2013/poster-php` | 滑块验证码（登录保护） |
 | `hg/apidoc` | API 文档自动生成（注解 + Web UI） |
