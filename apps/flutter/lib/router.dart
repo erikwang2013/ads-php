@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'features/auth/login_page.dart';
 import 'features/dashboard/dashboard_page.dart';
 import 'features/account/account_page.dart';
-import 'features/alert/alert_page.dart';
 import 'features/shell/app_shell.dart';
 import 'features/notification/notification_list_page.dart';
 import 'stores/auth_provider.dart';
@@ -35,10 +34,6 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/accounts',
             builder: (_, __) => const AccountPage(),
-          ),
-          GoRoute(
-            path: '/alerts',
-            builder: (_, __) => const AlertPage(),
           ),
           GoRoute(
             path: '/notifications',

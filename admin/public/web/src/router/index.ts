@@ -32,18 +32,6 @@ const routes: RouteRecordRaw[] = [
         meta: { title: '绑定账户' },
       },
       {
-        path: 'alerts',
-        name: 'Alerts',
-        component: () => import('@/views/alert/AlertRuleList.vue'),
-        meta: { title: '告警规则' },
-      },
-      {
-        path: 'alerts/logs',
-        name: 'AlertLogs',
-        component: () => import('@/views/alert/AlertLogList.vue'),
-        meta: { title: '告警记录' },
-      },
-      {
         path: 'assets',
         name: 'Assets',
         component: () => import('@/views/asset/AssetGallery.vue'),

@@ -2,7 +2,7 @@
 /**
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
  *
- * 广告计划只读列表：分页、筛选与花费排序（供仪表盘/告警范围选择）。
+ * 广告计划只读列表：分页、筛选与花费排序（供仪表盘）。
  */
 
 namespace Tests\Integration;

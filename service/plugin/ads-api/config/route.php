@@ -12,7 +12,6 @@ use plugin\ads_api\controller\v1\AccountController;
 use plugin\ads_api\controller\v1\CampaignController;
 use plugin\ads_api\controller\v1\AssetController;
 use plugin\ads_api\controller\v1\DashboardController;
-use plugin\ads_api\controller\v1\AlertController;
 use plugin\ads_api\controller\v1\NotificationController;
 use plugin\ads_api\controller\v1\DocController;
 use plugin\ads_api\controller\v1\SyncController;
@@ -52,15 +51,6 @@ Webman\Route::group('/api/v1', function () {
     Webman\Route::get('/campaigns', [CampaignController::class, 'index']);
 
     Webman\Route::get('/reports/summary', [DashboardController::class, 'summary']);
-
-    Webman\Route::get('/alerts/rules', [AlertController::class, 'rules']);
-    Webman\Route::post('/alerts/rules', [AlertController::class, 'createRule']);
-    Webman\Route::put('/alerts/rules/{id:\d+}', [AlertController::class, 'updateRule']);
-    Webman\Route::delete('/alerts/rules/{id:\d+}', [AlertController::class, 'deleteRule']);
-
-    Webman\Route::get('/alerts/logs', [AlertController::class, 'logs']);
-    Webman\Route::post('/alerts/logs/{id:\d+}/acknowledge', [AlertController::class, 'acknowledge']);
-    Webman\Route::get('/alerts/unread-count', [AlertController::class, 'unreadCount']);
 
     Webman\Route::get('/notifications', [NotificationController::class, 'index']);
     Webman\Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);

@@ -144,13 +144,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
         color: Colors.purple,
       ),
       _MetricCard(
-        title: '告警',
-        // summary 无告警数，保留默认值
-        value: '${_dashboardData?['alerts'] ?? 0}',
-        icon: Icons.warning,
-        color: Colors.red,
-      ),
-      _MetricCard(
         title: 'ROI',
         // summary 无 ROI，保留默认值
         value: '${_dashboardData?['roi'] ?? '0'}x',

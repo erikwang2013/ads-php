@@ -20,7 +20,7 @@ class NotificationAssetApiTest extends ApiTestCase
         DB::table('ads_notifications')->insert(array_merge([
             'id'         => $id,
             'tenant_id'  => $this->tenantId,
-            'type'       => 'alert',
+            'type'       => 'system',
             'title'      => '测试通知',
             'content'    => '花费超限提醒',
             'is_read'    => 0,

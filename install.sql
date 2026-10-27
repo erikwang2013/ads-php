@@ -179,55 +179,18 @@ CREATE TABLE IF NOT EXISTS `ads_conversions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ============================================================================
--- 6. 告警系统 (ads-alert)
+-- 6. 通知中心 (ads-notifications)
 -- ============================================================================
-
-CREATE TABLE IF NOT EXISTS `ads_alert_rules` (
-    `id` BIGINT UNSIGNED PRIMARY KEY,
-    `tenant_id` BIGINT UNSIGNED NOT NULL,
-    `name` VARCHAR(100) NOT NULL,
-    `metric` VARCHAR(32) NOT NULL,
-    `condition` VARCHAR(16) NOT NULL,
-    `threshold` DECIMAL(12,2) NOT NULL,
-    `scope` VARCHAR(32) DEFAULT 'tenant',
-    `platform` VARCHAR(32) NULL,
-    `campaign_id` BIGINT UNSIGNED NULL,
-    `check_interval` INT DEFAULT 5,
-    `channels` JSON NULL,
-    `webhook_url` VARCHAR(512) NULL COMMENT 'Webhook 回调地址（webhook 渠道用）',
-    `enabled` TINYINT DEFAULT 1,
-    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
-    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX `idx_tenant_enabled` (`tenant_id`, `enabled`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE IF NOT EXISTS `ads_alert_logs` (
-    `id` BIGINT UNSIGNED PRIMARY KEY,
-    `tenant_id` BIGINT UNSIGNED NOT NULL,
-    `rule_id` BIGINT UNSIGNED NOT NULL,
-    `rule_name` VARCHAR(100) NOT NULL,
-    `metric` VARCHAR(32) NOT NULL,
-    `current_value` DECIMAL(12,2) NOT NULL,
-    `threshold` DECIMAL(12,2) NOT NULL,
-    `condition` VARCHAR(16) NOT NULL,
-    `status` ENUM('triggered','acknowledged','resolved') DEFAULT 'triggered',
-    `extra` JSON NULL,
-    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
-    INDEX `idx_tenant_status` (`tenant_id`, `status`),
-    INDEX `idx_rule` (`rule_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `ads_notifications` (
     `id` BIGINT UNSIGNED PRIMARY KEY,
     `tenant_id` BIGINT UNSIGNED NOT NULL DEFAULT 1,
-    `type` VARCHAR(32) NOT NULL DEFAULT 'alert',
+    `type` VARCHAR(32) NOT NULL DEFAULT 'system',
     `title` VARCHAR(255) NOT NULL,
     `content` TEXT,
     `ref_type` VARCHAR(32) DEFAULT NULL,
     `ref_id` BIGINT UNSIGNED DEFAULT NULL,
     `is_read` TINYINT DEFAULT 0,
-    `rule_id` BIGINT UNSIGNED DEFAULT NULL,
-    `log_id` BIGINT UNSIGNED DEFAULT NULL,
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX `idx_tenant_read` (`tenant_id`, `is_read`),
@@ -285,8 +248,8 @@ CREATE TABLE IF NOT EXISTS `admin_roles` (
 
 INSERT INTO admin_roles (id, name, slug, permissions) VALUES
 (1, '超级管理员', 'super_admin', '["*"]'),
-(2, '运营经理', 'ops_manager', '["dashboard","campaigns","reports","alerts","accounts"]'),
-(3, '数据分析师', 'analyst', '["dashboard","reports"]')
+(2, '运营经理', 'ops_manager', '["dashboard","accounts","assets","notifications","sync"]'),
+(3, '数据分析师', 'analyst', '["dashboard"]')
 ON DUPLICATE KEY UPDATE name=VALUES(name);
 
 CREATE TABLE IF NOT EXISTS `admin_audit_logs` (
@@ -460,7 +423,5 @@ CALL ads_add_index('ads_campaigns', 'idx_tenant_platform', 'tenant_id, platform'
 CALL ads_add_index('ads_ad_groups', 'idx_campaign_status', 'campaign_id, status');
 CALL ads_add_index('ads_creatives', 'idx_adgroup_media', 'ad_group_id, media_type');
 CALL ads_add_index('ads_report_metrics', 'idx_tenant_date', 'tenant_id, date');
-CALL ads_add_index('ads_alert_rules', 'idx_tenant_platform', 'tenant_id, platform');
-CALL ads_add_index('ads_alert_logs', 'idx_tenant_rule', 'tenant_id, rule_id');
 
 DROP PROCEDURE IF EXISTS ads_add_index;

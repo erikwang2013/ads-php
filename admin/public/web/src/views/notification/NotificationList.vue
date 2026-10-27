@@ -4,7 +4,7 @@
     <template #header-actions><el-button type="primary" @click="markAll">全部已读</el-button></template>
     <template #filters>
       <el-select v-model="filter.type" placeholder="类型" clearable style="width:120px" @change="fetchList">
-        <el-option label="告警" value="alert" /><el-option label="系统" value="system" />
+        <el-option label="系统" value="system" />
       </el-select>
       <el-select v-model="filter.is_read" placeholder="状态" clearable style="width:100px" @change="fetchList">
         <el-option label="未读" :value="0" /><el-option label="已读" :value="1" />
@@ -12,7 +12,7 @@
     </template>
     <template #table>
       <el-table :data="list" v-loading="loading">
-        <el-table-column label="类型" width="80"><template #default="{ row }"><el-tag :type="row.type === 'alert' ? 'danger' : 'info'" size="small">{{ row.type }}</el-tag></template></el-table-column>
+        <el-table-column label="类型" width="80"><template #default="{ row }"><el-tag type="info" size="small">{{ row.type }}</el-tag></template></el-table-column>
         <el-table-column prop="title" label="标题" min-width="200" show-overflow-tooltip />
         <el-table-column label="内容" min-width="240" show-overflow-tooltip><template #default="{ row }">{{ truncate(row.content, 80) }}</template></el-table-column>
         <el-table-column label="状态" width="80"><template #default="{ row }"><span :style="{ color: row.is_read ? '#909399' : '#e6a23c' }">{{ row.is_read ? '已读' : '未读' }}</span></template></el-table-column>

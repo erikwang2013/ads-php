@@ -15,11 +15,6 @@ return [
         'rule'    => '*/10 * * * *',
     ],
     [
-        'name'    => 'AlertCheck',
-        'handler' => [plugin\ads_task\task\AlertCheckTask::class, 'execute'],
-        'rule'    => '*/5 * * * *',
-    ],
-    [
         'name'    => 'RetrySync',
         'handler' => [plugin\ads_task\task\RetrySyncTask::class, 'execute'],
         'rule'    => '*/3 * * * *',

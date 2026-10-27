@@ -8,7 +8,6 @@ export class StringResources {
     appTitle:  { zh: '广告管理系统', en: 'Ads Platform' },
     dashboard: { zh: '仪表盘', en: 'Dashboard' },
     accounts:  { zh: '平台账户', en: 'Accounts' },
-    alerts:    { zh: '告警管理', en: 'Alerts' },
     login:     { zh: '登录', en: 'Login' },
     logout:    { zh: '退出', en: 'Logout' },
     username:  { zh: '用户名', en: 'Username' },

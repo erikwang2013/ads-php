@@ -12,7 +12,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 | 形象 | 寓意 | 对应实现 |
 |------|------|---------|
-| 八条触手 | 八个插件各司其职、并行不悖 | ads-account / ads-alert / ads-api / ads-platform / ads-report / ads-storage / ads-task / ads-tenant |
+| 八条触手 | 七个插件各司其职、并行不悖 | ads-account / ads-api / ads-platform / ads-report / ads-storage / ads-task / ads-tenant |
 | 触手吸盘 | 数据一路吸附汇总 | 29 家平台 → 统一 `/api/v1` |
 | 双目前视 | 多端同时盯屏 | Vue Admin / Flutter / HarmonyOS 三端共用一套 API |
 | 眨眼 + 起伏 | 周期性轮询与守护 | 4 个定时任务（3/5/10/55 分钟）循环采集；22 项防护静默运行 |
@@ -56,7 +56,6 @@ SVG / PNG）**不是开源资产**，版权归作者所有。未经书面许可�
 - **数据概览** — 仪表盘跨平台指标汇总
 - **素材库** — 图片/视频素材管理、画廊预览
 - **全球加速** — 素材分发（本地/阿里云 OSS/腾讯云 COS/S3 兼容多驱动，环境变量配置）
-- **监控告警** — 告警规则引擎、多渠道推送、定时任务自动同步
 - **多端访问** — Web 管理后台 (Vue 3)、Flutter PC/Mobile、HarmonyOS
 - **稳定可靠** — 平台调用熔断/降级/超时、三级缓存、高并发优化、22 项安全防护
 - **国际化** — 12 语言文档、界面中英双语
@@ -110,13 +109,13 @@ SVG / PNG）**不是开源资产**，版权归作者所有。未经书面许可�
 
 | 层 | 技术 | 说明 |
 |----|------|------|
-| 服务端 | webman v2 + PHP 8.4+ | 8 个插件，39 API 端点 |
-| 数据库 | MySQL 8.0 | 23 张表，ads_ 前缀，Snowflake BIGINT 主键 |
+| 服务端 | webman v2 + PHP 8.4+ | 7 个插件，32 API 端点 |
+| 数据库 | MySQL 8.0 | 21 张表，ads_ 前缀，Snowflake BIGINT 主键 |
 | 缓存 | Redis 7 | 三级缓存 (L1内存/L2 APCu/L3 Redis)、限流计数、Pub/Sub、消息队列 |
 | 搜索 | Elasticsearch | webman-scout 自动索引同步（已配置） |
-| 管理后台 | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP 后端(端口 8789)，SPA 直连业务 API(端口 8788)，12 页面，ECharts 可视化 |
-| Flutter | Dart 3 + Riverpod + GoRouter + fl_chart | PC/Mobile 响应式，Desktop Shell 布局，5 页面 |
-| HarmonyOS | ArkTS + ArkUI | 4 个页面已实现，HTTP 客户端已就绪 |
+| 管理后台 | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP 后端(端口 8789)，SPA 直连业务 API(端口 8788)，10 页面，ECharts 可视化 |
+| Flutter | Dart 3 + Riverpod + GoRouter + fl_chart | PC/Mobile 响应式，Desktop Shell 布局，4 页面 |
+| HarmonyOS | ArkTS + ArkUI | 3 个页面已实现，HTTP 客户端已就绪 |
 | 部署 | Docker + Nginx + GHCR | Docker Compose 一键启动，GitHub Actions 自动构建推送 |
 
 ## 架构图
@@ -138,7 +137,7 @@ SVG / PNG）**不是开源资产**，版权归作者所有。未经书面许可�
 
 ## 架构说明
 
-- **`service/`** — webman v2 用户端业务 API 服务，监听端口 **8788**。处理广告平台对接、OAuth 授权、数据同步、仪表盘指标、告警监控等业务逻辑。
+- **`service/`** — webman v2 用户端业务 API 服务，监听端口 **8788**。处理广告平台对接、OAuth 授权、数据同步、仪表盘指标等业务逻辑。
 - **`admin/`** — webman-admin v2 独立管理后台，监听端口 **8789**。包含 PHP 后端（认证鉴权、用户管理、系统配置）和 Vue 3 SPA 前端。
 - **管理后台与业务服务的通信** — Vue SPA 通过 axios（baseURL `/api`）直连 service API；admin 专属路由（`/api/admin/*`）由 admin PHP 后端（8789）提供服务，Nginx 按路径分流。
 - **开发模式** — Vite dev server (端口 5173) 将 `/api` 代理至 service:8788；admin PHP 后端在 8789 提供 session 认证和 SPA 静态服务。
@@ -264,7 +263,7 @@ cd admin && composer install && php start.php start
 1. **数据库连接** — 填写 MySQL 主机、端口、数据库名、用户名密码，支持连接测试
 2. **Redis 配置** — 填写 Redis 连接信息（可选）
 3. **管理员账户** — 设置后台登录用户名、密码、显示名称
-4. **一键安装** — 自动建库、执行 `install.sql` 创建 23 张表并写入种子数据、更新管理员密码
+4. **一键安装** — 自动建库、执行 `install.sql` 创建 21 张表并写入种子数据、更新管理员密码
 
 安装完成后访问 `/` 进入管理后台，使用设置的用户名和密码登录。
 
@@ -319,8 +318,7 @@ ads-php/
 │   │   │   ├── src/                   # AdapterRegistry, CampaignData
 │   │   │   └── model/                 # Campaign
 │   │   ├── ads-account/               # OAuth 账户管理
-│   │   ├── ads-task/                  # 定时任务调度 (4 cron)
-│   │   ├── ads-alert/                 # 告警监控引擎
+│   │   ├── ads-task/                  # 定时任务调度 (3 cron)
 │   │   ├── ads-report/                # 转化追踪
 │   │   ├── ads-tenant/                # 多租户管理
 │   │   └── ads-storage/               # 存储抽象层 (local/OSS/COS/S3)
@@ -334,7 +332,7 @@ ads-php/
 │   │   ├── ExceptionHandler.php       # API 异常处理器
 │   │   └── ApiResponse.php            # 统一响应格式
 │   ├── config/                        # 全局配置 (DB/Redis/Log/Middleware)
-│   ├── tests/                         # PHPUnit 测试 (204 tests)
+│   ├── tests/                         # PHPUnit 测试 (175 tests)
 │   │   ├── Unit/                      # 单元测试 (Middleware, Task, Engines)
 │   │   └── Integration/               # 集成测试 (Auth, Health, API)
 │   └── start.php                      # 服务入口
@@ -342,16 +340,15 @@ ads-php/
 │   ├── public/web/
 │   │   ├── public/pet.svg             # 项目宠物「阿章」，favicon + 登录页
 │   │   ├── src/
-│   │   │   ├── views/                 # 12 个 Vue 页面
+│   │   │   ├── views/                 # 10 个 Vue 页面
 │   │   │   │   ├── dashboard/         # 仪表盘 (ECharts)
 │   │   │   │   ├── account/           # 账户管理 + 绑定
 │   │   │   │   ├── asset/             # 素材库
-│   │   │   │   ├── alert/             # 告警规则 + 记录
 │   │   │   │   ├── notification/      # 通知中心
 │   │   │   │   ├── sync/              # 同步状态
 │   │   │   │   ├── login/             # 登录页 (阿章)
 │   │   │   │   └── system/            # 用户管理 + 审计日志 + 系统信息
-│   │   │   ├── api/                   # 11 个 API 客户端
+│   │   │   ├── api/                   # 10 个 API 客户端
 │   │   │   ├── stores/                # 5 个 Pinia Store
 │   │   │   └── components/            # 共享组件 (ListPageLayout 等 8 个)
 │   │   └── dist/                      # 构建产物 (不入库，CI 构建)
@@ -389,10 +386,9 @@ ads-php/
 | 基础 | `ads_tenants` | 多租户 |
 | 账户 | `ads_platform_accounts`, `ads_auth_tokens` | OAuth 平台账户 |
 | 投放数据 | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | 平台同步的只读投放层级 |
-| 指标 | `ads_report_metrics` | 仪表盘/告警使用的同步指标 |
+| 指标 | `ads_report_metrics` | 仪表盘使用的同步指标 |
 | 素材 | `ads_assets` | 创意素材库 |
 | 转化 | `ads_conversions` | 转化回传数据 |
-| 告警 | `ads_alert_rules`, `ads_alert_logs` | 告警监控 |
 | 通知 | `ads_notifications` | 站内通知 |
 | 系统 | `ads_sync_errors`, `admin_users`, `admin_roles`, `admin_audit_logs` | 同步错误、RBAC、审计 |
 
@@ -404,7 +400,6 @@ ads-php/
 |------|------|------|
 | TokenRefreshTask | 每 55 分钟 | 扫描过期 OAuth Token，自动刷新 |
 | DataSyncTask | 每 10 分钟 | 拉取各平台计划+广告组+创意+指标，写入统一表，清除缓存 |
-| AlertCheckTask | 每 5 分钟 | 遍历启用告警规则，评估阈值，触发推送 |
 | RetrySyncTask | 每 3 分钟 | 重试失败的同步任务（最多3次，指数退避） |
 
 ---
@@ -413,10 +408,10 @@ ads-php/
 
 ```bash
 cd service && ./vendor/bin/phpunit
-# 204 测试 / 557 断言
+# 175 测试 / 466 断言
 ```
 
-**覆盖范围**: 14 个中间件 · 8 插件业务层 (账户/告警/平台/转化/任务/租户/存储) · 引擎 (Alert) · API 集成测试 (39 路由) · UI E2E (12 页面)
+**覆盖范围**: 14 个中间件 · 7 插件业务层 (账户/平台/转化/任务/租户/存储) · API 集成测试 (32 路由) · UI E2E (10 页面)
 
 **测试报告**: 覆盖 PHP 单元 / API 自动化 / UI E2E / Go N/A / Rust N/A + Bug 汇总）
 

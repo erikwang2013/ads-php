@@ -37,13 +37,6 @@ struct DashboardPage {
               router.pushUrl({ url: 'pages/AccountPage' });
             })
             .margin({ right: 16 })
-
-          Text('Alerts')
-            .fontSize(14)
-            .fontColor('#1677ff')
-            .onClick(() => {
-              router.pushUrl({ url: 'pages/AlertPage' });
-            })
         }
       }
       .width('100%')
@@ -154,9 +147,6 @@ struct DashboardPage {
           Row() {
             this.QuickActionButton('Accounts', '#52c41a', () => {
               router.pushUrl({ url: 'pages/AccountPage' });
-            })
-            this.QuickActionButton('Alerts', '#f5222d', () => {
-              router.pushUrl({ url: 'pages/AlertPage' });
             })
           }
           .width('100%')

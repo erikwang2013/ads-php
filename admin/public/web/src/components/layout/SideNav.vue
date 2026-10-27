@@ -24,15 +24,6 @@
       <el-icon><User /></el-icon>
       <span>账户管理</span>
     </el-menu-item>
-    <el-sub-menu index="alerts">
-      <template #title>
-        <el-icon><Bell /></el-icon>
-        <span>告警管理</span>
-        <el-badge v-if="alertStore.unreadCount > 0" :value="alertStore.unreadCount" class="nav-badge" />
-      </template>
-      <el-menu-item index="/alerts">告警规则</el-menu-item>
-      <el-menu-item index="/alerts/logs">告警记录</el-menu-item>
-    </el-sub-menu>
     <el-sub-menu index="system">
       <template #title>
         <el-icon><Setting /></el-icon>
@@ -48,11 +39,9 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 import { DataAnalysis, User, Bell, Document, Setting } from '@element-plus/icons-vue'
-import { useAlertStore } from '@/stores/alert'
 import { useNotificationStore } from '@/stores/notification'
 defineProps<{ collapsed: boolean }>()
 const route = useRoute()
-const alertStore = useAlertStore()
 const notifStore = useNotificationStore()
 
 function openDocs() {

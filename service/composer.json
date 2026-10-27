@@ -59,7 +59,6 @@
             "plugin\\ads_api\\": "plugin/ads-api/",
             "plugin\\ads_tenant\\": "plugin/ads-tenant/",
             "plugin\\ads_report\\": "plugin/ads-report/",
-            "plugin\\ads_alert\\": "plugin/ads-alert/",
             "plugin\\ads_task\\": "plugin/ads-task/",
             "plugin\\ads_storage\\": "plugin/ads-storage/"
         }

@@ -19,7 +19,7 @@ return [
     'default_timezone' => 'Asia/Shanghai',
 
     // 业务服务 API 地址
-    // 当前架构：admin 的广告数据查询（计划、报表、账户、告警等）由 Vue SPA
+    // 当前架构：admin 的业务数据查询（账户、素材、通知等）由 Vue SPA
     // 经 axios（baseURL /api，Nginx 分流到 :8788）直连 service；
     // ServiceProxy（cURL HTTP 代理）为预留基础设施，当前无活跃调用方。
     'service_api_url' => env('SERVICE_API_URL', 'http://127.0.0.1:8788/api'),

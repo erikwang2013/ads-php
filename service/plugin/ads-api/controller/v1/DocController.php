@@ -40,17 +40,8 @@ class DocController
             '仪表盘' => [
                 ['GET', '/api/v1/reports/summary', '仪表盘汇总（缓存 5min）', true, '?date_start=2026-05-01&date_end=2026-05-21'],
             ],
-            '告警' => [
-                ['GET', '/api/v1/alerts/rules', '告警规则列表（缓存 2min）', true, ''],
-                ['POST', '/api/v1/alerts/rules', '创建告警规则', true, '{"name":"花费超限","metric":"cost","condition":"gt","threshold":100000}'],
-                ['PUT', '/api/v1/alerts/rules/:id', '更新告警规则', true, ''],
-                ['DELETE', '/api/v1/alerts/rules/:id', '删除告警规则', true, ''],
-                ['GET', '/api/v1/alerts/logs', '告警记录列表', true, '?status=triggered&page=1&per_page=20'],
-                ['POST', '/api/v1/alerts/logs/:id/acknowledge', '确认告警', true, ''],
-                ['GET', '/api/v1/alerts/unread-count', '未读告警数量（缓存 30s）', true, ''],
-            ],
             '通知' => [
-                ['GET', '/api/v1/notifications', '通知列表', true, '?type=alert&is_read=0&page=1&per_page=20'],
+                ['GET', '/api/v1/notifications', '通知列表', true, '?is_read=0&page=1&per_page=20'],
                 ['GET', '/api/v1/notifications/unread-count', '未读通知数量', true, ''],
                 ['POST', '/api/v1/notifications/:id/read', '标记单条已读', true, ''],
                 ['POST', '/api/v1/notifications/read-all', '全部已读', true, ''],
