@@ -16,7 +16,6 @@ class AlibabaOssStorage implements StorageDriver
     protected string $accessKeySecret;
     protected string $bucket;
     protected string $endpoint;
-    protected string $cdnDomain = '';
 
     public function __construct()
     {
@@ -28,7 +27,6 @@ class AlibabaOssStorage implements StorageDriver
             $region = (string) env('OSS_REGION', '');
             if ($region !== '') $this->endpoint = "https://{$region}.aliyuncs.com";
         }
-        $this->cdnDomain = (string) env('OSS_CDN_DOMAIN', '');
     }
 
     protected function client(): OssClient
@@ -92,9 +90,6 @@ class AlibabaOssStorage implements StorageDriver
     public function publicUrl(string $key): string
     {
         $path = $this->object($key);
-        if ($this->cdnDomain !== '') {
-            return 'https://' . rtrim($this->cdnDomain, '/') . '/' . $path;
-        }
         $host = (string) parse_url($this->endpoint, PHP_URL_HOST);
         if ($port = parse_url($this->endpoint, PHP_URL_PORT)) $host .= ':' . $port;
         return "https://{$this->bucket}.{$host}/{$path}";

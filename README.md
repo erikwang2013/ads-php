@@ -55,7 +55,7 @@ SVG / PNG）**不是开源资产**，版权归作者所有。未经书面许可�
 - **账户管理** — OAuth 授权与多平台账户绑定
 - **数据概览** — 仪表盘跨平台指标汇总
 - **素材库** — 图片/视频素材管理、画廊预览
-- **全球加速** — 素材分发（本地/阿里云 OSS/腾讯云 COS/S3 兼容多驱动，环境变量配置）
+- **素材存储** — 本地/阿里云 OSS/腾讯云 COS/S3 兼容多驱动（环境变量配置）
 - **多端访问** — Web 管理后台 (Vue 3)、Flutter PC/Mobile、HarmonyOS
 - **稳定可靠** — 平台调用熔断/降级/超时、三级缓存、高并发优化、22 项安全防护
 - **国际化** — 12 语言文档、界面中英双语
@@ -241,7 +241,7 @@ CORS → SecurityHeaders → AttackGuard → ClientPlatform → Version → Rate
 | 消息队列异步 | Redis List 2 通道 (sync/notification) | `support/AsyncJobService.php` |
 | Nginx 分级限流 | 30r/s + burst 20 + 20 并发连接 + keepalive 32 | `docker/nginx/admin.conf` |
 | 水平扩展 | upstream 多实例 + 故障转移 + sticky session | `docker/nginx/admin.conf` |
-| CDN 加速 | 静态资源 `expires 30d` + `immutable` + `gzip_static` | `docker/nginx/admin.conf` |
+| 静态资源缓存 | 静态资源 `expires 30d` + `immutable` + `gzip_static` | `docker/nginx/admin.conf` |
 
 ---
 
@@ -446,7 +446,7 @@ cd apps/flutter && dart analyze   # 零错误
 | `security-middleware` | 添加安全中间件层（接口规范 + 注册 + 现有链参考） |
 | `version-split` | Lite/Standard/Full 三版本拆分（操作步骤 + 配置更新） |
 | `cache-strategy` | 三级缓存策略（L1内存/L2 APCu/L3 Redis + TTL建议） |
-| `high-concurrency` | 高并发 8 项优化（读写分离/连接池/消息队列/水平扩展/CDN） |
+| `high-concurrency` | 高并发 8 项优化（读写分离/连接池/消息队列/水平扩展/静态缓存） |
 
 
 ## 开源不易，欢迎支持

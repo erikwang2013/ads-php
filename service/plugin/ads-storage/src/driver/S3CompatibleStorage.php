@@ -22,7 +22,6 @@ class S3CompatibleStorage implements StorageDriver
     protected string $bucket;
     protected string $region = 'auto';
     protected string $endpoint = '';
-    protected string $cdnDomain = '';
 
     public function __construct()
     {
@@ -31,7 +30,6 @@ class S3CompatibleStorage implements StorageDriver
         $this->bucket = (string) env('S3_BUCKET', '');
         $this->region = (string) env('S3_REGION', 'auto') ?: 'auto';
         $this->endpoint = (string) env('S3_ENDPOINT', '');
-        $this->cdnDomain = (string) env('S3_CDN_DOMAIN', '');
     }
 
     protected function client(): S3Client
@@ -120,9 +118,6 @@ class S3CompatibleStorage implements StorageDriver
     public function publicUrl(string $key): string
     {
         $path = $this->object($key);
-        if ($this->cdnDomain !== '') {
-            return 'https://' . rtrim($this->cdnDomain, '/') . '/' . $path;
-        }
         if ($this->endpoint !== '') {
             return rtrim($this->endpoint, '/') . '/' . $this->bucket . '/' . $path;
         }
