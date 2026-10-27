@@ -43,18 +43,6 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/sync/SyncStatus.vue'),
         meta: { title: '同步状态' },
       },
-      {
-        path: 'system/users',
-        name: 'UserManage',
-        component: () => import('@/views/system/UserManage.vue'),
-        meta: { title: '用户管理' },
-      },
-      {
-        path: 'system/audit',
-        name: 'AuditLog',
-        component: () => import('@/views/system/AuditLog.vue'),
-        meta: { title: '审计日志' },
-      },
     ],
   },
 ]

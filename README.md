@@ -110,9 +110,9 @@ SVG / PNG）**不是开源资产**，版权归作者所有。未经书面许可�
 | 层 | 技术 | 说明 |
 |----|------|------|
 | 服务端 | webman v2 + PHP 8.4+ | 6 个插件，24 API 端点 |
-| 数据库 | MySQL 8.0 | 19 张表，ads_ 前缀，Snowflake BIGINT 主键 |
+| 数据库 | MySQL 8.0 | 16 张表，ads_ 前缀，Snowflake BIGINT 主键 |
 | 缓存 | Redis 7 | 三级缓存 (L1内存/L2 APCu/L3 Redis)、限流计数、Pub/Sub |
-| 管理后台 | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP 后端(端口 8789)，SPA 直连业务 API(端口 8788)，9 页面，ECharts 可视化 |
+| 管理后台 | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP 后端(端口 8789)，SPA 直连业务 API(端口 8788)，7 页面，ECharts 可视化 |
 | 部署 | Docker + Nginx + GHCR | Docker Compose 一键启动，GitHub Actions 自动构建推送 |
 
 ## 架构图
@@ -135,7 +135,7 @@ SVG / PNG）**不是开源资产**，版权归作者所有。未经书面许可�
 ## 架构说明
 
 - **`service/`** — webman v2 用户端业务 API 服务，监听端口 **8788**。处理广告平台对接、OAuth 授权、数据同步、仪表盘指标等业务逻辑。
-- **`admin/`** — webman-admin v2 独立管理后台，监听端口 **8789**。包含 PHP 后端（认证鉴权、用户管理、系统配置）和 Vue 3 SPA 前端。
+- **`admin/`** — webman-admin v2 独立管理后台，监听端口 **8789**。包含 PHP 后端（认证鉴权、系统配置）和 Vue 3 SPA 前端。
 - **管理后台与业务服务的通信** — Vue SPA 通过 axios（baseURL `/api`）直连 service API；admin 专属路由（`/api/admin/*`）由 admin PHP 后端（8789）提供服务，Nginx 按路径分流。
 - **开发模式** — Vite dev server (端口 5173) 将 `/api` 代理至 service:8788；admin PHP 后端在 8789 提供 session 认证和 SPA 静态服务。
 - **生产模式** — Nginx 将 `/` 路由至 admin:8789（管理后台 SPA），将 `/api/` 路由至 service:8788（业务 API）。
@@ -204,11 +204,9 @@ CORS → SecurityHeaders → AttackGuard → ClientPlatform → RateLimit → Lo
 
 ![安全架构图](assets/diagrams/security.svg)
 
-**防御纵深**：外层（Nginx）→ 入口守卫（5层中间件）→ 身份认证（7项）→ 输入校验（4项）→ 频率控制 → 数据加密 → 审计追溯
+**防御纵深**：外层（Nginx）→ 入口守卫（5层中间件）→ 身份认证（7项）→ 输入校验（4项）→ 频率控制 → 数据加密
 
-**认证**：服务端和 admin 统一用 `admin_users` 表 + bcrypt 哈希，JWT 24h + refresh 轮换
-
-**审计**：所有操作记录 IP / User-Agent / Client-Platform / 操作详情
+**认证**：Service 使用 JWT（24h + refresh 轮换）；Admin 使用环境变量配置的单管理员账号 + bcrypt 哈希
 
 **二次确认**：删除/解绑/批量操作采用"输入确认词"模式（`GlobalConfirm` + `useConfirmStore`）
 
@@ -256,7 +254,7 @@ cd admin && composer install && php start.php start
 1. **数据库连接** — 填写 MySQL 主机、端口、数据库名、用户名密码，支持连接测试
 2. **Redis 配置** — 填写 Redis 连接信息（可选）
 3. **管理员账户** — 设置后台登录用户名、密码、显示名称
-4. **一键安装** — 自动建库、执行 `install.sql` 创建 19 张表并写入种子数据、更新管理员密码
+4. **一键安装** — 自动建库、执行 `install.sql` 创建 16 张表并写入种子数据、设置管理员账号
 
 安装完成后访问 `/` 进入管理后台，使用设置的用户名和密码登录。
 
@@ -325,13 +323,13 @@ ads-php/
 │   ├── public/web/
 │   │   ├── public/pet.svg             # 项目宠物「阿章」，favicon + 登录页
 │   │   ├── src/
-│   │   │   ├── views/                 # 9 个 Vue 页面
+│   │   │   ├── views/                 # 7 个 Vue 页面
 │   │   │   │   ├── dashboard/         # 仪表盘 (ECharts)
 │   │   │   │   ├── account/           # 账户管理 + 绑定
 │   │   │   │   ├── asset/             # 素材库
 │   │   │   │   ├── sync/              # 同步状态
 │   │   │   │   ├── login/             # 登录页 (阿章)
-│   │   │   │   └── system/            # 用户管理 + 审计日志 + 系统信息
+│   │   │   │   └── system/            # 系统信息
 │   │   │   ├── api/                   # 10 个 API 客户端
 │   │   │   ├── stores/                # 4 个 Pinia Store
 │   │   │   └── components/            # 共享组件 (ListPageLayout 等 6 个)
@@ -364,7 +362,7 @@ ads-php/
 | 投放数据 | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | 平台同步的只读投放层级 |
 | 指标 | `ads_report_metrics` | 仪表盘使用的同步指标 |
 | 素材 | `ads_assets` | 创意素材库 |
-| 系统 | `ads_sync_errors`, `admin_users`, `admin_roles`, `admin_audit_logs` | 同步错误、RBAC、审计 |
+| 系统 | `ads_sync_errors` | 同步错误 |
 
 ---
 

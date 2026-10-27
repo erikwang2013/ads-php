@@ -4,14 +4,22 @@
  */
 namespace admin\controller;
 
-use Illuminate\Database\Capsule\Manager as DB;
 use Webman\Http\Request;
-use admin\service\AuditService;
 
 class AuthController
 {
+    private function adminUsername(): string
+    {
+        return (string) env('ADMIN_USERNAME', 'admin');
+    }
+
+    private function adminName(): string
+    {
+        return (string) env('ADMIN_NAME', '管理员');
+    }
+
     /**
-     * Admin login — validate credentials and return JWT token.
+     * Admin login — validate env credentials and return JWT token.
      */
         /**
      * @Title("管理员登录")
@@ -39,69 +47,32 @@ class AuthController
             return json(['code' => 422, 'message' => '用户名和密码不能为空', 'data' => null]);
         }
 
-        $user = DB::table('admin_users')->where('username', $username)->first();
-
-        if (!$user || !password_verify($password, $user->password)) {
+        $hash = (string) env('ADMIN_PASSWORD_HASH', '');
+        if ($hash === '' || !hash_equals($this->adminUsername(), $username) || !password_verify($password, $hash)) {
             return json(['code' => 401, 'message' => '用户名或密码错误', 'data' => null]);
-        }
-
-        if ((int) $user->status !== 1) {
-            return json(['code' => 403, 'message' => '账户已被禁用', 'data' => null]);
-        }
-
-        $role = DB::table('admin_roles')->find($user->role_id);
-        $permissions = [];
-        if ($role && $role->permissions) {
-            $permissions = json_decode($role->permissions, true) ?: [];
         }
 
         $token = \Erikwang2013\JwtWebman\Jwt::sign([
             '_ip'  => $request->getRealIp(),
             '_ua'  => md5($request->header('User-Agent', '')),
-            'uid'  => $user->id,
-            'role' => $role->slug ?? '',
+            'uid'  => 1,
+            'role' => 'super_admin',
             'exp'  => time() + 86400,
         ]);
-
-        // Update last login info
-        DB::table('admin_users')->where('id', $user->id)->update([
-            'last_login_at' => now(),
-            'last_login_ip' => $request->getRealIp(),
-            'updated_at'    => now(),
-        ]);
-
-        AuditService::log(
-            $user->id,
-            $user->username,
-            'login',
-            'auth',
-            $user->id,
-            ['ip' => $request->getRealIp()]
-        );
 
         return json([
             'code' => 0,
             'message' => '登录成功',
             'data' => [
                 'access_token' => $token,
-                'user' => [
-                    'id'       => $user->id,
-                    'username' => $user->username,
-                    'name'     => $user->name,
-                    'email'    => $user->email,
-                    'avatar'   => $user->avatar,
-                    'role_id'  => (int) $user->role_id,
-                    'role'     => $role->slug ?? '',
-                    'role_name'=> $role->name ?? '',
-                    'permissions' => $permissions,
-                ],
+                'user' => $this->adminPayload(),
                 'csrf_token' => session('csrf_token', bin2hex(random_bytes(32))),
             ],
         ]);
     }
 
     /**
-     * Get current user info with roles and permissions.
+     * Get current admin info.
      */
         /**
      * @Title("当前管理员")
@@ -116,32 +87,7 @@ class AuthController
             return json(['code' => 401, 'message' => '未登录', 'data' => null]);
         }
 
-        $user = DB::table('admin_users')->find($adminId);
-        if (!$user) {
-            return json(['code' => 404, 'message' => '用户不存在', 'data' => null]);
-        }
-
-        $role = DB::table('admin_roles')->find($user->role_id);
-        $permissions = [];
-        if ($role && $role->permissions) {
-            $permissions = json_decode($role->permissions, true) ?: [];
-        }
-
-        return json([
-            'code' => 0,
-            'message' => 'ok',
-            'data' => [
-                'id'       => $user->id,
-                'username' => $user->username,
-                'name'     => $user->name,
-                'email'    => $user->email,
-                'avatar'   => $user->avatar,
-                'role_id'  => (int) $user->role_id,
-                'role'     => $role->slug ?? '',
-                'role_name'=> $role->name ?? '',
-                'permissions' => $permissions,
-            ],
-        ]);
+        return json(['code' => 0, 'message' => 'ok', 'data' => $this->adminPayload()]);
     }
 
     /**
@@ -155,42 +101,23 @@ class AuthController
      */
     public function logout(Request $request): \Webman\Http\Response
     {
-        $adminId = $request->adminId ?? 0;
-        if ($adminId) {
-            AuditService::log(
-                $adminId,
-                $request->adminUsername ?? '',
-                'logout',
-                'auth',
-                $adminId
-            );
-        }
-
         $request->session()->forget('admin');
-
         return json(['code' => 0, 'message' => '已退出', 'data' => null]);
     }
 
-    /**
-     * List available roles (public endpoint for login page).
-     */
-        /**
-     * @Title("角色列表")
-     * @Group("管理后台-认证")
-     * @Url("/api/admin/roles")
-     * @Method("GET")
-     */
-    public function roles(): \Webman\Http\Response
+    private function adminPayload(): array
     {
-        $roles = DB::table('admin_roles')->get()->map(function ($item) {
-            $item->permissions = json_decode($item->permissions, true);
-            return $item;
-        });
-
-        return json([
-            'code' => 0,
-            'message' => 'ok',
-            'data' => $roles,
-        ]);
+        $username = $this->adminUsername();
+        return [
+            'id'          => 1,
+            'username'    => $username,
+            'name'        => $this->adminName(),
+            'email'       => '',
+            'avatar'      => '',
+            'role_id'     => 1,
+            'role'        => 'super_admin',
+            'role_name'   => '超级管理员',
+            'permissions' => ['*'],
+        ];
     }
 }

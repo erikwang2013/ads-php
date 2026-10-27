@@ -7,7 +7,7 @@
  * admin 是一个独立的 webman-admin v2 实例，职责：
  *   - 提供 Vue 3 SPA 的静态文件服务（public/web/）
  *   - 处理管理员认证（JWT + Session 双通道）
- *   - 提供管理员专用 API（用户管理 / RBAC / 审计日志）
+ *   - 提供单管理员认证 API
  *   - 广告数据查询由 SPA 直连 service API（:8788），ServiceProxy 为预留基础设施（暂未接线）
  */
 

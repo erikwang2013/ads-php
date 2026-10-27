@@ -12,23 +12,4 @@ export const adminApi = {
   logout() {
     return api.post('/admin/logout')
   },
-  listUsers(params?: any) {
-    return api.get('/admin/users', { params })
-  },
-  createUser(data: any) {
-    return api.post('/admin/users', data)
-  },
-  updateUser(id: number, data: any) {
-    return api.put(`/admin/users/${id}`, data)
-  },
-  deleteUser(id: number) {
-    return api.delete(`/admin/users/${id}`)
-  },
-  // 用户编辑页下拉框使用的角色列表 → 对应 route.php 中受保护的 GET /api/admin/users/roles
-  listRoles() {
-    return api.get('/admin/users/roles')
-  },
-  auditLogs(params?: any) {
-    return api.get('/admin/audit-logs', { params })
-  },
 }

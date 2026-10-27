@@ -41,24 +41,11 @@ abstract class ApiTestCase extends TestCase
         \app\support\ApiResponse::setLang('zh-CN');
 
         CacheService::flush('cache:');
-        $this->seedUser();
         $this->seedTenant();
         $this->registerMockAdapter();
         foreach (self::DIRTY_TABLES as $table) {
             DB::table($table)->delete();
         }
-    }
-
-    protected function seedUser(): void
-    {
-        DB::table('admin_users')->updateOrInsert(['username' => 'testuser'], [
-            'id'       => $this->userId,
-            'username' => 'testuser',
-            'password' => password_hash('testpass', PASSWORD_BCRYPT),
-            'name'     => 'Test User',
-            'role_id'  => 1,
-            'status'   => 1,
-        ]);
     }
 
     protected function seedTenant(): void

@@ -8,7 +8,6 @@ namespace Tests\Integration;
 use Tests\TestCase;
 use Webman\Http\Request;
 use plugin\ads_api\controller\v1\AuthController;
-use Illuminate\Database\Capsule\Manager as DB;
 
 class AuthControllerTest extends TestCase
 {
@@ -16,25 +15,6 @@ class AuthControllerTest extends TestCase
     {
         parent::setUp();
 
-        try {
-            // Seed a test user
-            DB::table('admin_users')->updateOrInsert(
-                ['username' => 'testuser'],
-                [
-                    'id'       => 9999,
-                    'username' => 'testuser',
-                    'password' => password_hash('testpass', PASSWORD_BCRYPT),
-                    'name'     => 'Test User',
-                    'role_id'  => 1,
-                    'status'   => 1,
-                ]
-            );
-        } catch (\Throwable $e) {
-            // 依赖真实 MySQL（admin_users 表），环境不可用时跳过
-            $this->markTestSkipped('MySQL 不可用，跳过登录集成测试: ' . $e->getMessage());
-        }
-
-        // Set JWT secret for testing
         putenv('JWT_SECRET=test-jwt-secret-at-least-16-chars-long');
 
         // Bypass I18n request dependency in test environment

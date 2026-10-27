@@ -148,7 +148,8 @@ HTML;
         }
 
         // Step 2: write .env
-        $env = $this->buildEnv($dbHost, $dbPort, $dbDatabase, $dbUsername, $dbPassword, $redisHost, $redisPort, $redisPassword, $jwtSecret, $serviceApiUrl);
+        $adminPasswordHash = password_hash($adminPassword, PASSWORD_BCRYPT);
+        $env = $this->buildEnv($dbHost, $dbPort, $dbDatabase, $dbUsername, $dbPassword, $redisHost, $redisPort, $redisPassword, $jwtSecret, $serviceApiUrl, $adminUsername, $adminPasswordHash, $adminName);
         if (file_put_contents($this->envPath(), $env) === false) {
             return json(['code' => 2, 'message' => '写入 .env 文件失败，请检查目录权限']);
         }
@@ -177,23 +178,14 @@ HTML;
             return json(['code' => 4, 'message' => '执行 SQL 失败：' . $e->getMessage()]);
         }
 
-        // Step 4: update admin password
-        try {
-            $hash = password_hash($adminPassword, PASSWORD_BCRYPT);
-            $stmtSafe = $pdo->prepare("UPDATE admin_users SET password = ?, name = ? WHERE username = 'admin'");
-            $stmtSafe->execute([$hash, $adminName]);
-        } catch (\PDOException $e) {
-            return json(['code' => 5, 'message' => '设置管理员密码失败：' . $e->getMessage()]);
-        }
-
-        // Step 5: create lock file
+        // Step 4: create lock file
         file_put_contents(base_path() . '/.installed', date('Y-m-d H:i:s'));
 
         return json([
             'code' => 0,
             'message' => '安装完成',
             'data' => [
-                'username' => 'admin',
+                'username' => $adminUsername,
                 'admin_url' => '/',
                 'jwt_secret' => $jwtSecret,
             ],
@@ -234,15 +226,22 @@ HTML;
         return $value;
     }
 
-    private function buildEnv(string $dbHost, string $dbPort, string $dbDatabase, string $dbUsername, string $dbPassword, string $redisHost, string $redisPort, string $redisPassword, string $jwtSecret, string $serviceApiUrl): string
+    private function buildEnv(string $dbHost, string $dbPort, string $dbDatabase, string $dbUsername, string $dbPassword, string $redisHost, string $redisPort, string $redisPassword, string $jwtSecret, string $serviceApiUrl, string $adminUsername, string $adminPasswordHash, string $adminName): string
     {
         $dbPasswordQuoted     = $this->envQuote($dbPassword);
         $redisPasswordQuoted  = $this->envQuote($redisPassword);
         $serviceApiUrlQuoted  = $this->envQuote($serviceApiUrl);
+        $adminUsernameQuoted  = $this->envQuote($adminUsername);
+        $adminHashQuoted      = $this->envQuote($adminPasswordHash);
+        $adminNameQuoted      = $this->envQuote($adminName);
 
         return <<<EOF
 APP_DEBUG=false
 APP_URL=http://0.0.0.0:8789
+
+ADMIN_USERNAME={$adminUsernameQuoted}
+ADMIN_PASSWORD_HASH={$adminHashQuoted}
+ADMIN_NAME={$adminNameQuoted}
 
 SERVICE_API_URL={$serviceApiUrlQuoted}
 

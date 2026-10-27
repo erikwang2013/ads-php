@@ -4,11 +4,10 @@
  *
  * 管理后台数据库配置
  *
- * 存储 admin 专用表：admin_users / admin_roles / admin_audit_logs。
+ * admin 使用单管理员模式（账号密码来自 .env），数据库用于 webman-admin 框架表。
  *
  * 业务数据（ads_campaigns、ads_report_metrics 等）存储在同一个 MySQL 实例中，
  * 但 admin 不直接操作业务表——所有业务查询通过 service API（:8788）完成。
- * 两者通过表命名前缀区分：业务表 ads_* ，管理表 admin_*。
  */
 
 return [
@@ -37,7 +36,7 @@ return [
             'charset'   => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
 
-            // 表前缀：留空，各表自行以 admin_ 命名（admin_users, admin_roles 等）
+            // 表前缀：留空，webman-admin 框架表以 wa_ 命名
             'prefix'    => '',
         ],
     ],

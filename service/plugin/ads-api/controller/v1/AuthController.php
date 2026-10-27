@@ -9,7 +9,6 @@ use erik\support\JwtService as Jwt;
 use Webman\Http\Request;
 use app\support\ApiResponse;
 use Webman\Http\Response;
-use Illuminate\Database\Capsule\Manager as DB;
 
 class AuthController
 {
@@ -39,29 +38,22 @@ class AuthController
             return ApiResponse::error('用户名和密码不能为空', 1001);
         }
 
-        $user = DB::table('admin_users')
-            ->where('username', $username)
-            ->where('status', 1)
-            ->first();
-
-        if (!$user || !password_verify($password, $user->password)) {
+        $hash = (string) env('API_PASSWORD_HASH', '');
+        if ($hash === '' || !hash_equals((string) env('API_USERNAME', 'admin'), $username) || !password_verify($password, $hash)) {
             return ApiResponse::error('用户名或密码错误', 1001);
         }
 
-        $token = Jwt::encode([
-            'uid' => $user->id,
-            'tid' => $tenantId,
-        ]);
+        $token = Jwt::encode(['uid' => 1, 'tid' => $tenantId]);
 
         return ApiResponse::success([
             'access_token' => $token,
             'token_type'   => 'Bearer',
             'expires_in'   => (int) config('app.jwt.ttl', 86400),
             'user'         => [
-                'id'       => $user->id,
-                'username' => $user->username,
-                'name'     => $user->name,
-                'email'    => $user->email,
+                'id'       => 1,
+                'username' => (string) env('API_USERNAME', 'admin'),
+                'name'     => (string) env('API_NAME', '管理员'),
+                'email'    => '',
                 'role'     => 'admin',
             ],
         ]);
@@ -80,16 +72,11 @@ class AuthController
             return ApiResponse::error('未登录', 401, 401);
         }
 
-        $user = DB::table('admin_users')->find($uid);
-        if (!$user) {
-            return ApiResponse::error('用户不存在', 404);
-        }
-
         return ApiResponse::success([
-            'id'        => $user->id,
-            'username'  => $user->username,
-            'name'      => $user->name,
-            'email'     => $user->email,
+            'id'        => $uid,
+            'username'  => (string) env('API_USERNAME', 'admin'),
+            'name'      => (string) env('API_NAME', '管理员'),
+            'email'     => '',
             'role'      => 'admin',
             'tenant_id' => $request->tenantId ?? 1,
         ]);
