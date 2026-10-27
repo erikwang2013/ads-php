@@ -12,7 +12,6 @@ use plugin\ads_api\controller\v1\AccountController;
 use plugin\ads_api\controller\v1\CampaignController;
 use plugin\ads_api\controller\v1\AssetController;
 use plugin\ads_api\controller\v1\DashboardController;
-use plugin\ads_api\controller\v1\NotificationController;
 use plugin\ads_api\controller\v1\DocController;
 use plugin\ads_api\controller\v1\SyncController;
 use plugin\ads_api\controller\v1\TenantController;
@@ -51,10 +50,6 @@ Webman\Route::group('/api/v1', function () {
 
     Webman\Route::get('/reports/summary', [DashboardController::class, 'summary']);
 
-    Webman\Route::get('/notifications', [NotificationController::class, 'index']);
-    Webman\Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
-    Webman\Route::post('/notifications/{id:\d+}/read', [NotificationController::class, 'markRead']);
-    Webman\Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead']);
 
     Webman\Route::get('/assets', [AssetController::class, 'index']);
     Webman\Route::post('/assets/upload', [AssetController::class, 'upload']);

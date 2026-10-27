@@ -15,11 +15,6 @@
       <el-icon><Document /></el-icon>
       <span>API 文档</span>
     </el-menu-item>
-    <el-menu-item index="/notifications">
-      <el-icon><Bell /></el-icon>
-      <span>通知中心</span>
-      <el-badge v-if="notifStore.unreadCount > 0" :value="notifStore.unreadCount" class="nav-badge" />
-    </el-menu-item>
     <el-menu-item index="/accounts">
       <el-icon><User /></el-icon>
       <span>账户管理</span>
@@ -38,11 +33,9 @@
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import { DataAnalysis, User, Bell, Document, Setting } from '@element-plus/icons-vue'
-import { useNotificationStore } from '@/stores/notification'
+import { DataAnalysis, User, Document, Setting } from '@element-plus/icons-vue'
 defineProps<{ collapsed: boolean }>()
 const route = useRoute()
-const notifStore = useNotificationStore()
 
 function openDocs() {
   window.open('/docs', '_blank')

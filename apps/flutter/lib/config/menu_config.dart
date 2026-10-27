@@ -19,7 +19,6 @@ class MenuItem {
 const List<MenuItem> menuConfig = [
   MenuItem(label: '仪表盘', path: '/dashboard', icon: Icons.dashboard),
   MenuItem(label: '平台账户', path: '/accounts', icon: Icons.person),
-  MenuItem(label: '通知中心', path: '/notifications', icon: Icons.markunread),
 ];
 
 /// Build breadcrumb trail for a given route path.

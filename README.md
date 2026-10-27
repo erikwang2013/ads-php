@@ -109,12 +109,12 @@ SVG / PNG）**不是开源资产**，版权归作者所有。未经书面许可�
 
 | 层 | 技术 | 说明 |
 |----|------|------|
-| 服务端 | webman v2 + PHP 8.4+ | 6 个插件，30 API 端点 |
-| 数据库 | MySQL 8.0 | 20 张表，ads_ 前缀，Snowflake BIGINT 主键 |
+| 服务端 | webman v2 + PHP 8.4+ | 6 个插件，26 API 端点 |
+| 数据库 | MySQL 8.0 | 19 张表，ads_ 前缀，Snowflake BIGINT 主键 |
 | 缓存 | Redis 7 | 三级缓存 (L1内存/L2 APCu/L3 Redis)、限流计数、Pub/Sub、消息队列 |
 | 搜索 | Elasticsearch | webman-scout 自动索引同步（已配置） |
-| 管理后台 | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP 后端(端口 8789)，SPA 直连业务 API(端口 8788)，10 页面，ECharts 可视化 |
-| Flutter | Dart 3 + Riverpod + GoRouter + fl_chart | PC/Mobile 响应式，Desktop Shell 布局，4 页面 |
+| 管理后台 | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP 后端(端口 8789)，SPA 直连业务 API(端口 8788)，9 页面，ECharts 可视化 |
+| Flutter | Dart 3 + Riverpod + GoRouter + fl_chart | PC/Mobile 响应式，Desktop Shell 布局，3 页面 |
 | HarmonyOS | ArkTS + ArkUI | 3 个页面已实现，HTTP 客户端已就绪 |
 | 部署 | Docker + Nginx + GHCR | Docker Compose 一键启动，GitHub Actions 自动构建推送 |
 
@@ -263,7 +263,7 @@ cd admin && composer install && php start.php start
 1. **数据库连接** — 填写 MySQL 主机、端口、数据库名、用户名密码，支持连接测试
 2. **Redis 配置** — 填写 Redis 连接信息（可选）
 3. **管理员账户** — 设置后台登录用户名、密码、显示名称
-4. **一键安装** — 自动建库、执行 `install.sql` 创建 20 张表并写入种子数据、更新管理员密码
+4. **一键安装** — 自动建库、执行 `install.sql` 创建 19 张表并写入种子数据、更新管理员密码
 
 安装完成后访问 `/` 进入管理后台，使用设置的用户名和密码登录。
 
@@ -331,7 +331,7 @@ ads-php/
 │   │   ├── ExceptionHandler.php       # API 异常处理器
 │   │   └── ApiResponse.php            # 统一响应格式
 │   ├── config/                        # 全局配置 (DB/Redis/Log/Middleware)
-│   ├── tests/                         # PHPUnit 测试 (160 tests)
+│   ├── tests/                         # PHPUnit 测试 (154 tests)
 │   │   ├── Unit/                      # 单元测试 (Middleware, Task, Engines)
 │   │   └── Integration/               # 集成测试 (Auth, Health, API)
 │   └── start.php                      # 服务入口
@@ -339,11 +339,10 @@ ads-php/
 │   ├── public/web/
 │   │   ├── public/pet.svg             # 项目宠物「阿章」，favicon + 登录页
 │   │   ├── src/
-│   │   │   ├── views/                 # 10 个 Vue 页面
+│   │   │   ├── views/                 # 9 个 Vue 页面
 │   │   │   │   ├── dashboard/         # 仪表盘 (ECharts)
 │   │   │   │   ├── account/           # 账户管理 + 绑定
 │   │   │   │   ├── asset/             # 素材库
-│   │   │   │   ├── notification/      # 通知中心
 │   │   │   │   ├── sync/              # 同步状态
 │   │   │   │   ├── login/             # 登录页 (阿章)
 │   │   │   │   └── system/            # 用户管理 + 审计日志 + 系统信息
@@ -356,7 +355,7 @@ ads-php/
 ├── apps/
 │   ├── flutter/                       # Flutter Desktop App
 │   │   └── lib/
-│   │       ├── features/              # 4 个功能页面 + Shell 布局
+│   │       ├── features/              # 3 个功能页面 + Shell 布局
 │   │       ├── config/menu_config.dart # 两级菜单配置
 │   │       ├── router.dart            # GoRouter (ShellRoute + 路由守卫)
 │   │       └── stores/                # Riverpod Auth Provider
@@ -387,7 +386,6 @@ ads-php/
 | 投放数据 | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | 平台同步的只读投放层级 |
 | 指标 | `ads_report_metrics` | 仪表盘使用的同步指标 |
 | 素材 | `ads_assets` | 创意素材库 |
-| 通知 | `ads_notifications` | 站内通知 |
 | 系统 | `ads_sync_errors`, `admin_users`, `admin_roles`, `admin_audit_logs` | 同步错误、RBAC、审计 |
 
 ---
@@ -406,10 +404,10 @@ ads-php/
 
 ```bash
 cd service && ./vendor/bin/phpunit
-# 160 测试 / 404 断言
+# 154 测试 / 385 断言
 ```
 
-**覆盖范围**: 14 个中间件 · 6 插件业务层 (账户/平台/任务/租户/存储) · API 集成测试 (30 路由) · UI E2E (10 页面)
+**覆盖范围**: 14 个中间件 · 6 插件业务层 (账户/平台/任务/租户/存储) · API 集成测试 (26 路由) · UI E2E (9 页面)
 
 **测试报告**: 覆盖 PHP 单元 / API 自动化 / UI E2E / Go N/A / Rust N/A + Bug 汇总）
 

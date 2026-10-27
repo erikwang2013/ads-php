@@ -40,12 +40,6 @@ class DocController
             '仪表盘' => [
                 ['GET', '/api/v1/reports/summary', '仪表盘汇总（缓存 5min）', true, '?date_start=2026-05-01&date_end=2026-05-21'],
             ],
-            '通知' => [
-                ['GET', '/api/v1/notifications', '通知列表', true, '?is_read=0&page=1&per_page=20'],
-                ['GET', '/api/v1/notifications/unread-count', '未读通知数量', true, ''],
-                ['POST', '/api/v1/notifications/:id/read', '标记单条已读', true, ''],
-                ['POST', '/api/v1/notifications/read-all', '全部已读', true, ''],
-            ],
         ];
 
         $html = '<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><title>Ads Platform API 文档</title>';

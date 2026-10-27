@@ -4,7 +4,6 @@ import 'features/auth/login_page.dart';
 import 'features/dashboard/dashboard_page.dart';
 import 'features/account/account_page.dart';
 import 'features/shell/app_shell.dart';
-import 'features/notification/notification_list_page.dart';
 import 'stores/auth_provider.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -34,10 +33,6 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/accounts',
             builder: (_, __) => const AccountPage(),
-          ),
-          GoRoute(
-            path: '/notifications',
-            builder: (_, __) => const NotificationListPage(),
           ),
         ],
       ),
