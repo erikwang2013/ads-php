@@ -165,7 +165,7 @@ CREATE TABLE IF NOT EXISTS `ads_assets` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ============================================================================
--- 5. 转化追踪与归因 (ads-report / conversions)
+-- 5. 转化追踪 (ads-report / conversions)
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS `ads_conversions` (
@@ -183,18 +183,6 @@ CREATE TABLE IF NOT EXISTS `ads_conversions` (
     `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     UNIQUE KEY `uk_order` (`tenant_id`, `platform`, `order_id`),
     INDEX `idx_tenant_time` (`tenant_id`, `conversion_time`),
-    INDEX `idx_campaign` (`campaign_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE IF NOT EXISTS `ads_attribution_results` (
-    `id` BIGINT UNSIGNED PRIMARY KEY,
-    `tenant_id` BIGINT UNSIGNED NOT NULL,
-    `conversion_id` BIGINT UNSIGNED NOT NULL,
-    `model` VARCHAR(32) NOT NULL,
-    `campaign_id` BIGINT UNSIGNED NOT NULL,
-    `credit` DECIMAL(12,2) DEFAULT 0,
-    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
-    INDEX `idx_conversion_model` (`conversion_id`, `model`),
     INDEX `idx_campaign` (`campaign_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

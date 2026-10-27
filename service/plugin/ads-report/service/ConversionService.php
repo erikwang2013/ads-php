@@ -7,10 +7,6 @@
  * 金额口径：value 单位「分」（cents），与 ads_report_metrics.cost /
  * CampaignData::$dailyBudget 等既有字段一致（Meta 等平台原生即 cents）。
  * 存储列 ads_conversions.value 为 DECIMAL(12,2)，此处按分原样入库。
- *
- * 归因联动：回传成功仅写入 ads_conversions；归因结果由现有
- * AttributionEngine（plugin\ads_report\service\AttributionEngine）定时/手动
- * 重算，本服务不自动触发，保持简单（Phase 10 Task 2 设计）。
  */
 
 namespace plugin\ads_report\service;
@@ -168,7 +164,6 @@ class ConversionService
             'updated_at'      => now(),
         ]);
 
-        // 归因联动：现有 AttributionEngine 定时/手动重算，此处不自动触发（见类注释）。
         return $conversion->toArray();
     }
 

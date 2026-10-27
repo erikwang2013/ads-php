@@ -22,7 +22,6 @@
       </template>
       <el-menu-item index="/reports/view">报表分析</el-menu-item>
       <el-menu-item index="/reports/export">报表导出</el-menu-item>
-      <el-menu-item index="/reports/attribution">归因分析</el-menu-item>
     </el-sub-menu>
     <el-menu-item index="/notifications">
       <el-icon><Bell /></el-icon>

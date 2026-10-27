@@ -53,7 +53,7 @@ SVG / PNG）**不是开源资产**，版权归作者所有。未经书面许可�
 **Ads Platform** 是一套多平台广告数据管理系统，对接 **29 个广告平台**（国内 16 家 + 国际 13 家），统一管理多平台账户与跨平台数据报表。
 
 - **账户管理** — OAuth 授权与多平台账户绑定
-- **数据报表** — 跨平台指标汇总、CSV/Excel/PDF 导出、5 模型跨平台归因
+- **数据报表** — 跨平台指标汇总、CSV/Excel/PDF 导出
 - **素材库** — 图片/视频素材管理、画廊预览
 - **全球加速** — 素材分发（本地/阿里云 OSS/腾讯云 COS/S3 兼容多驱动，环境变量配置）
 - **监控告警** — 告警规则引擎、多渠道推送、定时任务自动同步
@@ -110,11 +110,11 @@ SVG / PNG）**不是开源资产**，版权归作者所有。未经书面许可�
 
 | 层 | 技术 | 说明 |
 |----|------|------|
-| 服务端 | webman v2 + PHP 8.4+ | 8 个插件，44 API 端点 |
-| 数据库 | MySQL 8.0 | 25 张表，ads_ 前缀，Snowflake BIGINT 主键 |
+| 服务端 | webman v2 + PHP 8.4+ | 8 个插件，42 API 端点 |
+| 数据库 | MySQL 8.0 | 24 张表，ads_ 前缀，Snowflake BIGINT 主键 |
 | 缓存 | Redis 7 | 三级缓存 (L1内存/L2 APCu/L3 Redis)、限流计数、Pub/Sub、消息队列 |
 | 搜索 | Elasticsearch | webman-scout 自动索引同步（已配置） |
-| 管理后台 | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP 后端(端口 8789)，SPA 直连业务 API(端口 8788)，15 页面，ECharts 可视化 |
+| 管理后台 | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP 后端(端口 8789)，SPA 直连业务 API(端口 8788)，14 页面，ECharts 可视化 |
 | Flutter | Dart 3 + Riverpod + GoRouter + fl_chart | PC/Mobile 响应式，Desktop Shell 布局，7 页面 |
 | HarmonyOS | ArkTS + ArkUI | 5 个页面已实现，HTTP 客户端已就绪 |
 | 部署 | Docker + Nginx + GHCR | Docker Compose 一键启动，GitHub Actions 自动构建推送 |
@@ -226,7 +226,6 @@ CORS → SecurityHeaders → AttackGuard → ClientPlatform → Version → Rate
 | 功能 | 说明 | 技术 |
 |------|------|------|
 | 素材库 | 图片/视频上传管理、画廊预览、复制 URL | AssetController + Vue 画廊 |
-| 跨平台归因 | 5 模型归因 (first/last/linear/time_decay/position_based)、30 天回溯 | AttributionEngine + ECharts |
 | 平台调用弹性 | per-platform 熔断状态机 (5 次失败→OPEN→30s 半开探活)、降级快速失败、29 适配器超时核查 | CircuitBreaker + GuardedAdapter |
 | 素材存储 | 对象存储多驱动 (local/oss/cos/s3)、预签名直传 | ads-storage 插件 |
 
@@ -265,7 +264,7 @@ cd admin && composer install && php start.php start
 1. **数据库连接** — 填写 MySQL 主机、端口、数据库名、用户名密码，支持连接测试
 2. **Redis 配置** — 填写 Redis 连接信息（可选）
 3. **管理员账户** — 设置后台登录用户名、密码、显示名称
-4. **一键安装** — 自动建库、执行 `install.sql` 创建 25 张表并写入种子数据、更新管理员密码
+4. **一键安装** — 自动建库、执行 `install.sql` 创建 24 张表并写入种子数据、更新管理员密码
 
 安装完成后访问 `/` 进入管理后台，使用设置的用户名和密码登录。
 
@@ -322,7 +321,7 @@ ads-php/
 │   │   ├── ads-account/               # OAuth 账户管理
 │   │   ├── ads-task/                  # 定时任务调度 (4 cron)
 │   │   ├── ads-alert/                 # 告警监控引擎
-│   │   ├── ads-report/                # 报表引擎 (CSV/Excel/PDF) + 归因引擎
+│   │   ├── ads-report/                # 报表引擎 (CSV/Excel/PDF)
 │   │   ├── ads-tenant/                # 多租户管理
 │   │   └── ads-storage/               # 存储抽象层 (local/OSS/COS/S3)
 │   ├── public/                        # 静态资源 (webman 内置静态处理)
@@ -335,7 +334,7 @@ ads-php/
 │   │   ├── ExceptionHandler.php       # API 异常处理器
 │   │   └── ApiResponse.php            # 统一响应格式
 │   ├── config/                        # 全局配置 (DB/Redis/Log/Middleware)
-│   ├── tests/                         # PHPUnit 测试 (229 tests)
+│   ├── tests/                         # PHPUnit 测试 (217 tests)
 │   │   ├── Unit/                      # 单元测试 (Middleware, Task, Engines)
 │   │   └── Integration/               # 集成测试 (Auth, Health, API)
 │   └── start.php                      # 服务入口
@@ -343,11 +342,11 @@ ads-php/
 │   ├── public/web/
 │   │   ├── public/pet.svg             # 项目宠物「阿章」，favicon + 登录页
 │   │   ├── src/
-│   │   │   ├── views/                 # 15 个 Vue 页面
+│   │   │   ├── views/                 # 14 个 Vue 页面
 │   │   │   │   ├── dashboard/         # 仪表盘 (ECharts)
 │   │   │   │   ├── account/           # 账户管理 + 绑定
 │   │   │   │   ├── asset/             # 素材库
-│   │   │   │   ├── report/            # 报表分析 + 导出 + 归因
+│   │   │   │   ├── report/            # 报表分析 + 导出
 │   │   │   │   ├── alert/             # 告警规则 + 记录
 │   │   │   │   ├── notification/      # 通知中心
 │   │   │   │   ├── sync/              # 同步状态
@@ -393,7 +392,7 @@ ads-php/
 | 投放数据 | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | 平台同步的只读投放层级 |
 | 报表 | `ads_report_metrics`, `ads_report_extras` | 统一报表指标 |
 | 素材 | `ads_assets` | 创意素材库 |
-| 归因 | `ads_conversions`, `ads_attribution_results` | 转化追踪 + 归因结果 |
+| 转化 | `ads_conversions` | 转化回传数据 |
 | 告警 | `ads_alert_rules`, `ads_alert_logs` | 告警监控 |
 | 通知 | `ads_notifications` | 站内通知 |
 | 系统 | `ads_sync_errors`, `admin_users`, `admin_roles`, `admin_audit_logs` | 同步错误、RBAC、审计 |
@@ -415,10 +414,10 @@ ads-php/
 
 ```bash
 cd service && ./vendor/bin/phpunit
-# 229 测试 / 634 断言
+# 217 测试 / 595 断言
 ```
 
-**覆盖范围**: 14 个中间件 · 8 插件业务层 (账户/告警/平台/报表/任务/租户/存储) · 引擎 (Alert/Attribution/Report) · API 集成测试 (44 路由) · UI E2E (15 页面)
+**覆盖范围**: 14 个中间件 · 8 插件业务层 (账户/告警/平台/报表/任务/租户/存储) · 引擎 (Alert/Report) · API 集成测试 (42 路由) · UI E2E (14 页面)
 
 **测试报告**: 覆盖 PHP 单元 / API 自动化 / UI E2E / Go N/A / Rust N/A + Bug 汇总）
 
@@ -442,7 +441,7 @@ cd apps/flutter && dart analyze   # 零错误
 
 ## Skills
 
-11 个可复用项目技能（开发期内部技能，未随公开仓库发布）：
+10 个可复用项目技能（开发期内部技能，未随公开仓库发布）：
 
 | Skill | 说明 |
 |------|------|
@@ -455,7 +454,6 @@ cd apps/flutter && dart analyze   # 零错误
 | `security-middleware` | 添加安全中间件层（接口规范 + 注册 + 现有链参考） |
 | `version-split` | Lite/Standard/Full 三版本拆分（操作步骤 + 配置更新） |
 | `cache-strategy` | 三级缓存策略（L1内存/L2 APCu/L3 Redis + TTL建议） |
-| `attribution-setup` | 跨平台归因引擎（5模型 + API调用 + 数据准备） |
 | `high-concurrency` | 高并发 8 项优化（读写分离/连接池/消息队列/水平扩展/CDN） |
 
 

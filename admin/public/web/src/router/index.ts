@@ -50,12 +50,6 @@ const routes: RouteRecordRaw[] = [
         meta: { title: '报表导出' },
       },
       {
-        path: 'reports/attribution',
-        name: 'AttributionReport',
-        component: () => import('@/views/report/AttributionReport.vue'),
-        meta: { title: '归因分析' },
-      },
-      {
         path: 'assets',
         name: 'Assets',
         component: () => import('@/views/asset/AssetGallery.vue'),

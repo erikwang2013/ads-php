@@ -2,7 +2,7 @@
 /**
  * Copyright (c) 2026 erik <erik@erik.xyz} — https://erik.xyz
  *
- * 报表：汇总 / 自定义报表 / 归因 / 日历 / 预算告警 / 导出。
+ * 报表：汇总 / 自定义报表 / 导出。
  */
 
 namespace Tests\Integration;
@@ -70,25 +70,6 @@ class ReportApiTest extends ApiTestCase
         $this->assertArrayHasKey('data', $body);
     }
 
-    public function testAttributionModels(): void
-    {
-        $body = $this->assertSuccess((new DashboardController())->attributionModels());
-        $this->assertNotEmpty($body['data']);
-    }
-
-    public function testAttributionCompute(): void
-    {
-        $this->seedMetrics();
-        $this->seedConversion();
-
-        $request = $this->authedRequest('GET', '/api/reports/attribution', [], [], [
-            'date_start' => date('Y-m-01'),
-            'date_end'   => date('Y-m-d'),
-        ]);
-        $body = $this->assertSuccess((new DashboardController())->attribution($request));
-        $this->assertArrayHasKey('data', $body);
-    }
-
     public function testExportCsv(): void
     {
         $this->seedMetrics();
@@ -109,20 +90,5 @@ class ReportApiTest extends ApiTestCase
         $request = $this->authedRequest('GET', '/api/reports/export-dashboard', [], [], ['format' => 'jpg']);
         $body = $this->json((new ExportController())->exportDashboard($request));
         $this->assertEquals(1, $body['code']);
-    }
-
-    protected function seedConversion(array $overrides = []): void
-    {
-        DB::table('ads_conversions')->insert(array_merge([
-            'id'              => $this->nextId(),
-            'tenant_id'       => $this->tenantId,
-            'platform'        => 'mock',
-            'order_id'        => 'ord-' . $this->nextId(),
-            'conversion_time' => date('Y-m-d H:i:s'),
-            'value'           => 990,
-            'currency'        => 'CNY',
-            'created_at'      => now(),
-            'updated_at'      => now(),
-        ], $overrides));
     }
 }

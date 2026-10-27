@@ -7,10 +7,8 @@ namespace plugin\ads_api\controller\v1;
 
 use Webman\Http\Request;
 use app\support\ApiResponse;
-use Webman\Http\Response;
 use erik\support\CacheService;
 use Illuminate\Database\Capsule\Manager as DB;
-use Throwable;
 
 
 class DashboardController
@@ -76,26 +74,5 @@ class DashboardController
         }, 300);
 
         return ApiResponse::success($data);
-    }
-
-    public function attribution(Request $request): Response
-    {
-        $engine = new \plugin\ads_report\service\AttributionEngine();
-        $result = $engine->compute(
-            $request->tenantId ?? 1,
-            $request->get('date_start', date('Y-m-01')),
-            $request->get('date_end', date('Y-m-d')),
-            $request->get('model', 'last_touch'),
-        );
-        return ApiResponse::success($result);
-    }
-
-    public function attributionModels(): Response
-    {
-        $models = [];
-        foreach (\plugin\ads_report\service\AttributionEngine::MODELS as $code => $desc) {
-            $models[] = ['code' => $code, 'name' => explode(' ', $desc)[0], 'description' => $desc];
-        }
-        return ApiResponse::success($models);
     }
 }

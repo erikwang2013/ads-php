@@ -79,9 +79,6 @@ Webman\Route::group('/api/v1', function () {
     Webman\Route::get('/assets/{id}', [AssetController::class, 'show']);
     Webman\Route::delete('/assets/{id}', [AssetController::class, 'destroy']);
 
-    Webman\Route::get('/reports/attribution', [DashboardController::class, 'attribution']);
-    Webman\Route::get('/reports/attribution/models', [DashboardController::class, 'attributionModels']);
-
     // 同步状态可视化 (Phase 10 Task 1)
     Webman\Route::get('/sync/status', [SyncController::class, 'status']);
     Webman\Route::get('/sync/errors', [SyncController::class, 'errors']);
