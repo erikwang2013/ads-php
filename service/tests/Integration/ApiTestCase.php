@@ -31,7 +31,7 @@ abstract class ApiTestCase extends TestCase
     protected const DIRTY_TABLES = [
         'ads_platform_accounts', 'ads_campaigns', 'ads_ad_groups', 'ads_creatives',
         'ads_notifications', 'ads_assets', 'ads_sync_errors',
-        'ads_conversions', 'ads_auth_tokens', 'ads_report_metrics',
+        'ads_auth_tokens', 'ads_report_metrics',
     ];
 
     protected function setUp(): void

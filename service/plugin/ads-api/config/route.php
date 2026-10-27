@@ -15,7 +15,6 @@ use plugin\ads_api\controller\v1\DashboardController;
 use plugin\ads_api\controller\v1\NotificationController;
 use plugin\ads_api\controller\v1\DocController;
 use plugin\ads_api\controller\v1\SyncController;
-use plugin\ads_api\controller\v1\ConversionController;
 use plugin\ads_api\controller\v1\TenantController;
 
 // API 版本号固定在路由路径中：/api/v1/... → plugin\ads_api\controller\v1\*。
@@ -69,8 +68,6 @@ Webman\Route::group('/api/v1', function () {
     Webman\Route::get('/sync/errors', [SyncController::class, 'errors']);
 
     // 转化数据采集 (Phase 10 Task 2)
-    Webman\Route::post('/conversions', [ConversionController::class, 'store']);
-    Webman\Route::get('/conversions', [ConversionController::class, 'index']);
 
     // 多租户配额 (Phase 10 Task 4)
     Webman\Route::get('/tenant/quota', [TenantController::class, 'quota']);

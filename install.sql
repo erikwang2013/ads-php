@@ -157,29 +157,7 @@ CREATE TABLE IF NOT EXISTS `ads_assets` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ============================================================================
--- 5. 转化追踪 (ads-report / conversions)
--- ============================================================================
-
-CREATE TABLE IF NOT EXISTS `ads_conversions` (
-    `id` BIGINT UNSIGNED PRIMARY KEY,
-    `tenant_id` BIGINT UNSIGNED NOT NULL,
-    `platform` VARCHAR(32) NOT NULL,
-    `campaign_id` BIGINT UNSIGNED NULL COMMENT '关联 ads_campaigns.id（转化回传 API 必填）',
-    `order_id` VARCHAR(128) NOT NULL,
-    `value` DECIMAL(12,2) DEFAULT 0 COMMENT '金额，单位：分（与 cost 口径一致）',
-    `currency` VARCHAR(8) DEFAULT 'CNY',
-    `channel` VARCHAR(32) DEFAULT 'api' COMMENT '转化来源渠道（api 回传/埋点/手动）',
-    `conversion_time` DATETIME NOT NULL,
-    `extra` JSON NULL,
-    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
-    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    UNIQUE KEY `uk_order` (`tenant_id`, `platform`, `order_id`),
-    INDEX `idx_tenant_time` (`tenant_id`, `conversion_time`),
-    INDEX `idx_campaign` (`campaign_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- ============================================================================
--- 6. 通知中心 (ads-notifications)
+-- 5. 通知中心 (ads-notifications)
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS `ads_notifications` (
@@ -198,7 +176,7 @@ CREATE TABLE IF NOT EXISTS `ads_notifications` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ============================================================================
--- 7. 同步错误 (ads-task)
+-- 6. 同步错误 (ads-task)
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS `ads_sync_errors` (
@@ -214,7 +192,7 @@ CREATE TABLE IF NOT EXISTS `ads_sync_errors` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ============================================================================
--- 8. 管理后台 RBAC 表 (admin)
+-- 7. 管理后台 RBAC 表 (admin)
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS `admin_users` (
@@ -269,7 +247,7 @@ CREATE TABLE IF NOT EXISTS `admin_audit_logs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ============================================================================
--- 9. Webman Admin 后台表
+-- 8. Webman Admin 后台表
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS `wa_admin_roles` (
@@ -400,7 +378,7 @@ INSERT INTO `wa_options` VALUES
 ON DUPLICATE KEY UPDATE `name` = VALUES(`name`);
 
 -- ============================================================================
--- 10. 性能索引（在表创建完成后执行，使用存储过程保证幂等）
+-- 9. 性能索引（在表创建完成后执行，使用存储过程保证幂等）
 -- ============================================================================
 
 DROP PROCEDURE IF EXISTS ads_add_index;

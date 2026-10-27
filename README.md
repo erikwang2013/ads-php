@@ -12,7 +12,7 @@ Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
 | 形象 | 寓意 | 对应实现 |
 |------|------|---------|
-| 八条触手 | 七个插件各司其职、并行不悖 | ads-account / ads-api / ads-platform / ads-report / ads-storage / ads-task / ads-tenant |
+| 八条触手 | 六个插件各司其职、并行不悖 | ads-account / ads-api / ads-platform / ads-storage / ads-task / ads-tenant |
 | 触手吸盘 | 数据一路吸附汇总 | 29 家平台 → 统一 `/api/v1` |
 | 双目前视 | 多端同时盯屏 | Vue Admin / Flutter / HarmonyOS 三端共用一套 API |
 | 眨眼 + 起伏 | 周期性轮询与守护 | 4 个定时任务（3/5/10/55 分钟）循环采集；22 项防护静默运行 |
@@ -109,8 +109,8 @@ SVG / PNG）**不是开源资产**，版权归作者所有。未经书面许可�
 
 | 层 | 技术 | 说明 |
 |----|------|------|
-| 服务端 | webman v2 + PHP 8.4+ | 7 个插件，32 API 端点 |
-| 数据库 | MySQL 8.0 | 21 张表，ads_ 前缀，Snowflake BIGINT 主键 |
+| 服务端 | webman v2 + PHP 8.4+ | 6 个插件，30 API 端点 |
+| 数据库 | MySQL 8.0 | 20 张表，ads_ 前缀，Snowflake BIGINT 主键 |
 | 缓存 | Redis 7 | 三级缓存 (L1内存/L2 APCu/L3 Redis)、限流计数、Pub/Sub、消息队列 |
 | 搜索 | Elasticsearch | webman-scout 自动索引同步（已配置） |
 | 管理后台 | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP 后端(端口 8789)，SPA 直连业务 API(端口 8788)，10 页面，ECharts 可视化 |
@@ -263,7 +263,7 @@ cd admin && composer install && php start.php start
 1. **数据库连接** — 填写 MySQL 主机、端口、数据库名、用户名密码，支持连接测试
 2. **Redis 配置** — 填写 Redis 连接信息（可选）
 3. **管理员账户** — 设置后台登录用户名、密码、显示名称
-4. **一键安装** — 自动建库、执行 `install.sql` 创建 21 张表并写入种子数据、更新管理员密码
+4. **一键安装** — 自动建库、执行 `install.sql` 创建 20 张表并写入种子数据、更新管理员密码
 
 安装完成后访问 `/` 进入管理后台，使用设置的用户名和密码登录。
 
@@ -319,7 +319,6 @@ ads-php/
 │   │   │   └── model/                 # Campaign
 │   │   ├── ads-account/               # OAuth 账户管理
 │   │   ├── ads-task/                  # 定时任务调度 (3 cron)
-│   │   ├── ads-report/                # 转化追踪
 │   │   ├── ads-tenant/                # 多租户管理
 │   │   └── ads-storage/               # 存储抽象层 (local/OSS/COS/S3)
 │   ├── public/                        # 静态资源 (webman 内置静态处理)
@@ -332,7 +331,7 @@ ads-php/
 │   │   ├── ExceptionHandler.php       # API 异常处理器
 │   │   └── ApiResponse.php            # 统一响应格式
 │   ├── config/                        # 全局配置 (DB/Redis/Log/Middleware)
-│   ├── tests/                         # PHPUnit 测试 (175 tests)
+│   ├── tests/                         # PHPUnit 测试 (160 tests)
 │   │   ├── Unit/                      # 单元测试 (Middleware, Task, Engines)
 │   │   └── Integration/               # 集成测试 (Auth, Health, API)
 │   └── start.php                      # 服务入口
@@ -388,7 +387,6 @@ ads-php/
 | 投放数据 | `ads_campaigns`, `ads_ad_groups`, `ads_creatives` | 平台同步的只读投放层级 |
 | 指标 | `ads_report_metrics` | 仪表盘使用的同步指标 |
 | 素材 | `ads_assets` | 创意素材库 |
-| 转化 | `ads_conversions` | 转化回传数据 |
 | 通知 | `ads_notifications` | 站内通知 |
 | 系统 | `ads_sync_errors`, `admin_users`, `admin_roles`, `admin_audit_logs` | 同步错误、RBAC、审计 |
 
@@ -408,10 +406,10 @@ ads-php/
 
 ```bash
 cd service && ./vendor/bin/phpunit
-# 175 测试 / 466 断言
+# 160 测试 / 404 断言
 ```
 
-**覆盖范围**: 14 个中间件 · 7 插件业务层 (账户/平台/转化/任务/租户/存储) · API 集成测试 (32 路由) · UI E2E (10 页面)
+**覆盖范围**: 14 个中间件 · 6 插件业务层 (账户/平台/任务/租户/存储) · API 集成测试 (30 路由) · UI E2E (10 页面)
 
 **测试报告**: 覆盖 PHP 单元 / API 自动化 / UI E2E / Go N/A / Rust N/A + Bug 汇总）
 
