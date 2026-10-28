@@ -8,5 +8,7 @@
  */
 
 return [
+    // '' 为应用级，'@' 为跨应用全局；插件路由（plugin.*）需要 '@' 才能命中 JSON 处理器
     '' => erik\support\ExceptionHandler::class,
+    '@' => erik\support\ExceptionHandler::class,
 ];

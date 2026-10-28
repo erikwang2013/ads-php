@@ -18,5 +18,8 @@ WORKDIR /app
 COPY service/ /app/
 RUN composer install --no-dev --optimize-autoloader
 
+# Web installer resolves install.sql from the service root
+COPY install.sql /app/install.sql
+
 EXPOSE 8788
 CMD ["php", "start.php", "start"]

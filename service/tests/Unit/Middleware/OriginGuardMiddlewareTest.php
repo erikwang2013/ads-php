@@ -66,4 +66,27 @@ class OriginGuardMiddlewareTest extends TestCase
         $response = $this->process($this->makeRequest('POST'));
         $this->assertEquals(200, $response->getStatusCode());
     }
+
+    public function testAllowsOriginFromCorsAllowedOrigins(): void
+    {
+        // Vite 开发场景：APP_URL 是 0.0.0.0，浏览器 Origin 是 localhost:5173
+        putenv('APP_URL=http://0.0.0.0:8788');
+        putenv('CORS_ALLOWED_ORIGINS=http://localhost:5173');
+        try {
+            $response = $this->process($this->makeRequest('POST', '/api/x', ['Origin' => 'http://localhost:5173']));
+            $this->assertEquals(200, $response->getStatusCode());
+        } finally {
+            putenv('APP_URL');
+            putenv('CORS_ALLOWED_ORIGINS');
+        }
+    }
+
+    public function testAllowsInstallerPathsFromAnyOrigin(): void
+    {
+        // 安装器在 APP_URL 配置前运行，Origin 与默认 APP_URL 不同也应放行
+        foreach (['/install', '/api/install/check', '/api/install/run', '/api/install/status'] as $path) {
+            $response = $this->process($this->makeRequest('POST', $path, ['Origin' => 'http://localhost']));
+            $this->assertEquals(200, $response->getStatusCode(), "expected installer path {$path} to bypass origin check");
+        }
+    }
 }

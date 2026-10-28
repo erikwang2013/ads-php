@@ -33,19 +33,19 @@ class LoginThrottleMiddlewareTest extends TestCase
 
     public function testSkipsNonLoginPath(): void
     {
-        $response = $this->process($this->makeRequest('POST', '/api/campaigns'));
+        $response = $this->process($this->makeRequest('POST', '/api/v1/campaigns'));
         $this->assertEquals(200, $response->getStatusCode());
     }
 
     public function testSkipsEmptyUsername(): void
     {
-        $response = $this->process($this->makeRequest('POST', '/api/auth/login', 'username=&password=x'));
+        $response = $this->process($this->makeRequest('POST', '/api/v1/auth/login', 'username=&password=x'));
         $this->assertEquals(200, $response->getStatusCode());
     }
 
     public function testPassesThroughWhenRedisUnavailable(): void
     {
-        $response = $this->process($this->makeRequest('POST', '/api/auth/login', 'username=admin&password=wrong'));
+        $response = $this->process($this->makeRequest('POST', '/api/v1/auth/login', 'username=admin&password=wrong'));
         $this->assertEquals(200, $response->getStatusCode());
     }
 }

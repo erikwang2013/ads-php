@@ -8,7 +8,7 @@
  *   1. Timestamp within ±5 minutes of server time
  *   2. Nonce has not been used before (Redis TTL-based)
  *
- * Non-essential endpoint — best for non-browser clients (HarmonyOS, Flutter native).
+ * Non-essential endpoint — best for non-browser clients.
  * Browser clients using JWT tokens are already protected by HTTPS + token binding.
  */
 

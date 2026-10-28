@@ -101,6 +101,31 @@ class AuthApiTest extends ApiTestCase
         $this->assertEquals(401, $body['code']);
     }
 
+    public function testLogoutSucceedsWithBearerToken(): void
+    {
+        $request = $this->authedRequest('POST', '/api/auth/logout', [], [
+            'Authorization' => 'Bearer ' . $this->token(),
+        ]);
+        $body = $this->assertSuccess((new AuthController())->logout($request));
+        $this->assertSame('已退出', $body['message']);
+    }
+
+    public function testLogoutWithoutTokenStillSucceeds(): void
+    {
+        $request = $this->authedRequest('POST', '/api/auth/logout');
+        $body = $this->assertSuccess((new AuthController())->logout($request));
+        $this->assertSame('已退出', $body['message']);
+    }
+
+    public function testLogoutRouteIsRegistered(): void
+    {
+        $routes = (string) file_get_contents(__DIR__ . '/../../plugin/ads-api/config/route.php');
+        $this->assertStringContainsString(
+            "Webman\\Route::post('/auth/logout', [AuthController::class, 'logout']);",
+            $routes
+        );
+    }
+
     public function testMiddlewareRejectsMissingToken(): void
     {
         $middleware = new AuthMiddleware();

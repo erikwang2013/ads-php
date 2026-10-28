@@ -18,16 +18,16 @@ export const useAuthStore = defineStore('auth', () => {
     user.value = data.user
     localStorage.setItem('access_token', data.access_token)
     localStorage.setItem('user', JSON.stringify(data.user))
-    if (data.csrf_token) localStorage.setItem('csrf_token', data.csrf_token)
     router.push('/dashboard')
   }
 
-  function logout() {
+  async function logout() {
+    // 先带 token 通知服务端注销（吊销 JWT/session），失败不阻断本地登出
+    try { await authApi.logout() } catch { /* best-effort */ }
     token.value = ''
     user.value = null
     localStorage.removeItem('access_token')
     localStorage.removeItem('user')
-    localStorage.removeItem('csrf_token')
     router.push('/login')
   }
 

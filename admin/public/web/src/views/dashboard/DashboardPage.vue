@@ -92,10 +92,10 @@
           <template #default="{ row }">{{ row.clicks?.toLocaleString() }}</template>
         </el-table-column>
         <el-table-column label="点击率(CTR)" align="right">
-          <template #default="{ row }">{{ (row.ctr ?? 0).toFixed(2) }}%</template>
+          <template #default="{ row }">{{ Number(row.ctr ?? 0).toFixed(2) }}%</template>
         </el-table-column>
         <el-table-column label="转化率(CVR)" align="right">
-          <template #default="{ row }">{{ (row.cvr ?? 0).toFixed(2) }}%</template>
+          <template #default="{ row }">{{ Number(row.cvr ?? 0).toFixed(2) }}%</template>
         </el-table-column>
         <el-table-column label="点击均价(CPC)" align="right">
           <template #default="{ row }">{{ formatFen(row.cpc ?? 0) }}</template>

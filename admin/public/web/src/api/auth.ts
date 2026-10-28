@@ -7,4 +7,7 @@ export const authApi = {
   me() {
     return api.get('/auth/me')
   },
+  logout() {
+    return api.post('/auth/logout')
+  },
 }

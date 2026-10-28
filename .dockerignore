@@ -2,5 +2,7 @@
 node_modules
 *.log
 .env
+**/.env
 vendor
-composer.lock
+service/runtime/
+service/public/uploads/

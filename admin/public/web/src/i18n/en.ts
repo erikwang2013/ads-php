@@ -3,7 +3,7 @@
  */
 export default {
   app: { title: 'Ads Platform', copyright: 'Copyright (c) 2026 erik' },
-  nav: { dashboard: 'Dashboard', accounts: 'Accounts', system: 'System', syncStatus: 'Sync Status' },
+  nav: { dashboard: 'Dashboard', accounts: 'Accounts', syncStatus: 'Sync Status' },
   login: { title: 'Ads Platform', username: 'Username', password: 'Password', login: 'Login', usernameRequired: 'Username is required', passwordRequired: 'Password is required' },
   dashboard: { title: 'Dashboard', todayCost: 'Today Cost', impressions: 'Impressions', clicks: 'Clicks', ctr: 'CTR', cvr: 'CVR', avgCpa: 'Avg CPA', platformCost: 'Cost by Platform', topCampaigns: 'Top 10 Campaigns', trend: 'Cost Trend', last7days: 'Last 7 Days', last30days: 'Last 30 Days', today: 'Today', yesterday: 'Yesterday', vsYesterday: 'vs Yesterday' },
   account: { title: 'Accounts', bind: 'Bind Account', platform: 'Platform', accountName: 'Account Name', platformAccountId: 'Platform ID', status: 'Status', lastSync: 'Last Sync', actions: 'Actions', sync: 'Sync', unbind: 'Unbind', normal: 'Normal', disabled: 'Disabled', notSynced: 'Not Synced', syncTriggered: 'Sync triggered', unbindConfirm: 'Unbind this account?', unbindSuccess: 'Unbound', bindTitle: 'Bind Platform Account', selectPlatform: 'Select Platform', authorizeLogin: 'Authorize', complete: 'Complete', next: 'Next', goAuth: 'Authorize', callbackUrl: 'Callback URL', bindSuccess: 'Bound Successfully', viewAccounts: 'View Accounts', continueBind: 'Continue Binding' },

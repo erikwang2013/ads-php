@@ -19,11 +19,12 @@ class LoginThrottleMiddleware implements MiddlewareInterface
 
     public function process(Request $request, callable $handler): Response
     {
-        if ($request->path() !== '/api/auth/login' || $request->method() !== 'POST') {
+        if ($request->path() !== '/api/v1/auth/login' || $request->method() !== 'POST') {
             return $handler($request);
         }
 
-        $username = $request->post('username', '');
+        // 先规范化，避免 ' admin'、'admin<b></b>' 绕过同一账号的失败计数
+        $username = trim(strip_tags((string) $request->post('username', '')));
         if ($username === '') return $handler($request);
 
         $key = 'login_throttle:' . md5($username);

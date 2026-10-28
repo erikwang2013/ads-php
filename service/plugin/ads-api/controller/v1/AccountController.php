@@ -29,10 +29,11 @@ class AccountController
         $items = CacheService::remember($cacheKey, 300, function () use ($request) {
             $query = PlatformAccount::query();
             if ($platform = $request->get('platform')) $query->byPlatform($platform);
+            if (($status = $request->get('status')) !== null && $status !== '') $query->where('status', (int) $status);
             return $query->get()->toArray();
         });
 
-        $perPage = min((int) $request->get('per_page', 20), 100);
+        $perPage = max(1, min((int) $request->get('per_page', 20), 100));
         $page = max((int) $request->get('page', 1), 1);
         $slice = array_slice($items, ($page - 1) * $perPage, $perPage);
 
@@ -61,7 +62,8 @@ class AccountController
     {
         $account = PlatformAccount::findOrFail($id);
         $account->update(['status' => 0]);
-        CacheService::forget('cache:accounts:show:' . $id);
+        // 列表键为筛选条件的 md5，无法逐键失效
+        CacheService::flush('cache:accounts:');
         return ApiResponse::success(null, 'Account disabled');
     }
 
@@ -73,9 +75,16 @@ class AccountController
      */
     public function sync(Request $request, int $id): \Webman\Http\Response
     {
-        $account = PlatformAccount::findOrFail($id);
-        $account->update(['last_sync_at' => now()]);
-        CacheService::forget('cache:accounts:show:' . $id);
+        PlatformAccount::findOrFail($id);
+
+        // shortcut: sync runs inside the HTTP request; move to a queue if a platform sync exceeds ~30s.
+        try {
+            (new \plugin\ads_task\task\DataSyncTask())->executeSingleAccount($id);
+        } catch (Throwable $e) {
+            return ApiResponse::error($e->getMessage());
+        }
+
+        CacheService::flush('cache:accounts:');
         return ApiResponse::success(null, 'Sync triggered');
     }
 }

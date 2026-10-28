@@ -22,7 +22,9 @@ class HealthController
             \Illuminate\Database\Capsule\Manager::connection()->getPdo()->query('SELECT 1');
             $dbStatus = 'ok';
         } catch (\Throwable $e) {
-            $dbStatus = 'error: ' . $e->getMessage();
+            // 不向未认证的探活端点泄露连接串/异常细节
+            \support\Log::error('health check: database unavailable', ['exception' => $e]);
+            $dbStatus = 'unavailable';
         }
 
         // Redis check
@@ -35,7 +37,8 @@ class HealthController
                 $redisStatus = 'unavailable';
             }
         } catch (\Throwable $e) {
-            $redisStatus = 'error: ' . $e->getMessage();
+            \support\Log::error('health check: redis unavailable', ['exception' => $e]);
+            $redisStatus = 'unavailable';
         }
 
         $healthy = ($dbStatus === 'ok' && $redisStatus === 'ok');

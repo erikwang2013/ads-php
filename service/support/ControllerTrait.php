@@ -31,8 +31,8 @@ trait ControllerTrait
         $column = $table ? "{$table}.{$sort}" : $sort;
         $query->orderBy($column, 'desc');
 
-        $perPage = min((int) $request->get('per_page', 20), 100);
-        $paginator = $query->paginate($perPage);
+        $perPage = max(1, min((int) $request->get('per_page', 20), 100));
+        $paginator = $query->paginate($perPage, ['*'], 'page', max((int) $request->get('page', 1), 1));
 
         return [$paginator->items(), $paginator->total(), $paginator->currentPage(), $paginator->perPage()];
     }

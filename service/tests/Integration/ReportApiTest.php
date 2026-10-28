@@ -50,9 +50,19 @@ class ReportApiTest extends ApiTestCase
         $this->assertEquals(100, $body['data']['overview']['total_cost']);
         $this->assertEquals(50, $body['data']['overview']['total_clicks']);
         $this->assertEquals(2, $body['data']['overview']['total_conversions']);
-        $this->assertEquals(2.0, $body['data']['overview']['avg_cpc']);
         $this->assertNotEmpty($body['data']['by_platform']);
         $this->assertEquals(50, $body['data']['daily'][0]['clicks']);
         $this->assertEquals(2, $body['data']['daily'][0]['conversions']);
+
+        // 派生比率由 PHP 侧 bc_div/bcmul 计算，返回值必须是数值（bcmath 字符串或数字）
+        foreach (['avg_ctr', 'avg_cvr', 'avg_cpc', 'avg_cpa'] as $key) {
+            $this->assertArrayHasKey($key, $body['data']['overview']);
+            $this->assertTrue(is_numeric($body['data']['overview'][$key]), "$key should be numeric");
+        }
+        $platform = $body['data']['by_platform'][0];
+        foreach (['ctr', 'cvr', 'cpc'] as $key) {
+            $this->assertArrayHasKey($key, $platform);
+            $this->assertTrue(is_numeric($platform[$key]), "by_platform.$key should be numeric");
+        }
     }
 }

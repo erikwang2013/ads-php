@@ -26,7 +26,8 @@ class ValidationMiddleware implements MiddlewareInterface
     {
         $result = [];
         foreach ($data as $key => $value) {
-            if (is_string($value)) {
+            // 密码/密钥必须原样保留：trim/strip_tags 会破坏合法凭据
+            if (is_string($value) && !$this->isSecretKey((string) $key)) {
                 $value = trim($value);
                 // Don't strip tags from rich text fields
                 if (!in_array($key, ['description', 'content', 'extra'])) {
@@ -38,5 +39,11 @@ class ValidationMiddleware implements MiddlewareInterface
             $result[$key] = $value;
         }
         return $result;
+    }
+
+    protected function isSecretKey(string $key): bool
+    {
+        $key = strtolower($key);
+        return str_contains($key, 'password') || str_ends_with($key, '_secret');
     }
 }

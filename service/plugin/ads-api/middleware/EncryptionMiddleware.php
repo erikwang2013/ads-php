@@ -14,6 +14,12 @@ class EncryptionMiddleware implements MiddlewareInterface
 {
     public function process(Request $request, callable $handler): Response
     {
+        if ($request->header('X-Encrypted') && env('APP_ENCRYPTION_KEY', '') === '') {
+            return new Response(503, ['Content-Type' => 'application/json'], json_encode([
+                'code' => 503, 'message' => 'Encryption is not configured',
+            ], JSON_UNESCAPED_UNICODE));
+        }
+
         // Decrypt request body if encrypted
         $body = $request->rawBody();
         if (!empty($body) && $request->header('X-Encrypted')) {

@@ -64,7 +64,7 @@ SVG / PNG）**不是开源资产**，版权归作者所有。未经书面许可�
 - **国际化** — 界面中英双语
 - **项目宠物** — 章鱼「阿章」，八爪并行，24 小时值守 29 个平台（[pet.svg](assets/diagrams/pet.svg)）
 
-> API 文档：hg/apidoc 自动生成，启动服务后访问 `http://127.0.0.1:8788/apidoc`  
+> API 文档：本地 `docs/api.md`（仅本地工作副本，历史 tag 保留完整副本）<br>
 > 版本对比：[开源版 vs 商业版](#开源版-vs-商业版)
 >
 > 商业授权：Standard / Full 版请联系 erik@erik.xyz
@@ -120,7 +120,7 @@ SVG / PNG）**不是开源资产**，版权归作者所有。未经书面许可�
 |------|------------------|----------------|
 | 产品定位 | 轻量账户 / 仪表盘 / 素材 / 数据同步 | 完整投放管理、报表、告警、归因与多租户运营平台 |
 | 授权方式 | 公开源码；个人学习/研究，商业使用需书面授权 | 商业授权（Standard / Full），联系 erik@erik.xyz |
-| 工程规模 | 5 插件 · 9 控制器 · 23 路由 · 15 表 · 7 管理页 | 8 插件 · 21 控制器 · 78 路由 · 29 表 · 21 管理页 |
+| 工程规模 | 5 插件 · 10 控制器 · 23 路由 + 4 安装路由 · 8 表 · 6 管理页 | 8 插件 · 21 控制器 · 78 路由 · 29 表 · 21 管理页 |
 | 平台适配器 | 29（16 国内 + 13 国际） | 29（16 国内 + 13 国际） |
 | 账户 OAuth / 数据同步 | ✅ | ✅ |
 | 仪表盘 | ✅ 8 KPI | ✅ 8 KPI + 更多报表视图 |
@@ -135,11 +135,10 @@ SVG / PNG）**不是开源资产**，版权归作者所有。未经书面许可�
 | 素材存储 | 本地磁盘 | 本地 + OSS/COS/S3 + 预签名直传 + CDN 服务商 |
 | 多租户 / 配额 | 单租户 | 租户隔离 + 套餐配额 |
 | 管理端账号 | 单管理员（.env） | RBAC + 用户管理 + 审计日志 |
-| 移动端 | — | Flutter 12 页 + HarmonyOS 6 页 |
-| 测试 | 145 tests / 350 assertions | 300 个测试方法 / 52 个测试文件 |
+| 测试 | 175 tests / 507 assertions | 300 个测试方法 / 52 个测试文件 |
 | 文档 / 站点 | README | 12 语言文档（639 文件）+ 官网 site |
 | 安全 | 22 项核心防护 | 同左 + 多租户隔离、RBAC、审计 |
-| 版本线 | v4.0.x（精简线） | v3.4.x（完整线） |
+| 版本线 | v4.1.x（精简线） | v3.4.x（完整线） |
 
 **商业授权与交付**：Standard / Full 版授权、私有化部署与定制开发请联系 **erik@erik.xyz**。
 
@@ -149,10 +148,10 @@ SVG / PNG）**不是开源资产**，版权归作者所有。未经书面许可�
 
 | 层 | 技术 | 说明 |
 |----|------|------|
-| 服务端 | webman v2 + PHP 8.4+ | 5 个插件，23 API 端点 |
-| 数据库 | MySQL 8.0 | 15 张表，ads_ 前缀，Snowflake BIGINT 主键 |
+| 服务端 | webman v2 + PHP 8.4+ | 5 个插件，23 API 端点 + 4 安装向导端点 |
+| 数据库 | MySQL 8.0 | 8 张表，ads_ 前缀，Snowflake BIGINT 主键 |
 | 缓存 | Redis 7 | 三级缓存 (L1内存/L2 APCu/L3 Redis)、限流计数、Pub/Sub |
-| 管理后台 | webman-admin v2 + Vue 3 + TypeScript + Element Plus | PHP 后端(端口 8789)，SPA 直连业务 API(端口 8788)，7 页面，ECharts 可视化 |
+| 管理后台 | Vue 3 + TypeScript + Element Plus | SPA 由 Nginx 托管，JWT 直连 service API(端口 8788)，6 页面，ECharts 可视化 |
 | 部署 | Docker + Nginx + GHCR | Docker Compose 一键启动，GitHub Actions 自动构建推送 |
 
 ## 架构图
@@ -174,11 +173,11 @@ SVG / PNG）**不是开源资产**，版权归作者所有。未经书面许可�
 
 ## 架构说明
 
-- **`service/`** — webman v2 用户端业务 API 服务，监听端口 **8788**。处理广告平台对接、OAuth 授权、数据同步、仪表盘指标等业务逻辑。
-- **`admin/`** — webman-admin v2 独立管理后台，监听端口 **8789**。包含 PHP 后端（认证鉴权、系统配置）和 Vue 3 SPA 前端。
-- **管理后台与业务服务的通信** — Vue SPA 通过 axios（baseURL `/api`）直连 service API；admin 专属路由（`/api/admin/*`）由 admin PHP 后端（8789）提供服务，Nginx 按路径分流。
-- **开发模式** — Vite dev server (端口 5173) 将 `/api` 代理至 service:8788；admin PHP 后端在 8789 提供 session 认证和 SPA 静态服务。
-- **生产模式** — Nginx 将 `/` 路由至 admin:8789（管理后台 SPA），将 `/api/` 路由至 service:8788（业务 API）。
+- **`service/`** — 唯一后端：webman v2 业务 API 服务，监听端口 **8788**。处理广告平台对接、OAuth 授权、数据同步、仪表盘指标、管理员认证与 Web 安装向导。
+- **`admin/public/web/`** — Vue 3 + TypeScript + Element Plus 管理端 SPA 源码，构建后由 Nginx 托管；不再包含 PHP 后端。
+- **管理后台与业务服务的通信** — Vue SPA 通过 axios（baseURL `/api`）直连 service API，JWT 认证；Nginx 将 `/api/`、`/install`、`/uploads/` 代理至 service:8788。
+- **开发模式** — service 在 8788 启动；Vite dev server (端口 5173) 将 `/api` 代理至 service:8788。
+- **生产模式** — Nginx 将 `/` 路由至构建后的 SPA（静态文件），将 `/api/`、`/install`、`/uploads/` 路由至 service:8788。
 
 ## Erik Stack 集成
 
@@ -191,7 +190,6 @@ SVG / PNG）**不是开源资产**，版权归作者所有。未经书面许可�
 | `erikwang2013/encryptable` | DB 字段级自动加解密 |
 | `erikwang2013/season` | 国家旗帜标识 |
 | `erikwang2013/poster-php` | 滑块验证码（登录保护） |
-| `hg/apidoc` | API 文档自动生成（注解 + Web UI） |
 
 ## 国际化
 
@@ -204,13 +202,9 @@ SVG / PNG）**不是开源资产**，版权归作者所有。未经书面许可�
 
 ## 安全
 
-### Service 端 (13 层全局 + AuthMiddleware)
+### Service 端 (12 层全局 + 路由层认证)
 
-CORS → OriginGuard → SecurityHeaders → AttackGuard → ClientPlatform → ReplayGuard → RateLimit → LoginThrottle → SessionLimit → SQLGuard → Validation → ResponseTime → Encryption → AuthMiddleware（路由层）
-
-### Admin 端 (9 层全局 + AuthCheck)
-
-CORS → SecurityHeaders → AttackGuard → ClientPlatform → RateLimit → LoginThrottle → SQLGuard → Validation → CSRF → AuthCheck（路由层）
+CORS → OriginGuard → SecurityHeaders → AttackGuard → ClientPlatform → ReplayGuard → RateLimit → LoginThrottle → SQLGuard → Validation → ResponseTime → Encryption → AuthMiddleware + SessionLimitMiddleware（路由层）
 
 ### 防护能力总览 (22 项)
 
@@ -229,7 +223,6 @@ CORS → SecurityHeaders → AttackGuard → ClientPlatform → RateLimit → Lo
 | | 验证码 | 滑块验证码 (5分钟有效, 5px 容差) |
 | 请求校验 | CORS 白名单 | 生产环境域名白名单 |
 | | Origin/Referer 校验 | 跨域来源验证 |
-| | CSRF Token | Admin 端 session token 验证 |
 | | 防重放攻击 | Nonce + Timestamp ±5min (非浏览器端) |
 | | 接口限流 | 滑动窗口 60次/60s |
 | | SSRF 防护 | OAuth redirect_uri 白名单 |
@@ -246,7 +239,7 @@ CORS → SecurityHeaders → AttackGuard → ClientPlatform → RateLimit → Lo
 
 **防御纵深**：外层（Nginx）→ 入口守卫（5层中间件）→ 身份认证（7项）→ 输入校验（4项）→ 频率控制 → 数据加密
 
-**认证**：Service 使用 JWT（24h + refresh 轮换）；Admin 使用环境变量配置的单管理员账号 + bcrypt 哈希
+**认证**：Service 使用 JWT（24h + refresh 轮换）；管理员账号来自 `service/.env`（`API_USERNAME` + `API_PASSWORD_HASH`，bcrypt）
 
 **二次确认**：删除/解绑/批量操作采用"输入确认词"模式（`GlobalConfirm` + `useConfirmStore`）
 
@@ -280,38 +273,70 @@ CORS → SecurityHeaders → AttackGuard → ClientPlatform → RateLimit → Lo
 
 ### 一键 Web 安装（推荐）
 
-启动服务后浏览器访问 `/install` 进入安装向导：
+启动 service 后浏览器访问 `/install` 进入安装向导：
 
 ```bash
-# 启动管理后台 (端口 8789)
-cd admin && composer install && php start.php start
+# 启动 service (端口 8788)
+cd service && composer install && php start.php start
 
-# 打开浏览器访问 http://localhost:8789/install
-# 在安装向导中填写数据库信息、管理员账户，点击「开始安装」
+# 打开浏览器访问 http://127.0.0.1:8788/install
 ```
 
 安装向导将在网页上引导你完成：
-1. **数据库连接** — 填写 MySQL 主机、端口、数据库名、用户名密码，支持连接测试
-2. **Redis 配置** — 填写 Redis 连接信息（可选）
-3. **管理员账户** — 设置后台登录用户名、密码、显示名称
-4. **一键安装** — 自动建库、执行 `install.sql` 创建 15 张表并写入种子数据、设置管理员账号
+1. **安装令牌** — 本地 `cat service/runtime/install-token.txt`，Docker `docker compose exec php cat runtime/install-token.txt`，填入页面防止未授权安装
+2. **数据库连接** — 填写 MySQL 主机、端口、数据库名、用户名密码（Docker 用 `ads`，本地可用 `root`），支持连接测试
+3. **Redis 配置** — 填写 Redis 连接信息（可选）
+4. **管理员账号** — 设置管理后台登录账号、密码（至少 12 位）、显示名称（写入 `service/.env`）
+5. **一键安装** — 自动建库、执行 `install.sql` 创建 8 张表、写入 `.env`（含随机 JWT / 加密密钥）
 
-安装完成后访问 `/` 进入管理后台，使用设置的用户名和密码登录。
+安装完成后按提示重启 service（`php start.php restart`），访问 `/` 进入管理后台并登录。
 
 ### Docker (推荐生产环境)
 
+> Compose 仅对外发布 Nginx 的 80 端口（HTTP）；`php`/`mysql`/`redis` 均不对宿主机暴露。生产环境必须由上游反向代理或负载均衡终止 TLS（或自行挂载 443 证书），不要把 3306/6379/8788 暴露到公网。
+>
+> **上游 TLS 终止**：必须在 `docker/nginx/admin.conf` 的 http 段启用 `set_real_ip_from <代理 CIDR>` 与 `real_ip_header X-Forwarded-For`，让 `$remote_addr` 还原为真实客户端 IP；否则按 IP 限流和 JWT 的 IP 绑定会把所有客户端视为同一个代理 IP。同时把 80 端口限制为仅代理可访问，避免客户端伪造转发头。代理传入的 `X-Forwarded-Proto` 会用于生成 `APP_URL`；直接在 Nginx 挂载 443 证书时无需该配置，直连行为不变。
+
 ```bash
-# 启动全部服务 (MySQL + Redis + PHP + Nginx)
-docker-compose up -d
+# 1. 准备密钥（compose 从仓库根目录 .env 读取；缺失会直接报错退出）
+cat > .env <<'EOF'
+DB_PASSWORD=<强密码>
+REDIS_PASSWORD=<强密码>
+EOF
 
-# 初始化数据库（创建表 + 种子数据）
-make db-init
+# 2. 准备 service 环境文件（必做；容器会挂载此文件）
+cp service/.env.example service/.env
+# 编辑 service/.env：.env 会覆盖 compose 中的 environment 值，必须改成容器内服务名
+#   DB_HOST=mysql
+#   DB_PORT=3306
+#   DB_DATABASE=ads
+#   DB_USERNAME=ads
+#   DB_PASSWORD=<与根目录 .env 的 DB_PASSWORD 一致>
+#   REDIS_HOST=redis
+#   REDIS_PORT=6379
+#   REDIS_PASSWORD=<与根目录 .env 的 REDIS_PASSWORD 一致>
+#   APP_URL=<浏览器访问地址，例如 https://ads.example.com>
 
-# 访问
+# 3. 启动全部服务 (MySQL + Redis + service + Nginx)
+docker compose up -d
+
+# 4. 打开安装向导
 # 管理后台: http://localhost
 # 安装向导: http://localhost/install
 # API: http://localhost/api/v1（版本号固定于 URL 路径，不在 Header 传递）
 ```
+
+MySQL 首次启动会通过挂载的 `install.sql` 建表；`/install` 会再次执行幂等建表 SQL，并把管理员账号与随机密钥写入 `service/.env`（会覆盖上一步的编辑，因此安装向导中数据库用户填 `ads`、密码填根目录 `.env` 的 `DB_PASSWORD`，Redis 密码填 `REDIS_PASSWORD`）。
+
+> 多实例部署必须在 `service/.env` 设置 `JWT_STORAGE=redis`（安装向导会自动写入）；否则 JWT 黑名单落在各实例本地文件，登出/吊销不会跨实例生效。
+
+> **生产环境务必设置 `OAUTH_ALLOWED_REDIRECTS`**（逗号分隔白名单，支持通配符）。安装向导会自动写入 `<APP_URL>/*`；手动部署时留空则仅允许与 `APP_URL` 同主机（host）的 redirect 地址，其他地址一律拒绝。
+
+### 从旧版本升级（加密密钥）
+
+旧版安装器只写 `APP_ENCRYPTION_KEY` 且使用 `ENCRYPTION_CIPHER=aes-128-ecb`，新版字段加密读取 `ENCRYPTION_KEY`。升级时请把原 `APP_ENCRYPTION_KEY` 的值复制为 `ENCRYPTION_KEY`，并保留旧的 `ENCRYPTION_CIPHER=aes-128-ecb`，直到已加密的 token 全部重新加密完成，再切换到 `aes-256-gcm` 与新密钥。
+
+升级重启后请清理 service 所用 Redis DB 的旧键：`ads:cache:*`（旧账户缓存里可能仍有明文 token）和 `ads:sessions:*`（旧版是 SET，新版是 ZSET，类型冲突会暂时跳过会话限制），或直接 `FLUSHDB`。登录验证码默认强制（`CAPTCHA_ENABLED=true`）；纯 API 客户端需要实现滑块验证码，或显式设为 `false`（会降低爆破防护）。
 
 ### 本地开发
 
@@ -334,10 +359,10 @@ cd admin/public/web && npx vue-tsc --noEmit   # 零错误
 ads-php/
 ├── service/                           # 用户端业务服务 (webman v2 :8788)
 │   ├── plugin/
-│   │   ├── ads-api/                   # REST API (30 端点，版本路由 /api/v1)
-│   │   │   ├── controller/v1/         # 12 个控制器
+│   │   ├── ads-api/                   # REST API (23 端点，版本路由 /api/v1) + 安装向导
+│   │   │   ├── controller/            # 10 个控制器（v1/* + InstallController）
 │   │   │   ├── middleware/            # 14 个中间件
-│   │   │   ├── config/route.php       # 路由定义
+│   │   │   ├── config/route.php       # 路由定义（含 4 条安装路由）
 │   │   ├── ads-platform/              # 平台适配器核心
 │   │   │   ├── adapter/               # 29 个平台适配器
 │   │   │   ├── src/                   # AdapterRegistry, CampaignData
@@ -354,27 +379,23 @@ ads-php/
 │   │   ├── ExceptionHandler.php       # API 异常处理器
 │   │   └── ApiResponse.php            # 统一响应格式
 │   ├── config/                        # 全局配置 (DB/Redis/Log/Middleware)
-│   ├── tests/                         # PHPUnit 测试 (145 tests)
+│   ├── tests/                         # PHPUnit 测试 (175 tests)
 │   │   ├── Unit/                      # 单元测试 (Middleware, Task, Engines)
 │   │   └── Integration/               # 集成测试 (Auth, Health, API)
 │   └── start.php                      # 服务入口
-├── admin/                             # 独立管理后台 (webman-admin v2 :8789)
-│   ├── public/web/
-│   │   ├── public/pet.svg             # 项目宠物「阿章」，favicon + 登录页
-│   │   ├── src/
-│   │   │   ├── views/                 # 7 个 Vue 页面
-│   │   │   │   ├── dashboard/         # 仪表盘 (ECharts)
-│   │   │   │   ├── account/           # 账户管理 + 绑定
-│   │   │   │   ├── asset/             # 素材库
-│   │   │   │   ├── sync/              # 同步状态
-│   │   │   │   ├── login/             # 登录页 (阿章)
-│   │   │   │   └── system/            # 系统信息
-│   │   │   ├── api/                   # 8 个 API 客户端
-│   │   │   ├── stores/                # 4 个 Pinia Store
-│   │   │   └── components/            # 共享组件 (ListPageLayout 等 6 个)
-│   │   └── dist/                      # 构建产物 (不入库，CI 构建)
-│   ├── app/                           # PHP 后端 (controller/middleware)
-│   └── config/                        # Admin 配置
+├── admin/public/web/                  # Vue 3 管理端 SPA（无 PHP 后端，Nginx 托管）
+│   ├── public/pet.svg                 # 项目宠物「阿章」，favicon + 登录页
+│   ├── src/
+│   │   ├── views/                     # 6 个 Vue 页面
+│   │   │   ├── dashboard/             # 仪表盘 (ECharts)
+│   │   │   ├── account/               # 账户列表 + 绑定
+│   │   │   ├── asset/                 # 素材库
+│   │   │   ├── sync/                  # 同步状态
+│   │   │   └── login/                 # 登录页 (阿章)
+│   │   ├── api/                       # API 客户端
+│   │   ├── stores/                    # Pinia Store
+│   │   └── components/                # 共享组件 (ListPageLayout 等)
+│   └── dist/                          # 构建产物 (不入库，CI 构建)
 ├── docker/                            # Docker & Nginx 配置
 ├── .github/workflows/                 # CI (语法→测试→TS→Docker) + CD (构建推送)
 ├── assets/                            # 公开视觉资产（版权归属见 ASSETS-LICENSE.md）
@@ -382,13 +403,14 @@ ads-php/
 │   ├── pet-expressions/               # 阿章 12 种表情 SVG
 │   └── weixinpay.png / alipay.png     # 打赏收款码
 ├── docker-compose.yml
-├── Dockerfile / Dockerfile.admin / Dockerfile.admin-php
+├── Dockerfile                         # service 镜像
+├── Dockerfile.admin                   # SPA 构建 + Nginx 镜像
 └── Makefile
 ```
 
 ## API 端点
 
-> 全部 API 端点定义（请求/响应示例、错误码、限流策略）见 hg/apidoc 在线文档：启动服务后访问 `http://127.0.0.1:8788/apidoc`
+> 全部 API 端点定义（请求/响应示例、错误码、限流策略）见本地 `docs/api.md`（历史 tag 保留完整副本）；路由清单见 [service/plugin/ads-api/config/route.php](service/plugin/ads-api/config/route.php)。
 
 ## 数据库
 
@@ -418,12 +440,12 @@ ads-php/
 
 ```bash
 cd service && ./vendor/bin/phpunit
-# 145 测试 / 350 断言
+# 175 测试 / 507 断言
 ```
 
-**覆盖范围**: 14 个中间件 · 5 插件业务层 (账户/平台/任务/存储) · API 集成测试 (23 路由) · UI E2E (9 页面)
+**覆盖范围**: 14 个中间件 · 5 插件业务层 (账户/平台/任务/存储) · API 集成测试 (23 路由)
 
-**测试报告**: 覆盖 PHP 单元 / API 自动化 / UI E2E / Go N/A / Rust N/A + Bug 汇总）
+**测试报告**: PHP 单元 / API 自动化测试 + Bug 汇总。
 
 ```bash
 # TypeScript 检查
@@ -434,7 +456,7 @@ cd admin/public/web && npx vue-tsc --noEmit   # 零错误
 
 **CI** (`.github/workflows/ci.yml`): 自动管线 — **PHP Syntax → PHPUnit → TypeScript → Docker Build**
 
-**CD** (`.github/workflows/deploy.yml`): 手动触发 — **Docker Buildx → 推送 GHCR (service/admin/admin-php) → 部署通知**
+**CD** (`.github/workflows/deploy.yml`): 手动触发 — **Docker Buildx → 推送 GHCR (service/admin) → 部署通知**
 
 `.github/dependabot.yml` 每周自动更新 Composer + npm + Docker 依赖。
 

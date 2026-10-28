@@ -19,10 +19,25 @@ class OriginGuardMiddleware implements MiddlewareInterface
     // Non-standard / dangerous HTTP methods to reject
     protected const BLOCKED_METHODS = ['TRACE', 'DEBUG', 'CONNECT', 'TRACK', 'OPTIONS-POST', 'OPTIONS-PUT'];
 
+    // 首次安装须在 APP_URL 配置前可用，安装器路径跳过 Origin 校验
+    protected array $skipPaths = ['/install', '/api/install/check', '/api/install/run', '/api/install/status'];
+
     protected function getAllowedOrigins(): array
     {
-        $origins = env('ALLOWED_ORIGINS', env('APP_URL', 'http://127.0.0.1:8788'));
-        return array_map('trim', explode(',', $origins));
+        // 合并三处来源：显式白名单、CORS 白名单（Vite 开发端口）、APP_URL（生产同源）
+        $values = [
+            env('ALLOWED_ORIGINS', ''),
+            env('CORS_ALLOWED_ORIGINS', ''),
+            env('APP_URL', 'http://127.0.0.1:8788'),
+        ];
+
+        $origins = [];
+        foreach (explode(',', implode(',', $values)) as $origin) {
+            $origin = trim($origin);
+            if ($origin !== '') $origins[] = $origin;
+        }
+
+        return $origins;
     }
 
     public function process(Request $request, callable $handler): Response
@@ -33,6 +48,9 @@ class OriginGuardMiddleware implements MiddlewareInterface
         }
 
         // 2. Origin/Referer check for state-changing requests
+        if (in_array($request->path(), $this->skipPaths, true)) {
+            return $handler($request);
+        }
         if (!in_array($request->method(), ['POST', 'PUT', 'DELETE', 'PATCH'], true)) {
             return $handler($request);
         }

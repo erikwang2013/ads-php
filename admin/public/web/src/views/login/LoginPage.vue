@@ -40,7 +40,7 @@ import CaptchaWidget from '@/components/CaptchaWidget.vue'
 const authStore = useAuthStore()
 const formRef = ref<FormInstance>()
 const loading = ref(false)
-const form = reactive({ username: 'admin', password: 'admin123' })
+const form = reactive({ username: '', password: '' })
 const rules = {
   username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
@@ -59,6 +59,10 @@ async function handleLogin() {
   try {
     await authStore.login(form.username, form.password, captchaData.value)
     captchaData.value = null
+  } catch {
+    // 验证码 token 在服务端校验成功后即被删除，登录失败后必须重新验证
+    captchaData.value = null
+    showCaptcha.value = true
   } finally { loading.value = false }
 }
 

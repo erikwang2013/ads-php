@@ -30,6 +30,25 @@ class CampaignApiTest extends ApiTestCase
         $this->assertArrayHasKey('summary', $body['data']);
     }
 
+    public function testCampaignIndexSecondPageReturnsSecondCampaign(): void
+    {
+        $firstId  = $this->seedCampaign(['id' => 900001, 'platform_campaign_id' => 'pc-page-1']);
+        $secondId = $this->seedCampaign(['id' => 900002, 'platform_campaign_id' => 'pc-page-2']);
+
+        $request = $this->authedRequest('GET', '/api/campaigns', [], [], [
+            'page' => 2, 'per_page' => 1, 'sort' => 'id',
+        ]);
+        $body = $this->assertSuccess((new CampaignController())->index($request));
+
+        $this->assertSame(2, $body['data']['pagination']['page']);
+        $this->assertSame(1, $body['data']['pagination']['per_page']);
+        $this->assertSame(2, $body['data']['pagination']['total']);
+        $this->assertCount(1, $body['data']['list']);
+        // sort=id 固定按 id desc：第一页是较大的 id，第二页是较小的 id
+        $this->assertSame($firstId, $body['data']['list'][0]['id']);
+        $this->assertNotSame($secondId, $body['data']['list'][0]['id']);
+    }
+
     public function testCampaignIndexSortByCost(): void
     {
         $campaignId = $this->seedCampaign();

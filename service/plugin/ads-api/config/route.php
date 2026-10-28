@@ -4,6 +4,8 @@
  */
 
 use plugin\ads_api\middleware\AuthMiddleware;
+use plugin\ads_api\middleware\SessionLimitMiddleware;
+use plugin\ads_api\controller\InstallController;
 use plugin\ads_api\controller\v1\AuthController;
 use plugin\ads_api\controller\v1\CaptchaController;
 use plugin\ads_api\controller\v1\HealthController;
@@ -26,6 +28,12 @@ Webman\Route::post('/api/v1/captcha/verify', [CaptchaController::class, 'verify'
 Webman\Route::get('/health', [HealthController::class, 'health']);
 Webman\Route::get('/ping', [HealthController::class, 'ping']);
 
+// Web installer (public until .installed / API_PASSWORD_HASH is set)
+Webman\Route::get('/install', [InstallController::class, 'index']);
+Webman\Route::post('/api/install/check', [InstallController::class, 'checkDb']);
+Webman\Route::post('/api/install/run', [InstallController::class, 'run']);
+Webman\Route::get('/api/install/status', [InstallController::class, 'status']);
+
 // Public routes
 Webman\Route::post('/api/v1/auth/login', [AuthController::class, 'login']);
 Webman\Route::get('/api/v1/platforms', [PlatformController::class, 'index']);
@@ -34,6 +42,7 @@ Webman\Route::get('/api/v1/platforms', [PlatformController::class, 'index']);
 Webman\Route::group('/api/v1', function () {
     Webman\Route::get('/auth/me', [AuthController::class, 'me']);
     Webman\Route::post('/auth/refresh', [AuthController::class, 'refreshToken']);
+    Webman\Route::post('/auth/logout', [AuthController::class, 'logout']);
 
     Webman\Route::get('/platforms/{code}/oauth-url', [PlatformController::class, 'oauthUrl']);
     Webman\Route::post('/platforms/{code}/callback', [PlatformController::class, 'callback']);
@@ -57,4 +66,4 @@ Webman\Route::group('/api/v1', function () {
     Webman\Route::get('/sync/status', [SyncController::class, 'status']);
     Webman\Route::get('/sync/errors', [SyncController::class, 'errors']);
 
-})->middleware([AuthMiddleware::class]);
+})->middleware([AuthMiddleware::class, SessionLimitMiddleware::class]);

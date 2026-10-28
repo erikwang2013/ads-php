@@ -2,7 +2,8 @@
 /**
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
  *
- * SessionLimitMiddleware 测试：跳过路径、无 userId 放行；Redis 不可用时放行。
+ * SessionLimitMiddleware 测试：跳过路径、无 userId 放行；
+ * Redis 不可用时注册/查询/撤销均 fail-open。
  */
 
 namespace Tests\Unit\Middleware;
@@ -39,5 +40,16 @@ class SessionLimitMiddlewareTest extends TestCase
         $request->userId = 7;
 
         $this->assertEquals(200, $this->process($request)->getStatusCode());
+    }
+
+    public function testStaticHelpersFailOpenWithoutRedis(): void
+    {
+        $hash = md5('Bearer abc');
+
+        SessionLimitMiddleware::register(7, $hash);
+        $this->assertTrue(SessionLimitMiddleware::isActive(7, $hash));
+
+        SessionLimitMiddleware::revoke(7, $hash);
+        $this->assertTrue(SessionLimitMiddleware::isActive(7, $hash));
     }
 }

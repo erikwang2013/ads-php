@@ -37,6 +37,11 @@ class AuthMiddleware implements MiddlewareInterface
             return new Response(401, ['Content-Type' => 'application/json'], json_encode(['code' => 401, 'message' => 'Token invalid or expired'], JSON_UNESCAPED_UNICODE));
         }
 
+        // 被新登录挤出 ZSET 的 token 仍然签名有效，必须在此拒绝
+        if (!SessionLimitMiddleware::isActive((int) ($payload['uid'] ?? 0), md5($header))) {
+            return new Response(401, ['Content-Type' => 'application/json'], json_encode(['code' => 401, 'message' => 'Session revoked'], JSON_UNESCAPED_UNICODE));
+        }
+
         return $handler($request);
     }
 }

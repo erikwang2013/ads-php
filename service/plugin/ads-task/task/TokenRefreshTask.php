@@ -7,6 +7,7 @@ namespace plugin\ads_task\task;
 
 use plugin\ads_account\model\PlatformAccount;
 use plugin\ads_platform\src\AdapterRegistry;
+use erik\support\CacheService;
 use Throwable;
 
 class TokenRefreshTask
@@ -37,6 +38,7 @@ class TokenRefreshTask
                 echo "Token refresh failed for account {$account->id}: {$e->getMessage()}\n";
             }
         }
+        if ($refreshed > 0) CacheService::flush('cache:accounts:');
         echo "Refreshed {$refreshed} tokens.\n";
     }
 }

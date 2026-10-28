@@ -2,7 +2,7 @@
 /**
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
  *
- * RateLimitMiddleware 测试：Redis 不可用时优雅放行。
+ * RateLimitMiddleware 测试：Redis 不可用/故障时优雅放行，且只调用一次 handler。
  */
 
 namespace Tests\Unit\Middleware;
@@ -18,13 +18,13 @@ class RateLimitMiddlewareTest extends TestCase
     {
         $request = new Request("GET /api/x HTTP/1.1\r\nHost: localhost\r\n\r\n");
 
-        $called = false;
-        $response = (new RateLimitMiddleware())->process($request, function (Request $req) use (&$called) {
-            $called = true;
+        $calls = 0;
+        $response = (new RateLimitMiddleware())->process($request, function (Request $req) use (&$calls) {
+            $calls++;
             return new Response(200, [], 'ok');
         });
 
-        $this->assertTrue($called);
+        $this->assertSame(1, $calls);
         $this->assertEquals(200, $response->getStatusCode());
     }
 

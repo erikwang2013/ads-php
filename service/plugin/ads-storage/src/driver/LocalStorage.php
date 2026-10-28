@@ -6,9 +6,8 @@
 namespace plugin\ads_storage\src\driver;
 
 use Webman\Http\UploadFile;
-use plugin\ads_storage\src\StorageDriver;
 
-class LocalStorage implements StorageDriver
+class LocalStorage
 {
     protected string $dir;
 

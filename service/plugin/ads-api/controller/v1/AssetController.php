@@ -14,17 +14,16 @@ class AssetController
 {
     use \erik\support\ControllerTrait;
 
-    protected array $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'video/mp4'];
+    // MIME 白名单同时决定落盘扩展名，忽略客户端文件名（防 x.html 伪装成图片）
+    protected array $extensions = [
+        'image/jpeg' => 'jpg',
+        'image/png'  => 'png',
+        'image/gif'  => 'gif',
+        'image/webp' => 'webp',
+        'video/mp4'  => 'mp4',
+    ];
     protected int $maxImageSize = 5242880;   // 5 MiB
     protected int $maxVideoSize = 52428800;  // 50 MiB
-
-    /** DB 中始终存相对路径,读取时补全本地公开 URL */
-    protected function presentUrl(string $url): string
-    {
-        $prefix = '/uploads/assets/';
-        if (!str_starts_with($url, $prefix)) return $url;
-        return Storage::publicUrl(substr($url, strlen($prefix)));
-    }
 
         /**
      * @Title("上传素材")
@@ -37,11 +36,13 @@ class AssetController
         $file = $request->file('file');
         if (!$file) return ApiResponse::error('No file uploaded');
 
-        if (!in_array($file->getUploadMimeType(), $this->allowedTypes, true)) {
+        $mime = (string) $file->getUploadMimeType();
+        $ext = $this->extensions[$mime] ?? null;
+        if ($ext === null) {
             return ApiResponse::error('Unsupported file type');
         }
 
-        $isVideo = str_starts_with($file->getUploadMimeType(), 'video/');
+        $isVideo = str_starts_with($mime, 'video/');
         $maxSize = $isVideo ? $this->maxVideoSize : $this->maxImageSize;
         // move 后 tmp 文件消失,getSize 会抛异常,须在 move 前取值
         $size = $file->getSize();
@@ -49,7 +50,6 @@ class AssetController
             return ApiResponse::error('File too large');
         }
 
-        $ext = pathinfo($file->getUploadName(), PATHINFO_EXTENSION) ?: 'bin';
         $key = date('Ymd') . '/' . bin2hex(random_bytes(16)) . '.' . $ext;
         Storage::put($key, $file);
         // DB 存相对路径,读取时补全
@@ -62,7 +62,7 @@ class AssetController
             'id'           => $id,
             'type'         => $mediaType,
             'filename'     => $file->getUploadName(),
-            'mime_type'    => $file->getUploadMimeType(),
+            'mime_type'    => $mime,
             'size'         => $size,
             'url'          => $url,
             'width'        => 0,
@@ -70,7 +70,7 @@ class AssetController
             'created_at'   => now(),
         ]);
 
-        return ApiResponse::success(['id' => $id, 'url' => $this->presentUrl($url), 'type' => $mediaType]);
+        return ApiResponse::success(['id' => $id, 'url' => $url, 'type' => $mediaType]);
     }
 
         /**
@@ -86,10 +86,6 @@ class AssetController
 
         $this->allowedSorts = ['id', 'type', 'size', 'created_at'];
         [$items, $total, $page, $perPage] = $this->paginate($request, $query);
-        foreach ($items as &$row) {
-            $row->url = $this->presentUrl((string) $row->url);
-        }
-        unset($row);
 
         return ApiResponse::paginated($items, $total, $page, $perPage);
     }
@@ -104,7 +100,6 @@ class AssetController
     {
         $asset = DB::table('ads_assets')->find($id);
         if (!$asset) return ApiResponse::error('Asset not found');
-        $asset->url = $this->presentUrl((string) $asset->url);
         return ApiResponse::success($asset);
     }
 

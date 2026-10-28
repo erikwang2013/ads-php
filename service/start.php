@@ -6,12 +6,18 @@
 require_once __DIR__ . '/vendor/autoload.php';
 
 use Illuminate\Database\Capsule\Manager as DB;
-use plugin\ads_platform\src\AdapterRegistry;
-use plugin\ads_platform\adapter\Juliang;
 
 // Load .env
 if (file_exists(__DIR__ . '/.env')) {
     Dotenv\Dotenv::createUnsafeMutable(__DIR__)->load();
+}
+
+// 升级兼容：旧安装只有 APP_ENCRYPTION_KEY；Encryptable cast 只读 ENCRYPTION_KEY
+$legacyEncryptionKey = (string) env('APP_ENCRYPTION_KEY', '');
+if (!env('ENCRYPTION_KEY') && $legacyEncryptionKey !== '') {
+    // EnvEncryptableConfig 优先读 $_ENV/$_SERVER，.env 里的空值会遮蔽 putenv
+    $_ENV['ENCRYPTION_KEY'] = $_SERVER['ENCRYPTION_KEY'] = $legacyEncryptionKey;
+    putenv('ENCRYPTION_KEY=' . $legacyEncryptionKey);
 }
 
 // Initialize Database
@@ -21,17 +27,6 @@ $capsule->addConnection($connections['connections']['shared'], 'shared');
 $capsule->setAsGlobal();
 $capsule->getDatabaseManager()->setDefaultConnection('shared');
 $capsule->bootEloquent();
-
-// Configure paginator
-\Illuminate\Pagination\Paginator::currentPageResolver(function ($pageName = 'page') {
-    return (int) ($_GET[$pageName] ?? 1);
-});
-
-// Initialize Redis
-$redisConfig = require __DIR__ . '/config/redis.php';
-
-// Register platform adapters
-AdapterRegistry::register(new Juliang());
 
 // Start webman (loads configs, routes, and runs workers)
 support\App::run();

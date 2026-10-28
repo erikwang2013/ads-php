@@ -14,6 +14,19 @@ use plugin\ads_api\controller\v1\AccountController;
 
 class PlatformAccountApiTest extends ApiTestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+        // OAuth redirect 白名单已收紧：未配置时只允许 APP_URL 同 host
+        putenv('OAUTH_ALLOWED_REDIRECTS=https://app.example/*');
+    }
+
+    protected function tearDown(): void
+    {
+        putenv('OAUTH_ALLOWED_REDIRECTS');
+        parent::tearDown();
+    }
+
     public function testPlatformListContainsMockAdapter(): void
     {
         $body = $this->assertSuccess((new PlatformController())->index());
@@ -89,6 +102,32 @@ class PlatformAccountApiTest extends ApiTestCase
         $id = $this->seedAccount();
         $body = $this->assertSuccess((new AccountController())->show($id));
         $this->assertEquals($id, $body['data']['id']);
+    }
+
+    public function testAccountResponsesDoNotLeakTokens(): void
+    {
+        $this->seedAccount(['access_token' => 'secret-access-token', 'refresh_token' => 'secret-refresh-token']);
+
+        $indexRequest = $this->authedRequest('GET', '/api/accounts');
+        $indexResponse = (new AccountController())->index($indexRequest);
+        $indexBody = $this->assertSuccess($indexResponse);
+        $this->assertNotEmpty($indexBody['data']['list']);
+        foreach ($indexBody['data']['list'] as $row) {
+            $this->assertArrayNotHasKey('access_token', $row);
+            $this->assertArrayNotHasKey('refresh_token', $row);
+        }
+        $this->assertStringNotContainsString('secret-access-token', $indexResponse->rawBody());
+        $this->assertStringNotContainsString('secret-refresh-token', $indexResponse->rawBody());
+
+        $showResponse = (new AccountController())->show($this->seedAccount([
+            'access_token' => 'secret-access-token',
+            'refresh_token' => 'secret-refresh-token',
+        ]));
+        $showBody = $this->assertSuccess($showResponse);
+        $this->assertArrayNotHasKey('access_token', $showBody['data']);
+        $this->assertArrayNotHasKey('refresh_token', $showBody['data']);
+        $this->assertStringNotContainsString('secret-access-token', $showResponse->rawBody());
+        $this->assertStringNotContainsString('secret-refresh-token', $showResponse->rawBody());
     }
 
     public function testAccountDestroyDisablesAccount(): void

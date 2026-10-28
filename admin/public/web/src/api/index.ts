@@ -22,9 +22,7 @@ interface UnwrappedInstance extends Omit<AxiosInstance, 'request' | 'get' | 'del
 }
 
 // API 版本号固定在 URL 路径上（service 业务 API：/api/v1/...）。
-// '/admin/...' 走 admin 后端（:8789，不版本化）。
 export function versionedPath(url: string): string {
-  if (url.startsWith('/admin')) return url
   return url.startsWith('/v1') ? url : '/v1' + url
 }
 
@@ -40,10 +38,6 @@ raw.interceptors.request.use((config) => {
   }
   config.url = versionedPath(config.url ?? '')
   config.headers['X-Client-Platform'] = 'web'
-  const csrf = localStorage.getItem('csrf_token')
-  if (csrf && ['post', 'put', 'delete', 'patch'].includes(config.method?.toLowerCase() || '')) {
-    config.headers['X-CSRF-Token'] = csrf
-  }
   return config
 })
 

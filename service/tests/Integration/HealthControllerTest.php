@@ -31,5 +31,12 @@ class HealthControllerTest extends TestCase
         $this->assertArrayHasKey('checks', $body);
         $this->assertArrayHasKey('database', $body['checks']);
         $this->assertArrayHasKey('redis', $body['checks']);
+
+        // 探活端点不得泄露异常/连接串细节
+        $this->assertContains($body['checks']['database'], ['ok', 'unavailable']);
+        $this->assertContains($body['checks']['redis'], ['ok', 'unavailable']);
+        $this->assertStringNotContainsString('error:', $response->rawBody());
+        $this->assertStringNotContainsString('SQLSTATE', $response->rawBody());
+        $this->assertStringNotContainsString('Exception', $response->rawBody());
     }
 }

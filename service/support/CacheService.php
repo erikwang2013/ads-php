@@ -19,13 +19,16 @@ class CacheService
     public static function remember(string $key, int $ttl, callable $callback): mixed
     {
         if (isset(self::$l1Cache[$key])) {
-            return self::$l1Cache[$key];
+            if (self::$l1Cache[$key]['expires_at'] > time()) {
+                return self::$l1Cache[$key]['value'];
+            }
+            unset(self::$l1Cache[$key]);
         }
 
         if (function_exists('apcu_fetch')) {
             $cached = apcu_fetch($key, $hit);
             if ($hit) {
-                self::$l1Cache[$key] = $cached;
+                self::$l1Cache[$key] = ['expires_at' => time() + $ttl, 'value' => $cached];
                 return $cached;
             }
         }
@@ -35,14 +38,14 @@ class CacheService
             $cached = $redis->get($key);
             if ($cached !== false) {
                 $result = json_decode($cached, true);
-                self::$l1Cache[$key] = $result;
+                self::$l1Cache[$key] = ['expires_at' => time() + $ttl, 'value' => $result];
                 if (function_exists('apcu_store')) apcu_store($key, $result, min($ttl, 60));
                 return $result;
             }
         } catch (\Throwable $e) {}
 
         $result = $callback();
-        self::$l1Cache[$key] = $result;
+        self::$l1Cache[$key] = ['expires_at' => time() + $ttl, 'value' => $result];
 
         try {
             $redis = redis();

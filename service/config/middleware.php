@@ -4,7 +4,7 @@
  *
  * 全局中间件配置
  *
- * 请求流：Request → CORS → SecurityHeaders → AttackGuard → ClientPlatform → RateLimit → SQLGuard → Validation → ResponseTime → Encryption → Controller
+ * 请求流：Request → CORS → OriginGuard → SecurityHeaders → AttackGuard → Encryption → ClientPlatform → ReplayGuard → RateLimit → LoginThrottle → SQLGuard → Validation → ResponseTime → Controller
  *
  * 每个中间件职责：
  *   CorsMiddleware            — 跨域请求处理，支持 X-Encrypted 自定义头
@@ -22,19 +22,20 @@
  */
 
 return [
-    'global' => [
+    // webman 2.x 以 '@' 作为跨应用全局中间件桶，其他键会被当作应用名
+    '@' => [
         plugin\ads_api\middleware\CorsMiddleware::class,
         plugin\ads_api\middleware\OriginGuardMiddleware::class,
         plugin\ads_api\middleware\SecurityHeadersMiddleware::class,
         plugin\ads_api\middleware\AttackGuardMiddleware::class,
+        // Encryption 须在 LoginThrottle 之前：X-Encrypted 登录体先解密再读 username
+        plugin\ads_api\middleware\EncryptionMiddleware::class,
         plugin\ads_api\middleware\ClientPlatformMiddleware::class,
         plugin\ads_api\middleware\ReplayGuardMiddleware::class,
         plugin\ads_api\middleware\RateLimitMiddleware::class,
         plugin\ads_api\middleware\LoginThrottleMiddleware::class,
-        plugin\ads_api\middleware\SessionLimitMiddleware::class,
         plugin\ads_api\middleware\SqlGuardMiddleware::class,
         plugin\ads_api\middleware\ValidationMiddleware::class,
         plugin\ads_api\middleware\ResponseTimeMiddleware::class,
-        plugin\ads_api\middleware\EncryptionMiddleware::class,
     ],
 ];

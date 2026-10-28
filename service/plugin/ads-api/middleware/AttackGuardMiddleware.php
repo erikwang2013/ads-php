@@ -38,7 +38,9 @@ class AttackGuardMiddleware implements MiddlewareInterface
         if ($this->bodyTooLarge($request)) {
             return $this->block('Request body too large');
         }
-        if (in_array($request->method(), ['POST', 'PUT', 'PATCH'], true)) {
+        // X-Encrypted 请求体是密文（通常是 application/octet-stream），
+        // 解密后由控制器校验，此处跳过 Content-Type 白名单
+        if (in_array($request->method(), ['POST', 'PUT', 'PATCH'], true) && !$request->header('X-Encrypted')) {
             if (!$this->validContentType($request)) {
                 return $this->block('Invalid Content-Type');
             }

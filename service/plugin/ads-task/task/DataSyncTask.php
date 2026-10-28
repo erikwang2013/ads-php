@@ -21,125 +21,16 @@ class DataSyncTask
             ->where('sync_enabled', 1)
             ->get();
 
+        $synced = 0;
         foreach ($accounts as $account) {
             echo "Syncing account {$account->id} ({$account->platform})...\n";
 
+            if (!AdapterRegistry::get($account->platform)) continue;
+
             try {
-                $adapter = AdapterRegistry::get($account->platform);
-                if (!$adapter) continue;
-
-                // Sync campaigns
-                foreach ($adapter->fetchCampaigns($account->access_token, $account->account_id_on_platform) as $row) {
-                    DB::table('ads_campaigns')->updateOrInsert(
-                        [
-                            'platform_account_id'  => $account->id,
-                            'platform_campaign_id' => $row['platform_campaign_id'],
-                        ],
-                        [
-                            'platform'    => $account->platform,
-                            'name'        => $row['name'] ?? '',
-                            'daily_budget'=> $row['daily_budget'] ?? 0,
-                            'status'      => $row['status'] ?? null,
-                            'extra'       => json_encode($row['extra'] ?? [], JSON_UNESCAPED_UNICODE),
-                            'synced_at'   => now(),
-                            'updated_at'  => now(),
-                        ]
-                    );
-                }
-
-                // Sync ad groups
-                $campaigns = DB::table('ads_campaigns')
-                    ->where('platform_account_id', $account->id)
-                    ->get();
-                foreach ($campaigns as $campaign) {
-                    foreach ($adapter->fetchAdGroups($account->access_token, $account->account_id_on_platform, $campaign->platform_campaign_id) as $row) {
-                        DB::table('ads_ad_groups')->updateOrInsert(
-                            [
-                                'campaign_id'         => $campaign->id,
-                                'platform_adgroup_id' => $row['platform_adgroup_id'],
-                            ],
-                            [
-                                'name'       => $row['name'] ?? '',
-                                'status'     => $row['status'] ?? null,
-                                'bid_amount' => $row['bid_amount'] ?? 0,
-                                'bid_type'   => $row['bid_type'] ?? null,
-                                'targeting'  => json_encode($row['targeting'] ?? [], JSON_UNESCAPED_UNICODE),
-                                'extra'      => json_encode($row['extra'] ?? [], JSON_UNESCAPED_UNICODE),
-                                'updated_at' => now(),
-                            ]
-                        );
-                    }
-                }
-
-                // Sync creatives
-                $adGroups = DB::table('ads_ad_groups')
-                    ->whereIn('campaign_id', $campaigns->pluck('id')->toArray())
-                    ->get();
-                foreach ($adGroups as $adGroup) {
-                    foreach ($adapter->fetchCreatives($account->access_token, $account->account_id_on_platform, $adGroup->platform_adgroup_id) as $row) {
-                        DB::table('ads_creatives')->updateOrInsert(
-                            [
-                                'ad_group_id'         => $adGroup->id,
-                                'platform_creative_id' => $row['platform_creative_id'],
-                            ],
-                            [
-                                'title'       => $row['title'] ?? '',
-                                'description' => $row['description'] ?? null,
-                                'media_type'  => $row['media_type'] ?? null,
-                                'media_urls'  => json_encode($row['media_urls'] ?? [], JSON_UNESCAPED_UNICODE),
-                                'landing_url' => $row['landing_url'] ?? null,
-                                'extra'       => json_encode($row['extra'] ?? [], JSON_UNESCAPED_UNICODE),
-                                'updated_at'  => now(),
-                            ]
-                        );
-                    }
-                }
-
-                // Sync reports (last 2 days)
-                $req = new ReportRequest(
-                    dateStart: date('Y-m-d', strtotime('-2 days')),
-                    dateEnd:   date('Y-m-d'),
-                    granularity: 'daily',
-                    metrics: ['cost', 'impressions', 'clicks', 'conversions', 'ctr', 'cvr', 'cpc', 'cpm', 'roi'],
-                );
-
-                foreach ($adapter->fetchReports($account->access_token, $account->account_id_on_platform, $req) as $row) {
-                    $campaignId = null;
-                    if (!empty($row['platform_campaign_id'])) {
-                        $campaign = DB::table('ads_campaigns')
-                            ->where('platform_campaign_id', $row['platform_campaign_id'])
-                            ->where('platform_account_id', $account->id)
-                            ->first();
-                        $campaignId = $campaign->id ?? null;
-                    }
-
-                    DB::table('ads_report_metrics')->updateOrInsert(
-                        [
-                            'platform'            => $account->platform,
-                            'platform_account_id' => $account->id,
-                            'campaign_id'         => $campaignId,
-                            'date'                => $row['date'] ?? date('Y-m-d'),
-                            'granularity'         => 'daily',
-                        ],
-                        [
-                            'cost'         => $row['cost'] ?? 0,
-                            'impressions'  => $row['impressions'] ?? 0,
-                            'clicks'       => $row['clicks'] ?? 0,
-                            'conversions'  => $row['conversions'] ?? 0,
-                            'ctr'          => $row['ctr'] ?? 0,
-                            'cpm'          => $row['cpm'] ?? 0,
-                            'cpc'          => $row['cpc'] ?? 0,
-                            'cvr'          => $row['cvr'] ?? 0,
-                        ]
-                    );
-                }
-
-                // Flush cached dashboard on fresh data
-                CacheService::flush('cache:dashboard:');
-
-                $account->update(['last_sync_at' => now()]);
+                $this->syncAccount($account);
+                $synced++;
                 echo "  Done.\n";
-
             } catch (Throwable $e) {
                 DB::table('ads_sync_errors')->insert([
                     'platform_account_id' => $account->id,
@@ -151,6 +42,7 @@ class DataSyncTask
                 echo "  Failed: {$e->getMessage()}\n";
             }
         }
+        if ($synced > 0) CacheService::flush('cache:accounts:');
     }
 
     public function executeSingleAccount(int $accountId): void
@@ -161,7 +53,12 @@ class DataSyncTask
         }
 
         echo "Syncing account {$account->id} ({$account->platform})...\n";
+        $this->syncAccount($account);
+        echo "  Done.\n";
+    }
 
+    private function syncAccount(PlatformAccount $account): void
+    {
         $adapter = AdapterRegistry::get($account->platform);
         if (!$adapter) {
             throw new \RuntimeException("No adapter for platform {$account->platform}");
@@ -277,6 +174,5 @@ class DataSyncTask
         CacheService::flush('cache:dashboard:');
 
         $account->update(['last_sync_at' => now()]);
-        echo "  Done.\n";
     }
 }

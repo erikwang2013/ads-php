@@ -8,6 +8,7 @@ namespace plugin\ads_account\service;
 use plugin\ads_account\model\PlatformAccount;
 use plugin\ads_account\model\AuthToken;
 use plugin\ads_platform\src\AdapterRegistry;
+use erik\support\CacheService;
 use Throwable;
 use RuntimeException;
 use InvalidArgumentException;
@@ -86,6 +87,7 @@ class OAuthService
         }
 
         $authToken->delete();
+        CacheService::flush('cache:accounts:');
 
         return $account;
     }
@@ -104,5 +106,6 @@ class OAuthService
             'refresh_token'    => $tokenData['refresh_token'] ?? $account->refresh_token,
             'token_expires_at' => now()->addSeconds($tokenData['expires_in'] ?? 86400),
         ]);
+        CacheService::flush('cache:accounts:');
     }
 }

@@ -152,12 +152,29 @@ body {
 <div class="container">
   <div class="header">
     <h1>Ads-PHP 安装向导</h1>
-    <p>多平台广告投放管理系统 — 一键安装</p>
+    <p>多平台广告投放管理系统 — Service 后端一键安装（:8788）</p>
   </div>
 
   <div id="alert" class="alert"></div>
 
   <div id="formSection">
+    <!-- Install Token -->
+    <div class="card">
+      <div class="card-header">
+        <span class="icon">🔑</span> 安装令牌
+      </div>
+      <div class="card-body">
+        <div class="form-group">
+          <label>安装令牌 *</label>
+          <input type="text" id="install_token" placeholder="32 位十六进制令牌" autocomplete="off">
+          <div class="form-hint">
+            读取服务器上的 <code>service/runtime/install-token.txt</code>；
+            Docker：<code>docker compose exec php cat runtime/install-token.txt</code>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Database Config -->
     <div class="card">
       <div class="card-header">
@@ -167,11 +184,11 @@ body {
         <div class="form-row">
           <div class="form-group">
             <label>主机地址 *</label>
-            <input type="text" id="db_host" value="127.0.0.1" placeholder="127.0.0.1">
+            <input type="text" id="db_host" value="{{DB_HOST}}" placeholder="127.0.0.1">
           </div>
           <div class="form-group" style="max-width:120px">
             <label>端口</label>
-            <input type="text" id="db_port" value="3306" placeholder="3306">
+            <input type="text" id="db_port" value="{{DB_PORT}}" placeholder="3306">
           </div>
         </div>
         <div class="form-row">
@@ -183,7 +200,7 @@ body {
         <div class="form-row">
           <div class="form-group">
             <label>用户名 *</label>
-            <input type="text" id="db_username" value="root" placeholder="root">
+            <input type="text" id="db_username" value="ads" placeholder="ads">
           </div>
           <div class="form-group">
             <label>密码</label>
@@ -203,11 +220,11 @@ body {
         <div class="form-row">
           <div class="form-group">
             <label>主机地址</label>
-            <input type="text" id="redis_host" value="127.0.0.1" placeholder="127.0.0.1">
+            <input type="text" id="redis_host" value="{{REDIS_HOST}}" placeholder="127.0.0.1">
           </div>
           <div class="form-group" style="max-width:120px">
             <label>端口</label>
-            <input type="text" id="redis_port" value="6379" placeholder="6379">
+            <input type="text" id="redis_port" value="{{REDIS_PORT}}" placeholder="6379">
           </div>
         </div>
         <div class="form-row">
@@ -219,44 +236,29 @@ body {
       </div>
     </div>
 
-    <!-- Service API -->
+    <!-- Admin Account (service API credentials) -->
     <div class="card">
       <div class="card-header">
-        <span class="icon">🔗</span> 业务服务 API
+        <span class="icon">👤</span> 管理员账号
       </div>
       <div class="card-body">
+        <div class="form-hint" style="margin-bottom:12px;">将写入 service/.env（API_USERNAME / API_PASSWORD_HASH），用于登录管理后台</div>
         <div class="form-row">
           <div class="form-group">
-            <label>Service API 地址</label>
-            <input type="text" id="service_api_url" value="http://127.0.0.1:8788/api" placeholder="http://127.0.0.1:8788/api">
-            <div class="form-hint">业务数据（计划、报表、账户）通过此地址获取</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Admin Account -->
-    <div class="card">
-      <div class="card-header">
-        <span class="icon">👤</span> 后台管理员
-      </div>
-      <div class="card-body">
-        <div class="form-row">
-          <div class="form-group">
-            <label>用户名 *</label>
+            <label>管理员账号 *</label>
             <input type="text" id="admin_username" value="admin" placeholder="admin">
           </div>
         </div>
         <div class="form-row">
           <div class="form-group">
             <label>显示名称</label>
-            <input type="text" id="admin_name" value="超级管理员" placeholder="超级管理员">
+            <input type="text" id="admin_name" value="管理员" placeholder="管理员">
           </div>
         </div>
         <div class="form-row">
           <div class="form-group">
             <label>密码 *</label>
-            <input type="password" id="admin_password" placeholder="至少6位">
+            <input type="password" id="admin_password" placeholder="至少12位">
           </div>
           <div class="form-group">
             <label>确认密码 *</label>
@@ -286,17 +288,17 @@ body {
   <div id="successSection" style="display:none">
     <div class="card" style="text-align:center; padding: 48px 24px;">
       <h2 style="margin-bottom:8px">✅ 安装完成！</h2>
-      <p style="color:#999;margin-bottom:24px;">所有数据表已创建，管理员账户已就绪</p>
+      <p style="color:#999;margin-bottom:24px;">8 张业务表已创建，管理员账号已写入 service/.env</p>
 
       <div style="text-align:left;background:#f5f7fa;border-radius:6px;padding:16px 24px;margin-bottom:24px;">
-        <p style="margin-bottom:6px;"><strong>后台地址：</strong><code id="adminUrl">http://localhost:8789/</code></p>
-        <p style="margin-bottom:6px;"><strong>用户名：</strong><code>admin</code></p>
-        <p style="margin-bottom:6px;"><strong>JWT Secret：</strong><code id="jwtSecret" style="font-size:11px;word-break:break-all;"></code></p>
+        <p style="margin-bottom:6px;"><strong>后台地址：</strong><code id="adminUrl">/</code></p>
+        <p style="margin-bottom:6px;"><strong>管理员账号：</strong><code id="adminUsername">admin</code></p>
       </div>
 
       <div style="background:#fff7e6;border:1px solid #ffd591;border-radius:6px;padding:12px 16px;margin-bottom:24px;font-size:13px;text-align:left;color:#d46b08;">
-        <strong>注意：</strong>配置已写入 .env 文件，需重启服务生效：<br>
+        <strong>注意：</strong>配置已写入 .env 文件，需重启后端生效：<br>
         <code style="background:#fef0e6;padding:2px 6px;border-radius:3px;">php start.php restart</code>
+        或 Docker：<code style="background:#fef0e6;padding:2px 6px;border-radius:3px;">docker-compose restart php</code>
       </div>
 
       <a href="/" class="btn btn-primary" style="text-decoration:none;">进入管理后台</a>
@@ -324,6 +326,10 @@ function hideAlert() { $('alert').className = 'alert'; }
 
 async function testDb() {
   hideAlert();
+  const installToken = $('install_token').value.trim();
+  if (!installToken) {
+    return alert('请填写安装令牌', 'error');
+  }
   const btn = $('testDbBtn');
   btn.textContent = '⏳ 连接中...';
   btn.disabled = true;
@@ -333,6 +339,7 @@ async function testDb() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
+        install_token: installToken,
         db_host: $('db_host').value.trim(),
         db_port: $('db_port').value.trim(),
         db_database: $('db_database').value.trim(),
@@ -357,6 +364,11 @@ async function testDb() {
 async function install() {
   hideAlert();
 
+  const installToken = $('install_token').value.trim();
+  if (!installToken) {
+    return alert('请填写安装令牌', 'error');
+  }
+
   const dbHost     = $('db_host').value.trim();
   const dbPort     = $('db_port').value.trim();
   const dbDatabase = $('db_database').value.trim();
@@ -373,8 +385,8 @@ async function install() {
   if (!adminUsername || !adminPassword) {
     return alert('请填写管理员用户名和密码', 'error');
   }
-  if (adminPassword.length < 6) {
-    return alert('管理员密码至少需要6位', 'error');
+  if (adminPassword.length < 12) {
+    return alert('管理员密码至少需要12位', 'error');
   }
   if (adminPassword !== adminConfirm) {
     return alert('两次输入的密码不一致', 'error');
@@ -399,6 +411,7 @@ async function install() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
+        install_token: installToken,
         db_host: dbHost,
         db_port: dbPort,
         db_database: dbDatabase,
@@ -407,7 +420,6 @@ async function install() {
         redis_host: $('redis_host').value.trim(),
         redis_port: $('redis_port').value.trim(),
         redis_password: $('redis_password').value,
-        service_api_url: $('service_api_url').value.trim(),
         admin_username: adminUsername,
         admin_password: adminPassword,
         admin_name: $('admin_name').value.trim(),
@@ -423,7 +435,6 @@ async function install() {
     if (j.code === 1) { setStep('step_db', 'error'); throw new Error(j.message); }
     if (j.code === 2) { setStep('step_env', 'error'); throw new Error(j.message); }
     if (j.code === 3 || j.code === 4) { setStep('step_db', 'error'); throw new Error(j.message); }
-    if (j.code === 5) { setStep('step_admin', 'error'); throw new Error(j.message); }
 
     if (j.code !== 0) {
       throw new Error(j.message || '安装失败');
@@ -431,7 +442,7 @@ async function install() {
 
     setStep('step_done', 'done');
     $('loadingText').textContent = '安装完成！';
-    $('jwtSecret').textContent = j.data.jwt_secret || '';
+    $('adminUsername').textContent = j.data.username || '';
     $('adminUrl').textContent = window.location.origin + '/';
 
     setTimeout(() => {

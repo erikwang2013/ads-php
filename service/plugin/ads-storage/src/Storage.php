@@ -10,7 +10,7 @@ use plugin\ads_storage\src\driver\LocalStorage;
 
 class Storage
 {
-    public static function driver(): StorageDriver
+    public static function driver(): LocalStorage
     {
         return new LocalStorage();
     }

@@ -21,7 +21,11 @@ class CampaignController
      */
     public function index(Request $request): \Webman\Http\Response
     {
-        $this->allowedSorts = ['id', 'name', 'platform', 'daily_budget', 'status', 'created_at', 'updated_at', 'cost'];
+        $this->allowedSorts = ['id', 'name', 'platform', 'daily_budget', 'status', 'created_at', 'updated_at', 'total_cost'];
+        // ads_campaigns 无 cost 列，sort=cost 映射到 join 子查询的 total_cost 别名
+        if ($request->get('sort') === 'cost') {
+            $request->setGet('sort', 'total_cost');
+        }
         $query = DB::table('ads_campaigns as c')
             ->leftJoinSub(
                 DB::table('ads_report_metrics')
@@ -51,9 +55,11 @@ class CampaignController
             ->selectRaw('COALESCE(SUM(cost), 0) as total_cost')
             ->selectRaw('COALESCE(SUM(impressions), 0) as total_impressions')
             ->selectRaw('COALESCE(SUM(clicks), 0) as total_clicks')
-            ->selectRaw('COALESCE(AVG(ctr), 0) as avg_ctr')
-            ->selectRaw('COALESCE(AVG(cvr), 0) as avg_cvr')
+            ->selectRaw('COALESCE(SUM(conversions), 0) as total_conversions')
             ->first();
+
+        $summary['avg_ctr'] = bcmul(bc_div($summary['total_clicks'], $summary['total_impressions'], 4), '100', 2);
+        $summary['avg_cvr'] = bcmul(bc_div($summary['total_conversions'], $summary['total_clicks'], 4), '100', 2);
 
         return ApiResponse::paginated($items, $total, $page, $perPage, $summary);
     }

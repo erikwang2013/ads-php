@@ -6,8 +6,8 @@
  *
  * 架构端口说明：
  *   :8788 — service 业务 API（本文件）
- *   :8789 — admin  管理后台 webman-admin v2
- *   :5173 — vite   前端开发服务器（代理 /api → :8788）
+ *   :80   — nginx   前端 SPA 静态站点（/api 反代到 :8788）
+ *   :5173 — vite    前端开发服务器（代理 /api → :8788）
  */
 
 return [

@@ -1,31 +1,11 @@
 {
     "name": "ads/service",
+    "description": "Multi-platform advertising management service (webman).",
     "type": "project",
+    "license": "proprietary",
     "require-dev": {
-        "phpunit/phpunit": "^10.0",
-        "hg/apidoc": "^5.3"
+        "phpunit/phpunit": "^10.0"
     },
-    "repositories": [
-        {
-            "type": "package",
-            "package": {
-                "name": "aliyun/aliyun-oss-php-sdk",
-                "version": "2.6.0",
-                "dist": {
-                    "url": "https://codeload.github.com/aliyun/aliyun-oss-php-sdk/tar.gz/refs/tags/v2.6.0",
-                    "type": "tar"
-                },
-                "autoload": {
-                    "psr-4": {
-                        "OSS\\": "src/OSS"
-                    }
-                },
-                "require": {
-                    "php": ">=7.4"
-                }
-            }
-        }
-    ],
     "require": {
         "php": ">=8.4",
         "ext-bcmath": "*",
@@ -33,7 +13,7 @@
         "workerman/crontab": "^1.0",
         "illuminate/database": "^11.0",
         "illuminate/redis": "^11.0",
-        "firebase/php-jwt": "7.0.5 as 6.11.1",
+        "firebase/php-jwt": "~7.0.5",
         "vlucas/phpdotenv": "^5.0",
         "monolog/monolog": "^3.10",
         "illuminate/pagination": "^11.51",

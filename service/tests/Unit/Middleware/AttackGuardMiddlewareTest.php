@@ -70,6 +70,23 @@ class AttackGuardMiddlewareTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
+    public function testAllowsEncryptedOctetStreamBody(): void
+    {
+        $request = $this->makeRequest('POST', '/api/x', [
+            'Content-Type' => 'application/octet-stream',
+            'X-Encrypted'  => '1',
+        ]);
+        $response = $this->process($request);
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testStillBlocksOctetStreamWithoutEncryptionHeader(): void
+    {
+        $request = $this->makeRequest('POST', '/api/x', ['Content-Type' => 'application/octet-stream']);
+        $response = $this->process($request);
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
     public function testBlocksOversizedBody(): void
     {
         $body = str_repeat('a', 10485760 + 1);

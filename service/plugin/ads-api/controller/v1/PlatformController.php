@@ -6,7 +6,6 @@
 namespace plugin\ads_api\controller\v1;
 
 use plugin\ads_platform\src\AdapterRegistry;
-use plugin\ads_account\model\AuthToken;
 use plugin\ads_account\service\OAuthService;
 use Webman\Http\Request;
 use app\support\ApiResponse;
@@ -51,22 +50,17 @@ class PlatformController
             return ApiResponse::error('redirect_uri is not allowed');
         }
 
-        $adapter = AdapterRegistry::get($code);
-        if (!$adapter) {
-            return ApiResponse::error("Unsupported platform: $code");
+        try {
+            $result = (new OAuthService())->getAuthUrl($code, $redirectUri);
+        } catch (\InvalidArgumentException $e) {
+            return ApiResponse::error($e->getMessage());
+        } catch (Throwable $e) {
+            // DB 等内部异常不回显 SQLSTATE/PDO 细节
+            \support\Log::error('oauth url init failed', ['platform' => $code, 'exception' => $e]);
+            return ApiResponse::error('授权初始化失败');
         }
 
-        $state = bin2hex(random_bytes(16));
-        $url = $adapter->buildAuthUrl($redirectUri, $state);
-
-        AuthToken::create([
-            'platform'    => $code,
-            'state'       => $state,
-            'redirect_uri'=> $redirectUri,
-            'expires_at'  => now()->addMinutes(10),
-        ]);
-
-        return ApiResponse::success(['auth_url' => $url, 'state' => $state]);
+        return ApiResponse::success($result);
     }
 
         /**
@@ -96,7 +90,14 @@ class PlatformController
     protected function isAllowedRedirect(string $uri): bool
     {
         $allowed = env('OAUTH_ALLOWED_REDIRECTS', '');
-        if ($allowed === '') return true; // not configured, allow all
+        if ($allowed === '') {
+            // 未配置白名单时只允许与 APP_URL 同 host，避免开放重定向
+            $appHost = parse_url((string) env('APP_URL', ''), PHP_URL_HOST);
+            $uriHost = parse_url($uri, PHP_URL_HOST);
+            return is_string($appHost) && $appHost !== ''
+                && is_string($uriHost) && $uriHost !== ''
+                && strcasecmp($appHost, $uriHost) === 0;
+        }
         $patterns = array_map('trim', explode(',', $allowed));
         foreach ($patterns as $pattern) {
             if (fnmatch($pattern, $uri)) return true;

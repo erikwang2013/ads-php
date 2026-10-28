@@ -21,7 +21,7 @@ jobs:
           # "Errors parsing <file>"、stderr 有 "PHP Parse error: ..."，故过滤后非空即为失败。
           # 注意不能写成 `php -l ... | grep -v "No syntax errors"`：全是干净文件时 grep 无输出、
           # 退出码 1，配合 bash -e 会把"检查通过"判成失败（反之有语法错误时 grep 命中、退出 0，反而放行）。
-          out=$(find service admin -name "*.php" -not -path "*/vendor/*" -exec php -l {} \; 2>&1 \
+          out=$(find service -name "*.php" -not -path "*/vendor/*" -exec php -l {} \; 2>&1 \
                 | grep -v "No syntax errors" || true)
           if [ -n "$out" ]; then
             echo "$out"
@@ -52,7 +52,7 @@ jobs:
       - name: Load schema
         run: |
           # service/plugin/*/migration/*.sql 已合并为仓库根目录的 install.sql
-          # （28 张表 + 种子数据），旧的按目录遍历在仓库里匹配不到任何文件。
+          # （8 张 ads_* 业务表，无框架表/种子数据）。
           mysql -h 127.0.0.1 -u root -ptest ads_test < install.sql
           mysql -h 127.0.0.1 -u root -ptest ads_test -e "SHOW TABLES" | tail -n +2 | wc -l
       - name: Run tests

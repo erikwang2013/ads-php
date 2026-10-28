@@ -57,6 +57,28 @@ class AssetStorageTest extends ApiTestCase
         $this->assertFileDoesNotExist(public_path() . $url);
     }
 
+    public function testUploadUsesMimeExtensionNotClientFilename(): void
+    {
+        $png = base64_decode(
+            'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=='
+        );
+
+        $controller = new AssetController();
+        $body = $this->assertSuccess(
+            $controller->upload($this->multipartUploadRequest('/api/assets/upload', 'x.html', 'image/png', $png))
+        );
+
+        $url = $body['data']['url'];
+        $this->assertMatchesRegularExpression('#^/uploads/assets/\d{8}/[0-9a-f]{32}\.png$#', $url);
+        $this->assertFileExists(public_path() . $url);
+
+        // 原始文件名仅作元数据保留
+        $asset = DB::table('ads_assets')->find($body['data']['id']);
+        $this->assertSame('x.html', $asset->filename);
+
+        $this->assertSuccess($controller->destroy($this->authedRequest('DELETE', '/api/assets/' . $body['data']['id']), (int) $body['data']['id']));
+    }
+
     public function testStorageDispatchDefaultsToLocal(): void
     {
         $this->assertInstanceOf(LocalStorage::class, Storage::driver());

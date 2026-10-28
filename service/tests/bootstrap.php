@@ -6,12 +6,16 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 // Set up minimal environment for tests
 putenv('APP_DEBUG=true');
-putenv('JWT_SECRET=test-secret');
+putenv('JWT_SECRET=' . str_repeat('k', 32));
+// JWT 黑名单走文件存储：测试桥的 redis() 桩返回 null，不能用 redis 存储
+putenv('JWT_STORAGE=file');
 putenv('HASHIDS_SALT=test-salt');
 putenv('API_USERNAME=testuser');
 putenv('API_PASSWORD_HASH=' . password_hash('testpass', PASSWORD_BCRYPT));
 putenv('API_NAME=Test User');
+putenv('CAPTCHA_ENABLED=false');
 putenv('DB_HOST=127.0.0.1');
+putenv('DB_PORT=' . (getenv('DB_PORT') !== false ? getenv('DB_PORT') : '3306'));
 putenv('DB_DATABASE=ads_test');
 putenv('DB_USERNAME=root');
 putenv('DB_PASSWORD=' . (getenv('DB_PASSWORD') !== false ? getenv('DB_PASSWORD') : ''));
@@ -41,6 +45,7 @@ $capsule = new \Illuminate\Database\Capsule\Manager;
 $capsule->addConnection([
     'driver'    => 'mysql',
     'host'      => env('DB_HOST', '127.0.0.1'),
+    'port'      => (int) env('DB_PORT', 3306),
     'database'  => env('DB_DATABASE', 'ads_test'),
     'username'  => env('DB_USERNAME', 'root'),
     'password'  => env('DB_PASSWORD', ''),

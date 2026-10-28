@@ -18,6 +18,7 @@ class PlatformAccount extends Model
 
     protected $table = 'ads_platform_accounts';
     protected $guarded = ['id'];
+    protected $hidden = ['access_token', 'refresh_token'];
     protected $casts = [
         'sync_enabled' => 'boolean',
         'last_sync_at' => 'datetime',

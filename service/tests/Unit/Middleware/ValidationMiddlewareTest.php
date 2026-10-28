@@ -63,6 +63,29 @@ class ValidationMiddlewareTest extends TestCase
         $this->assertSame('plain', $result['items'][1]);
     }
 
+    public function testSanitizeLeavesPasswordAndSecretFieldsUntouched(): void
+    {
+        $mw = new ExposableValidationMiddleware();
+        $result = $mw->exposeSanitize([
+            'password'       => '  <b>p@ss</b>  ',
+            'admin_password' => ' <script>admin</script> ',
+            'db_password'    => '  spaced  ',
+            'redis_password' => '<i>pw</i>',
+            'client_secret'  => '  <b>secret</b>  ',
+            'settings'       => ['api_secret' => '  <x>  ', 'host' => '  h  '],
+            'username'       => '  <b>bob</b>  ',
+        ]);
+
+        $this->assertSame('  <b>p@ss</b>  ', $result['password']);
+        $this->assertSame(' <script>admin</script> ', $result['admin_password']);
+        $this->assertSame('  spaced  ', $result['db_password']);
+        $this->assertSame('<i>pw</i>', $result['redis_password']);
+        $this->assertSame('  <b>secret</b>  ', $result['client_secret']);
+        $this->assertSame('  <x>  ', $result['settings']['api_secret']);
+        $this->assertSame('h', $result['settings']['host']);
+        $this->assertSame('bob', $result['username']);
+    }
+
     public function testProcessWithEmptyInputPassesThrough(): void
     {
         $request = new Request("GET /api/x HTTP/1.1\r\nHost: localhost\r\n\r\n");
