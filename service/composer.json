@@ -13,7 +13,7 @@
         "workerman/crontab": "^1.0",
         "illuminate/database": "^11.0",
         "illuminate/redis": "^11.0",
-        "firebase/php-jwt": "~7.0.5",
+        "firebase/php-jwt": "~7.2.1",
         "vlucas/phpdotenv": "^5.0",
         "monolog/monolog": "^3.10",
         "illuminate/pagination": "^11.51",
