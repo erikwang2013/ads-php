@@ -594,31 +594,33 @@
         },
         {
             "name": "erikwang2013/season",
-            "version": "v2.0.2",
+            "version": "2.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/erikwang2013/season.git",
-                "reference": "63f4bd28ab678d2c952830ab9c571589d660a533"
+                "reference": "eb18423e157801a960c8fd01c08d7811eb45318e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/erikwang2013/season/zipball/63f4bd28ab678d2c952830ab9c571589d660a533",
-                "reference": "63f4bd28ab678d2c952830ab9c571589d660a533",
+                "url": "https://api.github.com/repos/erikwang2013/season/zipball/eb18423e157801a960c8fd01c08d7811eb45318e",
+                "reference": "eb18423e157801a960c8fd01c08d7811eb45318e",
                 "shasum": ""
             },
             "require": {
                 "ext-mbstring": "*",
-                "php": ">=8.1"
+                "php": ">=8.0"
             },
             "require-dev": {
                 "phpstan/phpstan": "^2.0",
-                "phpunit/phpunit": "^10.0 || ^11.0 || ^12.0"
+                "phpunit/phpunit": "^9.6 || ^10.0 || ^11.0 || ^12.0"
             },
             "suggest": {
                 "hyperf/framework": "Hyperf 2 / 3 使用 Erikwang2013\\Season\\Hyperf\\ConfigProvider 时需要",
                 "illuminate/support": "Laravel 7–11 使用 Erikwang2013\\Season\\Laravel\\CountrySeasonServiceProvider 时需要",
                 "topthink/framework": "ThinkPHP 6 / 8 使用 Erikwang2013\\Season\\ThinkPHP\\Service 时需要",
-                "workerman/webman-framework": "用于在 webman 项目中作为插件使用"
+                "workerman/webman-framework": "用于在 webman 项目中作为插件使用",
+                "yiisoft/config": "Yii3 通过 config-plugin 自动合并 config/params.php 与 config/di.php 时需要",
+                "yiisoft/yii2": "Yii2 使用 Erikwang2013\\Season\\Yii2\\Bootstrap 时需要"
             },
             "type": "library",
             "extra": {
@@ -636,7 +638,14 @@
                     ]
                 },
                 "branch-alias": {
-                    "dev-main": "1.0.x-dev"
+                    "dev-main": "2.0.x-dev"
+                },
+                "config-plugin": {
+                    "di": "di.php",
+                    "params": "params.php"
+                },
+                "config-plugin-options": {
+                    "source-directory": "config"
                 }
             },
             "autoload": {
@@ -657,7 +666,7 @@
                     "email": "erik@erik.xyz"
                 }
             ],
-            "description": "PHP library / extension that resolves the current season from an ISO 3166-1 alpha-2 country code. Use it as a plain Composer package, or integrate with Laravel 7–11, ThinkPHP 6 / 8, Hyperf 2 / 3, and webman. Besides English season keys (spring, etc.) and Chinese names, it provides flag emoji, localized season names by BCP 47 locale, hemisphere detection, and optional date-based calculation.",
+            "description": "PHP library / extension that resolves the current season from an ISO 3166-1 alpha-2 country code. Use it as a plain Composer package, or integrate with Laravel 7–11, ThinkPHP 6 / 8, Hyperf 2 / 3, webman, Yii 2, and Yii 3. Besides English season keys (spring, etc.) and Chinese names, it provides flag emoji, localized season names by BCP 47 locale, hemisphere detection, and optional date-based calculation.",
             "keywords": [
                 "ISO 3166-1",
                 "country",
@@ -666,13 +675,16 @@
                 "php",
                 "season",
                 "thinkphp",
-                "webman"
+                "webman",
+                "yii",
+                "yii2",
+                "yii3"
             ],
             "support": {
                 "issues": "https://github.com/erikwang2013/season/issues",
-                "source": "https://github.com/erikwang2013/season/tree/v2.0.2"
+                "source": "https://github.com/erikwang2013/season/tree/v2.2.0"
             },
-            "time": "2026-08-02T08:14:02+00:00"
+            "time": "2026-09-29T10:36:50+00:00"
         },
         {
             "name": "erikwang2013/snowflake-php",
